@@ -1,19 +1,16 @@
-// Firebase web config. This is PUBLIC by design — it identifies the project,
-// it does not authorise anything. Access is controlled by the Firestore
-// security rules in firestore.rules, which allow only the two signed-in
-// accounts on the allowlist.
+// Firebase web config. PUBLIC by design — it identifies the project, it does
+// not authorise anything. Access is controlled entirely by firestore.rules.
 //
-// FILLED IN once the project exists. Until apiKey is set, sync.js reports
-// "unconfigured" and the app runs happily on localStorage alone.
+// There is deliberately NO trip code in here. The code is the secret: it lives
+// in the deployed security rules (which are server-side and not public) and in
+// each phone's local storage, entered once. Putting it in this file would
+// publish it, since this repo is public.
 
 export const CONFIG = {
-  apiKey: '',
-  authDomain: '',
-  projectId: '',
-  storageBucket: '',
-  messagingSenderId: '',
-  appId: '',
+  apiKey: 'AIzaSyDRQomoP_0laVOpMthuiHwJcWlnuttwyQM',
+  authDomain: 'milepost-trip.firebaseapp.com',
+  projectId: 'milepost-trip',
+  storageBucket: 'milepost-trip.firebasestorage.app',
+  messagingSenderId: '309080612066',
+  appId: '1:309080612066:web:36f56c261aa02065bb12bb',
 };
-
-// One shared document holds the whole trip.
-export const TRIP_ID = 'christmas-2026';

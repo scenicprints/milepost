@@ -1,26 +1,34 @@
 // Two phones, one itinerary.
 //
-// Why Firestore and not something simpler: it queues writes while offline and
-// flushes them when signal comes back. On this trip that is the entire point —
-// you check off Meteor Crater somewhere west of Winslow with no bars, and it
-// lands on the other phone when you reach Albuquerque.
+// Why Firestore: it queues writes while offline and flushes them when signal
+// comes back. On this trip that is the whole point — you check off Meteor
+// Crater west of Winslow with no bars, and it lands on the other phone at
+// Albuquerque.
 //
-// The SDK is vendored in vendor/ rather than pulled from gstatic so the
-// service worker can cache it. A CDN import would mean the app fails to boot
-// in exactly the places this trip goes.
+// Why a trip code instead of a login: enabling a sign-in provider on a fresh
+// Firebase project routes through Identity Platform, which refuses without a
+// billing account. So the document path IS the secret. The code lives in the
+// deployed security rules (server-side, not public) and in each phone's local
+// storage — never in this repo, which is public. 80 bits of entropy, and the
+// rules deny collection listing, so it can't be found by probing.
 //
-// Everything here is lazy: if this module never loads, or never connects, the
-// app still runs entirely from localStorage. Sync is an enhancement, never a
+// The SDK is vendored in vendor/ rather than pulled from gstatic so the service
+// worker can cache it. A CDN import would fail in exactly the places this trip
+// goes.
+//
+// Everything here is lazy. If this module never loads or never connects, the
+// app runs entirely from localStorage. Sync is an enhancement, never a
 // dependency.
 
-import { CONFIG, TRIP_ID } from './firebase-config.js';
+import { CONFIG } from './firebase-config.js';
 import { store } from './store.js';
 
+const CODE_KEY = 'milepost.trip-code';
+
 export const sync = new EventTarget();
+export let state = { on: false, status: 'off', code: null, error: null, lastPull: null, lastPush: null };
 
-export let state = { on: false, status: 'off', who: null, error: null, lastPull: null };
-
-let db = null, auth = null, docRef = null, unsub = null;
+let db = null, docRef = null, unsub = null, f = null;
 let pushTimer = null;
 let applyingRemote = false;
 
@@ -29,24 +37,24 @@ function set(patch) {
   sync.dispatchEvent(new Event('change'));
 }
 
+export const savedCode = () => localStorage.getItem(CODE_KEY);
+export const normalise = c => String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, '')
+  .replace(/(.{4})(?=.)/g, '$1-');
+
 async function load() {
   if (db) return true;
   if (!CONFIG.apiKey) { set({ status: 'unconfigured' }); return false; }
   try {
-    const [{ initializeApp }, a, f] = await Promise.all([
+    const [{ initializeApp }, fs] = await Promise.all([
       import('../vendor/firebase-app.js'),
-      import('../vendor/firebase-auth.js'),
       import('../vendor/firebase-firestore.js'),
     ]);
+    f = fs;
     const app = initializeApp(CONFIG);
-    auth = a.getAuth(app);
     // Persistent cache is what makes the dead zones survivable.
     db = f.initializeFirestore(app, {
       localCache: f.persistentLocalCache({ tabManager: f.persistentSingleTabManager({}) }),
     });
-    docRef = f.doc(db, 'trips', TRIP_ID);
-    sync._f = f;
-    sync._a = a;
     return true;
   } catch (e) {
     set({ status: 'error', error: 'Could not load Firebase: ' + e.message });
@@ -54,51 +62,53 @@ async function load() {
   }
 }
 
-/// Sign in with the shared trip login. The password is typed by whoever owns
-/// the trip, into their own app — it is never stored anywhere but the
-/// browser's own credential handling.
-export async function signIn(email, password) {
+/// Connect this phone to the shared trip. Verifies the code actually works
+/// before saving it, so a typo reports itself instead of silently never syncing.
+export async function connect(rawCode) {
+  const code = normalise(rawCode);
+  if (code.replace(/-/g, '').length < 12) {
+    set({ status: 'error', error: 'That code looks too short.' });
+    return false;
+  }
   if (!(await load())) return false;
   set({ status: 'connecting', error: null });
   try {
-    const cred = await sync._a.signInWithEmailAndPassword(auth, email.trim(), password);
-    set({ on: true, status: 'connected', who: cred.user.email, error: null });
-    localStorage.setItem('milepost.sync-email', email.trim());
+    const ref = f.doc(db, 'trips', code);
+    await f.getDoc(ref);          // rules reject a wrong code here
+    docRef = ref;
+    localStorage.setItem(CODE_KEY, code);
+    set({ on: true, status: 'connected', code, error: null });
     watch();
+    push();
     return true;
   } catch (e) {
-    set({ status: 'error', error: friendly(e.code || e.message) });
+    set({
+      status: 'error',
+      error: /permission|insufficient/i.test(e.message || '')
+        ? "That code wasn't accepted. Check it against the other phone."
+        : 'Could not reach the trip. It will retry when you have signal.',
+    });
     return false;
   }
 }
 
 export async function resume() {
-  if (!localStorage.getItem('milepost.sync-email')) return;
-  if (!(await load())) return;
-  set({ status: 'connecting' });
-  sync._a.onAuthStateChanged(auth, user => {
-    if (user) {
-      set({ on: true, status: 'connected', who: user.email, error: null });
-      watch();
-    } else {
-      set({ on: false, status: 'signed-out' });
-    }
-  });
+  const code = savedCode();
+  if (code) await connect(code);
 }
 
-export async function signOut() {
+export function disconnect() {
   if (unsub) { unsub(); unsub = null; }
-  localStorage.removeItem('milepost.sync-email');
-  if (auth) await sync._a.signOut(auth);
-  set({ on: false, status: 'off', who: null });
+  localStorage.removeItem(CODE_KEY);
+  docRef = null;
+  set({ on: false, status: 'off', code: null });
 }
 
-/// Live subscription. Remote wins only when it is genuinely newer, so a phone
-/// that has been offline for a day doesn't overwrite the one that was being
-/// used.
+/// Live subscription. Remote only wins when genuinely newer, so a phone that
+/// has been offline for a day can't overwrite the one being used.
 function watch() {
   if (!docRef || unsub) return;
-  unsub = sync._f.onSnapshot(docRef, snap => {
+  unsub = f.onSnapshot(docRef, snap => {
     if (!snap.exists()) { push(); return; }
     const data = snap.data();
     if (!data || typeof data.updatedAt !== 'number') return;
@@ -109,7 +119,7 @@ function watch() {
   }, err => set({ status: 'error', error: err.message }));
 }
 
-/// Debounced so a burst of taps is one write.
+/// Debounced, so a burst of taps is one write.
 export function nudge() {
   if (!state.on || applyingRemote) return;
   clearTimeout(pushTimer);
@@ -119,21 +129,14 @@ export function nudge() {
 async function push() {
   if (!state.on || !docRef) return;
   try {
-    await sync._f.setDoc(docRef, store.snapshot(), { merge: true });
+    await f.setDoc(docRef, store.snapshot(), { merge: true });
+    set({ lastPush: Date.now(), status: 'connected', error: null });
   } catch (e) {
-    // Offline is not an error here — the write is queued and will land.
+    // Offline isn't an error — the write is queued and will land.
     if (!/offline|unavailable/i.test(e.message || '')) {
       set({ status: 'error', error: e.message });
     }
   }
-}
-
-function friendly(code) {
-  if (/user-not-found|invalid-credential|wrong-password/.test(code))
-    return 'That email and password combination was not accepted.';
-  if (/network/.test(code)) return 'No connection. It will sync when you have signal.';
-  if (/too-many-requests/.test(code)) return 'Too many attempts. Wait a minute.';
-  return code;
 }
 
 store.addEventListener('change', nudge);

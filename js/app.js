@@ -3,6 +3,7 @@
 import { store } from './store.js';
 import * as ui from './ui.js';
 import { maybeShow } from './install.js';
+import * as syncmod from './sync.js';
 
 const TABS = [
   { id: 'road',  ic: '🛣️', label: 'Road',  render: ui.renderRoad },
@@ -39,8 +40,10 @@ async function boot() {
        <span class="ic">${t.ic}</span><span>${t.label}</span></button>`).join('');
 
   store.addEventListener('change', draw);
+  syncmod.sync.addEventListener('change', draw);
   draw();
   maybeShow();
+  syncmod.resume();
 }
 
 function draw() {
@@ -76,6 +79,13 @@ document.addEventListener('click', e => {
   if (e.target.closest('[data-close]') || e.target.matches('[data-close-scrim]')) {
     sheetId = null; draw(); return;
   }
+
+  if (e.target.closest('[data-sync-connect]')) {
+    const v = document.getElementById('tripcode')?.value || '';
+    syncmod.connect(v);
+    return;
+  }
+  if (e.target.closest('[data-sync-off]')) { syncmod.disconnect(); return; }
 
   if (e.target.closest('[data-locate]')) {
     navigator.geolocation?.getCurrentPosition(

@@ -16,7 +16,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     match /trips/{tripId} {
-      allow read, write: if tripId == 'DKQM-J6SX-MD6V-DPSH';
+      allow read, write: if tripId == '__TRIP_CODE__';
     }
     match /{document=**} {
       allow read, write: if false;

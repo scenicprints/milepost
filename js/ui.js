@@ -5,6 +5,7 @@ import { store } from './store.js';
 import { buildRoute, stopCost, fmtMiles, fmtHours, milesBetween, project, measure } from './route.js';
 import { buildDays, planTotals, suggestStops } from './plan.js';
 import * as mapview from './map.js';
+import * as syncmod from './sync.js';
 
 let DATA = null;                 // { route, stops, usa }
 const built = new Map();         // routeId -> built route
@@ -302,6 +303,8 @@ export function renderBook() {
     </div>
   </div>`;
 
+  h += syncCard();
+
   if (seen.length) {
     h += `<div class="card"><b>Everything you've seen</b>
       <div class="stoplist" style="margin-top:10px">
@@ -309,6 +312,38 @@ export function renderBook() {
       </div></div>`;
   }
   return h;
+}
+
+/// Both phones, one plan. The code is the whole secret, so it is shown only
+/// on a phone that is already connected.
+function syncCard() {
+  const s = syncmod.state;
+  const on = s.on;
+  return `<div class="card">
+    <div class="row between">
+      <b>Both phones</b>
+      <span class="pill ${on ? 'seen' : ''}">${on ? 'SYNCED' : 'THIS PHONE ONLY'}</span>
+    </div>
+    <div class="small muted" style="margin-top:5px">
+      ${on
+        ? `Changes on either phone show up on the other. Writes made with no signal
+           queue up and land when you get bars again.`
+        : `Enter the trip code to share this plan with Ada's phone. Everything works
+           without it — it just won't be shared.`}
+    </div>
+    ${on
+      ? `<div class="field" style="margin-top:10px">
+           <div class="k">TRIP CODE</div>
+           <div class="v" style="font-family:ui-monospace,monospace;letter-spacing:.06em">${esc(s.code)}</div>
+         </div>
+         <div class="actions"><button class="btn ghost" data-sync-off>Disconnect this phone</button></div>`
+      : `<div style="margin-top:10px">
+           <input id="tripcode" class="btn" style="width:100%;font-family:ui-monospace,monospace;letter-spacing:.08em"
+                  placeholder="XXXX-XXXX-XXXX-XXXX" autocapitalize="characters" autocomplete="off" spellcheck="false">
+           <div class="actions"><button class="btn on" data-sync-connect>Connect</button></div>
+         </div>`}
+    ${s.error ? `<div class="small" style="color:var(--bad);margin-top:8px">${esc(s.error)}</div>` : ''}
+  </div>`;
 }
 
 // ============================================================= SHEET
