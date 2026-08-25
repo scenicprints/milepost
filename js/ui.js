@@ -98,9 +98,19 @@ export function resetView() { view = null; }
 
 let mapAspect = mapview.ASPECT;
 export const getAspect = () => mapAspect;
+
+/// The panel's shape changes when the phone rotates — and, more often, when the
+/// mobile address bar hides on scroll. This used to refit the map, which threw
+/// away whatever the user had zoomed to. Now it reshapes around the same centre
+/// and keeps the zoom.
 export function setAspect(a) {
-  if (!a || Math.abs(a - mapAspect) < 0.02) return false;
+  if (!a || !isFinite(a) || Math.abs(a - mapAspect) < 0.02) return false;
   mapAspect = a;
+  if (view) {
+    const cx = view.x + view.w / 2, cy = view.y + view.h / 2;
+    const h = view.w / a;
+    view = { x: cx - view.w / 2, y: cy - h / 2, w: view.w, h };
+  }
   return true;
 }
 

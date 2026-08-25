@@ -339,6 +339,30 @@ Photos cut. Android Auto scoped to riding alongside Maps. Built the clickable
 prototype: Rams visual language, transit-diagram route, leg-scoped tabs, place
 detail with links and December normals, map with routes and pins.
 
+**Session 8** — Kevin: "the zoom is atrocious. It just straight up doesn't
+work." He was right and the session-7 tests were the reason I missed it: they
+used discrete taps and synthetic wheel events, which never exercise a
+*continuous* gesture. Three faults.
+
+(1) Every zoom step called `draw()`, which replaces the whole scroll pane —
+destroying the SVG element holding `setPointerCapture`. A pinch therefore died
+after its first move event. Gestures now mutate the `viewBox` attribute only,
+and a full re-render (which rescales labels and re-culls pins) is debounced to
+after the gesture ends.
+
+(2) The aspect re-measure called `resetView()`. On a phone the address bar
+hiding on scroll changes viewport height, so the aspect check fired and threw
+away whatever the user had zoomed to — the map visibly snapped back. `setAspect`
+now reshapes the existing view around its centre and keeps the zoom.
+
+(3) `redrawMap()` replaces `.mapbox`, leaving the ResizeObserver watching a
+detached node, so rotations stopped being reported. Redraw re-mounts the
+observer. Also fixed the first paint, which rendered at the default 1.28 aspect
+before the panel had ever been measured.
+
+**RULE going forward: test drag and pinch as continuous streams of pointermove
+events on one element. Discrete taps prove nothing about a gesture.**
+
 **Session 7** — Kevin on the map tab: "damn near broken… I can only zoom in a
 little bit, and there's that annoying list underneath it." Three real faults.
 (1) `touch-action: none` was on `.mapbox` but not on the SVG that actually

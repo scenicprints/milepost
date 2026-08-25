@@ -60,103 +60,169 @@ function draw() {
   } else {
     $sheet.className = 'sheet';
   }
-  if (tab === 'map') {
-    // The panel is tall on a phone and wide on a desktop. Measure it once and
-    // refit, or the map is letterboxed into a landscape box on a portrait
-    // screen and most of the zoom range is wasted on empty ground.
-    const box = document.querySelector('.mapbox');
-    if (box) {
-      const r = box.getBoundingClientRect();
-      if (r.width > 0 && r.height > 0 && ui.setAspect(r.width / r.height)) {
-        ui.resetView();
-        $scroll.innerHTML = ui.renderMap(legIx);
-      }
-    }
-    wireMap();
-  }
+
+  if (tab === 'map') mountMap();
 }
 
-// ------------------------------------------------------------------ map
-// Drag to pan, wheel or pinch to zoom. A pointer that barely moved counts as a
-// tap, so pins stay selectable.
+// ============================================================ map
+//
+// The rule that matters here: NEVER re-render the map while a gesture is in
+// flight. Zooming used to call draw(), which replaced the whole scroll pane —
+// destroying the very SVG element that held setPointerCapture. A pinch would
+// therefore die after its first move event, which is why zoom felt broken.
+//
+// So gestures only mutate the viewBox attribute. A full re-render, which is
+// what rescales labels and re-culls pins, is debounced to after the gesture.
+
+let redrawTimer = null;
+let ro = null;
+
+/// Move the map without rebuilding it.
+function applyView(v) {
+  ui.setView(v);
+  const svg = document.getElementById('msvg');
+  if (svg) svg.setAttribute('viewBox', [v.x, v.y, v.w, v.h].map(n => n.toFixed(1)).join(' '));
+}
+
+/// Rebuild just the map, so labels and pins resize for the new scale.
+/// Goes through mountMap because this replaces the .mapbox element, and a
+/// ResizeObserver left watching the old detached node stops reporting — which
+/// is how the aspect quietly failed to follow a rotation.
+function redrawMap() {
+  if (tab !== 'map') return;
+  $scroll.innerHTML = ui.renderMap(legIx);
+  mountMap();
+}
+
+function scheduleRedraw(ms = 200) {
+  clearTimeout(redrawTimer);
+  redrawTimer = setTimeout(redrawMap, ms);
+}
+
+const fitNow = () => mapview.fitView(ui.legRoute(legIx), ui.getAspect());
+const viewNow = () => ui.getView() || fitNow();
+
+function mountMap() {
+  const box = document.querySelector('.mapbox');
+  if (!box) return;
+
+  // Watch the panel instead of measuring inside draw(). On a phone the address
+  // bar hiding changes the height constantly, and measuring per-draw made the
+  // map twitch.
+  if (ro) ro.disconnect();
+  ro = new ResizeObserver(entries => {
+    const r = entries[0].contentRect;
+    if (r.width > 0 && r.height > 0 && ui.setAspect(r.width / r.height)) scheduleRedraw(120);
+  });
+  ro.observe(box);
+
+  // First mount renders at the default aspect before the panel has been
+  // measured, so if the measurement disagrees, redraw once at the real shape.
+  const r = box.getBoundingClientRect();
+  if (r.width > 0 && r.height > 0 && ui.setAspect(r.width / r.height)) scheduleRedraw(0);
+
+  wireMap();
+}
+
 function wireMap() {
   const svg = document.getElementById('msvg');
-  if (!svg) return;
+  if (!svg || svg.__wired) return;
+  svg.__wired = true;
+
   const pts = new Map();
-  let start = null, moved = 0, pinch = null;
+  let start = null, moved = 0, pinch = null, lastTap = 0;
 
   const at = e => {
-    const r = svg.getBoundingClientRect();
-    const v = ui.getView() || mapview.fitView(ui.legRoute(legIx), ui.getAspect());
+    const r = svg.getBoundingClientRect(), v = viewNow();
     return {
       x: v.x + (e.clientX - r.left) / r.width * v.w,
       y: v.y + (e.clientY - r.top) / r.height * v.h,
     };
   };
+
   const zoom = (k, ax, ay) => {
-    const v = ui.getView() || mapview.fitView(ui.legRoute(legIx), ui.getAspect());
-    ui.setView(mapview.zoomView(v, k, ax, ay, ui.getAspect()));
-    draw();
+    applyView(mapview.zoomView(viewNow(), k, ax, ay, ui.getAspect()));
+    scheduleRedraw();
   };
 
   svg.addEventListener('pointerdown', e => {
     pts.set(e.pointerId, e);
     moved = 0;
     if (pts.size === 1) {
-      start = { e, v: ui.getView() || mapview.fitView(ui.legRoute(legIx), ui.getAspect()), r: svg.getBoundingClientRect() };
+      start = { e, v: viewNow(), r: svg.getBoundingClientRect() };
       svg.classList.add('drag');
     }
-    svg.setPointerCapture(e.pointerId);
+    try { svg.setPointerCapture(e.pointerId); } catch (_) {}
   });
 
   svg.addEventListener('pointermove', e => {
     if (!pts.has(e.pointerId)) return;
     const prev = pts.get(e.pointerId);
     pts.set(e.pointerId, e);
-    if (pts.size === 2) {
+
+    if (pts.size >= 2) {
       const [a, b] = [...pts.values()];
       const d = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
-      if (pinch) { const g = d / pinch; if (Math.abs(g - 1) > 0.012) zoom(g); }
-      pinch = d; moved = 99;
+      if (pinch && d > 0) {
+        const k = d / pinch;
+        if (Math.abs(k - 1) > 0.004) {
+          const r = svg.getBoundingClientRect(), v = viewNow();
+          const mid = {
+            x: v.x + ((a.clientX + b.clientX) / 2 - r.left) / r.width * v.w,
+            y: v.y + ((a.clientY + b.clientY) / 2 - r.top) / r.height * v.h,
+          };
+          // Mutate only. Rebuilding here is what used to kill the gesture.
+          applyView(mapview.zoomView(v, k, mid.x, mid.y, ui.getAspect()));
+          pinch = d;
+        }
+      } else {
+        pinch = d;
+      }
+      moved = 99;
       return;
     }
+
     if (!start) return;
     moved += Math.abs(e.clientX - prev.clientX) + Math.abs(e.clientY - prev.clientY);
     const v = start.v, r = start.r;
-    const nv = {
+    applyView({
       x: v.x - (e.clientX - start.e.clientX) / r.width * v.w,
       y: v.y - (e.clientY - start.e.clientY) / r.height * v.h,
       w: v.w, h: v.h,
-    };
-    ui.setView(nv);
-    svg.setAttribute('viewBox', [nv.x, nv.y, nv.w, nv.h].map(n => n.toFixed(1)).join(' '));
+    });
   });
 
   const up = e => {
+    const wasPinch = pts.size >= 2;
     pts.delete(e.pointerId);
     if (pts.size < 2) pinch = null;
-    if (pts.size === 0) { start = null; svg.classList.remove('drag'); if (moved > 6) draw(); }
+    if (pts.size > 0) return;
+
+    start = null;
+    svg.classList.remove('drag');
+
+    if (moved > 6 || wasPinch) { scheduleRedraw(60); return; }
+
+    const now = e.timeStamp;
+    if (now - lastTap < 320) { lastTap = 0; const q = at(e); zoom(2.2, q.x, q.y); }
+    else lastTap = now;
   };
   svg.addEventListener('pointerup', up);
   svg.addEventListener('pointercancel', up);
-  let lastTap = 0;
-  svg.addEventListener('pointerup', e => {
-    if (moved > 6) return;
-    const now = e.timeStamp;
-    if (now - lastTap < 320) { const q = at(e); zoom(2.2, q.x, q.y); lastTap = 0; }
-    else lastTap = now;
-  });
 
   svg.addEventListener('wheel', e => {
     e.preventDefault();
     const q = at(e);
-    zoom(e.deltaY < 0 ? 1.22 : 1 / 1.22, q.x, q.y);
+    applyView(mapview.zoomView(viewNow(), e.deltaY < 0 ? 1.18 : 1 / 1.18, q.x, q.y, ui.getAspect()));
+    scheduleRedraw();
   }, { passive: false });
 
-  svg.__zoom = zoom;
+  // Safari still emits these and they zoom the page if left alone.
+  for (const t of ['gesturestart', 'gesturechange', 'gestureend'])
+    svg.addEventListener(t, e => e.preventDefault());
 }
 
-// ------------------------------------------------------------------ events
+// ============================================================ events
 document.addEventListener('click', e => {
   if (e.target.closest('a')) return;              // let links be links
 
@@ -166,12 +232,8 @@ document.addEventListener('click', e => {
   const z = e.target.closest('[data-zoom]');
   if (z) {
     const k = z.dataset.zoom;
-    if (k === 'fit') ui.resetView();
-    else {
-      const v = ui.getView() || mapview.fitView(ui.legRoute(legIx), ui.getAspect());
-      ui.setView(mapview.zoomView(v, k === 'in' ? 2 : 0.5, null, null, ui.getAspect()));
-    }
-    draw();
+    if (k === 'fit') { ui.resetView(); redrawMap(); }
+    else { applyView(mapview.zoomView(viewNow(), k === 'in' ? 2 : 0.5, null, null, ui.getAspect())); redrawMap(); }
     return;
   }
 
@@ -215,13 +277,6 @@ document.addEventListener('click', e => {
 
 document.addEventListener('change', e => {
   if (e.target.id === 'depart' && e.target.value) store.setDeparture(e.target.value);
-});
-
-let resizeT = null;
-addEventListener('resize', () => {
-  if (tab !== 'map') return;
-  clearTimeout(resizeT);
-  resizeT = setTimeout(draw, 150);
 });
 
 // Android back closes a sheet instead of leaving the app.
