@@ -13,13 +13,13 @@
 // preferring fresh. Data, icons and the vendored SDK stay cache-first — they
 // are large, they rarely change, and a stale copy of them is harmless.
 
-const CACHE = 'milepost-v10';
+const CACHE = 'milepost-v11';
 
 const SHELL = [
   'index.html', 'manifest.webmanifest',
   'css/app.css',
   'js/app.js', 'js/ui.js', 'js/store.js', 'js/route.js', 'js/plan.js', 'js/map.js',
-  'js/install.js', 'js/sync.js', 'js/firebase-config.js',
+  'js/install.js', 'js/sync.js', 'js/firebase-config.js', 'js/version.js',
   'data/route.json', 'data/stops.json', 'data/usa.json', 'data/extras.json',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png',
   'icons/apple-touch-icon.png', 'icons/favicon-32.png',
@@ -36,8 +36,14 @@ self.addEventListener('install', e => {
     caches.open(CACHE)
       // Bypass the HTTP cache when priming, or we'd cache what we're replacing.
       .then(c => c.addAll(SHELL.map(u => new Request(u, { cache: 'reload' }))))
-      .then(() => self.skipWaiting())
   );
+  // Deliberately NOT skipWaiting(). A new worker used to take over by itself,
+  // which swapped the code under a running session. Updates are now a button
+  // in Trip, and that button sends SKIP_WAITING.
+});
+
+self.addEventListener('message', e => {
+  if (e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
 self.addEventListener('activate', e => {

@@ -5,6 +5,7 @@ import * as ui from './ui.js';
 import * as mapview from './map.js';
 import { maybeShow } from './install.js';
 import * as syncmod from './sync.js';
+import { VERSION } from './version.js';
 
 const TABS = [
   { id: 'route', label: 'Route', render: ui.renderRoute },
@@ -55,10 +56,13 @@ function draw() {
     b.setAttribute('aria-selected', String(b.dataset.tab === tab));
 
   if (sheet) {
-    $sheet.innerHTML = sheet.kind === 'trip' ? ui.tripSheet() : ui.placeSheet(sheet.id);
+    $sheet.innerHTML = sheet.kind === 'trip' ? ui.tripSheet(upd) : ui.placeSheet(sheet.id);
+    $sheet.style.transform = '';
     $sheet.className = 'sheet up';
+    wireSheetDrag();
   } else {
     $sheet.className = 'sheet';
+    $sheet.style.transform = '';
   }
 
   if (tab === 'map') mountMap();
@@ -222,6 +226,92 @@ function zoomStep(k) {
   schedulePaint(60);
 }
 
+// ============================================================ sheet gestures
+//
+// Swipe the sheet down to put it away. Only starts when the sheet's own scroll
+// is already at the top, or when the drag begins on the grab handle — otherwise
+// it would steal scrolling from the content.
+
+function wireSheetDrag() {
+  if ($sheet.__wired) return;
+  $sheet.__wired = true;
+
+  let y0 = 0, dy = 0, live = false, id = null, t0 = 0;
+
+  const body = () => $sheet.querySelector('.sb');
+
+  $sheet.addEventListener('pointerdown', e => {
+    if (e.target.closest('a, button:not([data-grab])')) return;
+    const b = body();
+    const onHandle = !!e.target.closest('[data-grab]');
+    if (!onHandle && b && b.scrollTop > 0) return;
+    id = e.pointerId; y0 = e.clientY; dy = 0; live = true; t0 = e.timeStamp;
+    $sheet.classList.add('dragging');
+  });
+
+  $sheet.addEventListener('pointermove', e => {
+    if (!live || e.pointerId !== id) return;
+    dy = e.clientY - y0;
+    if (dy <= 0) { $sheet.style.transform = ''; return; }
+    const b = body();
+    if (b && b.scrollTop > 0) { live = false; $sheet.classList.remove('dragging'); return; }
+    e.preventDefault();
+    $sheet.style.transform = `translateY(${dy}px)`;
+  }, { passive: false });
+
+  const end = e => {
+    if (!live || e.pointerId !== id) return;
+    live = false;
+    $sheet.classList.remove('dragging');
+    $sheet.style.transform = '';
+    // A short flick counts as much as a long drag.
+    const quick = dy > 45 && (e.timeStamp - t0) < 260;
+    if (dy > 110 || quick) { sheet = null; draw(); }
+    dy = 0;
+  };
+  $sheet.addEventListener('pointerup', end);
+  $sheet.addEventListener('pointercancel', end);
+}
+
+// ============================================================ updates
+//
+// The service worker no longer takes over by itself — it used to swap the code
+// under a running session. Updates are a button in Trip now.
+
+let upd = { updateReady: false, updateNote: '' };
+let reg = null;
+
+function setUpd(patch) { upd = { ...upd, ...patch }; if (sheet && sheet.kind === 'trip') draw(); }
+
+async function checkUpdate() {
+  if (!reg) { setUpd({ updateNote: 'Updates need the app installed or reloaded once.' }); return; }
+  if (reg.waiting) { setUpd({ updateReady: true, updateNote: 'An update is downloaded and ready.' }); return; }
+  setUpd({ updateNote: 'Checking…' });
+  try {
+    await reg.update();
+    if (reg.installing) {
+      setUpd({ updateNote: 'Downloading…' });
+      reg.installing.addEventListener('statechange', function () {
+        if (this.state === 'installed' && navigator.serviceWorker.controller)
+          setUpd({ updateReady: true, updateNote: 'An update is downloaded and ready.' });
+        else if (this.state === 'activated')
+          setUpd({ updateNote: `You're on the latest version.` });
+      });
+    } else if (reg.waiting) {
+      setUpd({ updateReady: true, updateNote: 'An update is downloaded and ready.' });
+    } else {
+      setUpd({ updateNote: `You're on the latest version.` });
+    }
+  } catch (_) {
+    setUpd({ updateNote: 'Could not reach the server. Try again with signal.' });
+  }
+}
+
+function applyUpdate() {
+  if (reg && reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+  else location.reload();
+}
+
 // ============================================================ events
 document.addEventListener('click', e => {
   if (e.target.closest('a')) return;              // let links be links
@@ -264,6 +354,11 @@ document.addEventListener('click', e => {
     return;
   }
   if (e.target.closest('[data-sync-off]')) { syncmod.disconnect(); return; }
+
+  if (e.target.closest('[data-update]')) {
+    if (upd.updateReady) applyUpdate(); else checkUpdate();
+    return;
+  }
   if (e.target.closest('[data-cleardep]')) { store.setDeparture(null); return; }
 
   if (e.target.closest('[data-locate]')) {
@@ -308,15 +403,32 @@ async function copyCode(code, btn) {
 
 boot();
 
-// Cache-first for data means a deployed change would otherwise sit behind the
-// old copy until a cold start. The new worker skips waiting, so when it takes
-// control we reload once. Without this, a fix pushed mid-trip never arrives.
 if ('serviceWorker' in navigator) {
+  // Reload only once the user has asked for the update and the new worker has
+  // taken control. Nothing swaps under a running session on its own.
   let reloaded = false;
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (reloaded) return;
     reloaded = true;
     location.reload();
   });
-  addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+  const register = async () => {
+    try {
+      reg = await navigator.serviceWorker.register('sw.js');
+      if (reg.waiting) setUpd({ updateReady: true, updateNote: 'An update is downloaded and ready.' });
+      reg.addEventListener('updatefound', () => {
+        const w = reg.installing;
+        if (!w) return;
+        w.addEventListener('statechange', () => {
+          if (w.state === 'installed' && navigator.serviceWorker.controller)
+            setUpd({ updateReady: true, updateNote: 'An update is downloaded and ready.' });
+        });
+      });
+    } catch (_) {}
+  };
+  // Modules are deferred, so 'load' normally still fires after this runs — but
+  // if it has already gone, waiting for it would leave reg null forever and the
+  // update button could never work.
+  if (document.readyState === 'complete') register();
+  else addEventListener('load', register);
 }

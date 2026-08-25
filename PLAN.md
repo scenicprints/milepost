@@ -339,6 +339,22 @@ Photos cut. Android Auto scoped to riding alongside Maps. Built the clickable
 prototype: Rams visual language, transit-diagram route, leg-scoped tabs, place
 detail with links and December normals, map with routes and pins.
 
+**Session 10** — Killed pull-to-refresh, which was eating every swipe-down the
+app wanted for itself: `overscroll-behavior: none` on html/body and `contain` on
+both scrolling panes. Sheets now swipe down to dismiss — a grab handle at the
+top, the sheet follows the finger, and it closes on a drag past 110px or a flick
+over 45px in under 260ms; anything shorter springs back. The drag only engages
+when the sheet's own scroll is already at the top or the gesture starts on the
+handle, so it never steals scrolling from the content.
+
+Updates moved to a button in Trip that also shows the version.
+`sw.js` no longer calls `skipWaiting()` on install — a new worker used to take
+over by itself and swap the code under a running session. It now waits for a
+`SKIP_WAITING` message, which only the button sends.
+
+**Version lives in `js/version.js`. Bump it with the `CACHE` name in `sw.js` on
+every deploy** — they are the two things that must move together.
+
 **Session 9 — the map, done properly.** Kevin, after two failed fixes: "still
 terrible… jittery as hell. I zoom and it jumps to a super zoom." Then: "go look
 at how Poppy does it."

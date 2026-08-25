@@ -9,6 +9,7 @@ import { buildRoute, stopCost, fmtHours, project } from './route.js';
 import { buildDays, planTotals, suggestStops } from './plan.js';
 import * as mapview from './map.js';
 import * as syncmod from './sync.js';
+import { VERSION } from './version.js';
 
 let DATA = null;              // { route, stops, usa }
 const built = new Map();      // routeId -> built route
@@ -161,7 +162,8 @@ export function placeSheet(id) {
   const site = DATA.sites[s.id];
   const wx = DATA.normals[s.town];
 
-  return `<div class="sh">
+  return `<div class="grab" data-grab><i></i></div>
+    <div class="sh">
       <div><div class="sloc">${esc(s.town)}, ${esc(s.state)}</div>
         <div class="snm">${esc(s.name)}</div></div>
       <button class="sclose" data-close>Close</button>
@@ -201,15 +203,16 @@ export function placeSheet(id) {
 }
 
 // ============================================================== trip sheet
-export function tripSheet() {
-  const st = syncmod.state;
+export function tripSheet(upd = {}) {
+  const st = { ...syncmod.state, ...upd };
   const dep = store.departure;
   const days = dep ? Math.ceil((new Date(dep + "T00:00:00") - new Date()) / 86400000) : null;
   const inPlay = allStops();
   const seen = inPlay.filter(s => store.isSeen(s.id));
   const firsts = inPlay.filter(s => s.first);
 
-  return `<div class="sh">
+  return `<div class="grab" data-grab><i></i></div>
+    <div class="sh">
       <div><div class="sloc">The whole thing</div><div class="snm">Trip</div></div>
       <button class="sclose" data-close>Close</button>
     </div>
@@ -261,6 +264,13 @@ export function tripSheet() {
       <div class="slab">Road conditions</div>
       <div class="sbody" style="font-size:13px;color:var(--ink2)">Check these the night before, not the morning of.</div>
       <div class="links" style="margin-top:12px">${dotLinks()}</div>
+
+      <div class="sdiv"></div>
+      <div class="slab">Version</div>
+      <div class="links" style="margin-top:12px">
+        <button data-update>${st.updateReady ? "Restart to update" : "Check for updates"}<span>${esc(VERSION)}</span></button>
+      </div>
+      ${st.updateNote ? `<div class="sbody" style="font-size:13px;color:var(--ink2)">${esc(st.updateNote)}</div>` : ""}
 
       <div class="sdiv"></div>
       <div class="slab">Where are we</div>
