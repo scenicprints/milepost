@@ -48,13 +48,21 @@
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html, body { margin: 0; height: 100%; overscroll-behavior: none; }
+html { margin: 0; height: 100%; overscroll-behavior: none; }
+/* overscroll-behavior alone did not stop Chrome's pull-to-refresh here. Taking
+   the body out of flow entirely does: with nothing scrollable at the document
+   level, there is no over-scroll for the browser to interpret. All scrolling
+   happens inside .scroll. */
 body {
+  margin: 0;
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
   background: var(--paper);
   color: var(--ink);
   font-family: var(--sans);
   font-weight: 400;
-  overscroll-behavior-y: none;
   -webkit-text-size-adjust: 100%;
 }
 button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-align: left; }
@@ -96,10 +104,11 @@ input, textarea { font: inherit; color: inherit; }
   -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
 }
 
+.tripbody { padding-top: 4px; }
 .tabs { flex: none; display: flex; border-top: 1px solid var(--rule); padding-bottom: env(safe-area-inset-bottom); }
 .tabs button {
   flex: 1; padding: 16px 0 18px; text-align: center; position: relative;
-  font-size: 11px; font-family: var(--mono); letter-spacing: .18em;
+  font-size: 11px; font-family: var(--mono); letter-spacing: .12em;
   text-transform: uppercase; color: var(--ink2);
 }
 .tabs button[aria-selected="true"] { color: var(--ink); }

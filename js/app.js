@@ -11,6 +11,7 @@ const TABS = [
   { id: 'route', label: 'Route', render: ui.renderRoute },
   { id: 'map',   label: 'Map',   render: ui.renderMap },
   { id: 'days',  label: 'Days',  render: ui.renderDays },
+  { id: 'trip',  label: 'Trip',  render: () => ui.renderTrip(upd) },
 ];
 
 let tab = 'route';
@@ -49,14 +50,14 @@ async function boot() {
 }
 
 function draw() {
-  $head.innerHTML = ui.renderHead(legIx);
+  $head.innerHTML = ui.renderHead(legIx, tab);
   $scroll.className = 'scroll' + (tab === 'map' ? ' ismap' : '');
   $scroll.innerHTML = TABS.find(t => t.id === tab).render(legIx);
   for (const b of $tabs.querySelectorAll('[data-tab]'))
     b.setAttribute('aria-selected', String(b.dataset.tab === tab));
 
   if (sheet) {
-    $sheet.innerHTML = sheet.kind === 'trip' ? ui.tripSheet(upd) : ui.placeSheet(sheet.id);
+    $sheet.innerHTML = ui.placeSheet(sheet.id);
     $sheet.style.transform = '';
     $sheet.className = 'sheet up';
     wireSheetDrag();
@@ -281,7 +282,7 @@ function wireSheetDrag() {
 let upd = { updateReady: false, updateNote: '' };
 let reg = null;
 
-function setUpd(patch) { upd = { ...upd, ...patch }; if (sheet && sheet.kind === 'trip') draw(); }
+function setUpd(patch) { upd = { ...upd, ...patch }; if (tab === 'trip') draw(); }
 
 async function checkUpdate() {
   if (!reg) { setUpd({ updateNote: 'Updates need the app installed or reloaded once.' }); return; }
@@ -332,8 +333,6 @@ document.addEventListener('click', e => {
 
   const g = e.target.closest('[data-leg]');
   if (g) { legIx = Number(g.dataset.leg); sheet = null; ui.resetTf(); draw(); return; }
-
-  if (e.target.closest('[data-trip]')) { sheet = { kind: 'trip' }; draw(); return; }
 
   const tg = e.target.closest('[data-toggle]');
   if (tg) { store.toggle(tg.dataset.toggle); return; }

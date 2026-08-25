@@ -85,9 +85,11 @@ The rules, as built in `prototype/template.html`:
   he accepted that it is decoration here. Do not add one back without asking.
 - **Sentence case everywhere.** No shouty uppercase labels.
 
-**Navigation: three tabs, scoped to one leg.** Route · Map · Days. The leg
-selector at the top (Carolina / Houston / Home) filters all three — Kevin
-explicitly wants the trip to feel like *three trips*.
+**Navigation: four tabs.** Route · Map · Days · Trip. The first three are scoped
+to one leg via the selector at the top (Carolina / Houston / Home) — Kevin
+explicitly wants the trip to feel like *three trips*. Trip is whole-trip and
+settings: departure, sync code, firsts, winter, road conditions, version and
+updates. It was a hidden sheet at first and Kevin could not find it.
 
 ---
 
@@ -338,6 +340,22 @@ Poppy's look too, wants sleek and uncluttered, "pretend you are Dieter Rams."
 Photos cut. Android Auto scoped to riding alongside Maps. Built the clickable
 prototype: Rams visual language, transit-diagram route, leg-scoped tabs, place
 detail with links and December normals, map with routes and pins.
+
+**Session 11** — Kevin: "that last update didn't take, when I swipe down the
+refresh icon still appears, and I don't see settings anywhere."
+
+Settings were unfindable and that was a design error, not a bug: Trip was hidden
+behind tapping the small grey mileage text in the header. **Trip is now a fourth
+tab** — Route · Map · Days · Trip — showing whole-trip totals and hiding the leg
+selector, since neither applies there. The place sheet stays a sheet.
+
+`overscroll-behavior` alone was not stopping Chrome's pull-to-refresh. The body
+is now `position: fixed; inset: 0; overflow: hidden`, so nothing at document
+level can scroll and there is no over-scroll for the browser to interpret. All
+scrolling happens inside `.scroll`.
+
+**Navigation is four tabs now, not three.** Discoverability beat minimalism:
+"I don't see settings anywhere" is a worse failure than one extra tab.
 
 **Session 10** — Killed pull-to-refresh, which was eating every swipe-down the
 app wanted for itself: `overscroll-behavior: none` on html/body and `contain` on

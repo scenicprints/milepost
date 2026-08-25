@@ -36,24 +36,27 @@ export const allStops = () => selected().flatMap(r => r.stops);
 export { suggestStops };
 
 // ============================================================== head
-export function renderHead(legIx) {
+export function renderHead(legIx, tab) {
   const rt = legRoute(legIx);
   const t = planTotals(buildDays(rt, store.chosen, store.pace));
-  let wm = 0, wd = 0;
-  for (const r of selected()) { const x = planTotals(buildDays(r, store.chosen, store.pace)); wm += x.miles; wd += x.days; }
+  let wm = 0, wd = 0, ws = 0;
+  for (const r of selected()) {
+    const x = planTotals(buildDays(r, store.chosen, store.pace));
+    wm += x.miles; wd += x.days; ws += x.stops;
+  }
 
   return `<div class="top">
       <div class="wordmark">Milepost</div>
-      <button class="whole" data-trip>${Math.round(wm).toLocaleString()} mi · ${wd} days total</button>
+      <div class="whole">${Math.round(wm).toLocaleString()} mi · ${wd} days total</div>
     </div>
-    <div class="legname">${esc(DATA.route.legs[legIx].name)}</div>
+    <div class="legname">${tab === "trip" ? "The whole trip" : esc(DATA.route.legs[legIx].name)}</div>
     <div class="totals">
-      <div><span class="tnum">${Math.round(t.miles).toLocaleString()}</span><span class="tlab">mi</span></div>
-      <div><span class="tnum">${t.days}</span><span class="tlab">days</span></div>
-      <div><span class="tnum on">${t.stops}</span><span class="tlab">stops</span></div>
+      <div><span class="tnum">${Math.round(tab === "trip" ? wm : t.miles).toLocaleString()}</span><span class="tlab">mi</span></div>
+      <div><span class="tnum">${tab === "trip" ? wd : t.days}</span><span class="tlab">days</span></div>
+      <div><span class="tnum on">${tab === "trip" ? ws : t.stops}</span><span class="tlab">stops</span></div>
     </div>
-    <div class="legs">${DATA.route.legs.map((l, i) =>
-      `<button data-leg="${i}" aria-selected="${i === legIx}">${esc(l.short || SHORT[i])}</button>`).join("")}</div>`;
+    ${tab === "trip" ? "" : `<div class="legs">${DATA.route.legs.map((l, i) =>
+      `<button data-leg="${i}" aria-selected="${i === legIx}">${esc(l.short || SHORT[i])}</button>`).join("")}</div>`}`;
 }
 
 const SHORT = ["Carolina", "Houston", "Home"];
@@ -203,7 +206,7 @@ export function placeSheet(id) {
 }
 
 // ============================================================== trip sheet
-export function tripSheet(upd = {}) {
+export function renderTrip(upd = {}) {
   const st = { ...syncmod.state, ...upd };
   const dep = store.departure;
   const days = dep ? Math.ceil((new Date(dep + "T00:00:00") - new Date()) / 86400000) : null;
@@ -211,12 +214,7 @@ export function tripSheet(upd = {}) {
   const seen = inPlay.filter(s => store.isSeen(s.id));
   const firsts = inPlay.filter(s => s.first);
 
-  return `<div class="grab" data-grab><i></i></div>
-    <div class="sh">
-      <div><div class="sloc">The whole thing</div><div class="snm">Trip</div></div>
-      <button class="sclose" data-close>Close</button>
-    </div>
-    <div class="sb">
+  return `<div class="tripbody">
       ${dep
         ? `<div class="count"><b>${days > 0 ? days : 0}</b>
              <span>${days > 0 ? "days until you leave" : "you're out there"}</span></div>
