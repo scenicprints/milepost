@@ -9,6 +9,8 @@ something, it goes in here before you stop.
 
 ---
 
+**Live: https://scenicprints.github.io/milepost/** · Repo: `scenicprints/milepost`
+
 ## What this is
 
 A road trip planner for one specific trip, built for Kevin and Ada.
@@ -130,8 +132,9 @@ ice. San Antonio River Walk lit through early January.
 ### Known rough edges
 - The Great Lakes in `data/usa.json` are coarse and slightly mangled. The route
   goes nowhere near them; cosmetic only.
-- Service worker registration was erroring in the preview browser. Verify it
-  actually registers on Pages before trusting offline.
+- ~~Service worker~~ **Verified working on Pages** — registered and controlling
+  (`navigator.serviceWorker.controller` is set). It only failed in the local
+  preview browser. Offline is real.
 - `Ahead` needs real GPS to be worth anything; only smoke-tested.
 - Leg 2 mileage ~4% light.
 
@@ -170,3 +173,7 @@ stops. Fixed two real bugs found by testing: `closeDay` could snap backward and
 stall the whole plan (silently truncating it), and stops costing more than a
 full day could never be placed. Calibrated `WIGGLE` against real road
 distances. Answered the chains question against the actual vehicle.
+Published to GitHub Pages and verified live: 5,890 mi / 21 days / 24 stops,
+6 route options, all five screens render, service worker controlling.
+
+**Live: https://scenicprints.github.io/milepost/**
