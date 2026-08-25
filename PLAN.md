@@ -14,21 +14,16 @@ agent, or a new Claude account, can continue without losing the thread.
 
 ---
 
-## ⚠ The single most important state fact
+## State
 
-**The live app and the prototype are two different designs, and they have not
-been merged.**
+**The Rams design is PORTED and live.** The app and the prototype now look the
+same; the app additionally syncs, installs and persists.
 
-- `index.html` + `js/` + `css/` = the **shipped app**. It works — routes, days,
-  map, offline, Firestore sync — but Kevin called the look "very ugly" and
-  expects roughly 90% of the UI to be replaced.
-- `prototype/` = the **agreed new direction**, Dieter Rams-inspired. It is a
-  design study, not the app. It shares the real data and a copy of the day
-  logic, but it does not sync, install, or persist anything.
+`prototype/` is kept as the design reference and as a fast way to try layout
+changes without touching the app. **It duplicates `js/plan.js` and will drift.**
+Delete it, or make it import the real modules, once the design settles.
 
-**The next major job is porting the prototype's design onto the shipped app.**
-Do not treat the current `css/app.css` or `js/ui.js` as settled; treat them as
-the thing being replaced.
+Kevin is testing this batch. He has more to add afterwards.
 
 ---
 
@@ -254,7 +249,7 @@ so the difference is visible. **Kevin has not made the final call yet.**
 - Android Auto approximation.
 
 ### Next, in order
-1. **Port the prototype design onto the shipped app.** This is the big one.
+1. **Whatever comes back from Kevin's testing of the ported design.**
 2. **Decide Android Auto** — recommendation above is no.
 3. **Car mode** — huge type, glanceable, what's in the next 150 miles.
 4. **Fuel and services planning.** Kevin asked for "definitely stop at this gas
@@ -265,7 +260,10 @@ so the difference is visible. **Kevin has not made the final call yet.**
 6. **Trip planning proper** — Kevin wants to sit down and plan it for real.
 
 ### Known rough edges
-- **The shipped app's UI.** See the state fact at the top.
+- **Google Fonts are not cached by the service worker** (it ignores cross-origin
+  so Firestore isn't corrupted). Offline, Archivo and Plex Mono fall back to
+  Helvetica and the system mono. Legible, slightly off-design. Vendoring the
+  two woff2 files would fix it.
 - December normals in `prototype/build.mjs` are **hand-assigned approximations**,
   not from a weather service. Right enough to pack by, not authoritative.
 - 42 official links are **best-effort and unverified**. The `nps.gov` ones follow
@@ -340,6 +338,19 @@ Poppy's look too, wants sleek and uncluttered, "pretend you are Dieter Rams."
 Photos cut. Android Auto scoped to riding alongside Maps. Built the clickable
 prototype: Rams visual language, transit-diagram route, leg-scoped tabs, place
 detail with links and December normals, map with routes and pins.
+
+**Session 6** — Ported the Rams design onto the app. Replaced `css/app.css`,
+`js/ui.js`, `js/app.js` and `js/map.js`; left the engine alone. Five tabs became
+three (Route · Map · Days), all scoped to one leg. The Book tab's contents —
+countdown, sync code, firsts, where-are-we — moved into a Trip sheet reached
+from the whole-trip total in the header, which keeps the tab bar at three.
+Pulled the official-site and December-normals tables out of `prototype/build.mjs`
+into `data/extras.json` so the app and the prototype share one source. Caught a
+class clash on the way: `install.js` was borrowing `.sheet`, which now means the
+slide-up panel and would have rendered the install prompt permanently
+off-screen. Verified in the running app — leg switching, day scoping, zoom and
+fit, both sheets, toggling a stop updating the header, all three theme states,
+and an audit confirming zero cards, pills, banners, shadows or border radii.
 
 **Session 5** — Days was showing all 21 days regardless of the selected leg;
 scoped it to the leg. Added the map tab, then zoom and pan. **Map label bug:**
