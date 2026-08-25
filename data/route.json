@@ -1,0 +1,224 @@
+{
+  "_comment": "The road itself. Each LEG has two or more ROUTES you can swap between — for weather, for closures, or just for what you feel like. Waypoints are real lat/lon, dense enough that the polyline through them approximates true road distance (the app applies a 1.04 wiggle factor). Mileage, day splits and every stop's position are recomputed from this, so edit freely. 'risk' marks winter trouble; 'elev' is feet.",
+  "home": { "name": "Modesto", "state": "CA", "ll": [37.639, -120.997] },
+  "vehicle": {
+    "name": "2023 Honda Accord Hybrid EX-L",
+    "drive": "FWD",
+    "tires": "Michelin Defender 2 (all-season touring, not 3PMSF snow-rated)",
+    "chainRule": "FWD does NOT qualify for California's R2 exemption, which is 4WD/AWD only. Under R2 this car needs chains ON. Carry low-clearance cable-style devices sized to the sidewall — check the owner's manual for Honda's chain clearance restriction before buying.",
+    "note": "Low ground clearance and touring all-seasons. This is a car that should not be on a mountain interstate during a storm regardless of what's in the trunk."
+  },
+  "legs": [
+    {
+      "id": "leg1",
+      "name": "Modesto to North Carolina",
+      "from": "Modesto, CA",
+      "to": "North Carolina",
+      "routes": [
+        {
+          "id": "leg1-i40",
+          "name": "The Route 66 road",
+          "road": "CA-99 · CA-58 · I-40",
+          "default": true,
+          "character": "The great one. Everything worth seeing between here and Memphis is strung along it.",
+          "why": "The Grand Canyon, Meteor Crater, the Painted Desert and 1,500 miles of old Route 66. If the weather cooperates there is no argument for taking anything else.",
+          "costs": "Two genuine winter obstacles — Flagstaff at 6,900 feet and the Panhandle ice belt.",
+          "waypoints": [
+            { "name": "Modesto", "state": "CA", "ll": [37.639, -120.997] },
+            { "name": "Fresno", "state": "CA", "ll": [36.746, -119.772] },
+            { "name": "Bakersfield", "state": "CA", "ll": [35.373, -119.019] },
+            { "name": "Tehachapi Pass", "state": "CA", "ll": [35.132, -118.449], "elev": 3793, "risk": "chains", "note": "Chain control posts here. Your FWD Accord needs chains ON under R2 — the exemption is AWD only." },
+            { "name": "Mojave", "state": "CA", "ll": [35.053, -118.174] },
+            { "name": "Barstow", "state": "CA", "ll": [34.899, -117.023], "note": "I-40 begins. One road for the next 2,400 miles." },
+            { "name": "Needles", "state": "CA", "ll": [34.848, -114.614] },
+            { "name": "Kingman", "state": "AZ", "ll": [35.189, -114.053], "elev": 3333, "note": "Below the snow line. Sleep here if Flagstaff is getting hit and go over in the morning." },
+            { "name": "Seligman", "state": "AZ", "ll": [35.326, -112.874] },
+            { "name": "Williams", "state": "AZ", "ll": [35.249, -112.191], "elev": 6766, "note": "Turn north here for the Grand Canyon." },
+            { "name": "Flagstaff", "state": "AZ", "ll": [35.198, -111.651], "elev": 6909, "risk": "snow", "note": "The most likely place on this whole trip to find the interstate closed. Check the forecast 48 hours out." },
+            { "name": "Winslow", "state": "AZ", "ll": [35.024, -110.697] },
+            { "name": "Holbrook", "state": "AZ", "ll": [34.902, -110.159] },
+            { "name": "Gallup", "state": "NM", "ll": [35.528, -108.742] },
+            { "name": "Continental Divide", "state": "NM", "ll": [35.44, -108.35], "elev": 7275, "risk": "snow", "note": "High point of the drive. Rain west of here ends up in the Pacific." },
+            { "name": "Albuquerque", "state": "NM", "ll": [35.084, -106.651], "elev": 5312 },
+            { "name": "Santa Rosa", "state": "NM", "ll": [34.938, -104.682] },
+            { "name": "Tucumcari", "state": "NM", "ll": [35.172, -103.725] },
+            { "name": "Amarillo", "state": "TX", "ll": [35.222, -101.831], "elev": 3605, "risk": "ice", "note": "Here to Little Rock is ice-storm country in late December. Chains do nothing on ice — the only move is to not drive that day." },
+            { "name": "Oklahoma City", "state": "OK", "ll": [35.468, -97.516], "risk": "ice" },
+            { "name": "Fort Smith", "state": "AR", "ll": [35.386, -94.398] },
+            { "name": "Little Rock", "state": "AR", "ll": [34.746, -92.289] },
+            { "name": "Memphis", "state": "TN", "ll": [35.149, -90.049], "note": "You cross the Mississippi here." },
+            { "name": "Nashville", "state": "TN", "ll": [36.163, -86.781] },
+            { "name": "Knoxville", "state": "TN", "ll": [35.961, -83.921] },
+            { "name": "Asheville", "state": "NC", "ll": [35.595, -82.552], "elev": 2134, "risk": "ice", "note": "I-40 climbs through the Smokies to get here and does ice up. The Blue Ridge Parkway closes outright." },
+            { "name": "Statesville", "state": "NC", "ll": [35.783, -80.887] },
+            { "name": "Greensboro", "state": "NC", "ll": [36.073, -79.792] },
+            { "name": "Raleigh", "state": "NC", "ll": [35.78, -78.639], "placeholder": true, "note": "PLACEHOLDER until we know her mom's city. Only the last ~300 miles change." }
+          ]
+        },
+        {
+          "id": "leg1-low",
+          "name": "The low road",
+          "road": "I-5 · I-10 · I-20 · I-30 · I-40",
+          "character": "The bail-out. Nothing above 4,600 feet the whole way across.",
+          "why": "If Flagstaff is buried or the Panhandle is icing, this gets you to North Carolina without ever climbing. Adds Tucson, El Paso and Dallas.",
+          "costs": "You lose the Grand Canyon, Meteor Crater and the Painted Desert — and you'd be driving most of the return route twice.",
+          "waypoints": [
+            { "name": "Modesto", "state": "CA", "ll": [37.639, -120.997] },
+            { "name": "Bakersfield", "state": "CA", "ll": [35.373, -119.019] },
+            { "name": "Tejon Pass", "state": "CA", "ll": [34.807, -118.879], "elev": 4144, "risk": "chains", "note": "The Grapevine. Unavoidable on this route and it does close." },
+            { "name": "Los Angeles", "state": "CA", "ll": [34.05, -118.24] },
+            { "name": "Indio", "state": "CA", "ll": [33.721, -116.216] },
+            { "name": "Blythe", "state": "CA", "ll": [33.61, -114.596] },
+            { "name": "Phoenix", "state": "AZ", "ll": [33.448, -112.074] },
+            { "name": "Tucson", "state": "AZ", "ll": [32.222, -110.971] },
+            { "name": "Las Cruces", "state": "NM", "ll": [32.312, -106.779] },
+            { "name": "El Paso", "state": "TX", "ll": [31.759, -106.487], "elev": 3740 },
+            { "name": "Van Horn", "state": "TX", "ll": [31.041, -104.83] },
+            { "name": "Odessa", "state": "TX", "ll": [31.845, -102.368] },
+            { "name": "Abilene", "state": "TX", "ll": [32.449, -99.733] },
+            { "name": "Fort Worth", "state": "TX", "ll": [32.756, -97.333] },
+            { "name": "Dallas", "state": "TX", "ll": [32.777, -96.797] },
+            { "name": "Texarkana", "state": "TX", "ll": [33.425, -94.048] },
+            { "name": "Little Rock", "state": "AR", "ll": [34.746, -92.289] },
+            { "name": "Memphis", "state": "TN", "ll": [35.149, -90.049] },
+            { "name": "Nashville", "state": "TN", "ll": [36.163, -86.781] },
+            { "name": "Knoxville", "state": "TN", "ll": [35.961, -83.921] },
+            { "name": "Asheville", "state": "NC", "ll": [35.595, -82.552], "risk": "ice" },
+            { "name": "Statesville", "state": "NC", "ll": [35.783, -80.887] },
+            { "name": "Greensboro", "state": "NC", "ll": [36.073, -79.792] },
+            { "name": "Raleigh", "state": "NC", "ll": [35.78, -78.639], "placeholder": true }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "leg2",
+      "name": "North Carolina to Houston",
+      "from": "North Carolina",
+      "to": "Houston, TX",
+      "routes": [
+        {
+          "id": "leg2-gulf",
+          "name": "The Gulf Coast",
+          "road": "I-85 · I-65 · I-10",
+          "default": true,
+          "character": "Down through Atlanta and Montgomery to the water, then west along the coast.",
+          "why": "New Orleans over New Year's, the Gulf, Mobile, and the Legacy Museum in Montgomery. This is the interesting one.",
+          "costs": "Slower, and New Orleans on New Year's Eve means booking a room well ahead.",
+          "waypoints": [
+            { "name": "Raleigh", "state": "NC", "ll": [35.78, -78.639], "placeholder": true },
+            { "name": "Charlotte", "state": "NC", "ll": [35.227, -80.843] },
+            { "name": "Greenville", "state": "SC", "ll": [34.853, -82.394] },
+            { "name": "Atlanta", "state": "GA", "ll": [33.749, -84.388] },
+            { "name": "Montgomery", "state": "AL", "ll": [32.367, -86.3] },
+            { "name": "Mobile", "state": "AL", "ll": [30.695, -88.04] },
+            { "name": "Gulfport", "state": "MS", "ll": [30.367, -89.093] },
+            { "name": "New Orleans", "state": "LA", "ll": [29.951, -90.072] },
+            { "name": "Baton Rouge", "state": "LA", "ll": [30.451, -91.187] },
+            { "name": "Lake Charles", "state": "LA", "ll": [30.226, -93.217] },
+            { "name": "Beaumont", "state": "TX", "ll": [30.08, -94.127] },
+            { "name": "Houston", "state": "TX", "ll": [29.76, -95.37] }
+          ]
+        },
+        {
+          "id": "leg2-inland",
+          "name": "The inland run",
+          "road": "I-85 · I-20 · I-45",
+          "character": "Straight across through Birmingham, Jackson and Dallas.",
+          "why": "Faster and simpler if you're worn out by then, or if the coast is weathered in. Picks up Birmingham's Civil Rights Institute and Dallas.",
+          "costs": "Skips New Orleans and the Gulf entirely — which is most of what makes this leg worth doing.",
+          "waypoints": [
+            { "name": "Raleigh", "state": "NC", "ll": [35.78, -78.639], "placeholder": true },
+            { "name": "Charlotte", "state": "NC", "ll": [35.227, -80.843] },
+            { "name": "Greenville", "state": "SC", "ll": [34.853, -82.394] },
+            { "name": "Atlanta", "state": "GA", "ll": [33.749, -84.388] },
+            { "name": "Birmingham", "state": "AL", "ll": [33.521, -86.802] },
+            { "name": "Meridian", "state": "MS", "ll": [32.364, -88.704] },
+            { "name": "Jackson", "state": "MS", "ll": [32.299, -90.185] },
+            { "name": "Shreveport", "state": "LA", "ll": [32.525, -93.75] },
+            { "name": "Dallas", "state": "TX", "ll": [32.777, -96.797] },
+            { "name": "Huntsville", "state": "TX", "ll": [30.724, -95.551] },
+            { "name": "Houston", "state": "TX", "ll": [29.76, -95.37] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "leg3",
+      "name": "Houston to Modesto",
+      "from": "Houston, TX",
+      "to": "Modesto, CA",
+      "routes": [
+        {
+          "id": "leg3-i10",
+          "name": "The desert road",
+          "road": "I-10 · I-5",
+          "default": true,
+          "character": "The low road home. Nothing repeated, nothing above 4,600 feet, best desert on the continent.",
+          "why": "San Antonio's River Walk, White Sands, Carlsbad, Saguaro and Joshua Tree. The safest winter route of the whole trip and also one of the best.",
+          "costs": "Los Angeles traffic at the end, and the Grapevine as the last obstacle.",
+          "waypoints": [
+            { "name": "Houston", "state": "TX", "ll": [29.76, -95.37] },
+            { "name": "San Antonio", "state": "TX", "ll": [29.424, -98.494] },
+            { "name": "Fort Stockton", "state": "TX", "ll": [30.894, -102.879] },
+            { "name": "Van Horn", "state": "TX", "ll": [31.041, -104.83], "note": "Turn-off point for Carlsbad Caverns and for Marfa. Decide before you get here." },
+            { "name": "El Paso", "state": "TX", "ll": [31.759, -106.487], "elev": 3740 },
+            { "name": "Las Cruces", "state": "NM", "ll": [32.312, -106.779], "note": "East on US-70 for White Sands, then back. Worth every minute." },
+            { "name": "Deming", "state": "NM", "ll": [32.269, -107.758] },
+            { "name": "Tucson", "state": "AZ", "ll": [32.222, -110.971] },
+            { "name": "Phoenix", "state": "AZ", "ll": [33.448, -112.074] },
+            { "name": "Blythe", "state": "CA", "ll": [33.61, -114.596], "note": "Back in California, still 500 miles from home." },
+            { "name": "Indio", "state": "CA", "ll": [33.721, -116.216] },
+            { "name": "Los Angeles", "state": "CA", "ll": [34.05, -118.24] },
+            { "name": "Tejon Pass", "state": "CA", "ll": [34.807, -118.879], "elev": 4144, "risk": "chains", "note": "The Grapevine. Last obstacle of the trip and it closes more often than people expect." },
+            { "name": "Bakersfield", "state": "CA", "ll": [35.373, -119.019] },
+            { "name": "Modesto", "state": "CA", "ll": [37.639, -120.997] }
+          ]
+        },
+        {
+          "id": "leg3-vegas",
+          "name": "Up through Vegas",
+          "road": "I-10 · US-93 · I-15 · CA-58",
+          "character": "Same desert as far as Phoenix, then north to Hoover Dam and Las Vegas instead of west into LA.",
+          "why": "Almost identical mileage, no Los Angeles traffic, and it adds Hoover Dam and the Strip. If she's never seen Vegas, this is a cheap way to.",
+          "costs": "You give up Joshua Tree and Palm Springs, and you still finish over Tehachapi.",
+          "waypoints": [
+            { "name": "Houston", "state": "TX", "ll": [29.76, -95.37] },
+            { "name": "San Antonio", "state": "TX", "ll": [29.424, -98.494] },
+            { "name": "Fort Stockton", "state": "TX", "ll": [30.894, -102.879] },
+            { "name": "Van Horn", "state": "TX", "ll": [31.041, -104.83] },
+            { "name": "El Paso", "state": "TX", "ll": [31.759, -106.487] },
+            { "name": "Las Cruces", "state": "NM", "ll": [32.312, -106.779] },
+            { "name": "Deming", "state": "NM", "ll": [32.269, -107.758] },
+            { "name": "Tucson", "state": "AZ", "ll": [32.222, -110.971] },
+            { "name": "Phoenix", "state": "AZ", "ll": [33.448, -112.074] },
+            { "name": "Wickenburg", "state": "AZ", "ll": [33.968, -112.729] },
+            { "name": "Kingman", "state": "AZ", "ll": [35.189, -114.053] },
+            { "name": "Hoover Dam", "state": "NV", "ll": [36.016, -114.737] },
+            { "name": "Las Vegas", "state": "NV", "ll": [36.171, -115.139], "elev": 2001 },
+            { "name": "Baker", "state": "CA", "ll": [35.264, -116.077] },
+            { "name": "Barstow", "state": "CA", "ll": [34.899, -117.023] },
+            { "name": "Tehachapi Pass", "state": "CA", "ll": [35.132, -118.449], "elev": 3793, "risk": "chains" },
+            { "name": "Bakersfield", "state": "CA", "ll": [35.373, -119.019] },
+            { "name": "Modesto", "state": "CA", "ll": [37.639, -120.997] }
+          ]
+        }
+      ]
+    }
+  ],
+  "dot": [
+    { "state": "CA", "name": "Caltrans QuickMap", "url": "https://quickmap.dot.ca.gov/" },
+    { "state": "NV", "name": "NV Roads", "url": "https://www.nvroads.com/" },
+    { "state": "AZ", "name": "ADOT AZ511", "url": "https://az511.gov/" },
+    { "state": "NM", "name": "NMRoads", "url": "https://nmroads.com/" },
+    { "state": "TX", "name": "DriveTexas", "url": "https://drivetexas.org/" },
+    { "state": "OK", "name": "OK511", "url": "https://oktraffic.org/" },
+    { "state": "AR", "name": "IDriveArkansas", "url": "https://www.idrivearkansas.com/" },
+    { "state": "TN", "name": "TDOT SmartWay", "url": "https://smartway.tn.gov/traffic" },
+    { "state": "NC", "name": "DriveNC", "url": "https://drivenc.gov/" },
+    { "state": "GA", "name": "511 Georgia", "url": "https://511ga.org/" },
+    { "state": "AL", "name": "ALGO Traffic", "url": "https://algotraffic.com/" },
+    { "state": "MS", "name": "MDOT Traffic", "url": "https://www.mdottraffic.com/" },
+    { "state": "LA", "name": "511LA", "url": "https://www.511la.org/" }
+  ]
+}

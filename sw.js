@@ -1,0 +1,34 @@
+// Offline is the whole point. Between Needles and Flagstaff, and again
+// across West Texas, there is no signal — so everything the app needs is
+// cached on first run and served from cache first, always.
+const CACHE = 'milepost-v1';
+const SHELL = [
+  'index.html', 'manifest.webmanifest',
+  'css/app.css',
+  'js/app.js', 'js/ui.js', 'js/store.js', 'js/route.js', 'js/plan.js', 'js/map.js',
+  'data/route.json', 'data/stops.json', 'data/usa.json',
+];
+
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
+});
+
+self.addEventListener('activate', e => {
+  e.waitUntil(caches.keys()
+    .then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k))))
+    .then(() => self.clients.claim()));
+});
+
+self.addEventListener('fetch', e => {
+  if (e.request.method !== 'GET') return;
+  e.respondWith(
+    caches.match(e.request).then(hit => {
+      // Cache first, then quietly refresh for next time.
+      const net = fetch(e.request).then(res => {
+        if (res.ok) caches.open(CACHE).then(c => c.put(e.request, res.clone()));
+        return res;
+      }).catch(() => hit);
+      return hit || net;
+    })
+  );
+});

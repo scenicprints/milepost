@@ -1,0 +1,9 @@
+{
+  "name": "Milepost",
+  "short_name": "Milepost",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f6f0e2",
+  "theme_color": "#0d5c3f",
+  "description": "Modesto to North Carolina to Houston and home."
+}

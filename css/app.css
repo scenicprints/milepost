@@ -1,0 +1,258 @@
+/* Milepost — enamel road sign meets national park poster. */
+
+:root {
+  --sign:    #0d5c3f;   /* interstate guide-sign green */
+  --sign-lo: #0a4632;
+  --rust:    #b8410f;   /* desert, and everything "first" */
+  --gold:    #d8a13c;
+  --sky:     #2f6f9e;
+
+  --bg:      #f6f0e2;
+  --card:    #fffdf6;
+  --ink:     #221e18;
+  --ink2:    #6c6355;
+  --line:    #e4dac2;
+  --sunk:    #efe7d3;
+
+  --ok:      #2f7a4a;
+  --warn:    #b4720c;
+  --bad:     #a32a1c;
+
+  --r: 14px;
+  --shadow: 0 1px 2px rgba(34,30,24,.06);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:   #12100d;
+    --card: #1c1913;
+    --ink:  #f0e8d6;
+    --ink2: #a3987f;
+    --line: #2c271e;
+    --sunk: #17140f;
+    --sign: #2f9a6d;
+    --sign-lo: #1d6a4a;
+    --rust: #e2703a;
+    --gold: #e5b757;
+    --shadow: none;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:   #12100d;
+  --card: #1c1913;
+  --ink:  #f0e8d6;
+  --ink2: #a3987f;
+  --line: #2c271e;
+  --sunk: #17140f;
+  --sign: #2f9a6d;
+  --sign-lo: #1d6a4a;
+  --rust: #e2703a;
+  --gold: #e5b757;
+  --shadow: none;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior-y: none;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+h1, h2, h3 { margin: 0; font-weight: 700; letter-spacing: -.01em; }
+button { font: inherit; color: inherit; }
+
+/* ---------------------------------------------------------------- shell */
+#app { max-width: 780px; margin: 0 auto; padding: 0 14px 96px; }
+
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  background: linear-gradient(var(--bg) 72%, transparent);
+  max-width: 780px; margin: 0 auto;
+  padding: 14px 14px 10px;
+  display: flex; align-items: baseline; gap: 10px;
+}
+.brand {
+  font-size: 21px; font-weight: 800; letter-spacing: -.02em;
+  display: flex; align-items: center; gap: 8px;
+}
+.brand .shield {
+  display: inline-grid; place-items: center;
+  width: 26px; height: 26px; border-radius: 6px;
+  background: var(--sign); color: #fff;
+  font-size: 11px; font-weight: 800; letter-spacing: 0;
+}
+.topbar .sub { color: var(--ink2); font-size: 13px; margin-left: auto; }
+
+.tabs {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  background: var(--card); border-top: 1px solid var(--line);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.tabs button {
+  background: none; border: 0; padding: 9px 2px 11px;
+  display: grid; gap: 2px; justify-items: center;
+  font-size: 10.5px; font-weight: 700; letter-spacing: .02em;
+  color: var(--ink2); cursor: pointer;
+}
+.tabs button .ic { font-size: 17px; line-height: 1.1; }
+.tabs button[aria-selected="true"] { color: var(--sign); }
+.tabs button[aria-selected="true"] .ic { transform: translateY(-1px); }
+
+/* ---------------------------------------------------------------- bits */
+.card {
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: var(--r); box-shadow: var(--shadow);
+  padding: 14px; margin-bottom: 12px;
+}
+.card.tight { padding: 11px 13px; }
+.row { display: flex; gap: 10px; align-items: center; }
+.row.between { justify-content: space-between; }
+.grow { flex: 1; min-width: 0; }
+.muted { color: var(--ink2); }
+.small { font-size: 12.5px; }
+.tiny { font-size: 11.5px; }
+.stack { display: grid; gap: 10px; }
+
+.pill {
+  display: inline-block; padding: 2.5px 8px; border-radius: 999px;
+  font-size: 10.5px; font-weight: 800; letter-spacing: .03em;
+  background: var(--sunk); color: var(--ink2); white-space: nowrap;
+}
+.pill.first { background: color-mix(in srgb, var(--rust) 16%, transparent); color: var(--rust); }
+.pill.big   { background: color-mix(in srgb, var(--sign) 16%, transparent); color: var(--sign); }
+.pill.warn  { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); }
+.pill.bad   { background: color-mix(in srgb, var(--bad) 16%, transparent);  color: var(--bad); }
+.pill.seen  { background: color-mix(in srgb, var(--ok) 16%, transparent);   color: var(--ok); }
+
+.stat { display: grid; gap: 1px; }
+.stat b { font-size: 20px; font-weight: 800; letter-spacing: -.02em; }
+.stat span { font-size: 11px; color: var(--ink2); font-weight: 600; letter-spacing: .03em; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+
+.btn {
+  border: 1px solid var(--line); background: var(--card);
+  border-radius: 10px; padding: 8px 13px; font-size: 13px; font-weight: 700;
+  cursor: pointer;
+}
+.btn.on { background: var(--sign); border-color: var(--sign); color: #fff; }
+.btn.ghost { background: transparent; }
+.btn:active { transform: translateY(1px); }
+
+/* --------------------------------------------------------------- legs */
+.leg-head { display: flex; align-items: baseline; gap: 8px; margin: 18px 0 8px; }
+.leg-head h2 { font-size: 15px; }
+.leg-head .n {
+  width: 20px; height: 20px; border-radius: 5px; background: var(--sign); color: #fff;
+  display: grid; place-items: center; font-size: 11px; font-weight: 800;
+}
+
+.routepick { display: grid; gap: 8px; }
+.routeopt {
+  text-align: left; width: 100%; cursor: pointer;
+  border: 1.5px solid var(--line); background: var(--card);
+  border-radius: 12px; padding: 11px 12px;
+}
+.routeopt[aria-pressed="true"] {
+  border-color: var(--sign);
+  background: color-mix(in srgb, var(--sign) 7%, var(--card));
+}
+.routeopt .nm { font-weight: 800; font-size: 14px; display: flex; gap: 8px; align-items: center; }
+.routeopt .rd {
+  font-size: 11px; font-weight: 700; color: var(--ink2); letter-spacing: .04em;
+  margin-top: 1px;
+}
+.routeopt .ch { font-size: 12.5px; color: var(--ink2); margin-top: 6px; }
+.routeopt .why { font-size: 12.5px; margin-top: 6px; }
+.routeopt .costs { font-size: 12.5px; color: var(--warn); margin-top: 4px; }
+
+/* --------------------------------------------------------------- days */
+.day { display: grid; grid-template-columns: 42px 1fr; gap: 12px; }
+.day .num {
+  border-radius: 9px; background: var(--sunk); display: grid; place-items: center;
+  align-self: start; padding: 7px 0;
+}
+.day .num b { font-size: 15px; font-weight: 800; line-height: 1; }
+.day .num span { font-size: 9.5px; color: var(--ink2); font-weight: 700; letter-spacing: .06em; }
+.day .route { font-weight: 750; font-size: 14.5px; }
+.day .meta { font-size: 12.5px; color: var(--ink2); margin-top: 2px; }
+.day .warn { font-size: 12.5px; color: var(--warn); margin-top: 6px; }
+
+.stoplist { margin-top: 9px; display: grid; gap: 6px; }
+.stopline {
+  display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center;
+  padding: 7px 9px; border-radius: 9px; background: var(--sunk); cursor: pointer;
+  border: 0; text-align: left; width: 100%;
+}
+.stopline .nm { font-size: 13px; font-weight: 700; }
+.stopline .sub { font-size: 11.5px; color: var(--ink2); }
+.stopline .cost { font-size: 11.5px; font-weight: 700; color: var(--ink2); white-space: nowrap; }
+
+/* --------------------------------------------------------------- map */
+.mapwrap {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--r);
+  overflow: hidden; margin-bottom: 12px;
+}
+.map-svg { display: block; width: 100%; height: auto; background: var(--card); }
+.m-land { fill: var(--sunk); stroke: var(--line); stroke-width: 1.2; }
+.m-state {
+  fill: var(--ink2); opacity: .45; font-size: 9px; font-weight: 700;
+  letter-spacing: .08em; text-anchor: middle;
+}
+.m-road-case { fill: none; stroke: var(--card); stroke-width: 6.5; stroke-linejoin: round; stroke-linecap: round; }
+.m-road { fill: none; stroke: var(--sign); stroke-width: 3.2; stroke-linejoin: round; stroke-linecap: round; }
+.m-town { fill: var(--ink2); }
+.m-townlabel { fill: var(--ink2); font-size: 8.5px; font-weight: 700; }
+.m-risk { fill: none; stroke-width: 2; }
+.m-risk-snow { stroke: var(--sky); }
+.m-risk-ice { stroke: var(--bad); }
+.m-risk-chains { stroke: var(--warn); }
+.m-stop { cursor: pointer; }
+.m-stop.off { fill: var(--card); stroke: var(--ink2); stroke-width: 1.4; }
+.m-stop.on { fill: var(--sign); stroke: var(--card); stroke-width: 1.4; }
+.m-stop.on.first { fill: var(--rust); }
+.m-stop.focus { stroke: var(--gold); stroke-width: 3; }
+.m-home { fill: var(--gold); stroke: var(--card); stroke-width: 1.2; }
+.m-pos { fill: var(--sky); stroke: #fff; stroke-width: 2; }
+.m-pos-halo { fill: var(--sky); opacity: .25; }
+
+/* --------------------------------------------------------------- sheet */
+.scrim {
+  position: fixed; inset: 0; z-index: 40; background: rgba(20,16,10,.5);
+  display: grid; align-items: end; justify-items: center;
+}
+.sheet {
+  background: var(--card); width: 100%; max-width: 780px;
+  border-radius: 18px 18px 0 0; padding: 16px 16px calc(20px + env(safe-area-inset-bottom));
+  max-height: 88vh; overflow: auto;
+  border: 1px solid var(--line); border-bottom: 0;
+}
+.sheet h3 { font-size: 19px; letter-spacing: -.02em; }
+.sheet .where { color: var(--ink2); font-size: 13px; margin-top: 2px; }
+.sheet .why { margin-top: 12px; font-size: 14px; }
+.sheet .field { margin-top: 12px; }
+.sheet .field .k {
+  font-size: 10.5px; font-weight: 800; letter-spacing: .06em; color: var(--ink2);
+}
+.sheet .field .v { font-size: 13.5px; margin-top: 2px; }
+.sheet .actions { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+.sheet textarea {
+  width: 100%; margin-top: 4px; border: 1px solid var(--line); border-radius: 9px;
+  background: var(--sunk); color: var(--ink); padding: 8px; font: inherit; font-size: 13px;
+  min-height: 60px; resize: vertical;
+}
+
+/* --------------------------------------------------------------- misc */
+.banner {
+  border-radius: var(--r); padding: 13px 14px; margin-bottom: 12px;
+  border: 1px solid color-mix(in srgb, var(--warn) 35%, var(--line));
+  background: color-mix(in srgb, var(--warn) 9%, var(--card));
+  font-size: 13px;
+}
+.banner b { display: block; margin-bottom: 3px; }
+.empty { text-align: center; color: var(--ink2); padding: 40px 20px; font-size: 14px; }
+.seg { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.seg .btn { padding: 6px 11px; font-size: 12.5px; }
