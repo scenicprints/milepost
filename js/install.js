@@ -60,8 +60,8 @@ function render() {
       ];
 
   host.innerHTML = `
-    <div class="scrim install-scrim">
-      <div class="sheet install-sheet">
+    <div class="scrim">
+      <div class="install-sheet">
         <img class="install-icon" src="icons/icon-192.png" alt="">
         <h3>Put Milepost on your home screen</h3>
         <p class="install-lead">

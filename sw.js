@@ -20,7 +20,7 @@ const SHELL = [
   'css/app.css',
   'js/app.js', 'js/ui.js', 'js/store.js', 'js/route.js', 'js/plan.js', 'js/map.js',
   'js/install.js', 'js/sync.js', 'js/firebase-config.js',
-  'data/route.json', 'data/stops.json', 'data/usa.json',
+  'data/route.json', 'data/stops.json', 'data/usa.json', 'data/extras.json',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png',
   'icons/apple-touch-icon.png', 'icons/favicon-32.png',
   'vendor/firebase-app.js', 'vendor/firebase-firestore.js',

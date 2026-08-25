@@ -1,404 +1,281 @@
-// The five screens. Everything reads from the store and the built routes;
-// nothing here holds state of its own.
+// The three screens, plus the two sheets. Everything reads from the store and
+// the built routes; nothing here holds trip state of its own.
+//
+// Route · Map · Days, and all three are scoped to ONE leg. The trip is three
+// trips, and the leg selector at the top drives all of it.
 
 import { store } from './store.js';
-import { buildRoute, stopCost, fmtMiles, fmtHours, milesBetween, project, measure } from './route.js';
+import { buildRoute, stopCost, fmtHours, project } from './route.js';
 import { buildDays, planTotals, suggestStops } from './plan.js';
 import * as mapview from './map.js';
 import * as syncmod from './sync.js';
 
-let DATA = null;                 // { route, stops, usa }
-const built = new Map();         // routeId -> built route
-let position = null;             // [lat, lon] from geolocation, if allowed
+let DATA = null;              // { route, stops, usa }
+const built = new Map();      // routeId -> built route
+let position = null;          // [lat, lon] once geolocation is allowed
 
 export function init(data) { DATA = data; }
 export function setPosition(ll) { position = ll; }
+export function hasPosition() { return !!position; }
 
-const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-function routeById(id) {
+export function routeById(id) {
   if (built.has(id)) return built.get(id);
-  for (const leg of DATA.route.legs) {
-    for (const r of leg.routes) {
-      if (r.id === id) {
-        const b = buildRoute(r, DATA.stops);
-        built.set(id, b);
-        return b;
-      }
-    }
-  }
+  for (const leg of DATA.route.legs)
+    for (const r of leg.routes)
+      if (r.id === id) { const b = buildRoute(r, DATA.stops); built.set(id, b); return b; }
   return null;
 }
 
-/// The three routes currently selected, in order.
-function selected() {
-  return DATA.route.legs.map(leg => ({ leg, route: routeById(store.routeFor(leg.id)) }));
-}
+export const legs = () => DATA.route.legs;
+export const selected = () => DATA.route.legs.map(l => routeById(store.routeFor(l.id)));
+export const legRoute = i => routeById(store.routeFor(DATA.route.legs[i].id));
+export const allStops = () => selected().flatMap(r => r.stops);
+export { suggestStops };
 
-function allStopsInPlay() {
-  return selected().flatMap(({ route }) => route.stops);
-}
+// ============================================================== head
+export function renderHead(legIx) {
+  const rt = legRoute(legIx);
+  const t = planTotals(buildDays(rt, store.chosen, store.pace));
+  let wm = 0, wd = 0;
+  for (const r of selected()) { const x = planTotals(buildDays(r, store.chosen, store.pace)); wm += x.miles; wd += x.days; }
 
-function tripTotals() {
-  let miles = 0, days = 0, driveMins = 0, stops = 0, firsts = 0;
-  for (const { route } of selected()) {
-    const d = buildDays(route, store.chosen, store.pace);
-    const t = planTotals(d);
-    miles += t.miles; days += t.days; driveMins += t.driveMins;
-    stops += t.stops; firsts += t.firsts;
-  }
-  return { miles, days, driveMins, stops, firsts };
-}
-
-// ============================================================= ROAD
-export function renderRoad() {
-  const t = tripTotals();
-  const totalFirsts = allStopsInPlay().filter(s => s.first).length;
-  const seenCount = allStopsInPlay().filter(s => store.isSeen(s.id)).length;
-
-  let h = '';
-
-  h += `<div class="card">
-    <div class="stats">
-      <div class="stat"><b>${Math.round(t.miles).toLocaleString()}</b><span>MILES</span></div>
-      <div class="stat"><b>${t.days}</b><span>DRIVING DAYS</span></div>
-      <div class="stat"><b>${Math.round(t.driveMins / 60)}</b><span>HOURS DRIVING</span></div>
-      <div class="stat"><b>${t.stops}</b><span>STOPS</span></div>
+  return `<div class="top">
+      <div class="wordmark">Milepost</div>
+      <button class="whole" data-trip>${Math.round(wm).toLocaleString()} mi · ${wd} days total</button>
     </div>
-    <div class="small muted" style="margin-top:12px">
-      Modesto to North Carolina, down to Houston, and home again —
-      ${t.firsts} of your ${totalFirsts} picked stops are things Ada has never seen.
-      ${seenCount ? `<b>${seenCount} done so far.</b>` : ''}
+    <div class="legname">${esc(DATA.route.legs[legIx].name)}</div>
+    <div class="totals">
+      <div><span class="tnum">${Math.round(t.miles).toLocaleString()}</span><span class="tlab">mi</span></div>
+      <div><span class="tnum">${t.days}</span><span class="tlab">days</span></div>
+      <div><span class="tnum on">${t.stops}</span><span class="tlab">stops</span></div>
     </div>
-  </div>`;
-
-  h += `<div class="banner">
-    <b>Chains: buy a set, plan not to use them.</b>
-    A FWD Accord on Defender 2s does not qualify for California's R2 exemption — that's AWD only —
-    so chain control on Tehachapi or the Grapevine means chains on the drive wheels or a turnaround.
-    They do nothing for the two risks that actually matter: I-40 closing at Flagstaff, and ice
-    between Amarillo and Little Rock. Slack in the schedule is the real protection.
-  </div>`;
-
-  selected().forEach(({ leg, route }, i) => {
-    const days = buildDays(route, store.chosen, store.pace);
-    const tt = planTotals(days);
-    h += `<div class="leg-head"><span class="n">${i + 1}</span><h2>${esc(leg.name)}</h2>
-      <span class="muted small" style="margin-left:auto">${fmtMiles(route.miles)} · ${tt.days} days</span></div>`;
-    h += `<div class="routepick">`;
-    for (const opt of leg.routes) {
-      const b = routeById(opt.id);
-      const on = store.routeFor(leg.id) === opt.id;
-      h += `<button class="routeopt" aria-pressed="${on}" data-pick-route="${opt.id}" data-leg="${leg.id}">
-        <div class="nm">${esc(opt.name)} ${opt.default ? '<span class="pill">DEFAULT</span>' : ''}</div>
-        <div class="rd">${esc(opt.road)} · ${fmtMiles(b.miles)}</div>
-        <div class="ch">${esc(opt.character)}</div>
-        ${on ? `<div class="why">${esc(opt.why)}</div>
-                <div class="costs">Costs you: ${esc(opt.costs)}</div>` : ''}
-      </button>`;
-    }
-    h += `</div>`;
-  });
-
-  return h;
+    <div class="legs">${DATA.route.legs.map((l, i) =>
+      `<button data-leg="${i}" aria-selected="${i === legIx}">${esc(l.short || SHORT[i])}</button>`).join("")}</div>`;
 }
 
-// ============================================================= AHEAD
-export function renderAhead() {
-  if (!position) {
-    return `<div class="card">
-      <b>Where are we?</b>
-      <div class="small muted" style="margin-top:6px">
-        This screen watches your position and tells you what's coming up in the next
-        150 miles, soonest first, with what each one costs the day.
-      </div>
-      <div class="actions" style="margin-top:12px">
-        <button class="btn on" data-locate>Use my location</button>
-      </div>
-    </div>
-    <div class="empty">Nothing to show until it knows where you are.</div>`;
+const SHORT = ["Carolina", "Houston", "Home"];
+
+// ============================================================== route
+export function renderRoute(legIx) {
+  const leg = DATA.route.legs[legIx], rt = legRoute(legIx);
+  let h = '<div class="routes">';
+  for (const opt of leg.routes) {
+    const b = routeById(opt.id);
+    h += `<button class="rt" aria-pressed="${opt.id === rt.id}" data-route="${opt.id}" data-rleg="${leg.id}">
+      <span class="dot"></span><span class="rn">${esc(opt.name)}</span>
+      <span class="rm">${Math.round(b.miles).toLocaleString()} mi</span></button>`;
   }
+  h += '</div><div class="line">';
 
-  // Which of the three routes are we actually on? The one we're closest to.
-  let bestRoute = null, bestOff = Infinity, bestMile = 0;
-  for (const { route } of selected()) {
-    const p = project(position, route.waypoints, route.cum);
-    if (p.off < bestOff) { bestOff = p.off; bestRoute = route; bestMile = p.mile; }
+  const nights = buildDays(rt, store.chosen, store.pace).slice(0, -1)
+    .map(d => ({ m: d.overnight.mile, n: d.overnight.name }));
+  let ni = 0;
+  const night = () => `<div class="night"><span class="bar"></span>
+    <span class="txt">Night — ${esc(nights[ni].n)}</span><span class="rule"></span></div>`;
+
+  for (const s of rt.stops) {
+    while (ni < nights.length && nights[ni].m < s.mile) { h += night(); ni++; }
+    const on = store.isChosen(s.id), seen = store.isSeen(s.id);
+    h += `<div class="st ${on ? "on " : ""}${s.big ? "big " : ""}${seen ? "seen" : ""}">
+      <button class="mark" data-toggle="${s.id}" aria-label="Toggle ${esc(s.name)}"></button>
+      <button class="body" data-stop="${s.id}">
+        <div class="nm">${esc(s.name)}</div>
+        <div class="sub">${esc(s.town)}, ${esc(s.state)} · ${s.detour} min off</div>
+      </button>
+      <div class="cost">${fmtHours(stopCost(s).total)}</div></div>`;
   }
-
-  const ahead = bestRoute.stops
-    .filter(s => s.mile > bestMile - 5 && s.mile < bestMile + 150)
-    .sort((a, b) => a.mile - b.mile);
-
-  const nextTown = bestRoute.towns.find(t => t.mile > bestMile);
-
-  let h = `<div class="card tight">
-    <div class="row between">
-      <div>
-        <b>${esc(bestRoute.name)}</b>
-        <div class="tiny muted">${Math.round(bestMile).toLocaleString()} of ${Math.round(bestRoute.miles).toLocaleString()} miles${bestOff > 25 ? ` · ${Math.round(bestOff)} mi off route` : ''}</div>
-      </div>
-      ${nextTown ? `<div style="text-align:right">
-        <b>${esc(nextTown.name)}</b>
-        <div class="tiny muted">${Math.round(nextTown.mile - bestMile)} mi ahead</div>
-      </div>` : ''}
-    </div>
-  </div>`;
-
-  if (!ahead.length) return h + `<div class="empty">Nothing in the next 150 miles. Enjoy the drive.</div>`;
-
-  h += `<div class="stack">`;
-  for (const s of ahead) {
-    const dist = Math.round(s.mile - bestMile);
-    const c = stopCost(s);
-    const seen = store.isSeen(s.id);
-    h += `<button class="card tight stopline" data-stop="${s.id}" style="display:block">
-      <div class="row between">
-        <div class="grow">
-          <div class="nm">${esc(s.name)}
-            ${s.first ? '<span class="pill first">FIRST</span>' : ''}
-            ${seen ? '<span class="pill seen">SEEN</span>' : ''}</div>
-          <div class="sub">${esc(s.town)}, ${esc(s.state)} · ${s.detour} min off the road</div>
-        </div>
-        <div style="text-align:right">
-          <div class="nm">${dist <= 0 ? 'here' : dist + ' mi'}</div>
-          <div class="sub">${fmtHours(c.total)} all in</div>
-        </div>
-      </div>
-    </button>`;
-  }
-  h += `</div>`;
-  return h;
+  while (ni < nights.length) { h += night(); ni++; }
+  return h + "</div>";
 }
 
-// ============================================================= MAP
-export function renderMap() {
-  const sel = selected();
-  const activeId = mapLegId || sel[0].route.id;
-  const route = routeById(activeId);
+// ============================================================== map
+let view = null;
+export const getView = () => view;
+export function setView(v) { view = v; }
+export function resetView() { view = null; }
 
-  let h = `<div class="seg">`;
-  for (const { leg, route: r } of sel) {
-    h += `<button class="btn ${r.id === activeId ? 'on' : ''}" data-map-leg="${r.id}">${esc(leg.name.replace(/ to /, ' → '))}</button>`;
-  }
-  h += `</div>`;
+export function renderMap(legIx) {
+  const rt = legRoute(legIx);
+  const svg = mapview.render(DATA.usa, selected(), rt, { view, chosen: store.chosen, pos: position });
+  const risks = rt.towns.filter(t => t.risk);
+  const states = [...new Set(rt.towns.map(t => t.state))];
 
-  h += `<div class="mapwrap">${mapview.render(DATA.usa, route, { chosen: store.chosen, pos: position })}</div>`;
+  let h = `<div class="mapwrap"><div class="mapbox">${svg}
+      <div class="zoom">
+        <button data-zoom="in" aria-label="Zoom in">+</button>
+        <button data-zoom="out" aria-label="Zoom out">−</button>
+        <button class="fit" data-zoom="fit" aria-label="Fit to leg">FIT</button>
+      </div></div>
+    <div class="mkey">
+      <span><i style="background:var(--signal)"></i>In the plan</span>
+      <span><i style="border:1.5px solid var(--rule2)"></i>Not yet</span>
+      <span><i style="background:var(--ink);border-radius:0"></i>Home</span>
+    </div></div>`;
 
-  const risks = route.towns.filter(t => t.risk);
   if (risks.length) {
-    h += `<div class="card"><b>Winter watch on this route</b><div class="stack" style="margin-top:8px">`;
+    h += `<div class="field"><div class="slab">Winter watch</div>`;
     for (const r of risks) {
-      h += `<div>
-        <div class="row" style="gap:6px">
-          <span class="pill ${r.risk === 'ice' ? 'bad' : 'warn'}">${r.risk.toUpperCase()}</span>
-          <b class="small">${esc(r.name)}, ${esc(r.state)}${r.elev ? ` · ${r.elev.toLocaleString()} ft` : ''}</b>
-        </div>
-        ${r.note ? `<div class="small muted" style="margin-top:3px">${esc(r.note)}</div>` : ''}
+      h += `<div style="margin-top:14px">
+        <div style="font-size:14px">${esc(r.name)}, ${esc(r.state)}${r.elev ? ` · ${r.elev.toLocaleString()} ft` : ""}</div>
+        ${r.note ? `<div class="sbody" style="font-size:13px;color:var(--ink2);margin-top:5px">${esc(r.note)}</div>` : ""}
       </div>`;
     }
-    h += `</div></div>`;
+    h += `</div>`;
   }
 
-  h += `<div class="card"><b>Road conditions</b><div class="small muted" style="margin:6px 0 10px">
-    Every state you cross, in order. Check these the night before, not the morning of.</div>
-    <div class="seg" style="margin:0">`;
-  const states = [...new Set(route.towns.map(t => t.state))];
+  h += `<div class="field"><div class="slab">Road conditions</div><div class="links">`;
   for (const st of states) {
     const d = DATA.route.dot.find(x => x.state === st);
-    if (d) h += `<a class="btn" href="${d.url}" target="_blank" rel="noopener">${esc(st)}</a>`;
+    if (d) h += `<a href="${d.url}" target="_blank" rel="noopener">${esc(d.name)}<span>${esc(st)}</span></a>`;
   }
-  h += `</div></div>`;
-  return h;
+  return h + `</div></div>`;
 }
 
-let mapLegId = null;
-export function setMapLeg(id) { mapLegId = id; }
+// ============================================================== days
+export function renderDays(legIx) {
+  const rt = legRoute(legIx);
+  const D = buildDays(rt, store.chosen, store.pace);
+  let h = '<div class="days">';
+  if (D.truncated)
+    h += `<div class="err">This plan didn't finish building. Something in the route or pace is off.</div>`;
+  if (D.unplaced && D.unplaced.length)
+    h += `<div class="err">Couldn't schedule: ${D.unplaced.map(s => esc(s.name)).join(", ")}. Give the day more hours, or drop them.</div>`;
 
-// ============================================================= DAYS
-export function renderDays() {
-  let h = '';
-  let dayNo = 0;
-
-  for (const { leg, route } of selected()) {
-    const days = buildDays(route, store.chosen, store.pace);
-    h += `<div class="leg-head"><span class="n">${DATA.route.legs.indexOf(leg) + 1}</span>
-      <h2>${esc(leg.name)}</h2>
-      <span class="muted small" style="margin-left:auto">${esc(route.name)}</span></div>`;
-
-    if (days.truncated) {
-      h += `<div class="banner"><b>This plan didn't finish building.</b>
-        It hit the day limit, which means something in the route or pace is off. Tell Claude.</div>`;
-    }
-    if (days.unplaced && days.unplaced.length) {
-      h += `<div class="banner"><b>${days.unplaced.length} chosen stop(s) couldn't be scheduled:</b>
-        ${days.unplaced.map(s => esc(s.name)).join(', ')}. Give the day more hours, or drop them.</div>`;
-    }
-
-    for (const d of days) {
-      dayNo++;
-      h += `<div class="card"><div class="day">
-        <div class="num"><span>DAY</span><b>${dayNo}</b></div>
-        <div class="grow">
-          <div class="route">${esc(d.from.name)} → ${esc(d.overnight.name)}${d.sameTown ? ' <span class="pill">2ND NIGHT</span>' : ''}</div>
-          <div class="meta">${Math.round(d.miles).toLocaleString()} mi · ${fmtHours(d.driveMins)} driving${d.stopMins ? ` · ${fmtHours(d.stopMins)} stopped` : ''}</div>
-          ${d.over ? `<div class="warn">Runs long — ${fmtHours(d.driveMins + d.stopMins)} on the go.</div>` : ''}
-          ${d.risks.length ? `<div class="warn">Winter watch: ${d.risks.map(r => esc(r.name)).join(', ')}</div>` : ''}
-          ${d.stops.length ? `<div class="stoplist">${d.stops.map(s => stopLine(s)).join('')}</div>` : ''}
-        </div>
-      </div></div>`;
-    }
-  }
-  return h;
+  D.forEach((d, i) => {
+    h += `<div class="day">
+      <div class="dnum">Day ${i + 1}</div>
+      <div class="dto">${esc(d.from.name)} → ${esc(d.overnight.name)}${d.sameTown ? " (2nd night)" : ""}</div>
+      <div class="dmeta">${Math.round(d.miles).toLocaleString()} mi · ${fmtHours(d.driveMins)} driving${d.stopMins ? ` · ${fmtHours(d.stopMins)} stopped` : ""}</div>
+      ${d.risks.length ? `<div class="warn">Winter watch — ${d.risks.map(r => esc(r.name)).join(", ")}</div>` : ""}
+      ${d.stops.length ? `<div class="dstops">${d.stops.map(s =>
+        `<button class="dstop" data-stop="${s.id}"><i></i><span>${esc(s.name)}</span></button>`).join("")}</div>` : ""}
+    </div>`;
+  });
+  return h + "</div>";
 }
 
-function stopLine(s) {
-  const c = stopCost(s);
-  return `<button class="stopline" data-stop="${s.id}">
-    <div>
-      <div class="nm">${esc(s.name)} ${s.first ? '<span class="pill first">FIRST</span>' : ''}${store.isSeen(s.id) ? '<span class="pill seen">SEEN</span>' : ''}</div>
-      <div class="sub">${esc(s.town)}, ${esc(s.state)}</div>
+// ============================================================== place sheet
+export function placeSheet(id) {
+  let s = null;
+  for (const leg of DATA.route.legs)
+    for (const r of leg.routes) { const f = routeById(r.id).stops.find(x => x.id === id); if (f) s = f; }
+  if (!s) return "";
+
+  const on = store.isChosen(s.id), seen = store.isSeen(s.id);
+  const c = stopCost(s), hh = Math.floor(c.total / 60), mm = c.total % 60;
+  const q = encodeURIComponent(`${s.name} ${s.town} ${s.state}`);
+  const site = DATA.sites[s.id];
+  const wx = DATA.normals[s.town];
+
+  return `<div class="sh">
+      <div><div class="sloc">${esc(s.town)}, ${esc(s.state)}</div>
+        <div class="snm">${esc(s.name)}</div></div>
+      <button class="sclose" data-close>Close</button>
     </div>
-    <div class="cost">${s.detour} min off<br>${fmtHours(c.total)}</div>
-  </button>`;
+    <div class="sb">
+      <div class="scost"><span class="n">${hh || mm}</span><span class="u">${hh ? "h" : "min"}</span>
+        <span class="l">off your day</span></div>
+      <div class="srow">${s.detour} min off the interstate, each way<br>${fmtHours(c.dwell)} on the ground${s.cost ? `<br>${esc(s.cost)}` : ""}</div>
+
+      <div class="sdiv"></div>
+      <div class="sbody">${esc(s.desc || s.why || "")}</div>
+
+      <div class="sdiv"></div>
+      <div class="slab">Late December</div>
+      ${wx ? `<div class="temps"><b>${wx[0]}°</b><s>${wx[1]}°</s><em>typical high / low</em></div>` : ""}
+      ${s.winter ? `<div class="sbody">${esc(s.winter)}</div>` : ""}
+
+      ${s.first ? `<div class="sdiv"></div><div class="slab">A first</div>
+        <div class="sbody">There is nothing in California like this.</div>` : ""}
+
+      <div class="sdiv"></div>
+      <div class="slab">Look it up</div>
+      <div class="links">
+        ${site ? `<a href="${site}" target="_blank" rel="noopener">Official site<span>${esc(site.replace(/^https?:\/\/(www\.)?/, "").split("/")[0])}</span></a>` : ""}
+        <a href="https://www.google.com/search?q=${q}" target="_blank" rel="noopener">Search<span>Google</span></a>
+        <a href="https://en.wikipedia.org/w/index.php?search=${q}" target="_blank" rel="noopener">Background<span>Wikipedia</span></a>
+        <a href="https://www.google.com/maps/dir/?api=1&destination=${s.ll[0]},${s.ll[1]}" target="_blank" rel="noopener">Directions<span>Maps</span></a>
+        <button data-seen="${s.id}">${seen ? "Been there" : "Mark as seen"}<span>${seen ? esc(store.seenDate(s.id)) : "—"}</span></button>
+      </div>
+    </div>
+    <div class="sact">
+      <button class="${on ? "prim" : ""}" data-toggle="${s.id}">${on ? "In the plan" : "Add to plan"}</button>
+      <a class="btn" style="flex:1;text-align:center;padding:13px 0"
+         href="https://www.google.com/maps/dir/?api=1&destination=${s.ll[0]},${s.ll[1]}"
+         target="_blank" rel="noopener">Navigate</a>
+    </div>`;
 }
 
-// ============================================================= BOOK
-export function renderBook() {
-  const inPlay = allStopsInPlay();
-  const firsts = inPlay.filter(s => s.first);
-  const seen = inPlay.filter(s => store.isSeen(s.id));
+// ============================================================== trip sheet
+export function tripSheet() {
+  const st = syncmod.state;
   const dep = store.departure;
+  const days = dep ? Math.ceil((new Date(dep + "T00:00:00") - new Date()) / 86400000) : null;
+  const inPlay = allStops();
+  const seen = inPlay.filter(s => store.isSeen(s.id));
+  const firsts = inPlay.filter(s => s.first);
 
-  let h = '';
+  return `<div class="sh">
+      <div><div class="sloc">The whole thing</div><div class="snm">Trip</div></div>
+      <button class="sclose" data-close>Close</button>
+    </div>
+    <div class="sb">
+      ${dep
+        ? `<div class="count"><b>${days > 0 ? days : 0}</b>
+             <span>${days > 0 ? "days until you leave" : "you're out there"}</span></div>
+           <div class="links"><button data-cleardep>Change the date<span>${esc(dep)}</span></button></div>`
+        : `<div class="field"><div class="slab">When do you leave</div>
+             <div class="sbody" style="font-size:13px;color:var(--ink2)">Stays on your phones. It never goes in the repo.</div>
+             <input type="date" id="depart" class="tinput"></div>`}
 
-  if (dep) {
-    const days = Math.ceil((new Date(dep) - new Date()) / 86400000);
-    h += `<div class="card" style="text-align:center">
-      <div class="stat"><b style="font-size:38px">${days > 0 ? days : 0}</b>
-      <span>${days > 0 ? 'DAYS UNTIL YOU LEAVE' : 'YOU\'RE OUT THERE'}</span></div>
-    </div>`;
-  } else {
-    h += `<div class="card">
-      <b>When do you leave?</b>
-      <div class="small muted" style="margin:5px 0 10px">
-        Stays on your phones — it never goes in the repo.
+      <div class="sdiv"></div>
+      <div class="slab">Both phones</div>
+      ${st.on
+        ? `<div class="sbody" style="font-size:13px;color:var(--ink2)">Changes on either phone show up on the other.
+             Anything you do with no signal queues and lands when you get bars.</div>
+           <div class="codebox">${esc(st.code)}</div>
+           <div class="links" style="margin-top:14px">
+             <button data-copy-code="${esc(st.code)}">Copy the code<span>Share it</span></button>
+             <button data-sync-off>Disconnect this phone<span>—</span></button>
+           </div>`
+        : `<div class="sbody" style="font-size:13px;color:var(--ink2)">Enter the trip code to share this plan.
+             Everything works without it — it just won't be shared.</div>
+           <input id="tripcode" class="tinput" placeholder="XXXX-XXXX-XXXX-XXXX"
+                  autocapitalize="characters" autocomplete="off" spellcheck="false">
+           <div class="actions"><button class="on" data-sync-connect>Connect</button></div>`}
+      ${st.error ? `<div class="err">${esc(st.error)}</div>` : ""}
+
+      <div class="sdiv"></div>
+      <div class="slab">Firsts</div>
+      <div class="sbody" style="font-size:13px;color:var(--ink2)">
+        ${firsts.filter(s => store.isSeen(s.id)).length} of ${firsts.length} seen.
+        Things there is no California version of.</div>
+      <div class="links" style="margin-top:12px">
+        ${firsts.map(s => `<button data-stop="${s.id}">${esc(s.name)}<span>${store.isSeen(s.id) ? esc(store.seenDate(s.id)) : "—"}</span></button>`).join("")}
       </div>
-      <input type="date" id="depart" class="btn" style="width:100%">
+
+      ${seen.length ? `<div class="sdiv"></div><div class="slab">Everywhere you've been</div>
+        <div class="links" style="margin-top:12px">
+          ${seen.map(s => `<button data-stop="${s.id}">${esc(s.name)}<span>${esc(store.seenDate(s.id))}</span></button>`).join("")}
+        </div>` : ""}
+
+      <div class="sdiv"></div>
+      <div class="slab">Where are we</div>
+      <div class="sbody" style="font-size:13px;color:var(--ink2)">
+        ${position ? whereAreWe() : "Turn this on and the map shows your position along the route."}</div>
+      ${position ? "" : `<div class="actions"><button data-locate>Use my location</button></div>`}
     </div>`;
+}
+
+function whereAreWe() {
+  let best = null, off = Infinity, mile = 0;
+  for (const r of selected()) {
+    const p = project(position, r.waypoints, r.cum);
+    if (p.off < off) { off = p.off; best = r; mile = p.mile; }
   }
-
-  h += `<div class="card">
-    <div class="row between"><b>Firsts</b>
-      <span class="muted small">${firsts.filter(s => store.isSeen(s.id)).length} of ${firsts.length}</span></div>
-    <div class="small muted" style="margin-top:4px">
-      Things there is no California version of. Tap one when you've done it.
-    </div>
-    <div class="stoplist" style="margin-top:10px">
-      ${firsts.map(s => `<button class="stopline" data-seen="${s.id}">
-        <div><div class="nm">${esc(s.name)}</div>
-        <div class="sub">${esc(s.town)}, ${esc(s.state)}</div></div>
-        <div class="cost">${store.isSeen(s.id) ? `<span class="pill seen">${esc(store.seenDate(s.id))}</span>` : '○'}</div>
-      </button>`).join('')}
-    </div>
-  </div>`;
-
-  h += syncCard();
-
-  if (seen.length) {
-    h += `<div class="card"><b>Everything you've seen</b>
-      <div class="stoplist" style="margin-top:10px">
-        ${seen.map(s => stopLine(s)).join('')}
-      </div></div>`;
-  }
-  return h;
+  const next = best.towns.find(t => t.mile > mile);
+  return `${Math.round(mile).toLocaleString()} of ${Math.round(best.miles).toLocaleString()} miles into ${esc(best.name)}.`
+    + (next ? ` ${esc(next.name)} is ${Math.round(next.mile - mile)} miles ahead.` : "");
 }
-
-/// Both phones, one plan. The code is the whole secret, so it is shown only
-/// on a phone that is already connected.
-function syncCard() {
-  const s = syncmod.state;
-  const on = s.on;
-  return `<div class="card">
-    <div class="row between">
-      <b>Both phones</b>
-      <span class="pill ${on ? 'seen' : ''}">${on ? 'SYNCED' : 'THIS PHONE ONLY'}</span>
-    </div>
-    <div class="small muted" style="margin-top:5px">
-      ${on
-        ? `Changes on either phone show up on the other. Writes made with no signal
-           queue up and land when you get bars again.`
-        : `Enter the trip code to share this plan with Ada's phone. Everything works
-           without it — it just won't be shared.`}
-    </div>
-    ${on
-      ? `<div class="field" style="margin-top:10px">
-           <div class="k">TRIP CODE</div>
-           <div class="codebox">${esc(s.code)}</div>
-           <div class="tiny muted" style="margin-top:6px">
-             Saved on this phone. Hand this to anyone you want on the trip —
-             it's the only thing they need.
-           </div>
-         </div>
-         <div class="actions">
-           <button class="btn on" data-copy-code="${esc(s.code)}">Copy code</button>
-           ${navigator.share ? `<button class="btn" data-share-code="${esc(s.code)}">Share</button>` : ''}
-           <button class="btn ghost" data-sync-off>Disconnect</button>
-         </div>`
-      : `<div style="margin-top:10px">
-           <input id="tripcode" class="btn" style="width:100%;font-family:ui-monospace,monospace;letter-spacing:.08em"
-                  placeholder="XXXX-XXXX-XXXX-XXXX" autocapitalize="characters" autocomplete="off" spellcheck="false">
-           <div class="actions"><button class="btn on" data-sync-connect>Connect</button></div>
-         </div>`}
-    ${s.error ? `<div class="small" style="color:var(--bad);margin-top:8px">${esc(s.error)}</div>` : ''}
-  </div>`;
-}
-
-// ============================================================= SHEET
-export function stopSheet(id) {
-  const s = allStopsInPlay().find(x => x.id === id);
-  if (!s) return '';
-  const c = stopCost(s);
-  const chosen = store.isChosen(s.id);
-  const seen = store.isSeen(s.id);
-  const maps = `https://www.google.com/maps/search/?api=1&query=${s.ll[0]},${s.ll[1]}`;
-
-  return `<div class="scrim" data-close-scrim><div class="sheet" role="dialog">
-    <div class="row between">
-      <div class="grow">
-        <h3>${esc(s.name)}</h3>
-        <div class="where">${esc(s.town)}, ${esc(s.state)}</div>
-      </div>
-      <button class="btn ghost" data-close>Close</button>
-    </div>
-    <div class="row" style="gap:6px;margin-top:10px;flex-wrap:wrap">
-      ${s.first ? '<span class="pill first">NEVER SEEN ANYTHING LIKE IT</span>' : ''}
-      ${s.big ? '<span class="pill big">WORTH REBUILDING THE DAY</span>' : ''}
-      ${seen ? `<span class="pill seen">SEEN ${esc(store.seenDate(s.id))}</span>` : ''}
-    </div>
-
-    <div class="why">${esc(s.why)}</div>
-
-    <div class="field"><div class="k">WHAT IT COSTS YOU</div>
-      <div class="v"><b>${fmtHours(c.total)}</b> all in —
-      ${s.detour} min off the road each way, about ${fmtHours(c.dwell)} on the ground.</div></div>
-
-    ${s.winter ? `<div class="field"><div class="k">IN LATE DECEMBER</div>
-      <div class="v">${esc(s.winter)}</div></div>` : ''}
-
-    <div class="field"><div class="k">COST</div><div class="v">${esc(s.cost || '—')}</div></div>
-
-    <div class="field"><div class="k">NOTES</div>
-      <textarea data-note="${s.id}" placeholder="Anything you want to remember">${esc(store.note(s.id))}</textarea></div>
-
-    <div class="actions">
-      <button class="btn ${chosen ? 'on' : ''}" data-toggle="${s.id}">
-        ${chosen ? 'In the plan' : 'Add to the plan'}</button>
-      <button class="btn ${seen ? 'on' : ''}" data-seen="${s.id}">
-        ${seen ? 'Seen it' : 'Mark seen'}</button>
-      <a class="btn" href="${maps}" target="_blank" rel="noopener">Open in Maps</a>
-    </div>
-  </div></div>`;
-}
-
-export { routeById, selected, suggestStops };

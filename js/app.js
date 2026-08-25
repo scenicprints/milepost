@@ -1,43 +1,44 @@
-// Boot, routing between tabs, and every event the screens fire.
+// Boot, the three tabs, the leg selector, and every event the screens fire.
 
 import { store } from './store.js';
 import * as ui from './ui.js';
+import * as mapview from './map.js';
 import { maybeShow } from './install.js';
 import * as syncmod from './sync.js';
 
 const TABS = [
-  { id: 'road',  ic: '🛣️', label: 'Road',  render: ui.renderRoad },
-  { id: 'ahead', ic: '📍', label: 'Ahead', render: ui.renderAhead },
-  { id: 'map',   ic: '🗺️', label: 'Map',   render: ui.renderMap },
-  { id: 'days',  ic: '📅', label: 'Days',  render: ui.renderDays },
-  { id: 'book',  ic: '📖', label: 'Book',  render: ui.renderBook },
+  { id: 'route', label: 'Route', render: ui.renderRoute },
+  { id: 'map',   label: 'Map',   render: ui.renderMap },
+  { id: 'days',  label: 'Days',  render: ui.renderDays },
 ];
 
-let tab = 'road';
-let sheetId = null;
+let tab = 'route';
+let legIx = 0;
+let sheet = null;          // null | { kind: 'place', id } | { kind: 'trip' }
 
-const $app = document.getElementById('app');
+const $head = document.getElementById('head');
+const $scroll = document.getElementById('scroll');
 const $tabs = document.getElementById('tabs');
 const $sheet = document.getElementById('sheet');
 
 async function boot() {
-  const [route, stops, usa] = await Promise.all([
+  const [route, stops, usa, extras] = await Promise.all([
     fetch('data/route.json').then(r => r.json()),
     fetch('data/stops.json').then(r => r.json()),
     fetch('data/usa.json').then(r => r.json()),
+    fetch('data/extras.json').then(r => r.json()),
   ]);
-  ui.init({ route, stops: stops.stops, usa });
+  ui.init({ route, stops: stops.stops, usa, sites: extras.sites, normals: extras.normals });
 
-  // First run: start them off with a sensible plan rather than a blank app.
+  // First run opens with a real plan rather than a blank app.
   if (!store.s.seeded) {
-    for (const { route: r } of ui.selected()) store.choose(ui.suggestStops(r));
+    for (const r of ui.selected()) store.choose(ui.suggestStops(r));
     store.s.seeded = true;
     store.save();
   }
 
   $tabs.innerHTML = TABS.map(t =>
-    `<button data-tab="${t.id}" aria-selected="${t.id === tab}">
-       <span class="ic">${t.ic}</span><span>${t.label}</span></button>`).join('');
+    `<button data-tab="${t.id}" aria-selected="${t.id === tab}">${t.label}</button>`).join('');
 
   store.addEventListener('change', draw);
   syncmod.sync.addEventListener('change', draw);
@@ -47,75 +48,162 @@ async function boot() {
 }
 
 function draw() {
-  const t = TABS.find(t => t.id === tab);
-  $app.innerHTML = t.render();
-  for (const b of $tabs.querySelectorAll('button')) {
-    b.setAttribute('aria-selected', b.dataset.tab === tab);
+  $head.innerHTML = ui.renderHead(legIx);
+  $scroll.innerHTML = TABS.find(t => t.id === tab).render(legIx);
+  for (const b of $tabs.querySelectorAll('[data-tab]'))
+    b.setAttribute('aria-selected', String(b.dataset.tab === tab));
+
+  if (sheet) {
+    $sheet.innerHTML = sheet.kind === 'trip' ? ui.tripSheet() : ui.placeSheet(sheet.id);
+    $sheet.className = 'sheet up';
+  } else {
+    $sheet.className = 'sheet';
   }
-  $sheet.innerHTML = sheetId ? ui.stopSheet(sheetId) : '';
-  document.getElementById('sub').textContent = t.label === 'Road' ? 'Modesto → Carolina → Houston → home' : '';
+  if (tab === 'map') wireMap();
 }
 
-// ---------------------------------------------------------------- events
+// ------------------------------------------------------------------ map
+// Drag to pan, wheel or pinch to zoom. A pointer that barely moved counts as a
+// tap, so pins stay selectable.
+function wireMap() {
+  const svg = document.getElementById('msvg');
+  if (!svg) return;
+  const pts = new Map();
+  let start = null, moved = 0, pinch = null;
+
+  const at = e => {
+    const r = svg.getBoundingClientRect();
+    const v = ui.getView() || mapview.fitView(ui.legRoute(legIx));
+    return {
+      x: v.x + (e.clientX - r.left) / r.width * v.w,
+      y: v.y + (e.clientY - r.top) / r.height * v.h,
+    };
+  };
+  const zoom = (k, ax, ay) => {
+    const v = ui.getView() || mapview.fitView(ui.legRoute(legIx));
+    ui.setView(mapview.zoomView(v, k, ax, ay));
+    draw();
+  };
+
+  svg.addEventListener('pointerdown', e => {
+    pts.set(e.pointerId, e);
+    moved = 0;
+    if (pts.size === 1) {
+      start = { e, v: ui.getView() || mapview.fitView(ui.legRoute(legIx)), r: svg.getBoundingClientRect() };
+      svg.classList.add('drag');
+    }
+    svg.setPointerCapture(e.pointerId);
+  });
+
+  svg.addEventListener('pointermove', e => {
+    if (!pts.has(e.pointerId)) return;
+    const prev = pts.get(e.pointerId);
+    pts.set(e.pointerId, e);
+    if (pts.size === 2) {
+      const [a, b] = [...pts.values()];
+      const d = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+      if (pinch) { const g = d / pinch; if (Math.abs(g - 1) > 0.012) zoom(g); }
+      pinch = d; moved = 99;
+      return;
+    }
+    if (!start) return;
+    moved += Math.abs(e.clientX - prev.clientX) + Math.abs(e.clientY - prev.clientY);
+    const v = start.v, r = start.r;
+    const nv = {
+      x: v.x - (e.clientX - start.e.clientX) / r.width * v.w,
+      y: v.y - (e.clientY - start.e.clientY) / r.height * v.h,
+      w: v.w, h: v.h,
+    };
+    ui.setView(nv);
+    svg.setAttribute('viewBox', [nv.x, nv.y, nv.w, nv.h].map(n => n.toFixed(1)).join(' '));
+  });
+
+  const up = e => {
+    pts.delete(e.pointerId);
+    if (pts.size < 2) pinch = null;
+    if (pts.size === 0) { start = null; svg.classList.remove('drag'); if (moved > 6) draw(); }
+  };
+  svg.addEventListener('pointerup', up);
+  svg.addEventListener('pointercancel', up);
+  svg.addEventListener('wheel', e => {
+    e.preventDefault();
+    const q = at(e);
+    zoom(e.deltaY < 0 ? 1.22 : 1 / 1.22, q.x, q.y);
+  }, { passive: false });
+
+  svg.__zoom = zoom;
+}
+
+// ------------------------------------------------------------------ events
 document.addEventListener('click', e => {
+  if (e.target.closest('a')) return;              // let links be links
+
   const t = e.target.closest('[data-tab]');
-  if (t) { tab = t.dataset.tab; sheetId = null; draw(); return; }
+  if (t) { tab = t.dataset.tab; sheet = null; draw(); return; }
 
-  const pick = e.target.closest('[data-pick-route]');
-  if (pick) { store.setRoute(pick.dataset.leg, pick.dataset.pickRoute); return; }
-
-  const ml = e.target.closest('[data-map-leg]');
-  if (ml) { ui.setMapLeg(ml.dataset.mapLeg); draw(); return; }
-
-  const seen = e.target.closest('[data-seen]');
-  if (seen) { store.markSeen(seen.dataset.seen); return; }
-
-  const tog = e.target.closest('[data-toggle]');
-  if (tog) { store.toggle(tog.dataset.toggle); return; }
-
-  const stop = e.target.closest('[data-stop]');
-  if (stop) { sheetId = stop.dataset.stop; draw(); return; }
-
-  if (e.target.closest('[data-close]') || e.target.matches('[data-close-scrim]')) {
-    sheetId = null; draw(); return;
+  const z = e.target.closest('[data-zoom]');
+  if (z) {
+    const k = z.dataset.zoom;
+    if (k === 'fit') ui.resetView();
+    else {
+      const v = ui.getView() || mapview.fitView(ui.legRoute(legIx));
+      ui.setView(mapview.zoomView(v, k === 'in' ? 1.5 : 1 / 1.5));
+    }
+    draw();
+    return;
   }
 
+  const r = e.target.closest('[data-route]');
+  if (r) { store.setRoute(r.dataset.rleg, r.dataset.route); ui.resetView(); return; }
+
+  const g = e.target.closest('[data-leg]');
+  if (g) { legIx = Number(g.dataset.leg); sheet = null; ui.resetView(); draw(); return; }
+
+  if (e.target.closest('[data-trip]')) { sheet = { kind: 'trip' }; draw(); return; }
+
+  const tg = e.target.closest('[data-toggle]');
+  if (tg) { store.toggle(tg.dataset.toggle); return; }
+
+  const sn = e.target.closest('[data-seen]');
+  if (sn) { store.markSeen(sn.dataset.seen); return; }
+
+  const st = e.target.closest('[data-stop]');
+  if (st) { sheet = { kind: 'place', id: st.dataset.stop }; draw(); return; }
+
+  if (e.target.closest('[data-close]')) { sheet = null; draw(); return; }
+
+  const cp = e.target.closest('[data-copy-code]');
+  if (cp) { copyCode(cp.dataset.copyCode, cp); return; }
+
   if (e.target.closest('[data-sync-connect]')) {
-    const v = document.getElementById('tripcode')?.value || '';
-    syncmod.connect(v);
+    syncmod.connect(document.getElementById('tripcode')?.value || '');
     return;
   }
   if (e.target.closest('[data-sync-off]')) { syncmod.disconnect(); return; }
-
-  const copy = e.target.closest('[data-copy-code]');
-  if (copy) { copyCode(copy.dataset.copyCode, copy); return; }
-
-  const share = e.target.closest('[data-share-code]');
-  if (share) {
-    navigator.share({
-      title: 'Milepost',
-      text: `Trip code for Milepost: ${share.dataset.shareCode}`,
-    }).catch(() => {});
-    return;
-  }
+  if (e.target.closest('[data-cleardep]')) { store.setDeparture(null); return; }
 
   if (e.target.closest('[data-locate]')) {
     navigator.geolocation?.getCurrentPosition(
       p => { ui.setPosition([p.coords.latitude, p.coords.longitude]); draw(); },
-      () => alert('Location unavailable. Ahead needs it to know what is coming up.'),
+      () => alert('Location unavailable.'),
       { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
     );
   }
 });
 
-/// Clipboard API needs a secure context and can be refused; the textarea
+document.addEventListener('change', e => {
+  if (e.target.id === 'depart' && e.target.value) store.setDeparture(e.target.value);
+});
+
+// Android back closes a sheet instead of leaving the app.
+addEventListener('popstate', () => { if (sheet) { sheet = null; draw(); } });
+
+/// Clipboard needs a secure context and can still be refused; the textarea
 /// fallback is what actually works on older iOS Safari.
 async function copyCode(code, btn) {
   let ok = false;
-  try {
-    await navigator.clipboard.writeText(code);
-    ok = true;
-  } catch (_) {
+  try { await navigator.clipboard.writeText(code); ok = true; }
+  catch (_) {
     try {
       const ta = document.createElement('textarea');
       ta.value = code;
@@ -126,29 +214,19 @@ async function copyCode(code, btn) {
       ta.remove();
     } catch (_) {}
   }
-  const was = btn.textContent;
-  btn.textContent = ok ? 'Copied' : 'Select it by hand';
-  setTimeout(() => { btn.textContent = was; }, 1600);
+  const span = btn.querySelector('span');
+  if (span) {
+    const was = span.textContent;
+    span.textContent = ok ? 'Copied' : 'Select by hand';
+    setTimeout(() => { span.textContent = was; }, 1600);
+  }
 }
-
-document.addEventListener('change', e => {
-  if (e.target.id === 'depart') store.setDeparture(e.target.value);
-});
-
-document.addEventListener('input', e => {
-  const n = e.target.closest('[data-note]');
-  if (n) store.setNote(n.dataset.note, n.value);
-});
-
-// Android back closes the sheet instead of leaving the app.
-addEventListener('popstate', () => { if (sheetId) { sheetId = null; draw(); } });
 
 boot();
 
-// Cache-first means a deployed change would otherwise sit behind the old
-// cached copy until the next cold start. The new worker calls skipWaiting, so
-// when it takes control we reload once to pick up the new code. Without this,
-// pushing a fix mid-trip wouldn't reach either phone.
+// Cache-first for data means a deployed change would otherwise sit behind the
+// old copy until a cold start. The new worker skips waiting, so when it takes
+// control we reload once. Without this, a fix pushed mid-trip never arrives.
 if ('serviceWorker' in navigator) {
   let reloaded = false;
   navigator.serviceWorker.addEventListener('controllerchange', () => {
