@@ -110,6 +110,16 @@ addEventListener('popstate', () => { if (sheetId) { sheetId = null; draw(); } })
 
 boot();
 
+// Cache-first means a deployed change would otherwise sit behind the old
+// cached copy until the next cold start. The new worker calls skipWaiting, so
+// when it takes control we reload once to pick up the new code. Without this,
+// pushing a fix mid-trip wouldn't reach either phone.
 if ('serviceWorker' in navigator) {
+  let reloaded = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (reloaded) return;
+    reloaded = true;
+    location.reload();
+  });
   addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 }

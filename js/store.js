@@ -43,8 +43,14 @@ class Store extends EventTarget {
   get updatedAt() { return this.s.updatedAt || 0; }
 
   /// The whole trip as one plain object, safe to hand to Firestore.
+  ///
+  /// updatedAt is stamped here rather than only in save(), because the very
+  /// first push happens on connect — before anything has been edited — and a
+  /// document without it is ignored by sync's snapshot handler. That would
+  /// mean the two phones silently never see each other's changes.
   snapshot() {
     this.s.chosen = [...this.chosen];
+    if (typeof this.s.updatedAt !== 'number') this.s.updatedAt = Date.now();
     return JSON.parse(JSON.stringify(this.s));
   }
 

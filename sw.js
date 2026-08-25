@@ -1,7 +1,7 @@
 // Offline is the whole point. Between Needles and Flagstaff, and again
 // across West Texas, there is no signal — so everything the app needs is
 // cached on first run and served from cache first, always.
-const CACHE = 'milepost-v4';
+const CACHE = 'milepost-v5';
 const SHELL = [
   'index.html', 'manifest.webmanifest',
   'css/app.css',
