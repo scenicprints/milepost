@@ -11,6 +11,18 @@ something, it goes in here before you stop.
 
 **Live: https://scenicprints.github.io/milepost/**
 
+**Session 3** — Firebase done, entirely from the CLI (the Claude-in-Chrome
+bridge never connected; the extension turned out to be installed in Brave, not
+Chrome, and still wouldn't pair). Created project `milepost-trip`, Firestore in
+nam5, web app, and deployed rules. Auth design changed under a billing wall —
+see the Sync section. Leaked the trip code into the public repo and fixed it
+(see the incident note). Two real bugs caught by testing rather than assumed
+away: the trip document was written with no `updatedAt`, which `watch()`
+requires, so the phones would have silently never synced; and the cache-first
+service worker plus GitHub Pages' HTTP caching served stale code across repeated
+reloads, meaning a fix pushed mid-trip might never have arrived. Both fixed and
+re-verified.
+
 **Session 2** — Fixed the PWA: the shortcut was opening in a browser tab because
 the manifest had no icons (Chrome requires a 192 AND a 512 to treat a manifest
 as installable, otherwise "Add to Home screen" makes a plain bookmark). Added
@@ -135,8 +147,11 @@ ice. San Antonio River Walk lit through early January.
 - Multi-route model, swappable per leg, everything recomputes.
 - Poster map (`js/map.js`) — SVG from coordinates, no tiles.
 - Five screens: Road, Ahead, Map, Days, Book.
-- Offline service worker, PWA manifest.
+- Offline service worker (network-first for code, cache-first for data), PWA
+  manifest, icons, first-run install walkthrough.
 - 68 stops with detour cost, winter caveats and `first` flags.
+- **Firestore sync, verified working end to end.** Project `milepost-trip`,
+  created entirely from the CLI.
 
 ### Next, in order
 1. **UI redesign — Kevin's verdict on the current look was "terrible", and he
@@ -147,16 +162,7 @@ ice. San Antonio River Walk lit through early January.
    things that respond) and never extra chrome, and he likes an
    app-as-control-panel feel. Upkeep's instrument-cluster gauges landed well.
    Most of his apps have a mascot and he's fond of them.
-2. **Finish Firebase.** Sync layer is written and pushed but **UNVERIFIED** —
-   `js/firebase-config.js` is empty, so `sync.js` reports "unconfigured" and the
-   app runs on localStorage alone. Remaining: create the project, enable
-   Email/Password, create Firestore, register a web app, paste the config, get
-   the two uids into `firestore.rules`, deploy. Kevin chose to connect the
-   Claude-in-Chrome extension so Claude can do it in the console.
-   **Claude must not enter passwords or create accounts** — the shared trip
-   login gets created by Kevin through the app's own sign-in.
-   `firebase-tools` is installed in the session scratchpad if CLI deploys help.
-3. **Weather.** Open-Meteo, pre-fetched per overnight town, cached with a
+2. **Weather.** Open-Meteo, pre-fetched per overnight town, cached with a
    timestamp so a stale forecast still shows.
 4. **Trip planning proper** — Kevin wants to sit down and actually plan it once
    the base is up. Needs: her mom's city, departure date, hotel vs. camping.
@@ -186,6 +192,41 @@ ice. San Antonio River Walk lit through early January.
 
 ---
 
+## Sync — how it actually works
+
+Project **`milepost-trip`**. One document, `trips/{TRIP_CODE}`, holding the
+whole plan.
+
+**There is no login, and that was forced.** Enabling any sign-in provider on a
+fresh Firebase project routes through Identity Platform, which returns
+`BILLING_NOT_ENABLED` without a billing account. Rather than attach a card to a
+holiday itinerary, the **document path is the secret**: 80 bits, held in the
+deployed rules (server-side, not public) and in each phone's local storage.
+Rules deny every other path and deny collection listing, so it cannot be found
+by probing.
+
+Verified live against the real project:
+
+| Check | Result |
+|---|---|
+| Read/write with the correct code | 200 |
+| Write with a wrong code | 403 |
+| List the `trips` collection | 403 |
+| Full round trip from the deployed app | document lands with all fields |
+
+**The code lives in `trip-code.local`, which is gitignored.** `firestore.rules`
+is generated from `firestore.rules.template` by `tools/deploy-rules.js` and is
+also gitignored and untracked. Deploy rules with:
+
+    node tools/deploy-rules.js && firebase deploy --only firestore:rules --project milepost-trip
+
+**Incident, session 3:** the trip code was committed to this public repo once.
+`.gitignore` does not apply to already-tracked files, and `firestore.rules` had
+been committed earlier with placeholder contents, so `git add -A` picked up the
+real secret. Caught immediately; code rotated, new rules deployed, file
+untracked. The leaked value is dead. **Lesson: adding a path to .gitignore does
+nothing if it is already tracked — always `git rm --cached` too.**
+
 ## Decisions, and why
 
 - **Web app, not Flutter** — Ada's iPhone. Deliberate exception to the usual
@@ -213,6 +254,18 @@ Published to GitHub Pages and verified live: 5,890 mi / 21 days / 24 stops,
 6 route options, all five screens render, service worker controlling.
 
 **Live: https://scenicprints.github.io/milepost/**
+
+**Session 3** — Firebase done, entirely from the CLI (the Claude-in-Chrome
+bridge never connected; the extension turned out to be installed in Brave, not
+Chrome, and still wouldn't pair). Created project `milepost-trip`, Firestore in
+nam5, web app, and deployed rules. Auth design changed under a billing wall —
+see the Sync section. Leaked the trip code into the public repo and fixed it
+(see the incident note). Two real bugs caught by testing rather than assumed
+away: the trip document was written with no `updatedAt`, which `watch()`
+requires, so the phones would have silently never synced; and the cache-first
+service worker plus GitHub Pages' HTTP caching served stale code across repeated
+reloads, meaning a fix pushed mid-trip might never have arrived. Both fixed and
+re-verified.
 
 **Session 2** — Fixed the PWA: the shortcut was opening in a browser tab because
 the manifest had no icons (Chrome requires a 192 AND a 512 to treat a manifest
