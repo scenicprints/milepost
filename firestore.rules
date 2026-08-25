@@ -1,0 +1,21 @@
+rules_version = '2';
+
+// One trip document, readable and writable only by the two accounts on the
+// allowlist. Note that `request.auth != null` would NOT be safe here: the web
+// API key is public (it's in the repo), and Firebase Email/Password lets
+// anyone with the key create an account. So the uids are named explicitly.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /trips/{tripId} {
+      allow read, write: if request.auth != null
+                         && request.auth.uid in [
+                              // FILL IN once the shared login exists:
+                              // 'kevin-uid',
+                              // 'ada-uid',
+                            ];
+    }
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

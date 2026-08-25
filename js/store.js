@@ -34,6 +34,25 @@ class Store extends EventTarget {
 
   save() {
     this.s.chosen = [...this.chosen];
+    this.s.updatedAt = Date.now();
+    try { localStorage.setItem(KEY, JSON.stringify(this.s)); } catch (_) {}
+    this.dispatchEvent(new Event('change'));
+  }
+
+  // ---- the seam sync.js writes through ----
+  get updatedAt() { return this.s.updatedAt || 0; }
+
+  /// The whole trip as one plain object, safe to hand to Firestore.
+  snapshot() {
+    this.s.chosen = [...this.chosen];
+    return JSON.parse(JSON.stringify(this.s));
+  }
+
+  /// A newer copy from the other phone. Written straight to storage without
+  /// re-stamping updatedAt, or the two devices would ping-pong forever.
+  applyRemote(data) {
+    this.s = { ...this.s, ...data };
+    this.chosen = new Set(this.s.chosen || []);
     try { localStorage.setItem(KEY, JSON.stringify(this.s)); } catch (_) {}
     this.dispatchEvent(new Event('change'));
   }
