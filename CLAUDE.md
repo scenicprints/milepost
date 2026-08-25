@@ -6,6 +6,10 @@ the build state, every decision and why, and the open questions.
 **Update PLAN.md and push it every session.** That is the law here — it is how
 the next agent (or the next Claude account) continues without losing the thread.
 
+**The live app and `prototype/` are two different designs.** The prototype is
+the direction; the shipped UI is what it replaces. Read PLAN.md before assuming
+either is settled.
+
 ## Quick facts
 
 - Vanilla ES modules, **no build step**. GitHub Pages serves these files as-is.
@@ -32,3 +36,4 @@ the next agent (or the next Claude account) continues without losing the thread.
 | `js/store.js` | All user state. The seam where Firestore drops in. |
 | `js/ui.js` | The five screens. |
 | `js/app.js` | Boot, tabs, events. |
+| `prototype/` | The agreed new design, not yet ported onto the app. `node prototype/build.mjs` regenerates it. |

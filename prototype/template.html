@@ -1,0 +1,583 @@
+<title>Milepost</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:#EFEEEA; --ink:#191917; --ink2:#78766E; --ink3:#A3A199;
+  --rule:#D7D5CE; --rule2:#C4C2BA; --signal:#E0522A; --ground:#DEDCD6; --land:#E5E3DD;
+  --sans:"Archivo",Helvetica,Arial,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#1B1B19; --ink:#EDEBE5; --ink2:#8B887F; --ink3:#5E5C56;
+  --rule:#33322E; --rule2:#4A4942; --signal:#F26840; --ground:#111110; --land:#262622;
+}}
+:root[data-theme="dark"]{
+  --paper:#1B1B19; --ink:#EDEBE5; --ink2:#8B887F; --ink3:#5E5C56;
+  --rule:#33322E; --rule2:#4A4942; --signal:#F26840; --ground:#111110; --land:#262622;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);font-weight:400}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:left}
+button:focus-visible,a:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+a{color:inherit}
+.stage{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px;gap:30px;flex-wrap:wrap}
+.phone{width:390px;max-width:100%;height:812px;max-height:90vh;background:var(--paper);
+  display:flex;flex-direction:column;overflow:hidden;position:relative}
+.note{width:250px;font-size:13px;line-height:1.7;color:var(--ink2)}
+.note h1{font-size:14px;font-weight:500;color:var(--ink);margin:0 0 12px;
+  font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase}
+.note p{margin:0 0 13px}
+.note b{font-weight:500;color:var(--ink)}
+
+.head{padding:26px 24px 0;flex:none}
+.top{display:flex;justify-content:space-between;align-items:baseline}
+.wordmark{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--ink2);font-family:var(--mono)}
+.whole{font-size:10.5px;font-family:var(--mono);color:var(--ink3);font-variant-numeric:tabular-nums}
+.legname{font-size:13px;color:var(--ink2);margin-top:14px}
+.totals{display:flex;align-items:baseline;gap:20px;margin-top:8px}
+.tnum{font-size:33px;letter-spacing:-.035em;font-variant-numeric:tabular-nums;line-height:1}
+.tlab{font-size:11px;color:var(--ink2);font-family:var(--mono);margin-left:5px}
+.tnum.on{color:var(--signal)}
+
+.legs{display:flex;margin-top:20px;border-top:1px solid var(--rule)}
+.legs button{flex:1;padding:12px 0 11px;font-size:11px;font-family:var(--mono);letter-spacing:.06em;
+  color:var(--ink2);border-top:2px solid transparent;margin-top:-1px;text-align:center}
+.legs button[aria-selected="true"]{color:var(--ink);border-top-color:var(--signal)}
+
+.scroll{flex:1;overflow-y:auto;padding:0 24px 30px}
+
+.routes{padding:20px 0 2px}
+.rt{display:flex;align-items:center;gap:13px;padding:10px 0;width:100%;border-bottom:1px solid var(--rule)}
+.rt .dot{width:11px;height:11px;border-radius:50%;border:1.5px solid var(--rule2);flex:none;box-sizing:border-box}
+.rt[aria-pressed="true"] .dot{border-color:var(--signal);background:var(--signal)}
+.rt .rn{font-size:14px;flex:1}
+.rt .rm{font-size:11px;font-family:var(--mono);color:var(--ink2);font-variant-numeric:tabular-nums}
+.rt[aria-pressed="true"] .rn{font-weight:500}
+
+.line{position:relative;padding:24px 0 8px}
+.line::before{content:"";position:absolute;left:5px;top:32px;bottom:16px;width:1px;background:var(--rule2)}
+.st{display:flex;gap:16px;align-items:flex-start;padding:9px 0;width:100%;position:relative}
+.st .mark{width:11px;height:11px;border-radius:50%;border:1.5px solid var(--rule2);background:var(--paper);
+  flex:none;margin-top:4px;z-index:1;box-sizing:border-box}
+.st.on .mark{border-color:var(--signal);background:var(--signal)}
+.st.big .mark{width:15px;height:15px;margin-top:2px;margin-left:-2px}
+.st .body{flex:1;min-width:0}
+.st .nm{font-size:14.5px;line-height:1.35}
+.st.on .nm{font-weight:500}
+.st:not(.on) .nm{color:var(--ink2)}
+.st .sub{font-size:11px;color:var(--ink2);font-family:var(--mono);margin-top:3px;font-variant-numeric:tabular-nums}
+.st .cost{font-size:11px;font-family:var(--mono);color:var(--ink2);font-variant-numeric:tabular-nums;
+  padding-top:4px;flex:none}
+.st.on .cost{color:var(--signal)}
+
+.night{display:flex;align-items:center;gap:16px;padding:15px 0 14px}
+.night .bar{width:11px;height:1px;background:var(--rule2);flex:none}
+.night .txt{font-size:10.5px;font-family:var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink2)}
+.night .rule{flex:1;height:1px;background:var(--rule)}
+
+.days{padding:24px 0 0}
+.day{padding-bottom:20px;border-bottom:1px solid var(--rule);margin-bottom:20px}
+.day:last-child{border-bottom:0}
+.dnum{font-size:10.5px;font-family:var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--ink2)}
+.dto{font-size:17px;margin-top:7px;letter-spacing:-.015em}
+.dmeta{font-size:11.5px;font-family:var(--mono);color:var(--ink2);margin-top:8px;font-variant-numeric:tabular-nums}
+.dstops{margin-top:13px;display:flex;flex-direction:column;gap:8px}
+.dstop{display:flex;gap:11px;font-size:13px;align-items:baseline;width:100%}
+.dstop i{width:5px;height:5px;border-radius:50%;background:var(--signal);flex:none;transform:translateY(-2px)}
+.warn{font-size:11.5px;font-family:var(--mono);color:var(--signal);margin-top:9px}
+
+.mapwrap{padding:22px 0 6px}
+.mapsvg{width:100%;display:block}
+.mland{fill:var(--land);stroke:var(--rule2);stroke-width:1}
+.mstate{fill:var(--ink3);letter-spacing:.1em;font-family:var(--mono)}
+.mlabel{fill:var(--ink2);font-family:var(--sans)}
+.mhalo{fill:none;stroke:var(--paper);stroke-linejoin:round;font-family:var(--sans)}
+.mroute{fill:none;stroke:var(--rule2);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.mroute.act{stroke:var(--ink);stroke-width:2.6}
+.mpin{fill:var(--paper);stroke:var(--rule2);stroke-width:1.5;cursor:pointer}
+.mpin.on{fill:var(--signal);stroke:var(--signal)}
+.mhome{fill:var(--ink)}
+.mkey{display:flex;gap:18px;padding:10px 0 0;font-size:10.5px;font-family:var(--mono);color:var(--ink2)}
+.mkey span{display:flex;align-items:center;gap:7px}
+.mkey i{width:9px;height:9px;border-radius:50%;display:block;box-sizing:border-box}
+.mapbox{position:relative;touch-action:none}
+.mapsvg{cursor:grab}
+.mapsvg.drag{cursor:grabbing}
+.zoom{position:absolute;right:0;top:0;display:flex;flex-direction:column;gap:1px}
+.zoom button{width:30px;height:30px;background:var(--paper);border:1px solid var(--rule2);
+  display:grid;place-items:center;font-size:15px;line-height:1;font-family:var(--mono);color:var(--ink2)}
+.zoom button+button{margin-top:-1px}
+.zoom .fit{font-size:9px;letter-spacing:.06em}
+
+.car{width:820px;max-width:100%;background:#202124;color:#E8EAED;display:flex;
+  font-family:"Archivo",Roboto,Arial,sans-serif;height:472px;overflow:hidden}
+.car .cmap{width:44%;background:#303134;position:relative;flex:none}
+.car .cmap svg{width:100%;height:100%;display:block}
+.car .clist{flex:1;display:flex;flex-direction:column;min-width:0}
+.car .chead{padding:16px 22px 12px;font-size:13px;color:#9AA0A6;letter-spacing:.04em;
+  border-bottom:1px solid #3C4043;flex:none}
+.car .crow{display:flex;gap:16px;align-items:center;padding:14px 22px;border-bottom:1px solid #3C4043}
+.car .cpin{width:30px;height:30px;border-radius:50%;background:#8AB4F8;color:#202124;
+  display:grid;place-items:center;font-size:14px;font-weight:500;flex:none}
+.car .cnm{font-size:19px;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.car .csub{font-size:14px;color:#9AA0A6;margin-top:3px}
+.car .cfoot{margin-top:auto;padding:14px 22px;border-top:1px solid #3C4043;display:flex;gap:10px;flex:none}
+.car .cbtn{padding:10px 20px;border-radius:20px;background:#3C4043;font-size:14px}
+.car .cbtn.p{background:#8AB4F8;color:#202124}
+.carwrap{display:flex;flex-direction:column;gap:12px;align-items:center;width:100%;margin-top:8px}
+.carcap{font-size:12px;color:var(--ink2);font-family:var(--mono);letter-spacing:.06em;
+  text-align:center;max-width:760px;line-height:1.7}
+
+.tabs{flex:none;display:flex;border-top:1px solid var(--rule)}
+.tabs button{flex:1;padding:16px 0 18px;text-align:center;font-size:11px;font-family:var(--mono);
+  letter-spacing:.18em;text-transform:uppercase;color:var(--ink2);position:relative}
+.tabs button[aria-selected="true"]{color:var(--ink)}
+.tabs button[aria-selected="true"]::after{content:"";position:absolute;top:0;left:50%;
+  transform:translateX(-50%);width:26px;height:2px;background:var(--signal)}
+
+.sheet{position:absolute;inset:0;background:var(--paper);
+  transform:translateY(100%);transition:transform .34s cubic-bezier(.22,1,.36,1);
+  display:flex;flex-direction:column}
+.sheet.up{transform:translateY(0)}
+@media (prefers-reduced-motion:reduce){.sheet{transition:none}}
+.sh{padding:28px 24px 0;flex:none;display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+.sb{padding:0 24px 28px;overflow-y:auto;flex:1}
+.sloc{font-size:11px;font-family:var(--mono);color:var(--ink2);letter-spacing:.06em}
+.snm{font-size:23px;letter-spacing:-.025em;line-height:1.2;margin-top:7px}
+.sclose{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink2);flex:none;padding-top:4px}
+.scost{display:flex;align-items:baseline;gap:6px;margin-top:28px}
+.scost .n{font-size:46px;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums;color:var(--signal)}
+.scost .u{font-size:15px;color:var(--signal)}
+.scost .l{font-size:11px;font-family:var(--mono);color:var(--ink2);margin-left:9px}
+.srow{font-size:11px;font-family:var(--mono);color:var(--ink2);margin-top:9px;
+  font-variant-numeric:tabular-nums;line-height:1.75}
+.sdiv{height:1px;background:var(--rule);margin:22px 0}
+.slab{font-size:10.5px;font-family:var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--ink2)}
+.sbody{font-size:14.5px;line-height:1.62;margin-top:10px}
+.temps{display:flex;align-items:baseline;gap:10px;margin-top:11px}
+.temps b{font-size:26px;font-weight:400;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.temps s{text-decoration:none;font-size:18px;color:var(--ink2);font-variant-numeric:tabular-nums}
+.temps em{font-style:normal;font-size:11px;font-family:var(--mono);color:var(--ink2)}
+.links{display:flex;flex-direction:column;gap:1px;margin-top:12px}
+.links a{display:flex;justify-content:space-between;align-items:center;padding:11px 0;
+  border-bottom:1px solid var(--rule);font-size:13.5px;text-decoration:none}
+.links a span{font-family:var(--mono);font-size:10.5px;color:var(--ink2);letter-spacing:.08em}
+.sact{display:flex;gap:10px;padding:20px 24px 26px;flex:none;border-top:1px solid var(--rule)}
+.sact button{flex:1;padding:13px 0;text-align:center;font-size:12.5px;border:1px solid var(--rule2)}
+.sact .prim{background:var(--signal);border-color:var(--signal);color:#FFF6F3;font-weight:500}
+</style>
+
+<div class="stage">
+  <div class="phone">
+    <div class="head">
+      <div class="top">
+        <div class="wordmark">Milepost</div>
+        <div class="whole" id="whole"></div>
+      </div>
+      <div class="legname" id="legName"></div>
+      <div class="totals">
+        <div><span class="tnum" id="tMiles">0</span><span class="tlab">mi</span></div>
+        <div><span class="tnum" id="tDays">0</span><span class="tlab">days</span></div>
+        <div><span class="tnum on" id="tStops">0</span><span class="tlab">stops</span></div>
+      </div>
+      <div class="legs" id="legs"></div>
+    </div>
+    <div class="scroll" id="scroll"></div>
+    <div class="tabs" id="tabs">
+      <button data-tab="route" aria-selected="true">Route</button>
+      <button data-tab="map" aria-selected="false">Map</button>
+      <button data-tab="days" aria-selected="false">Days</button>
+    </div>
+    <div class="sheet" id="sheet"></div>
+  </div>
+
+  <div class="note">
+    <h1>Try it</h1>
+    <p><b>Three trips.</b> The tabs are the three legs. Everything below them — route, map, days — is only that leg.</p>
+    <p><b>Tap a circle</b> to add or drop a stop. Miles, days and the itinerary recompute.</p>
+    <p><b>Tap a name</b> for detail: what it costs, what it's like in late December, typical temperatures, and links out.</p>
+    <p><b>Map</b> opens fitted to the leg. Drag to pan, pinch or scroll to zoom, tap a pin to open it. Names appear as you get closer.</p>
+    <p>Below: what the head unit actually gets.</p>
+  </div>
+
+  <div class="carwrap">
+    <div class="car" id="car"></div>
+    <div class="carcap">Android Auto, approximated. Google's PlaceListMapTemplate — their layout, their type,
+      the car maker's theme. Six rows maximum. None of the design above reaches the head unit.</div>
+  </div>
+</div>
+
+<script>
+const DATA = __DATA__;
+const chosen = new Set(DATA.suggested);
+const picked = { leg1: "leg1-i40", leg2: "leg2-gulf", leg3: "leg3-i10" };
+const SHORT = ["Carolina", "Houston", "Home"];
+let legIx = 0, tab = "route", sheetId = null;
+
+const R = id => { for (const l of DATA.legs) for (const r of l.routes) if (r.id === id) return r; };
+const cur = () => R(picked[DATA.legs[legIx].id]);
+const sel = () => DATA.legs.map(l => R(picked[l.id]));
+const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const cost = s => s.d * 2 + s.w;
+const hrs = m => { const h = Math.floor(m / 60), n = Math.round(m % 60);
+  return h === 0 ? n + " min" : (n === 0 ? h + "h" : h + "h " + n + "m"); };
+
+function days(rt) {
+  const B = 480, MPH = 62, out = [], pend = rt.stops.filter(s => chosen.has(s.id));
+  let c = 0, d = { stops: [], drive: 0, stop: 0, from: 0 };
+  const townAt = m => rt.towns.reduce((a, t) => Math.abs(t.m - m) < Math.abs(a.m - m) ? t : a, rt.towns[0]);
+  const sleep = (m, st) => { let b = null, g = 1e9;
+    for (const t of rt.towns) { if (t.m <= st + 20) continue;
+      const x = Math.abs(t.m - m); if (x < g) { g = x; b = t; } }
+    return g <= 75 ? b : null; };
+  const close = (m, last) => {
+    const st = d.from, t = last ? null : sleep(m, st);
+    const stay = !t && !last && d.stops.length > 0;
+    const end = last ? rt.miles : (t ? t.m : (stay ? Math.max(m, st) : Math.max(m, st + 20)));
+    d.drive = Math.max(0, (end - st) / MPH * 60);
+    d.miles = end - st;
+    d.fromT = townAt(st);
+    d.to = last ? rt.towns[rt.towns.length - 1] : (t || d.fromT);
+    d.stay = stay;
+    d.risks = rt.towns.filter(x => x.risk && x.m >= st - 5 && x.m <= end + 5);
+    out.push(d);
+    d = { stops: [], drive: 0, stop: 0, from: end };
+    return end; };
+  let g = 0;
+  while (g++ < 300 && out.length < 40) {
+    const left = B - (d.drive + d.stop), nx = pend[0], tgt = nx ? nx.m : rt.miles;
+    const dr = Math.max(0, (tgt - c) / MPH * 60), k = nx ? cost(nx) : 0, reach = dr <= left;
+    if (!nx) {
+      if (dr <= left) { close(rt.miles, true); break; }
+      c = close(Math.min(c + left / 60 * MPH, rt.miles));
+      if (c >= rt.miles - 1) break;
+      continue; }
+    const empty = d.stops.length === 0 && d.drive < 1;
+    if (reach && (dr + k <= left || (empty && dr + k > B))) {
+      d.drive += dr; c = tgt; d.stops.push(nx); d.stop += k; pend.shift(); }
+    else if (reach) { c = close(tgt); }
+    else { c = close(Math.min(c + left / 60 * MPH, rt.miles)); }
+    if (d.drive + d.stop >= B * 0.98) c = close(c);
+  }
+  while (out.length > 1 && out[out.length - 1].miles < 1 && !out[out.length - 1].stops.length) out.pop();
+  return out;
+}
+
+function drawHead() {
+  const rt = cur(), D = days(rt);
+  let wm = 0, wd = 0;
+  for (const r of sel()) { const X = days(r); wm += X.reduce((a, x) => a + x.miles, 0); wd += X.length; }
+  document.getElementById("whole").textContent =
+    Math.round(wm).toLocaleString() + " mi · " + wd + " days total";
+  document.getElementById("legName").textContent = DATA.legs[legIx].name;
+  document.getElementById("tMiles").textContent = Math.round(D.reduce((a, x) => a + x.miles, 0)).toLocaleString();
+  document.getElementById("tDays").textContent = D.length;
+  document.getElementById("tStops").textContent = D.reduce((a, x) => a + x.stops.length, 0);
+  document.getElementById("legs").innerHTML = DATA.legs.map((l, i) =>
+    '<button data-leg="' + i + '" aria-selected="' + (i === legIx) + '">' + SHORT[i] + "</button>").join("");
+}
+
+function drawRoute() {
+  const leg = DATA.legs[legIx], rt = cur();
+  let h = '<div class="routes">';
+  for (const r of leg.routes)
+    h += '<button class="rt" aria-pressed="' + (r.id === rt.id) + '" data-route="' + r.id + '" data-leg="' + leg.id + '">'
+      + '<span class="dot"></span><span class="rn">' + esc(r.name) + "</span>"
+      + '<span class="rm">' + r.miles.toLocaleString() + " mi</span></button>";
+  h += '</div><div class="line">';
+  const nights = days(rt).slice(0, -1).map(d => ({ m: d.to.m, n: d.to.n }));
+  let ni = 0;
+  const night = () => '<div class="night"><span class="bar"></span><span class="txt">Night — '
+    + esc(nights[ni].n) + '</span><span class="rule"></span></div>';
+  for (const s of rt.stops) {
+    while (ni < nights.length && nights[ni].m < s.m) { h += night(); ni++; }
+    const on = chosen.has(s.id);
+    h += '<div class="st ' + (on ? "on " : "") + (s.big ? "big" : "") + '">'
+      + '<button class="mark" data-toggle="' + s.id + '" aria-label="Toggle ' + esc(s.n) + '"></button>'
+      + '<button class="body" data-open="' + s.id + '"><div class="nm">' + esc(s.n) + "</div>"
+      + '<div class="sub">' + esc(s.t) + ", " + esc(s.s) + " · " + s.d + " min off</div></button>"
+      + '<div class="cost">' + hrs(cost(s)) + "</div></div>";
+  }
+  while (ni < nights.length) { h += night(); ni++; }
+  return h + "</div>";
+}
+
+const LON0 = -125.5, LON1 = -66.5, LAT0 = 24, LAT1 = 49.6;
+const KX = Math.cos((LAT0 + LAT1) / 2 * Math.PI / 180);
+const MW = 1000, MH = Math.round(MW * (LAT1 - LAT0) / ((LON1 - LON0) * KX));
+const px = ll => [((ll[1] - LON0) / (LON1 - LON0)) * MW, ((LAT1 - ll[0]) / (LAT1 - LAT0)) * MH];
+const poly = pts => pts.map((p, i) => (i ? "L" : "M") + px(p).map(n => n.toFixed(1)).join(" ")).join(" ");
+
+// The map opens fitted to the leg you are looking at, not the whole country.
+// At national scale the four Memphis stops land on top of one another.
+let view = null;
+const ASPECT = 1.28;
+
+function fitView(rt) {
+  const xs = [], ys = [];
+  for (const q of rt.path.map(px).concat(rt.stops.map(s => px(s.ll)))) { xs.push(q[0]); ys.push(q[1]); }
+  const pad = 34;
+  let x0 = Math.min.apply(null, xs) - pad, x1 = Math.max.apply(null, xs) + pad;
+  let y0 = Math.min.apply(null, ys) - pad, y1 = Math.max.apply(null, ys) + pad;
+  let w = x1 - x0, h = y1 - y0;
+  if (w / h < ASPECT) { const nw = h * ASPECT; x0 -= (nw - w) / 2; w = nw; }
+  else { const nh = w / ASPECT; y0 -= (nh - h) / 2; h = nh; }
+  return { x: x0, y: y0, w: w, h: h };
+}
+
+function vb() { return view || fitView(cur()); }
+
+function zoomBy(k, ax, ay) {
+  const v = vb();
+  const cx = ax == null ? v.x + v.w / 2 : ax, cy = ay == null ? v.y + v.h / 2 : ay;
+  let w = v.w / k, h = v.h / k;
+  const minW = 24, maxW = MW * 1.6;
+  if (w < minW) { w = minW; h = w / ASPECT; }
+  if (w > maxW) { w = maxW; h = w / ASPECT; }
+  view = { x: cx - (cx - v.x) * (w / v.w), y: cy - (cy - v.y) * (h / v.h), w: w, h: h };
+  draw();
+}
+
+// Everything on the map is sized in SCREEN pixels, converted to user units by
+// u = viewBoxWidth / renderedWidth. Anything proportional to 1/sqrt(zoom) —
+// which is what this used to do — grows without limit as you zoom in, which is
+// how a label ended up wider than the whole viewport.
+const PXW = 342;
+
+function drawMap() {
+  const rt = cur(), v = vb();
+  const u = v.w / PXW;
+  const px2 = n => (n * u).toFixed(2);
+  const inView = q => q[0] > v.x - v.w * 0.1 && q[0] < v.x + v.w * 1.1
+                   && q[1] > v.y - v.h * 0.1 && q[1] < v.y + v.h * 1.1;
+  const zoom = MW / v.w;
+
+  let h = '<div class="mapwrap"><div class="mapbox"><svg class="mapsvg" id="msvg" viewBox="'
+    + [v.x, v.y, v.w, v.h].map(n => n.toFixed(1)).join(" ") + '" role="img" '
+    + 'aria-label="Map of the trip with the current leg emphasised">'
+    + '<path class="mland" d="' + poly(DATA.usa) + ' Z" stroke-width="' + px2(1) + '"/>';
+
+  if (zoom < 2.6) for (const l of DATA.labels) {
+    const q = px(l.ll);
+    if (!inView(q)) continue;
+    h += '<text class="mstate" text-anchor="middle" x="' + q[0].toFixed(0) + '" y="' + q[1].toFixed(0)
+      + '" font-size="' + px2(9) + '">' + esc(l.t) + "</text>";
+  }
+
+  for (const r of sel()) h += '<path class="mroute" d="' + poly(r.path) + '" stroke-width="' + px2(2) + '"/>';
+  h += '<path class="mroute act" d="' + poly(rt.path) + '" stroke-width="' + px2(2.6) + '"/>';
+
+  for (const s of rt.stops) {
+    const q = px(s.ll);
+    if (!inView(q)) continue;
+    const on = chosen.has(s.id);
+    h += '<circle class="mpin' + (on ? " on" : "") + '" data-open="' + s.id + '" cx="' + q[0].toFixed(1)
+      + '" cy="' + q[1].toFixed(1) + '" r="' + px2(on ? 6 : 4)
+      + '" stroke-width="' + px2(1.5) + '"><title>' + esc(s.n) + "</title></circle>";
+  }
+
+  // Names once there is room for them, biggest stops first, never overlapping.
+  if (zoom > 3.2) {
+    const fs = 11 * u, placed = [];
+    const order = rt.stops.slice().sort((a, b) =>
+      (b.big ? 1 : 0) - (a.big ? 1 : 0) || (chosen.has(b.id) ? 1 : 0) - (chosen.has(a.id) ? 1 : 0));
+    for (const s of order) {
+      const q = px(s.ll);
+      if (!inView(q)) continue;
+      const bx = q[0] + 9 * u, by = q[1] + 3.5 * u;
+      const bw = s.n.length * fs * 0.5, bh = fs * 1.3;
+      if (bw > v.w * 0.62) continue;
+      let clash = false;
+      for (const b of placed)
+        if (bx < b.x + b.w && bx + bw > b.x && by - bh < b.y && by > b.y - b.h) { clash = true; break; }
+      if (clash) continue;
+      placed.push({ x: bx, y: by, w: bw, h: bh });
+      const t = ' text-anchor="start" x="' + bx.toFixed(1) + '" y="' + by.toFixed(1)
+        + '" font-size="' + fs.toFixed(2) + '">' + esc(s.n) + "</text>";
+      h += '<text class="mhalo" stroke-width="' + px2(3) + '"' + t + '<text class="mlabel"' + t;
+    }
+  }
+
+  const hp = px(DATA.legs[0].routes[0].path[0]), hs = 10 * u;
+  h += '<rect class="mhome" x="' + (hp[0] - hs / 2).toFixed(1) + '" y="' + (hp[1] - hs / 2).toFixed(1)
+    + '" width="' + hs.toFixed(1) + '" height="' + hs.toFixed(1) + '"/>';
+  h += "</svg>"
+    + '<div class="zoom"><button data-zoom="in" aria-label="Zoom in">+</button>'
+    + '<button data-zoom="out" aria-label="Zoom out">−</button>'
+    + '<button class="fit" data-zoom="fit" aria-label="Fit to leg">FIT</button></div></div>'
+    + '<div class="mkey">'
+    + '<span><i style="background:var(--signal)"></i>In the plan</span>'
+    + '<span><i style="border:1.5px solid var(--rule2)"></i>Not yet</span>'
+    + '<span><i style="background:var(--ink);border-radius:0"></i>Home</span></div></div>';
+  return h;
+}
+
+// Drag to pan, wheel or pinch to zoom. A pointer that barely moved counts as a
+// tap, so pins stay selectable.
+function wireMap() {
+  const svg = document.getElementById("msvg");
+  if (!svg) return;
+  const pts = new Map();
+  let start = null, moved = 0, pinch = null;
+  const at = e => {
+    const r = svg.getBoundingClientRect(), v = vb();
+    return { x: v.x + (e.clientX - r.left) / r.width * v.w, y: v.y + (e.clientY - r.top) / r.height * v.h };
+  };
+  svg.addEventListener("pointerdown", e => {
+    pts.set(e.pointerId, e); moved = 0;
+    if (pts.size === 1) { start = { e: e, v: vb(), r: svg.getBoundingClientRect() }; svg.classList.add("drag"); }
+    svg.setPointerCapture(e.pointerId);
+  });
+  svg.addEventListener("pointermove", e => {
+    if (!pts.has(e.pointerId)) return;
+    const prev = pts.get(e.pointerId);
+    pts.set(e.pointerId, e);
+    if (pts.size === 2) {
+      const a = [...pts.values()][0], b = [...pts.values()][1];
+      const d = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+      if (pinch) { const g = d / pinch; if (Math.abs(g - 1) > 0.012) zoomBy(g); }
+      pinch = d; moved = 99; return;
+    }
+    if (!start) return;
+    moved += Math.abs(e.clientX - prev.clientX) + Math.abs(e.clientY - prev.clientY);
+    const v = start.v, r = start.r;
+    view = {
+      x: v.x - (e.clientX - start.e.clientX) / r.width * v.w,
+      y: v.y - (e.clientY - start.e.clientY) / r.height * v.h,
+      w: v.w, h: v.h
+    };
+    svg.setAttribute("viewBox", [view.x, view.y, view.w, view.h].map(n => n.toFixed(1)).join(" "));
+  });
+  const up = e => {
+    pts.delete(e.pointerId);
+    if (pts.size < 2) pinch = null;
+    if (pts.size === 0) { start = null; svg.classList.remove("drag"); if (moved > 6) draw(); }
+  };
+  svg.addEventListener("pointerup", up);
+  svg.addEventListener("pointercancel", up);
+  svg.addEventListener("wheel", e => {
+    e.preventDefault();
+    const q = at(e);
+    zoomBy(e.deltaY < 0 ? 1.22 : 1 / 1.22, q.x, q.y);
+  }, { passive: false });
+}
+
+// Approximation of Android Auto's PlaceListMapTemplate: Google's layout and
+// type, the car maker's theme, and a hard cap of six rows.
+function drawCar() {
+  const rt = cur(), list = rt.stops.filter(s => chosen.has(s.id)).slice(0, 6);
+  const xs = [], ys = [];
+  for (const q of rt.path.map(px)) { xs.push(q[0]); ys.push(q[1]); }
+  const pad = 30;
+  let x0 = Math.min.apply(null, xs) - pad, x1 = Math.max.apply(null, xs) + pad;
+  let y0 = Math.min.apply(null, ys) - pad, y1 = Math.max.apply(null, ys) + pad;
+  let w = x1 - x0, h = y1 - y0;
+  if (w / h < 0.76) { const nw = h * 0.76; x0 -= (nw - w) / 2; w = nw; }
+  else { const nh = w / 0.76; y0 -= (nh - h) / 2; h = nh; }
+  const AB = "ABCDEF";
+  let m = '<svg viewBox="' + [x0, y0, w, h].map(n => n.toFixed(1)).join(" ") + '" aria-hidden="true">'
+    + '<path d="' + poly(DATA.usa) + ' Z" fill="#3C4043" stroke="#5F6368" stroke-width="1.5"/>'
+    + '<path d="' + poly(rt.path) + '" fill="none" stroke="#8AB4F8" stroke-width="4" stroke-linecap="round"/>';
+  list.forEach(function (s, i) {
+    const q = px(s.ll);
+    m += '<circle cx="' + q[0].toFixed(1) + '" cy="' + q[1].toFixed(1) + '" r="9" fill="#8AB4F8"/>'
+      + '<text x="' + q[0].toFixed(1) + '" y="' + (q[1] + 3.4).toFixed(1) + '" text-anchor="middle" '
+      + 'font-size="10" font-weight="500" fill="#202124">' + AB[i] + "</text>";
+  });
+  m += "</svg>";
+  return '<div class="cmap">' + m + "</div>"
+    + '<div class="clist"><div class="chead">Milepost &nbsp;·&nbsp; ' + esc(DATA.legs[legIx].name) + "</div>"
+    + list.map(function (s, i) {
+        return '<div class="crow"><div class="cpin">' + AB[i] + "</div><div>"
+          + '<div class="cnm">' + esc(s.n) + "</div>"
+          + '<div class="csub">' + Math.round(s.m).toLocaleString() + " mi in · " + s.d + " min off</div></div></div>";
+      }).join("")
+    + '<div class="cfoot"><div class="cbtn p">Navigate</div><div class="cbtn">Skip</div></div></div>';
+}
+
+function drawDays() {
+  const rt = cur();
+  let h = '<div class="days">', n = 0;
+  for (const d of days(rt)) { n++;
+    h += '<div class="day"><div class="dnum">Day ' + n + "</div>"
+      + '<div class="dto">' + esc(d.fromT.n) + " → " + esc(d.to.n) + (d.stay ? " (2nd night)" : "") + "</div>"
+      + '<div class="dmeta">' + Math.round(d.miles).toLocaleString() + " mi · " + hrs(d.drive) + " driving"
+      + (d.stop ? " · " + hrs(d.stop) + " stopped" : "") + "</div>"
+      + (d.risks.length ? '<div class="warn">Winter watch — ' + d.risks.map(x => esc(x.n)).join(", ") + "</div>" : "")
+      + (d.stops.length ? '<div class="dstops">' + d.stops.map(s =>
+          '<button class="dstop" data-open="' + s.id + '"><i></i><span>' + esc(s.n) + "</span></button>").join("") + "</div>" : "")
+      + "</div>";
+  }
+  return h + "</div>";
+}
+
+function drawSheet() {
+  const el = document.getElementById("sheet");
+  if (!sheetId) { el.className = "sheet"; return; }
+  let s = null;
+  for (const l of DATA.legs) for (const r of l.routes) { const f = r.stops.find(x => x.id === sheetId); if (f) s = f; }
+  if (!s) { el.className = "sheet"; return; }
+  const on = chosen.has(s.id), c = cost(s), h = Math.floor(c / 60), m = c % 60;
+  const q = encodeURIComponent(s.n + " " + s.t + " " + s.s);
+  el.innerHTML = '<div class="sh"><div>'
+    + '<div class="sloc">' + esc(s.t) + ", " + esc(s.s) + "</div>"
+    + '<div class="snm">' + esc(s.n) + "</div></div>"
+    + '<button class="sclose" data-close>Close</button></div>'
+    + '<div class="sb">'
+    + '<div class="scost"><span class="n">' + (h || m) + '</span><span class="u">' + (h ? "h" : "min")
+    + '</span><span class="l">off your day</span></div>'
+    + '<div class="srow">' + s.d + " min off the interstate, each way<br>" + hrs(s.w) + " on the ground"
+    + (s.cost ? "<br>" + esc(s.cost) : "") + "</div>"
+    + '<div class="sdiv"></div><div class="sbody">' + esc(s.why) + "</div>"
+    + '<div class="sdiv"></div><div class="slab">Late December</div>'
+    + (s.wx ? '<div class="temps"><b>' + s.wx[0] + "°</b><s>" + s.wx[1] + "°</s><em>typical high / low</em></div>" : "")
+    + (s.winter ? '<div class="sbody">' + esc(s.winter) + "</div>" : "")
+    + (s.first ? '<div class="sdiv"></div><div class="slab">A first</div>'
+        + '<div class="sbody">There is nothing in California like this.</div>' : "")
+    + '<div class="sdiv"></div><div class="slab">Look it up</div><div class="links">'
+    + (s.site ? '<a href="' + s.site + '">Official site<span>' + esc(s.site.replace(/^https?:\/\/(www\.)?/, "").split("/")[0]) + "</span></a>" : "")
+    + '<a href="https://www.google.com/search?q=' + q + '">Search<span>Google</span></a>'
+    + '<a href="https://en.wikipedia.org/w/index.php?search=' + q + '">Background<span>Wikipedia</span></a>'
+    + '<a href="https://www.google.com/maps/dir/?api=1&destination=' + s.ll[0] + "," + s.ll[1] + '">Directions<span>Maps</span></a>'
+    + "</div></div>"
+    + '<div class="sact"><button class="' + (on ? "prim" : "") + '" data-toggle="' + s.id + '">'
+    + (on ? "In the plan" : "Add to plan") + "</button><button>Navigate</button></div>";
+  el.className = "sheet up";
+}
+
+function draw() {
+  drawHead();
+  document.getElementById("scroll").innerHTML =
+    tab === "route" ? drawRoute() : tab === "map" ? drawMap() : drawDays();
+  for (const b of document.querySelectorAll("#tabs [data-tab]"))
+    b.setAttribute("aria-selected", String(b.dataset.tab === tab));
+  drawSheet();
+  document.getElementById("car").innerHTML = drawCar();
+  if (tab === "map") wireMap();
+}
+
+document.addEventListener("click", e => {
+  if (e.target.closest(".links a")) return;
+  const t = e.target.closest("[data-tab]");
+  if (t) { tab = t.dataset.tab; sheetId = null; draw(); return; }
+  const r = e.target.closest("[data-route]");
+  if (r) { picked[r.dataset.leg] = r.dataset.route; view = null; draw(); return; }
+  const z = e.target.closest("[data-zoom]");
+  if (z) {
+    const k = z.dataset.zoom;
+    if (k === "fit") { view = null; draw(); } else zoomBy(k === "in" ? 1.5 : 1 / 1.5);
+    return;
+  }
+  const g = e.target.closest("#legs [data-leg]");
+  if (g) { legIx = Number(g.dataset.leg); sheetId = null; view = null; draw(); return; }
+  const tg = e.target.closest("[data-toggle]");
+  if (tg) { const id = tg.dataset.toggle;
+    if (chosen.has(id)) chosen.delete(id); else chosen.add(id);
+    draw(); return; }
+  const o = e.target.closest("[data-open]");
+  if (o) { sheetId = o.dataset.open; draw(); return; }
+  if (e.target.closest("[data-close]")) { sheetId = null; draw(); }
+});
+
+draw();
+</script>

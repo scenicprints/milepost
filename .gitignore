@@ -3,3 +3,4 @@ node_modules/
 trip-code.local
 firestore.rules
 .firebaserc
+prototype/index.html
