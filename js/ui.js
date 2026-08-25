@@ -334,9 +334,17 @@ function syncCard() {
     ${on
       ? `<div class="field" style="margin-top:10px">
            <div class="k">TRIP CODE</div>
-           <div class="v" style="font-family:ui-monospace,monospace;letter-spacing:.06em">${esc(s.code)}</div>
+           <div class="codebox">${esc(s.code)}</div>
+           <div class="tiny muted" style="margin-top:6px">
+             Saved on this phone. Hand this to anyone you want on the trip —
+             it's the only thing they need.
+           </div>
          </div>
-         <div class="actions"><button class="btn ghost" data-sync-off>Disconnect this phone</button></div>`
+         <div class="actions">
+           <button class="btn on" data-copy-code="${esc(s.code)}">Copy code</button>
+           ${navigator.share ? `<button class="btn" data-share-code="${esc(s.code)}">Share</button>` : ''}
+           <button class="btn ghost" data-sync-off>Disconnect</button>
+         </div>`
       : `<div style="margin-top:10px">
            <input id="tripcode" class="btn" style="width:100%;font-family:ui-monospace,monospace;letter-spacing:.08em"
                   placeholder="XXXX-XXXX-XXXX-XXXX" autocapitalize="characters" autocomplete="off" spellcheck="false">

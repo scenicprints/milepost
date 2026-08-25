@@ -87,6 +87,18 @@ document.addEventListener('click', e => {
   }
   if (e.target.closest('[data-sync-off]')) { syncmod.disconnect(); return; }
 
+  const copy = e.target.closest('[data-copy-code]');
+  if (copy) { copyCode(copy.dataset.copyCode, copy); return; }
+
+  const share = e.target.closest('[data-share-code]');
+  if (share) {
+    navigator.share({
+      title: 'Milepost',
+      text: `Trip code for Milepost: ${share.dataset.shareCode}`,
+    }).catch(() => {});
+    return;
+  }
+
   if (e.target.closest('[data-locate]')) {
     navigator.geolocation?.getCurrentPosition(
       p => { ui.setPosition([p.coords.latitude, p.coords.longitude]); draw(); },
@@ -95,6 +107,29 @@ document.addEventListener('click', e => {
     );
   }
 });
+
+/// Clipboard API needs a secure context and can be refused; the textarea
+/// fallback is what actually works on older iOS Safari.
+async function copyCode(code, btn) {
+  let ok = false;
+  try {
+    await navigator.clipboard.writeText(code);
+    ok = true;
+  } catch (_) {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = code;
+      ta.style.cssText = 'position:fixed;opacity:0';
+      document.body.appendChild(ta);
+      ta.select();
+      ok = document.execCommand('copy');
+      ta.remove();
+    } catch (_) {}
+  }
+  const was = btn.textContent;
+  btn.textContent = ok ? 'Copied' : 'Select it by hand';
+  setTimeout(() => { btn.textContent = was; }, 1600);
+}
 
 document.addEventListener('change', e => {
   if (e.target.id === 'depart') store.setDeparture(e.target.value);

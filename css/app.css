@@ -274,3 +274,13 @@ button { font: inherit; color: inherit; }
 }
 .install-steps .sub { display: block; color: var(--ink2); font-size: 12.5px; margin-top: 1px; }
 .install-sheet .actions { justify-content: center; }
+
+/* The trip code needs to be readable at a glance and easy to select by hand
+   if the clipboard is refused. */
+.codebox {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 17px; font-weight: 700; letter-spacing: .09em;
+  background: var(--sunk); border: 1px dashed var(--line);
+  border-radius: 9px; padding: 10px 12px; margin-top: 4px;
+  user-select: all; -webkit-user-select: all; word-break: break-all;
+}
