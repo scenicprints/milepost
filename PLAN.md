@@ -214,6 +214,10 @@ Verified live against the real project:
 | List the `trips` collection | 403 |
 | Full round trip from the deployed app | document lands with all fields |
 
+On a connected phone the code is shown on the Book tab in a selectable box,
+with Copy and (where the browser supports it) Share. That is the hand-off path:
+whoever you give the app to needs the code and nothing else.
+
 **The code lives in `trip-code.local`, which is gitignored.** `firestore.rules`
 is generated from `firestore.rules.template` by `tools/deploy-rules.js` and is
 also gitignored and untracked. Deploy rules with:
