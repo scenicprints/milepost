@@ -9,7 +9,27 @@ something, it goes in here before you stop.
 
 ---
 
-**Live: https://scenicprints.github.io/milepost/** · Repo: `scenicprints/milepost`
+**Live: https://scenicprints.github.io/milepost/**
+
+**Session 2** — Fixed the PWA: the shortcut was opening in a browser tab because
+the manifest had no icons (Chrome requires a 192 AND a 512 to treat a manifest
+as installable, otherwise "Add to Home screen" makes a plain bookmark). Added
+generated icons, proper manifest `id`/`scope`/`orientation`, and the
+`apple-touch-icon` + `apple-mobile-web-app-capable` tags iOS needs — iOS ignores
+the manifest for home-screen behaviour entirely, which is what would have bitten
+Ada. Added a first-run install walkthrough (`js/install.js`) that uses Android's
+`beforeinstallprompt` when offered and gives platform-correct manual steps
+otherwise. Wrote the Firestore sync layer and vendored the Firebase SDK into
+`vendor/` with its absolute gstatic imports rewritten relative, so the service
+worker can cache it — a CDN import would fail in exactly the dead zones this
+trip goes through. Blocked on Firebase console access: Claude in Chrome was not
+connected. Kevin called the UI terrible; redesign direction to be brainstormed,
+not guessed.
+
+**Security note worth keeping:** `request.auth != null` is NOT a safe Firestore
+rule for this app. The web API key is public (public repo) and Firebase
+Email/Password lets anyone holding it create an account. `firestore.rules`
+allowlists specific uids for that reason. · Repo: `scenicprints/milepost`
 
 ## What this is
 
@@ -119,19 +139,35 @@ ice. San Antonio River Walk lit through early January.
 - 68 stops with detour cost, winter caveats and `first` flags.
 
 ### Next, in order
-1. **Firestore sync.** `js/store.js` is the seam. One shared login for the two of
-   them. Firestore's offline persistence is the reason it's the right choice —
-   writes queue through dead zones. Kevin can open the console in his browser;
-   **Claude must not enter passwords** — if it prompts for sign-in, hand it back.
-2. **Weather.** Open-Meteo, pre-fetched per overnight town, cached with a
+1. **UI redesign — Kevin's verdict on the current look was "terrible", and he
+   expects ~90% of it to be redone.** Direction is NOT decided; he wants to
+   brainstorm it rather than be handed options. **Do not go redesign it on a
+   guess** — see [[dont-redesign-past-the-ask]]. Things known about his taste:
+   hates visual noise, "wow factor" means liveness (motion, presence, a mascot,
+   things that respond) and never extra chrome, and he likes an
+   app-as-control-panel feel. Upkeep's instrument-cluster gauges landed well.
+   Most of his apps have a mascot and he's fond of them.
+2. **Finish Firebase.** Sync layer is written and pushed but **UNVERIFIED** —
+   `js/firebase-config.js` is empty, so `sync.js` reports "unconfigured" and the
+   app runs on localStorage alone. Remaining: create the project, enable
+   Email/Password, create Firestore, register a web app, paste the config, get
+   the two uids into `firestore.rules`, deploy. Kevin chose to connect the
+   Claude-in-Chrome extension so Claude can do it in the console.
+   **Claude must not enter passwords or create accounts** — the shared trip
+   login gets created by Kevin through the app's own sign-in.
+   `firebase-tools` is installed in the session scratchpad if CLI deploys help.
+3. **Weather.** Open-Meteo, pre-fetched per overnight town, cached with a
    timestamp so a stale forecast still shows.
-3. **Trip planning proper** — Kevin wants to sit down and actually plan it once
+4. **Trip planning proper** — Kevin wants to sit down and actually plan it once
    the base is up. Needs: her mom's city, departure date, hotel vs. camping.
-4. **Book/scrapbook** — photos per stop.
+5. **Book/scrapbook** — photos per stop.
 
 ### Known rough edges
+- **The whole UI.** See item 1 above. Treat the current look as a placeholder.
 - The Great Lakes in `data/usa.json` are coarse and slightly mangled. The route
   goes nowhere near them; cosmetic only.
+- The 32px favicon is legible but muddy — the sun nearly merges into the road.
+  Redo it alongside the UI.
 - ~~Service worker~~ **Verified working on Pages** — registered and controlling
   (`navigator.serviceWorker.controller` is set). It only failed in the local
   preview browser. Offline is real.
@@ -177,3 +213,23 @@ Published to GitHub Pages and verified live: 5,890 mi / 21 days / 24 stops,
 6 route options, all five screens render, service worker controlling.
 
 **Live: https://scenicprints.github.io/milepost/**
+
+**Session 2** — Fixed the PWA: the shortcut was opening in a browser tab because
+the manifest had no icons (Chrome requires a 192 AND a 512 to treat a manifest
+as installable, otherwise "Add to Home screen" makes a plain bookmark). Added
+generated icons, proper manifest `id`/`scope`/`orientation`, and the
+`apple-touch-icon` + `apple-mobile-web-app-capable` tags iOS needs — iOS ignores
+the manifest for home-screen behaviour entirely, which is what would have bitten
+Ada. Added a first-run install walkthrough (`js/install.js`) that uses Android's
+`beforeinstallprompt` when offered and gives platform-correct manual steps
+otherwise. Wrote the Firestore sync layer and vendored the Firebase SDK into
+`vendor/` with its absolute gstatic imports rewritten relative, so the service
+worker can cache it — a CDN import would fail in exactly the dead zones this
+trip goes through. Blocked on Firebase console access: Claude in Chrome was not
+connected. Kevin called the UI terrible; redesign direction to be brainstormed,
+not guessed.
+
+**Security note worth keeping:** `request.auth != null` is NOT a safe Firestore
+rule for this app. The web API key is public (public repo) and Firebase
+Email/Password lets anyone holding it create an account. `firestore.rules`
+allowlists specific uids for that reason.
