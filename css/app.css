@@ -151,9 +151,15 @@ input, textarea { font: inherit; color: inherit; }
    touch-action must sit on the SVG itself — the browser was claiming the pinch
    as a page gesture and pointermove never fired. */
 .scroll.ismap { padding: 0; overflow: hidden; display: flex; }
-.mapbox { position: relative; flex: 1; min-height: 0; touch-action: none; }
-.mapsvg { width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
-.mapsvg.drag { cursor: grabbing; }
+.mapbox {
+  position: relative; flex: 1; min-height: 0; overflow: hidden;
+  touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none;
+}
+.mapbox.drag { cursor: grabbing; }
+/* The stage is a fixed-size canvas that pan and zoom transform as a unit. The
+   map is painted into it once; gestures never recompute geometry. */
+.mapstage { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; }
+.mapsvg { display: block; }
 .mland { fill: var(--land); stroke: var(--rule2); }
 .mstate { fill: var(--ink3); letter-spacing: .1em; font-family: var(--mono); }
 .mlabel { fill: var(--ink2); font-family: var(--sans); }

@@ -339,6 +339,37 @@ Photos cut. Android Auto scoped to riding alongside Maps. Built the clickable
 prototype: Rams visual language, transit-diagram route, leg-scoped tabs, place
 detail with links and December normals, map with routes and pins.
 
+**Session 9 — the map, done properly.** Kevin, after two failed fixes: "still
+terrible… jittery as hell. I zoom and it jumps to a super zoom." Then: "go look
+at how Poppy does it."
+
+**Poppy does not hand-roll gesture maths.** It paints the map once and hands it
+to Flutter's `InteractiveViewer`, which applies a transform matrix on top
+(`lib/focus_map.dart`, `maxScale: 8`). Nothing is recomputed while you zoom.
+
+Every attempt here had been recomputing the SVG viewBox on each pointer move,
+re-deriving label sizes and pin radii per frame — that is the jitter — and
+re-rendering during the gesture destroyed the element holding pointer capture —
+that is the jumping.
+
+**The rewrite matches Poppy.** The SVG is painted once into a fixed-size
+`.mapstage`; pan and zoom write only a CSS transform on that stage, composited
+on the GPU. After a gesture settles, one repaint fixes label density and pin
+sizes for the new scale.
+
+The gesture model is the standard baseline one: take a baseline when the FINGER
+COUNT changes, then derive the transform from that baseline on every move.
+Deriving it incrementally from the previous frame is what accumulated error and
+let one bad delta throw the map across the country.
+
+Measured after the rewrite: a 30-frame pinch produces a perfectly linear scale
+ramp (max frame-to-frame ratio 1.107), lifting a finger mid-pinch jumps by
+exactly 0, adding one jumps by exactly 0, scale clamps at 0.15 and 60, FIT
+returns exactly, and pins still open their sheet.
+
+**RULE: never recompute map geometry inside a gesture, and never replace a DOM
+node mid-gesture. Transform, then repaint on release.**
+
 **Session 8** — Kevin: "the zoom is atrocious. It just straight up doesn't
 work." He was right and the session-7 tests were the reason I missed it: they
 used discrete taps and synthetic wheel events, which never exercise a

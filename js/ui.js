@@ -91,45 +91,38 @@ export function renderRoute(legIx) {
 }
 
 // ============================================================== map
-let view = null;
-export const getView = () => view;
-export function setView(v) { view = v; }
-export function resetView() { view = null; }
+// Pan/zoom lives in a CSS transform on .mapstage — see js/map.js for why.
+let tf = null;                       // { x, y, s } or null for "fit on mount"
+export const getTf = () => tf;
+export const setTf = t => { tf = t; };
+export const resetTf = () => { tf = null; };
 
-let mapAspect = mapview.ASPECT;
-export const getAspect = () => mapAspect;
+// kept for the old call sites
+export const resetView = resetTf;
 
-/// The panel's shape changes when the phone rotates — and, more often, when the
-/// mobile address bar hides on scroll. This used to refit the map, which threw
-/// away whatever the user had zoomed to. Now it reshapes around the same centre
-/// and keeps the zoom.
-export function setAspect(a) {
-  if (!a || !isFinite(a) || Math.abs(a - mapAspect) < 0.02) return false;
-  mapAspect = a;
-  if (view) {
-    const cx = view.x + view.w / 2, cy = view.y + view.h / 2;
-    const h = view.w / a;
-    view = { x: cx - view.w / 2, y: cy - h / 2, w: view.w, h };
-  }
-  return true;
-}
-
-/// The map tab is the map. Nothing under it, nothing beside it. The winter
-/// notes and the road-conditions links used to live here and were just a pair
-/// of lists stapled to the bottom of a picture; they belong in Trip.
 export function renderMap(legIx) {
   const rt = legRoute(legIx);
-  const svg = mapview.render(DATA.usa, selected(), rt, {
-    view: view || mapview.fitView(rt, mapAspect),
-    chosen: store.chosen,
-    pos: position,
+  return `<div class="mapbox" id="mapbox">
+      <div class="mapstage" id="mstage" style="width:${mapview.MW}px;height:${mapview.MH}px">
+        <svg class="mapsvg" id="msvg" width="${mapview.MW}" height="${mapview.MH}"
+             viewBox="0 0 ${mapview.MW} ${mapview.MH}" role="img"
+             aria-label="Map of the trip with the current leg emphasised"></svg>
+      </div>
+      <div class="zoom">
+        <button data-zoom="in" aria-label="Zoom in">+</button>
+        <button data-zoom="out" aria-label="Zoom out">−</button>
+        <button class="fit" data-zoom="fit" aria-label="Fit to leg">FIT</button>
+      </div>
+    </div>`;
+}
+
+/// Paint the map for the scale it is currently shown at.
+export function paintMap(legIx, scale, view) {
+  const svg = document.getElementById("msvg");
+  if (!svg) return;
+  svg.innerHTML = mapview.paint(DATA.usa, selected(), legRoute(legIx), {
+    chosen: store.chosen, pos: position, scale, view,
   });
-  return `<div class="mapbox">${svg}
-    <div class="zoom">
-      <button data-zoom="in" aria-label="Zoom in">+</button>
-      <button data-zoom="out" aria-label="Zoom out">−</button>
-      <button class="fit" data-zoom="fit" aria-label="Fit to leg">FIT</button>
-    </div></div>`;
 }
 
 // ============================================================== days

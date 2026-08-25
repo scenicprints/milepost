@@ -66,160 +66,160 @@ function draw() {
 
 // ============================================================ map
 //
-// The rule that matters here: NEVER re-render the map while a gesture is in
-// flight. Zooming used to call draw(), which replaced the whole scroll pane —
-// destroying the very SVG element that held setPointerCapture. A pinch would
-// therefore die after its first move event, which is why zoom felt broken.
+// Pan and zoom write a CSS transform on the stage and nothing else. Geometry is
+// never recomputed mid-gesture — that was the jitter — and no element is ever
+// replaced mid-gesture — that was the jumping.
 //
-// So gestures only mutate the viewBox attribute. A full re-render, which is
-// what rescales labels and re-culls pins, is debounced to after the gesture.
+// The gesture model is the standard one (what Flutter's InteractiveViewer does,
+// which is what Poppy uses): take a BASELINE when the number of fingers
+// changes, then derive the transform from that baseline every move. Deriving it
+// incrementally from the previous frame is what accumulates error and lets one
+// bad delta throw the map across the country.
 
-let redrawTimer = null;
-let ro = null;
+let paintTimer = null;
 
-/// Move the map without rebuilding it.
-function applyView(v) {
-  ui.setView(v);
-  const svg = document.getElementById('msvg');
-  if (svg) svg.setAttribute('viewBox', [v.x, v.y, v.w, v.h].map(n => n.toFixed(1)).join(' '));
+const stage = () => document.getElementById('mstage');
+const mapbox = () => document.getElementById('mapbox');
+
+function applyTf(t) {
+  ui.setTf(t);
+  const el = stage();
+  if (el) el.style.transform = `translate(${t.x.toFixed(2)}px, ${t.y.toFixed(2)}px) scale(${t.s.toFixed(5)})`;
 }
 
-/// Rebuild just the map, so labels and pins resize for the new scale.
-/// Goes through mountMap because this replaces the .mapbox element, and a
-/// ResizeObserver left watching the old detached node stops reporting — which
-/// is how the aspect quietly failed to follow a rotation.
-function redrawMap() {
-  if (tab !== 'map') return;
-  $scroll.innerHTML = ui.renderMap(legIx);
-  mountMap();
+/// What part of the stage is on screen, in stage units.
+function visible(t) {
+  const box = mapbox();
+  if (!box) return null;
+  const r = box.getBoundingClientRect();
+  return { x: -t.x / t.s, y: -t.y / t.s, w: r.width / t.s, h: r.height / t.s };
 }
 
-function scheduleRedraw(ms = 200) {
-  clearTimeout(redrawTimer);
-  redrawTimer = setTimeout(redrawMap, ms);
+function repaint() {
+  const t = ui.getTf();
+  if (!t) return;
+  ui.paintMap(legIx, t.s, visible(t));
 }
 
-const fitNow = () => mapview.fitView(ui.legRoute(legIx), ui.getAspect());
-const viewNow = () => ui.getView() || fitNow();
+function schedulePaint(ms = 140) {
+  clearTimeout(paintTimer);
+  paintTimer = setTimeout(repaint, ms);
+}
+
+function fitTf() {
+  const box = mapbox();
+  const r = box.getBoundingClientRect();
+  return mapview.fitTransform(mapview.bounds(ui.legRoute(legIx)), r.width, r.height);
+}
 
 function mountMap() {
-  const box = document.querySelector('.mapbox');
+  const box = mapbox();
   if (!box) return;
-
-  // Watch the panel instead of measuring inside draw(). On a phone the address
-  // bar hiding changes the height constantly, and measuring per-draw made the
-  // map twitch.
-  if (ro) ro.disconnect();
-  ro = new ResizeObserver(entries => {
-    const r = entries[0].contentRect;
-    if (r.width > 0 && r.height > 0 && ui.setAspect(r.width / r.height)) scheduleRedraw(120);
-  });
-  ro.observe(box);
-
-  // First mount renders at the default aspect before the panel has been
-  // measured, so if the measurement disagrees, redraw once at the real shape.
-  const r = box.getBoundingClientRect();
-  if (r.width > 0 && r.height > 0 && ui.setAspect(r.width / r.height)) scheduleRedraw(0);
-
-  wireMap();
+  applyTf(ui.getTf() || fitTf());
+  repaint();
+  wireMap(box);
 }
 
-function wireMap() {
-  const svg = document.getElementById('msvg');
-  if (!svg || svg.__wired) return;
-  svg.__wired = true;
+function wireMap(box) {
+  if (box.__wired) return;
+  box.__wired = true;
 
   const pts = new Map();
-  let start = null, moved = 0, pinch = null, lastTap = 0;
+  let base = null;
 
-  const at = e => {
-    const r = svg.getBoundingClientRect(), v = viewNow();
-    return {
-      x: v.x + (e.clientX - r.left) / r.width * v.w,
-      y: v.y + (e.clientY - r.top) / r.height * v.h,
-    };
-  };
-
-  const zoom = (k, ax, ay) => {
-    applyView(mapview.zoomView(viewNow(), k, ax, ay, ui.getAspect()));
-    scheduleRedraw();
-  };
-
-  svg.addEventListener('pointerdown', e => {
-    pts.set(e.pointerId, e);
-    moved = 0;
-    if (pts.size === 1) {
-      start = { e, v: viewNow(), r: svg.getBoundingClientRect() };
-      svg.classList.add('drag');
+  /// Centroid and average spread of the live pointers, in client pixels.
+  function touchState() {
+    const a = [...pts.values()];
+    let cx = 0, cy = 0;
+    for (const p of a) { cx += p.clientX; cy += p.clientY; }
+    cx /= a.length; cy /= a.length;
+    let spread = 0;
+    if (a.length > 1) {
+      for (const p of a) spread += Math.hypot(p.clientX - cx, p.clientY - cy);
+      spread /= a.length;
     }
-    try { svg.setPointerCapture(e.pointerId); } catch (_) {}
+    return { n: a.length, cx, cy, spread };
+  }
+
+  /// Re-baseline. Called whenever a finger goes down or comes up, so adding or
+  /// lifting a finger never makes the map jump.
+  function rebase() {
+    base = { t: { ...(ui.getTf() || fitTf()) }, st: touchState() };
+  }
+
+  function onMove() {
+    if (!base || !pts.size) return;
+    const st = touchState();
+    if (st.n !== base.st.n) { rebase(); return; }
+
+    const T = base.t;
+    let s = T.s;
+    if (st.n > 1 && base.st.spread > 1) s = mapview.clampScale(T.s * (st.spread / base.st.spread));
+
+    // The stage point under the baseline centroid must end up under the
+    // current centroid. Derived from the baseline, never from last frame.
+    const wx = (base.st.cx - T.x) / T.s;
+    const wy = (base.st.cy - T.y) / T.s;
+    applyTf({ s, x: st.cx - wx * s, y: st.cy - wy * s });
+  }
+
+  box.addEventListener('pointerdown', e => {
+    pts.set(e.pointerId, e);
+    rebase();
+    box.classList.add('drag');
+    try { box.setPointerCapture(e.pointerId); } catch (_) {}
   });
 
-  svg.addEventListener('pointermove', e => {
+  box.addEventListener('pointermove', e => {
     if (!pts.has(e.pointerId)) return;
-    const prev = pts.get(e.pointerId);
     pts.set(e.pointerId, e);
-
-    if (pts.size >= 2) {
-      const [a, b] = [...pts.values()];
-      const d = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
-      if (pinch && d > 0) {
-        const k = d / pinch;
-        if (Math.abs(k - 1) > 0.004) {
-          const r = svg.getBoundingClientRect(), v = viewNow();
-          const mid = {
-            x: v.x + ((a.clientX + b.clientX) / 2 - r.left) / r.width * v.w,
-            y: v.y + ((a.clientY + b.clientY) / 2 - r.top) / r.height * v.h,
-          };
-          // Mutate only. Rebuilding here is what used to kill the gesture.
-          applyView(mapview.zoomView(v, k, mid.x, mid.y, ui.getAspect()));
-          pinch = d;
-        }
-      } else {
-        pinch = d;
-      }
-      moved = 99;
-      return;
-    }
-
-    if (!start) return;
-    moved += Math.abs(e.clientX - prev.clientX) + Math.abs(e.clientY - prev.clientY);
-    const v = start.v, r = start.r;
-    applyView({
-      x: v.x - (e.clientX - start.e.clientX) / r.width * v.w,
-      y: v.y - (e.clientY - start.e.clientY) / r.height * v.h,
-      w: v.w, h: v.h,
-    });
+    onMove();
   });
 
-  const up = e => {
-    const wasPinch = pts.size >= 2;
+  const lift = e => {
+    if (!pts.has(e.pointerId)) return;
     pts.delete(e.pointerId);
-    if (pts.size < 2) pinch = null;
-    if (pts.size > 0) return;
-
-    start = null;
-    svg.classList.remove('drag');
-
-    if (moved > 6 || wasPinch) { scheduleRedraw(60); return; }
-
-    const now = e.timeStamp;
-    if (now - lastTap < 320) { lastTap = 0; const q = at(e); zoom(2.2, q.x, q.y); }
-    else lastTap = now;
+    if (pts.size) { rebase(); return; }
+    base = null;
+    box.classList.remove('drag');
+    schedulePaint(80);
   };
-  svg.addEventListener('pointerup', up);
-  svg.addEventListener('pointercancel', up);
+  box.addEventListener('pointerup', lift);
+  box.addEventListener('pointercancel', lift);
 
-  svg.addEventListener('wheel', e => {
+  box.addEventListener('wheel', e => {
     e.preventDefault();
-    const q = at(e);
-    applyView(mapview.zoomView(viewNow(), e.deltaY < 0 ? 1.18 : 1 / 1.18, q.x, q.y, ui.getAspect()));
-    scheduleRedraw();
+    const t = ui.getTf() || fitTf();
+    const r = box.getBoundingClientRect();
+    const s = mapview.clampScale(t.s * (e.deltaY < 0 ? 1.15 : 1 / 1.15));
+    const wx = (e.clientX - r.left - t.x) / t.s;
+    const wy = (e.clientY - r.top - t.y) / t.s;
+    applyTf({ s, x: e.clientX - r.left - wx * s, y: e.clientY - r.top - wy * s });
+    schedulePaint();
   }, { passive: false });
 
-  // Safari still emits these and they zoom the page if left alone.
-  for (const t of ['gesturestart', 'gesturechange', 'gestureend'])
-    svg.addEventListener(t, e => e.preventDefault());
+  // Safari fires these as well and will zoom the whole page if left alone.
+  for (const g of ['gesturestart', 'gesturechange', 'gestureend'])
+    box.addEventListener(g, e => e.preventDefault());
+
+  new ResizeObserver(() => {
+    if (tab !== 'map') return;
+    if (!ui.getTf()) applyTf(fitTf());
+    schedulePaint(120);
+  }).observe(box);
+}
+
+/// Zoom a step about the middle of the panel.
+function zoomStep(k) {
+  const box = mapbox();
+  if (!box) return;
+  const r = box.getBoundingClientRect();
+  const t = ui.getTf() || fitTf();
+  const s = mapview.clampScale(t.s * k);
+  const wx = (r.width / 2 - t.x) / t.s;
+  const wy = (r.height / 2 - t.y) / t.s;
+  applyTf({ s, x: r.width / 2 - wx * s, y: r.height / 2 - wy * s });
+  schedulePaint(60);
 }
 
 // ============================================================ events
@@ -232,16 +232,16 @@ document.addEventListener('click', e => {
   const z = e.target.closest('[data-zoom]');
   if (z) {
     const k = z.dataset.zoom;
-    if (k === 'fit') { ui.resetView(); redrawMap(); }
-    else { applyView(mapview.zoomView(viewNow(), k === 'in' ? 2 : 0.5, null, null, ui.getAspect())); redrawMap(); }
+    if (k === 'fit') { ui.resetTf(); applyTf(fitTf()); repaint(); }
+    else zoomStep(k === 'in' ? 1.6 : 1 / 1.6);
     return;
   }
 
   const r = e.target.closest('[data-route]');
-  if (r) { store.setRoute(r.dataset.rleg, r.dataset.route); ui.resetView(); return; }
+  if (r) { store.setRoute(r.dataset.rleg, r.dataset.route); ui.resetTf(); return; }
 
   const g = e.target.closest('[data-leg]');
-  if (g) { legIx = Number(g.dataset.leg); sheet = null; ui.resetView(); draw(); return; }
+  if (g) { legIx = Number(g.dataset.leg); sheet = null; ui.resetTf(); draw(); return; }
 
   if (e.target.closest('[data-trip]')) { sheet = { kind: 'trip' }; draw(); return; }
 
