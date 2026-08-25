@@ -1,9 +1,17 @@
 {
+  "id": "/milepost/",
   "name": "Milepost",
   "short_name": "Milepost",
-  "start_url": ".",
+  "description": "Modesto to North Carolina to Houston and home. Swappable routes, detour cost per stop, works with no signal.",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#f6f0e2",
+  "orientation": "portrait",
+  "background_color": "#0d5c3f",
   "theme_color": "#0d5c3f",
-  "description": "Modesto to North Carolina to Houston and home."
+  "icons": [
+    { "src": "icons/icon-192.png",     "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png",     "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
 }

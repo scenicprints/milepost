@@ -2,6 +2,7 @@
 
 import { store } from './store.js';
 import * as ui from './ui.js';
+import { maybeShow } from './install.js';
 
 const TABS = [
   { id: 'road',  ic: '🛣️', label: 'Road',  render: ui.renderRoad },
@@ -39,6 +40,7 @@ async function boot() {
 
   store.addEventListener('change', draw);
   draw();
+  maybeShow();
 }
 
 function draw() {
