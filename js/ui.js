@@ -96,41 +96,30 @@ export const getView = () => view;
 export function setView(v) { view = v; }
 export function resetView() { view = null; }
 
+let mapAspect = mapview.ASPECT;
+export const getAspect = () => mapAspect;
+export function setAspect(a) {
+  if (!a || Math.abs(a - mapAspect) < 0.02) return false;
+  mapAspect = a;
+  return true;
+}
+
+/// The map tab is the map. Nothing under it, nothing beside it. The winter
+/// notes and the road-conditions links used to live here and were just a pair
+/// of lists stapled to the bottom of a picture; they belong in Trip.
 export function renderMap(legIx) {
   const rt = legRoute(legIx);
-  const svg = mapview.render(DATA.usa, selected(), rt, { view, chosen: store.chosen, pos: position });
-  const risks = rt.towns.filter(t => t.risk);
-  const states = [...new Set(rt.towns.map(t => t.state))];
-
-  let h = `<div class="mapwrap"><div class="mapbox">${svg}
-      <div class="zoom">
-        <button data-zoom="in" aria-label="Zoom in">+</button>
-        <button data-zoom="out" aria-label="Zoom out">−</button>
-        <button class="fit" data-zoom="fit" aria-label="Fit to leg">FIT</button>
-      </div></div>
-    <div class="mkey">
-      <span><i style="background:var(--signal)"></i>In the plan</span>
-      <span><i style="border:1.5px solid var(--rule2)"></i>Not yet</span>
-      <span><i style="background:var(--ink);border-radius:0"></i>Home</span>
+  const svg = mapview.render(DATA.usa, selected(), rt, {
+    view: view || mapview.fitView(rt, mapAspect),
+    chosen: store.chosen,
+    pos: position,
+  });
+  return `<div class="mapbox">${svg}
+    <div class="zoom">
+      <button data-zoom="in" aria-label="Zoom in">+</button>
+      <button data-zoom="out" aria-label="Zoom out">−</button>
+      <button class="fit" data-zoom="fit" aria-label="Fit to leg">FIT</button>
     </div></div>`;
-
-  if (risks.length) {
-    h += `<div class="field"><div class="slab">Winter watch</div>`;
-    for (const r of risks) {
-      h += `<div style="margin-top:14px">
-        <div style="font-size:14px">${esc(r.name)}, ${esc(r.state)}${r.elev ? ` · ${r.elev.toLocaleString()} ft` : ""}</div>
-        ${r.note ? `<div class="sbody" style="font-size:13px;color:var(--ink2);margin-top:5px">${esc(r.note)}</div>` : ""}
-      </div>`;
-    }
-    h += `</div>`;
-  }
-
-  h += `<div class="field"><div class="slab">Road conditions</div><div class="links">`;
-  for (const st of states) {
-    const d = DATA.route.dot.find(x => x.state === st);
-    if (d) h += `<a href="${d.url}" target="_blank" rel="noopener">${esc(d.name)}<span>${esc(st)}</span></a>`;
-  }
-  return h + `</div></div>`;
 }
 
 // ============================================================== days
@@ -262,6 +251,15 @@ export function tripSheet() {
         </div>` : ""}
 
       <div class="sdiv"></div>
+      <div class="slab">Winter watch</div>
+      ${riskList()}
+
+      <div class="sdiv"></div>
+      <div class="slab">Road conditions</div>
+      <div class="sbody" style="font-size:13px;color:var(--ink2)">Check these the night before, not the morning of.</div>
+      <div class="links" style="margin-top:12px">${dotLinks()}</div>
+
+      <div class="sdiv"></div>
       <div class="slab">Where are we</div>
       <div class="sbody" style="font-size:13px;color:var(--ink2)">
         ${position ? whereAreWe() : "Turn this on and the map shows your position along the route."}</div>
@@ -278,4 +276,34 @@ function whereAreWe() {
   const next = best.towns.find(t => t.mile > mile);
   return `${Math.round(mile).toLocaleString()} of ${Math.round(best.miles).toLocaleString()} miles into ${esc(best.name)}.`
     + (next ? ` ${esc(next.name)} is ${Math.round(next.mile - mile)} miles ahead.` : "");
+}
+
+/// Every winter trouble spot across the three chosen routes, in road order.
+function riskList() {
+  const seen = new Set();
+  let h = "";
+  for (const r of selected())
+    for (const t of r.towns) {
+      if (!t.risk || seen.has(t.name)) continue;
+      seen.add(t.name);
+      h += `<div style="margin-top:16px">
+        <div style="font-size:14px">${esc(t.name)}, ${esc(t.state)}${t.elev ? ` · ${t.elev.toLocaleString()} ft` : ""}</div>
+        ${t.note ? `<div class="sbody" style="font-size:13px;color:var(--ink2);margin-top:5px">${esc(t.note)}</div>` : ""}
+      </div>`;
+    }
+  return h || `<div class="sbody" style="font-size:13px;color:var(--ink2)">Nothing flagged on the routes you've picked.</div>`;
+}
+
+/// Each state you cross, once, in the order you cross it.
+function dotLinks() {
+  const seen = new Set();
+  let h = "";
+  for (const r of selected())
+    for (const t of r.towns) {
+      if (seen.has(t.state)) continue;
+      seen.add(t.state);
+      const d = DATA.route.dot.find(x => x.state === t.state);
+      if (d) h += `<a href="${d.url}" target="_blank" rel="noopener">${esc(d.name)}<span>${esc(t.state)}</span></a>`;
+    }
+  return h;
 }

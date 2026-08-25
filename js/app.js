@@ -49,6 +49,7 @@ async function boot() {
 
 function draw() {
   $head.innerHTML = ui.renderHead(legIx);
+  $scroll.className = 'scroll' + (tab === 'map' ? ' ismap' : '');
   $scroll.innerHTML = TABS.find(t => t.id === tab).render(legIx);
   for (const b of $tabs.querySelectorAll('[data-tab]'))
     b.setAttribute('aria-selected', String(b.dataset.tab === tab));
@@ -59,7 +60,20 @@ function draw() {
   } else {
     $sheet.className = 'sheet';
   }
-  if (tab === 'map') wireMap();
+  if (tab === 'map') {
+    // The panel is tall on a phone and wide on a desktop. Measure it once and
+    // refit, or the map is letterboxed into a landscape box on a portrait
+    // screen and most of the zoom range is wasted on empty ground.
+    const box = document.querySelector('.mapbox');
+    if (box) {
+      const r = box.getBoundingClientRect();
+      if (r.width > 0 && r.height > 0 && ui.setAspect(r.width / r.height)) {
+        ui.resetView();
+        $scroll.innerHTML = ui.renderMap(legIx);
+      }
+    }
+    wireMap();
+  }
 }
 
 // ------------------------------------------------------------------ map
@@ -73,15 +87,15 @@ function wireMap() {
 
   const at = e => {
     const r = svg.getBoundingClientRect();
-    const v = ui.getView() || mapview.fitView(ui.legRoute(legIx));
+    const v = ui.getView() || mapview.fitView(ui.legRoute(legIx), ui.getAspect());
     return {
       x: v.x + (e.clientX - r.left) / r.width * v.w,
       y: v.y + (e.clientY - r.top) / r.height * v.h,
     };
   };
   const zoom = (k, ax, ay) => {
-    const v = ui.getView() || mapview.fitView(ui.legRoute(legIx));
-    ui.setView(mapview.zoomView(v, k, ax, ay));
+    const v = ui.getView() || mapview.fitView(ui.legRoute(legIx), ui.getAspect());
+    ui.setView(mapview.zoomView(v, k, ax, ay, ui.getAspect()));
     draw();
   };
 
@@ -89,7 +103,7 @@ function wireMap() {
     pts.set(e.pointerId, e);
     moved = 0;
     if (pts.size === 1) {
-      start = { e, v: ui.getView() || mapview.fitView(ui.legRoute(legIx)), r: svg.getBoundingClientRect() };
+      start = { e, v: ui.getView() || mapview.fitView(ui.legRoute(legIx), ui.getAspect()), r: svg.getBoundingClientRect() };
       svg.classList.add('drag');
     }
     svg.setPointerCapture(e.pointerId);
@@ -125,6 +139,14 @@ function wireMap() {
   };
   svg.addEventListener('pointerup', up);
   svg.addEventListener('pointercancel', up);
+  let lastTap = 0;
+  svg.addEventListener('pointerup', e => {
+    if (moved > 6) return;
+    const now = e.timeStamp;
+    if (now - lastTap < 320) { const q = at(e); zoom(2.2, q.x, q.y); lastTap = 0; }
+    else lastTap = now;
+  });
+
   svg.addEventListener('wheel', e => {
     e.preventDefault();
     const q = at(e);
@@ -146,8 +168,8 @@ document.addEventListener('click', e => {
     const k = z.dataset.zoom;
     if (k === 'fit') ui.resetView();
     else {
-      const v = ui.getView() || mapview.fitView(ui.legRoute(legIx));
-      ui.setView(mapview.zoomView(v, k === 'in' ? 1.5 : 1 / 1.5));
+      const v = ui.getView() || mapview.fitView(ui.legRoute(legIx), ui.getAspect());
+      ui.setView(mapview.zoomView(v, k === 'in' ? 2 : 0.5, null, null, ui.getAspect()));
     }
     draw();
     return;
@@ -193,6 +215,13 @@ document.addEventListener('click', e => {
 
 document.addEventListener('change', e => {
   if (e.target.id === 'depart' && e.target.value) store.setDeparture(e.target.value);
+});
+
+let resizeT = null;
+addEventListener('resize', () => {
+  if (tab !== 'map') return;
+  clearTimeout(resizeT);
+  resizeT = setTimeout(draw, 150);
 });
 
 // Android back closes a sheet instead of leaving the app.

@@ -339,6 +339,20 @@ Photos cut. Android Auto scoped to riding alongside Maps. Built the clickable
 prototype: Rams visual language, transit-diagram route, leg-scoped tabs, place
 detail with links and December normals, map with routes and pins.
 
+**Session 7** — Kevin on the map tab: "damn near broken… I can only zoom in a
+little bit, and there's that annoying list underneath it." Three real faults.
+(1) `touch-action: none` was on `.mapbox` but not on the SVG that actually
+receives the pointer events, so the browser claimed the pinch as a page gesture
+and pinch-zoom never fired at all — only the buttons worked. (2) The viewBox was
+fitted to a fixed 1.28 landscape aspect while the panel on a phone is 0.63
+portrait, so the map was letterboxed and most of the zoom range was spent on
+empty ground. The panel is now measured and the fit uses its real aspect.
+(3) The winter notes and road-conditions links were two lists stapled under a
+picture; they moved into the Trip sheet, where they cover the whole trip rather
+than one leg. The map tab is now only the map, full height, no scroll. Zoom
+depth went from 41x to 125x, buttons step 2x instead of 1.5x, and double-tap
+zooms where you tapped.
+
 **Session 6** — Ported the Rams design onto the app. Replaced `css/app.css`,
 `js/ui.js`, `js/app.js` and `js/map.js`; left the engine alone. Five tabs became
 three (Route · Map · Days), all scoped to one leg. The Book tab's contents —

@@ -32,8 +32,10 @@ const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "
 
 export const ASPECT = 1.28;
 
-/// The box that frames one route, padded, at the panel's aspect ratio.
-export function fitView(route) {
+/// The box that frames one route, padded, at the panel's real aspect ratio.
+/// The caller measures the panel — on a phone the map is tall, and fitting to
+/// a fixed landscape box wasted most of the screen.
+export function fitView(route, aspect = ASPECT) {
   const xs = [], ys = [];
   for (const q of route.waypoints.map(w => xy(w.ll)).concat(route.stops.map(s => xy(s.ll)))) {
     xs.push(q[0]); ys.push(q[1]);
@@ -42,20 +44,22 @@ export function fitView(route) {
   let x0 = Math.min(...xs) - pad, x1 = Math.max(...xs) + pad;
   let y0 = Math.min(...ys) - pad, y1 = Math.max(...ys) + pad;
   let w = x1 - x0, h = y1 - y0;
-  if (w / h < ASPECT) { const nw = h * ASPECT; x0 -= (nw - w) / 2; w = nw; }
-  else { const nh = w / ASPECT; y0 -= (nh - h) / 2; h = nh; }
+  if (w / h < aspect) { const nw = h * aspect; x0 -= (nw - w) / 2; w = nw; }
+  else { const nh = w / aspect; y0 -= (nh - h) / 2; h = nh; }
   return { x: x0, y: y0, w, h };
 }
 
-const MIN_W = 24, MAX_W = MW * 1.6;
+// 8 user units is roughly a half-mile across — close enough to pick one
+// building out of four in downtown Memphis.
+const MIN_W = 8, MAX_W = MW * 1.6;
 
 /// Zoom about a point, clamped so the map can't be lost.
-export function zoomView(v, k, ax, ay) {
+export function zoomView(v, k, ax, ay, aspect = ASPECT) {
   const cx = ax == null ? v.x + v.w / 2 : ax;
   const cy = ay == null ? v.y + v.h / 2 : ay;
   let w = v.w / k, h = v.h / k;
-  if (w < MIN_W) { w = MIN_W; h = w / ASPECT; }
-  if (w > MAX_W) { w = MAX_W; h = w / ASPECT; }
+  if (w < MIN_W) { w = MIN_W; h = w / aspect; }
+  if (w > MAX_W) { w = MAX_W; h = w / aspect; }
   return { x: cx - (cx - v.x) * (w / v.w), y: cy - (cy - v.y) * (h / v.h), w, h };
 }
 
