@@ -347,6 +347,32 @@ Photos cut. Android Auto scoped to riding alongside Maps. Built the clickable
 prototype: Rams visual language, transit-diagram route, leg-scoped tabs, place
 detail with links and December normals, map with routes and pins.
 
+**Session 21 — Firsts removed from Trip, and what a third route would do (1.5.1).**
+
+**Firsts is gone from the Trip tab** at Kevin's call — the counter and the list.
+**The `first` flag itself stays**: it is still in `stops.json`, still shown as
+"A first" on a place sheet, and still the thing the stop list should be chosen
+against. He asked to remove it from Trip, not to stop caring about it. Do not
+take this as licence to strip the flag.
+
+**"What do we do if there are several alternate routes?"** Tested rather than
+guessed, by serving the app with a synthetic third route bolted onto leg 1:
+
+- The **picker** holds three names on one row at 375px and wraps beyond that.
+  Fine.
+- The **drawer** lists all three and scrolls. Fine.
+- **The map is what breaks.** Every non-chosen route is drawn with the same
+  dashed `--ink2` line, so with two alternatives you can see that other ways
+  exist but not which is which. Verified identical stroke and dash pattern.
+
+**The fix, when a leg actually gets a third route: draw one alternative at a
+time — whichever you are reading about in the drawer.** You are never choosing
+between three at once; you are asking "should I go that way instead", which is
+one comparison. Rejected: a second dash pattern or a fading scale, because both
+make the reader decode a legend, and a legend is decoration.
+
+Not built. Every leg has exactly two routes today, so nothing is broken now.
+
 **Session 20 — choosing the way happens on the map now (1.5.0).**
 
 Kevin: *"this should actually sit in the Map part. So you can visually see the

@@ -291,7 +291,6 @@ export function renderTrip(upd = {}) {
   const days = dep ? Math.ceil((new Date(dep + "T00:00:00") - new Date()) / 86400000) : null;
   const inPlay = allStops();
   const seen = inPlay.filter(s => store.isSeen(s.id));
-  const firsts = inPlay.filter(s => s.first);
 
   return `<div class="tripbody">
       ${dep
@@ -318,15 +317,6 @@ export function renderTrip(upd = {}) {
                   autocapitalize="characters" autocomplete="off" spellcheck="false">
            <div class="actions"><button class="on" data-sync-connect>Connect</button></div>`}
       ${st.error ? `<div class="err">${esc(st.error)}</div>` : ""}
-
-      <div class="sdiv"></div>
-      <div class="slab">Firsts</div>
-      <div class="sbody" style="font-size:13px;color:var(--ink2)">
-        ${firsts.filter(s => store.isSeen(s.id)).length} of ${firsts.length} seen.
-        Things there is no California version of.</div>
-      <div class="links" style="margin-top:12px">
-        ${firsts.map(s => `<button data-stop="${s.id}">${esc(s.name)}<span>${store.isSeen(s.id) ? esc(store.seenDate(s.id)) : "—"}</span></button>`).join("")}
-      </div>
 
       ${seen.length ? `<div class="sdiv"></div><div class="slab">Everywhere you've been</div>
         <div class="links" style="margin-top:12px">
