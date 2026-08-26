@@ -19,9 +19,11 @@ agent, or a new Claude account, can continue without losing the thread.
 **The Rams design is PORTED and live.** The app and the prototype now look the
 same; the app additionally syncs, installs and persists.
 
-`prototype/` is kept as the design reference and as a fast way to try layout
-changes without touching the app. **It duplicates `js/plan.js` and will drift.**
-Delete it, or make it import the real modules, once the design settles.
+**⚠ `prototype/` IS STALE.** It is the original design study from before the app
+was rebuilt, and it predates the ported design, the Next screen, bookings, the
+editor and live weather. Do not read it as the current app and do not republish
+it as if it were. Either delete it or rebuild it from the real modules. The app
+itself — `index.html` + `js/` + `css/` — is the only current truth.
 
 Kevin is testing this batch. He has more to add afterwards.
 
