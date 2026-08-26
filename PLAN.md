@@ -253,8 +253,7 @@ so the difference is visible. **Kevin has not made the final call yet.**
 ### Next, in order
 1. **Whatever comes back from Kevin's testing of the ported design.**
 2. **Decide Android Auto** — recommendation above is no.
-3. **"What's next" mode** — where you actually are, what is coming up, how far
-   to a bed. NOT a "today" view: that assumes the schedule held, and it won't.
+3. ~~"What's next" mode~~ **DONE, session 15.**
 4. **Fuel and services planning.** Kevin asked for "definitely stop at this gas
    station." Long dry stretches (Van Horn → Fort Stockton, the Mojave crossing)
    are real, and this is a genuinely useful feature that does not exist yet.
@@ -341,6 +340,34 @@ Poppy's look too, wants sleek and uncluttered, "pretend you are Dieter Rams."
 Photos cut. Android Auto scoped to riding alongside Maps. Built the clickable
 prototype: Rams visual language, transit-diagram route, leg-scoped tabs, place
 detail with links and December normals, map with routes and pins.
+
+**Session 15 — what's next (1.3.0).**
+
+**Built now, not in December, and Kevin was right to push.** My reasoning for
+waiting was bad: you cannot test a driving feature in December. Deferred, its
+first real use is at 70mph on I-40 with one bar — and the map saga is what
+happens when something only worked in tests. Built now it gets shaken out on
+every drive between here and Christmas. Nothing arrives between now and then
+that changes the design.
+
+**It keys off position, never the date.** `whereAmI()` projects your GPS onto
+each selected route and takes the closest; the day is the one whose milepost
+span contains you. So being a day behind changes nothing. With no GPS it falls
+back to the first stop you haven't marked seen, so the screen still works parked
+at home.
+
+Shows: miles to the next chosen stop with its detour cost, the three after it,
+tonight's town with distance and drive time plus the bed if one is set,
+risk points within 260 miles, and progress along the leg.
+
+`watchPosition`, not a one-shot, because it is glanced at while moving — but
+only when asked, since a continuous GPS lock costs battery and there is no
+reason to hold one in August. If it was on last session the app reopens on Next
+and resumes it.
+
+Verified against a simulated position west of Winslow: 17 mi to Standin' on the
+Corner, then Wigwam Motel 51, Petrified Forest 70; tonight Gallup at 150 mi /
+2h25; Continental Divide flagged 175 mi ahead; header 727 in / 2,044 to go / 26%.
 
 **Session 14 — the editor (1.2.0).**
 

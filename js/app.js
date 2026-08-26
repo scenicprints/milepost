@@ -8,6 +8,7 @@ import * as syncmod from './sync.js';
 import { VERSION } from './version.js';
 
 const TABS = [
+  { id: 'next',  label: 'Next',  render: () => ui.renderNext() },
   { id: 'route', label: 'Route', render: ui.renderRoute },
   { id: 'map',   label: 'Map',   render: ui.renderMap },
   { id: 'days',  label: 'Days',  render: ui.renderDays },
@@ -48,6 +49,12 @@ async function boot() {
   draw();
   maybeShow();
   syncmod.resume();
+  // If location was on last session, pick it back up — you're probably still
+  // driving. Opens on Next in that case, which is the screen you want.
+  if (localStorage.getItem('milepost.watch') === '1') {
+    tab = 'next';
+    startWatch();
+  }
 }
 
 function draw() {
@@ -332,6 +339,34 @@ function applyUpdate() {
   else location.reload();
 }
 
+// ============================================================ location
+//
+// watchPosition, not a one-shot: this is a screen you glance at while moving.
+// Started only when asked, because a continuous GPS lock costs battery and
+// there is no reason to hold one in August.
+
+let watchId = null;
+
+function startWatch() {
+  if (!navigator.geolocation) return;
+  if (watchId != null) return;
+  watchId = navigator.geolocation.watchPosition(
+    p => { ui.setPosition([p.coords.latitude, p.coords.longitude]); draw(); },
+    () => { stopWatch(); },
+    { enableHighAccuracy: true, maximumAge: 15000, timeout: 20000 }
+  );
+  try { localStorage.setItem('milepost.watch', '1'); } catch (_) {}
+  draw();
+}
+
+function stopWatch() {
+  if (watchId != null) navigator.geolocation.clearWatch(watchId);
+  watchId = null;
+  try { localStorage.removeItem('milepost.watch'); } catch (_) {}
+}
+
+export function watching() { return watchId != null; }
+
 // ============================================================ events
 document.addEventListener('click', e => {
   if (e.target.closest('a')) return;              // let links be links
@@ -468,6 +503,8 @@ document.addEventListener('click', e => {
     return;
   }
   if (e.target.closest('[data-cleardep]')) { store.setDeparture(null); return; }
+
+  if (e.target.closest('[data-watch]')) { startWatch(); return; }
 
   if (e.target.closest('[data-locate]')) {
     navigator.geolocation?.getCurrentPosition(

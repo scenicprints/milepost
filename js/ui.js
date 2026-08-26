@@ -63,13 +63,22 @@ export function renderHead(legIx, tab) {
       <div class="wordmark">Milepost</div>
       <div class="whole">${Math.round(wm).toLocaleString()} mi · ${wd} days total</div>
     </div>
-    <div class="legname">${tab === "trip" ? "The whole trip" : esc(DATA.route.legs[legIx].name)}</div>
+    <div class="legname">${tab === "trip" ? "The whole trip"
+      : tab === "next" ? esc(DATA.route.legs[(whereAmI() || { legIx: 0 }).legIx].name)
+      : esc(DATA.route.legs[legIx].name)}</div>
     <div class="totals">
+      ${tab === "next" ? (() => {
+        const h = whereAmI() || { mile: 0, route: legRoute(0) };
+        const pct = Math.min(100, Math.max(0, h.mile / h.route.miles * 100));
+        return `<div><span class="tnum">${Math.round(h.mile).toLocaleString()}</span><span class="tlab">mi in</span></div>
+          <div><span class="tnum">${Math.round(h.route.miles - h.mile).toLocaleString()}</span><span class="tlab">to go</span></div>
+          <div><span class="tnum on">${Math.round(pct)}</span><span class="tlab">%</span></div>`;
+      })() : `
       <div><span class="tnum">${Math.round(tab === "trip" ? wm : t.miles).toLocaleString()}</span><span class="tlab">mi</span></div>
       <div><span class="tnum">${tab === "trip" ? wd : t.days}</span><span class="tlab">days</span></div>
-      <div><span class="tnum on">${tab === "trip" ? ws : t.stops}</span><span class="tlab">stops</span></div>
+      <div><span class="tnum on">${tab === "trip" ? ws : t.stops}</span><span class="tlab">stops</span></div>`}
     </div>
-    ${tab === "trip" ? "" : `<div class="legs">${DATA.route.legs.map((l, i) =>
+    ${tab === "trip" || tab === "next" ? "" : `<div class="legs">${DATA.route.legs.map((l, i) =>
       `<button data-leg="${i}" aria-selected="${i === legIx}">${esc(l.short || SHORT[i])}</button>`).join("")}</div>`}`;
 }
 
@@ -546,4 +555,127 @@ export function editorSheet() {
       <button class="${ready ? 'prim' : ''}" data-editor-save>${d.id ? 'Save' : 'Add it'}</button>
       ${d.id ? `<button data-editor-delete>Delete</button>` : ''}
     </div>`;
+}
+
+// ============================================================== what's next
+//
+// Keyed off WHERE YOU ARE, never off the date. A schedule view assumes the
+// schedule held; one snow day at Flagstaff and every date after it is wrong.
+// This asks the road, not the calendar.
+
+/// Which leg and milepost you are actually on, by projecting your position
+/// onto each selected route and taking the closest.
+export function whereAmI() {
+  if (!position) return null;
+  let best = null;
+  selected().forEach((route, legIx) => {
+    const p = project(position, route.waypoints, route.cum);
+    if (!best || p.off < best.off) best = { route, legIx, mile: p.mile, off: p.off };
+  });
+  if (!best) return null;
+  best.onRoute = best.off < 60;
+  return best;
+}
+
+/// Falls back to the first thing you have not marked seen, so the screen is
+/// still useful parked in the driveway in August.
+function fallbackSpot() {
+  const legs = selected();
+  for (let i = 0; i < legs.length; i++) {
+    const route = legs[i];
+    for (const s of route.stops) {
+      if (store.isChosen(s.id) && !store.isSeen(s.id) && s.kind !== 'lodging')
+        return { route, legIx: i, mile: Math.max(0, s.mile - 1), off: 0, onRoute: false, guessed: true };
+    }
+  }
+  return { route: legs[0], legIx: 0, mile: 0, off: 0, onRoute: false, guessed: true };
+}
+
+export function renderNext() {
+  const here = whereAmI() || fallbackSpot();
+  const rt = here.route;
+  const days = buildDays(rt, store.chosen, store.pace);
+  const day = days.find(d => here.mile >= d.startMile - 1 && here.mile <= d.endMile + 1) || days[0];
+
+  const ahead = rt.stops
+    .filter(s => s.kind !== 'lodging' && store.isChosen(s.id) && s.mile > here.mile - 2 && !store.isSeen(s.id))
+    .sort((a, b) => a.mile - b.mile);
+  const next = ahead[0];
+  const after = ahead.slice(1, 4);
+
+  const bed = day ? lodgingFor(rt, day.endMile) : null;
+  const toNight = day ? Math.max(0, day.endMile - here.mile) : 0;
+  const risks = rt.towns.filter(t => t.risk && t.mile > here.mile && t.mile < here.mile + 260);
+
+  let h = '<div class="nextbody">';
+
+  if (!position) {
+    h += `<div class="nonav">
+      <div class="sbody">This screen needs to know where you are. Everything below is a
+        guess from the first place you haven't marked seen.</div>
+      <div class="actions"><button class="on" data-watch>Turn on location</button></div>
+    </div>`;
+  }
+
+  if (next) {
+    const dist = Math.max(0, Math.round(next.mile - here.mile));
+    const c = stopCost(next);
+    h += `<button class="nextcard" data-stop="${next.id}">
+      <div class="nlab">Next</div>
+      <div class="nbig"><b>${dist.toLocaleString()}</b><span>mi</span></div>
+      <div class="nname">${esc(next.name)}</div>
+      <div class="nsub">${esc(next.town)}, ${esc(next.state)} · ${next.detour} min off the road
+        · ${fmtHours(c.total)} all in</div>
+    </button>
+    <div class="actions" style="margin-top:2px">
+      <a class="btn on" style="text-align:center;padding:13px 0"
+         href="https://www.google.com/maps/dir/?api=1&destination=${next.ll[0]},${next.ll[1]}"
+         target="_blank" rel="noopener">Navigate there</a>
+      <button data-seen="${next.id}">Been there</button>
+    </div>`;
+  } else {
+    h += `<div class="nextcard"><div class="nlab">Next</div>
+      <div class="nname">Nothing left on this leg.</div>
+      <div class="nsub">Everything you picked is marked seen.</div></div>`;
+  }
+
+  if (after.length) {
+    h += `<div class="nblock"><div class="slab">Then</div><div class="stoplist2">${
+      after.map(s => `<button class="nrow" data-stop="${s.id}">
+        <span class="t">${esc(s.name)}</span>
+        <span class="d">${Math.max(0, Math.round(s.mile - here.mile)).toLocaleString()} mi</span>
+      </button>`).join('')}</div></div>`;
+  }
+
+  if (day) {
+    h += `<div class="nblock"><div class="slab">Tonight</div>
+      <div class="nrow big">
+        <span class="t">${esc(day.overnight.name)}${day.overnight.state ? ', ' + esc(day.overnight.state) : ''}</span>
+        <span class="d">${Math.round(toNight).toLocaleString()} mi · ${fmtHours(toNight / store.pace.mph * 60)}</span>
+      </div>
+      ${bed
+        ? `<button class="nrow" data-stop="${bed.id}"><span class="t">${esc(bed.name)}</span>
+             <span class="d">booked in</span></button>`
+        : `<button class="nrow add" data-addbed="${here.legIx}" data-town="${esc(day.overnight.name)}"
+             data-st="${esc(day.overnight.state || '')}"><span class="t">No bed set for tonight</span>
+             <span class="d">add one</span></button>`}
+    </div>`;
+  }
+
+  if (risks.length) {
+    h += `<div class="nblock"><div class="slab">Watch out</div>${risks.map(t => `
+      <div class="nrow"><span class="t">${esc(t.name)}${t.elev ? ` · ${t.elev.toLocaleString()} ft` : ''}</span>
+        <span class="d">${Math.round(t.mile - here.mile).toLocaleString()} mi</span></div>
+      ${t.note ? `<div class="nnote">${esc(t.note)}</div>` : ''}`).join('')}</div>`;
+  }
+
+  const done = here.mile, left = Math.max(0, rt.miles - here.mile);
+  h += `<div class="nblock"><div class="slab">This leg</div>
+    <div class="nrow"><span class="t">Behind you</span><span class="d">${Math.round(done).toLocaleString()} mi</span></div>
+    <div class="nrow"><span class="t">Still to go</span><span class="d">${Math.round(left).toLocaleString()} mi</span></div>
+    <div class="bar"><i style="width:${Math.min(100, Math.max(0, done / rt.miles * 100)).toFixed(1)}%"></i></div>
+    ${here.onRoute === false && position ? `<div class="nnote">You're ${Math.round(here.off)} miles off the route — these numbers assume you rejoin it.</div>` : ''}
+  </div>`;
+
+  return h + '</div>';
 }
