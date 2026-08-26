@@ -347,6 +347,54 @@ Photos cut. Android Auto scoped to riding alongside Maps. Built the clickable
 prototype: Rams visual language, transit-diagram route, leg-scoped tabs, place
 detail with links and December normals, map with routes and pins.
 
+**Session 20 — choosing the way happens on the map now (1.5.0).**
+
+Kevin: *"this should actually sit in the Map part. So you can visually see the
+difference."* He was right, and it exposed the real gap: **the map had never
+drawn the alternative at all.** `paint()` was given `selected()` — the chosen
+route of each leg — so there was nothing on screen to compare. Adding prose to
+the Route tab (1.4.0) had been answering the wrong question.
+
+**Three lines on the map now, three weights.** Other legs faint `--rule2`; the
+option you are NOT taking in `--ink2`, dashed; the way you are going solid
+`--ink`. Contrast against the land, measured in both themes: 1.4 / 3.6 / 13.7
+light, 1.7 / 4.3 / 12.7 dark. The alternative was `--ink3` first and it
+disappeared into the ground in dark mode.
+
+**A slim picker in the head**, under the leg selector, on the three leg-scoped
+tabs. Mono, no boxes, no rules — a dial, not a second row of tabs. The chosen
+one is in the signal colour, which still only means "in your plan".
+
+**The route's case lives in a drawer at the foot of the map**, shut by default:
+one line, `Why` on the right. It reuses the `.rtopt` component built in 1.4.0,
+so there is one definition of what a route option looks like. Capped at 34vh so
+247px of map stays visible while you read — reading and looking are the same act
+here.
+
+**Two things done deliberately:**
+
+- **Swapping a route no longer resets the view.** It used to call `resetTf()`.
+  You zoom into Arizona to see where the two lines split, tap the other route,
+  and refitting would throw that away — the same mistake `resetView()` made on
+  every aspect change in session 8. Verified: the transform is byte-identical
+  across a swap from either the picker or the drawer.
+- **The drawer toggles by mutating its own element, not through `draw()`**, so
+  opening it never repaints the map underneath. Verified the SVG is untouched.
+
+**No stop list under the map, and that was a refusal.** Kevin asked for one.
+It is the whole Route tab one tap away, and session 7 records him calling a list
+under the map "that annoying list underneath it" before it was removed. He took
+the argument.
+
+**The Route tab is now only the stops** — the fat route rows are gone and the
+first stop sits 82px down instead of 563px, which retires the space problem
+1.4.0 created.
+
+**Gotcha for the next agent:** `node --check` parses a file as CommonJS and
+**missed a duplicate `const` declaration** in `app.js` that the browser caught
+instantly. Check modules with `node --input-type=module --check < file`, or just
+load the app.
+
 **Session 19 — the case for each route, which was written and never shown (1.4.0).**
 
 Kevin, on alternate routes: *"that was discussed on having multiple routes in

@@ -61,7 +61,7 @@ export function fitTransform(box, w, h) {
 /// Everything is drawn at `px / scale` so it renders at `px` on screen for the
 /// scale we are painting for. Repaint after a zoom and sizes are right again.
 export function paint(usa, routes, active, opts = {}) {
-  const { chosen = new Set(), seen = new Set(), pos = null, scale = 1, view = null } = opts;
+  const { chosen = new Set(), seen = new Set(), alts = [], pos = null, scale = 1, view = null } = opts;
   const u = 1 / scale;
   const n = k => (k * u).toFixed(2);
 
@@ -83,6 +83,14 @@ export function paint(usa, routes, active, opts = {}) {
 
   for (const r of routes)
     out.push('<path class="mroute" d="' + poly(r.waypoints.map(w => w.ll)) + '" stroke-width="' + n(2) + '"/>');
+
+  // The road not taken. Dashed, and darker than the other legs' lines, because
+  // it is the thing you are deciding about — you should be able to see where it
+  // splits off and where it rejoins. Solid ink is always the way you are going.
+  for (const r of alts)
+    out.push('<path class="mroute alt" d="' + poly(r.waypoints.map(w => w.ll)) +
+      '" stroke-width="' + n(1.8) + '" stroke-dasharray="' + n(7) + ' ' + n(5) + '"/>');
+
   out.push('<path class="mroute act" d="' + poly(active.waypoints.map(w => w.ll)) + '" stroke-width="' + n(2.6) + '"/>');
 
   for (const st of active.stops) {

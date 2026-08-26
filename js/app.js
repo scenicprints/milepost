@@ -382,8 +382,25 @@ document.addEventListener('click', e => {
     return;
   }
 
+  const dr = e.target.closest('[data-drawer]');
+  if (dr) {
+    // Toggled on the element rather than through draw(), so opening the drawer
+    // never repaints the map underneath it.
+    ui.setDrawer(!ui.drawerOpen());
+    const el = document.getElementById('mways');
+    if (el) {
+      el.classList.toggle('up', ui.drawerOpen());
+      el.querySelector('.mwbar').setAttribute('aria-expanded', String(ui.drawerOpen()));
+      el.querySelector('.x').textContent = ui.drawerOpen() ? 'Close' : 'Why';
+    }
+    return;
+  }
+
+  // The view is NOT reset. You swap routes to watch the line move, and refitting
+  // would throw away the zoom you did to see where they split — the same mistake
+  // resetView() made on every aspect change in session 8.
   const r = e.target.closest('[data-route]');
-  if (r) { store.setRoute(r.dataset.rleg, r.dataset.route); ui.resetTf(); return; }
+  if (r) { store.setRoute(r.dataset.rleg, r.dataset.route); return; }
 
   const g = e.target.closest('[data-leg]');
   if (g) { legIx = Number(g.dataset.leg); sheet = null; ui.resetTf(); draw(); return; }

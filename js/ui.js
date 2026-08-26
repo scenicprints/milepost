@@ -79,31 +79,20 @@ export function renderHead(legIx, tab) {
       <div><span class="tnum on">${tab === "trip" ? ws : t.stops}</span><span class="tlab">stops</span></div>`}
     </div>
     ${tab === "trip" || tab === "next" ? "" : `<div class="legs">${DATA.route.legs.map((l, i) =>
-      `<button data-leg="${i}" aria-selected="${i === legIx}">${esc(l.short || SHORT[i])}</button>`).join("")}</div>`}`;
+      `<button data-leg="${i}" aria-selected="${i === legIx}">${esc(l.short || SHORT[i])}</button>`).join("")}</div>
+    <div class="ways">${DATA.route.legs[legIx].routes.map(o =>
+      `<button data-route="${o.id}" data-rleg="${DATA.route.legs[legIx].id}"
+        aria-pressed="${o.id === rt.id}">${esc(o.name)}</button>`).join("")}</div>`}`;
 }
 
 const SHORT = ["Carolina", "Houston", "Home"];
 
 // ============================================================== route
 export function renderRoute(legIx) {
-  const leg = DATA.route.legs[legIx], rt = legRoute(legIx);
+  const rt = legRoute(legIx);
   let h = '<div class="routes">';
-  // The case for each option, not just its mileage. You pick a route at a rest
-  // stop with I-40 shut at Flagstaff, and "2,771 mi" against "2,984 mi" is not
-  // enough to decide on. The prose is already in route.json; it was just never
-  // shown. It sits OUTSIDE the button so reading it cannot swap your route.
-  for (const opt of leg.routes) {
-    const b = routeById(opt.id);
-    h += `<div class="rtopt">
-      <button class="rt" aria-pressed="${opt.id === rt.id}" data-route="${opt.id}" data-rleg="${leg.id}">
-        <span class="dot"></span><span class="rn">${esc(opt.name)}</span>
-        <span class="rm">${Math.round(b.miles).toLocaleString()} mi</span></button>
-      ${opt.road ? `<div class="rroad">${esc(opt.road)}</div>` : ""}
-      ${opt.character ? `<div class="rchar">${esc(opt.character)}</div>` : ""}
-      ${opt.why ? `<div class="rwhy">${esc(opt.why)}</div>` : ""}
-      ${opt.costs ? `<div class="rcost">${esc(opt.costs)}</div>` : ""}
-    </div>`;
-  }
+  // Choosing the route happens on the Map, where you can see the two lines
+  // split. This tab is the stops.
   h += `<button class="rt addrow" data-add><span class="dot plus">+</span>
       <span class="rn">Add a place of your own</span></button>`;
   h += '</div><div class="line">';
@@ -144,6 +133,25 @@ export const resetTf = () => { tf = null; };
 // kept for the old call sites
 export const resetView = resetTf;
 
+/// The drawer at the foot of the map. Survives redraws, like the map transform.
+let drawer = false;
+export const drawerOpen = () => drawer;
+export const setDrawer = v => { drawer = !!v; };
+
+/// One route option: the selector, then the case for taking it.
+function routeOption(leg, opt, chosenId) {
+  const b = routeById(opt.id);
+  return `<div class="rtopt">
+    <button class="rt" aria-pressed="${opt.id === chosenId}" data-route="${opt.id}" data-rleg="${leg.id}">
+      <span class="dot"></span><span class="rn">${esc(opt.name)}</span>
+      <span class="rm">${Math.round(b.miles).toLocaleString()} mi</span></button>
+    ${opt.road ? `<div class="rroad">${esc(opt.road)}</div>` : ""}
+    ${opt.character ? `<div class="rchar">${esc(opt.character)}</div>` : ""}
+    ${opt.why ? `<div class="rwhy">${esc(opt.why)}</div>` : ""}
+    ${opt.costs ? `<div class="rcost">${esc(opt.costs)}</div>` : ""}
+  </div>`;
+}
+
 export function renderMap(legIx) {
   const rt = legRoute(legIx);
   return `<div class="mapbox" id="mapbox">
@@ -157,6 +165,15 @@ export function renderMap(legIx) {
         <button data-zoom="out" aria-label="Zoom out">−</button>
         <button class="fit" data-zoom="fit" aria-label="Fit to leg">FIT</button>
       </div>
+      <div class="mways${drawer ? " up" : ""}" id="mways">
+        <button class="mwbar" data-drawer aria-expanded="${drawer}">
+          <span class="t">${esc(rt.name)}</span>
+          <span class="m">${Math.round(rt.miles).toLocaleString()} mi</span>
+          <span class="x">${drawer ? "Close" : "Why"}</span>
+        </button>
+        <div class="mwbody">${DATA.route.legs[legIx].routes
+          .map(o => routeOption(DATA.route.legs[legIx], o, rt.id)).join("")}</div>
+      </div>
     </div>`;
 }
 
@@ -167,8 +184,10 @@ const seenSet = () => new Set(allStops().filter(s => store.isSeen(s.id)).map(s =
 export function paintMap(legIx, scale, view) {
   const svg = document.getElementById("msvg");
   if (!svg) return;
-  svg.innerHTML = mapview.paint(DATA.usa, selected(), legRoute(legIx), {
+  const leg = DATA.route.legs[legIx], cur = legRoute(legIx);
+  svg.innerHTML = mapview.paint(DATA.usa, selected(), cur, {
     chosen: store.chosen, seen: seenSet(), pos: position, scale, view,
+    alts: leg.routes.filter(o => o.id !== cur.id).map(o => routeById(o.id)),
   });
 }
 

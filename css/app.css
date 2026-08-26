@@ -96,6 +96,15 @@ input, textarea { font: inherit; color: inherit; }
 }
 .legs button[aria-selected="true"] { color: var(--ink); border-top-color: var(--signal); }
 
+/* Which way you are going. A dial under the band selector, not a second row of
+   tabs — hence no rules, no boxes, just the names. */
+.ways { display: flex; flex-wrap: wrap; gap: 4px 18px; padding: 10px 0 2px; }
+.ways button {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .05em;
+  color: var(--ink3); padding: 1px 0;
+}
+.ways button[aria-pressed="true"] { color: var(--signal); }
+
 /* overscroll-behavior contains the scroll chain so the browser never turns an
    over-scroll into pull-to-refresh. That gesture was eating every swipe-down
    the app wants to use itself. */
@@ -120,9 +129,11 @@ input, textarea { font: inherit; color: inherit; }
 /* ------------------------------------------------------------------ route */
 .routes { padding: 20px 0 2px; }
 .rt { display: flex; align-items: center; gap: 13px; padding: 10px 0; width: 100%; border-bottom: 1px solid var(--rule); }
-/* One option and everything that argues for it. The prose is indented to the
-   route name's left edge — dot 11 + gap 13 — so every line starts on one edge. */
+/* One option and everything that argues for it. Lives in the map drawer, where
+   the choice is made. The prose is indented to the route name's left edge —
+   dot 11 + gap 13 — so every line starts on one edge. */
 .rtopt { border-bottom: 1px solid var(--rule); padding-bottom: 15px; }
+.rtopt:last-child { border-bottom: 0; padding-bottom: 4px; }
 .rtopt .rt { border-bottom: 0; padding-bottom: 2px; }
 .rroad, .rchar, .rwhy, .rcost { padding-left: 24px; }
 .rroad { font-size: 10.5px; font-family: var(--mono); color: var(--ink3); letter-spacing: .05em; margin-top: 5px; }
@@ -191,6 +202,9 @@ input, textarea { font: inherit; color: inherit; }
 .mhalo { fill: none; stroke: var(--paper); stroke-linejoin: round; font-family: var(--sans); }
 .mroute { fill: none; stroke: var(--rule2); stroke-linejoin: round; stroke-linecap: round; }
 .mroute.act { stroke: var(--ink); }
+/* The option you are not taking. Darker than the other legs so it reads as a
+   choice rather than background, dashed so it never reads as the way you go. */
+.mroute.alt { stroke: var(--ink2); }
 .mpin { fill: var(--paper); stroke: var(--rule2); cursor: pointer; }
 .mpin.on { fill: var(--signal); stroke: var(--signal); }
 .mhome { fill: var(--ink); }
@@ -203,6 +217,18 @@ input, textarea { font: inherit; color: inherit; }
 }
 .zoom button + button { margin-top: -1px; }
 .zoom .fit { font-size: 9px; letter-spacing: .06em; }
+
+/* The case for the way you are going, at the foot of the map. Shut by default:
+   a list under the map is the thing that got removed in session 7. */
+.mways { position: absolute; left: 0; right: 0; bottom: 0; background: var(--paper); border-top: 1px solid var(--rule); }
+.mwbar { display: flex; align-items: baseline; gap: 12px; width: 100%; padding: 13px 24px 14px; }
+.mwbar .t { font-size: 13px; flex: 1; }
+.mwbar .m { font-size: 11px; font-family: var(--mono); color: var(--ink2); font-variant-numeric: tabular-nums; }
+.mwbar .x { font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink2); }
+/* Capped so the two lines on the map stay visible while you read about them.
+   Reading and looking are the same act here. */
+.mwbody { display: none; padding: 0 24px 20px; max-height: 34vh; overflow-y: auto; overscroll-behavior: contain; }
+.mways.up .mwbody { display: block; }
 
 /* ------------------------------------------------------------------ sheet */
 .sheet {
