@@ -10,7 +10,6 @@ import { buildDays, planTotals, suggestStops } from './plan.js';
 import * as mapview from './map.js';
 import * as syncmod from './sync.js';
 import { VERSION } from './version.js';
-import { tripStats, money } from './stats.js';
 import * as wx from './weather.js';
 
 let DATA = null;              // { route, stops, usa }
@@ -422,90 +421,4 @@ export function plannedDate(id) {
     }
   }
   return null;
-}
-
-// ============================================================== stats
-const n0 = v => Math.round(v).toLocaleString();
-const n1 = v => (Math.round(v * 10) / 10).toLocaleString();
-const usd = v => "$" + Math.round(v).toLocaleString();
-
-function row(k, v, sub) {
-  return `<div class="srow2"><span class="k">${k}</span><span class="v">${v}</span>${
-    sub ? `<span class="s">${sub}</span>` : ""}</div>`;
-}
-function block(title, rows) {
-  return `<div class="statblock"><div class="slab">${title}</div>${rows}</div>`;
-}
-
-export function renderStats() {
-  const S = tripStats(selected(), store.chosen, store);
-  const f = S.fuel;
-  const dep = store.departure;
-  const out = [];
-
-  out.push(`<div class="bignums">
-    <div><b>${n0(S.miles)}</b><span>miles</span></div>
-    <div><b>${S.days}</b><span>driving days</span></div>
-    <div><b>${n0(S.driveMins / 60)}</b><span>hours at the wheel</span></div>
-    <div><b>${S.stops}</b><span>stops</span></div>
-  </div>`);
-
-  out.push(block("The drive", [
-    row("Average day", n0(S.milesPerDay) + " mi", n1(S.hoursPerDay) + "h driving"),
-    row("Longest day", S.longest ? n0(S.longest.miles) + " mi" : "—",
-        S.longest ? esc(S.longest.from.name) + " → " + esc(S.longest.overnight.name) : ""),
-    row("Shortest day", S.shortest ? n0(S.shortest.miles) + " mi" : "—",
-        S.shortest ? esc(S.shortest.from.name) + " → " + esc(S.shortest.overnight.name) : ""),
-    row("Time stopped", n1(S.stopMins / 60) + "h", n1(S.detourMins / 60) + "h of it just detouring"),
-    row("Second nights", String(S.secondNights), "days you don't move on"),
-  ].join("")));
-
-  out.push(block("Fuel", [
-    row("Estimated", n0(S.gallons) + " gal", usd(S.fuelCost) + " at " + n1(S.mpg) + " mpg"),
-    row("Fill-ups logged", String(f.count), f.count ? usd(f.spend) + " spent" : "none yet"),
-    row("Measured mpg", f.avgMpg ? n1(f.avgMpg) : "—",
-        f.avgMpg ? `best ${n1(f.bestMpg)} · worst ${n1(f.worstMpg)}` : "needs two full fill-ups"),
-    row("Price per gallon", f.avgPrice ? "$" + n1(f.avgPrice) : "—", f.count ? "your average" : ""),
-  ].join("")));
-
-  out.push(`<div class="statblock"><div class="slab">Log a fill-up</div>
-    <div class="fillform">
-      <input id="f-odo" class="tinput" inputmode="decimal" placeholder="Odometer">
-      <input id="f-gal" class="tinput" inputmode="decimal" placeholder="Gallons">
-      <input id="f-ppg" class="tinput" inputmode="decimal" placeholder="$ / gal">
-    </div>
-    <div class="actions"><button data-addfill>Add</button>
-      <button data-partial="0" id="f-part">Full tank</button></div>
-    ${f.count ? `<div class="links" style="margin-top:6px">${store.fills.slice().reverse().map(x =>
-      `<button data-delfill="${x.id}">${n0(x.odometer)} mi · ${n1(x.gallons)} gal${x.partial ? " · partial" : ""}
-        <span>${usd(x.gallons * x.pricePerGallon)}</span></button>`).join("")}</div>` : ""}
-  </div>`);
-
-  out.push(block("The country", [
-    row("States", String(S.states.length), S.states.join(" · ")),
-    row("Highest point", S.high ? n0(S.high.elev) + " ft" : "—", S.high ? esc(S.high.name) : ""),
-    row("Winter watch days", String(S.riskDays), "of " + S.days),
-  ].join("")));
-
-  out.push(block("Places", [
-    row("In the plan", S.stops + " of " + S.available, "stops available on your routes"),
-    row("Firsts", S.firstsIn + " of " + S.firstsAll, "no California equivalent"),
-    row("Seen so far", String(S.seen), S.seen ? "and counting" : "trip hasn't started"),
-    row("Admission", usd(S.admission), S.unpriced ? S.unpriced + " with no price listed" : "everything priced"),
-  ].join("")));
-
-  if (S.tags.length) out.push(block("What you picked", S.tags.slice(0, 8)
-    .map(([t, c]) => row(t, String(c), "")).join("")));
-
-  out.push(block("Per leg", S.legs.map((l, i) =>
-    row(esc(DATA.route.legs[i].name), n0(l.totals.miles) + " mi",
-        l.totals.days + " days · " + l.totals.stops + " stops")).join("")));
-
-  if (dep) {
-    const left = Math.ceil((new Date(dep + "T00:00:00") - new Date()) / 86400000);
-    out.push(block("Countdown", row(left > 0 ? "Days until you leave" : "Days since you left",
-      String(Math.abs(left)), esc(dep))));
-  }
-
-  return `<div class="statsbody">${out.join("")}</div>`;
 }

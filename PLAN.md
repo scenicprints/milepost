@@ -341,6 +341,21 @@ Photos cut. Android Auto scoped to riding alongside Maps. Built the clickable
 prototype: Rams visual language, transit-diagram route, leg-scoped tabs, place
 detail with links and December normals, map with routes and pins.
 
+**Session 13** — Stats removed at Kevin's call: "they look too cumbersome."
+Gone entirely — the tab, `js/stats.js`, the fuel log, its store model and its
+styles. Back to four tabs. Bookings, weather and notes all stay.
+
+**Correction on FuelWise, because I had it wrong.** FuelWise ships
+`native/UpkeepProvider.kt`, an Android **ContentProvider**, and Upkeep reads the
+fuel log through it on-device — no token, no network, no repo. Its own comment
+calls a cloud round-trip "absurd ceremony for two apps six inches apart." The
+accurate statement is that FuelWise is unreachable **from a web app**, not
+unreachable: Milepost runs in a browser sandbox and cannot query a
+ContentProvider. (The provider is also deliberately minimal — odometer and date
+only, no gallons or price — so it could not produce MPG anyway.) **If a future
+agent wants app-to-app data on this phone, the ContentProvider is the pattern;
+it just isn't available to this app.**
+
 **Session 12 — bookings, real weather, stats (1.1.0).**
 
 **FuelWise cannot be connected, and this is why.** `scenicprints/fuelwise-data`

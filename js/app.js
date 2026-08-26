@@ -11,7 +11,6 @@ const TABS = [
   { id: 'route', label: 'Route', render: ui.renderRoute },
   { id: 'map',   label: 'Map',   render: ui.renderMap },
   { id: 'days',  label: 'Days',  render: ui.renderDays },
-  { id: 'stats', label: 'Stats', render: () => ui.renderStats() },
   { id: 'trip',  label: 'Trip',  render: () => ui.renderTrip(upd) },
 ];
 
@@ -52,7 +51,7 @@ async function boot() {
 }
 
 function draw() {
-  $head.innerHTML = ui.renderHead(legIx, tab === 'stats' ? 'trip' : tab);
+  $head.innerHTML = ui.renderHead(legIx, tab);
   $scroll.className = 'scroll' + (tab === 'map' ? ' ismap' : '');
   $scroll.innerHTML = TABS.find(t => t.id === tab).render(legIx);
   for (const b of $tabs.querySelectorAll('[data-tab]'))
@@ -345,31 +344,6 @@ document.addEventListener('click', e => {
 
   const bk = e.target.closest('[data-book]');
   if (bk) { store.toggleBooked(bk.dataset.book); return; }
-
-  const pt = e.target.closest('[data-partial]');
-  if (pt) {
-    const on = pt.dataset.partial === '1';
-    pt.dataset.partial = on ? '0' : '1';
-    pt.textContent = on ? 'Full tank' : 'Partial fill';
-    pt.classList.toggle('on', !on);
-    return;
-  }
-
-  if (e.target.closest('[data-addfill]')) {
-    const num = id => parseFloat((document.getElementById(id) || {}).value);
-    const odo = num('f-odo'), gal = num('f-gal'), ppg = num('f-ppg');
-    const part = (document.getElementById('f-part') || {}).dataset?.partial === '1';
-    if (!(odo > 0) || !(gal > 0)) {
-      const el = document.getElementById(odo > 0 ? 'f-gal' : 'f-odo');
-      if (el) { el.style.borderColor = 'var(--signal)'; el.focus(); }
-      return;
-    }
-    store.addFill({ odometer: odo, gallons: gal, pricePerGallon: ppg || store.s.gas, partial: part });
-    return;
-  }
-
-  const df = e.target.closest('[data-delfill]');
-  if (df) { store.removeFill(df.dataset.delfill); return; }
 
   const st = e.target.closest('[data-stop]');
   if (st) { sheet = { kind: 'place', id: st.dataset.stop }; draw(); return; }
