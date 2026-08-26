@@ -16,6 +16,10 @@ const DEFAULTS = () => ({
   chosen: [],            // stop ids
   seen: {},              // stopId -> yyyy-mm-dd
   notes: {},             // stopId -> text
+  booked: {},            // stopId -> yyyy-mm-dd it was booked
+  fills: [],             // FuelWise's FillUp shape, so the two stay swappable
+  mpg: 45,               // assumed until real fill-ups say otherwise
+  gas: 3.60,             // assumed $/gal
   pace: { ...DEFAULT_PACE },
   departure: null,       // yyyy-mm-dd, set by the user, never committed
   seeded: false,
@@ -86,6 +90,40 @@ class Store extends EventTarget {
 
   note(id) { return this.s.notes[id] || ''; }
   setNote(id, t) { this.s.notes[id] = t; this.save(); }
+  /// Save without notifying, so typing in a textarea doesn't redraw it away.
+  setNoteQuiet(id, t) {
+    this.s.notes[id] = t;
+    this.s.updatedAt = Date.now();
+    try { localStorage.setItem(KEY, JSON.stringify({ ...this.s, chosen: [...this.chosen] })); } catch (_) {}
+  }
+
+  // ---- bookings ----
+  isBooked(id) { return !!this.s.booked[id]; }
+  bookedOn(id) { return this.s.booked[id]; }
+  toggleBooked(id) {
+    if (this.s.booked[id]) delete this.s.booked[id];
+    else this.s.booked[id] = new Date().toISOString().slice(0, 10);
+    this.save();
+  }
+
+  // ---- fuel ----
+  get fills() { return this.s.fills || (this.s.fills = []); }
+  addFill(f) {
+    this.fills.push({
+      id: 'f' + Date.now().toString(36),
+      vehicleId: 'accord',
+      date: f.date || new Date().toISOString(),
+      odometer: Number(f.odometer) || 0,
+      gallons: Number(f.gallons) || 0,
+      pricePerGallon: Number(f.pricePerGallon) || 0,
+      station: f.station || null,
+      partial: !!f.partial,
+      note: f.note || null,
+    });
+    this.save();
+  }
+  removeFill(id) { this.s.fills = this.fills.filter(f => f.id !== id); this.save(); }
+  setAssumption(k, v) { this.s[k] = Number(v) || this.s[k]; this.save(); }
 
   // ---- pace ----
   get pace() { return this.s.pace; }

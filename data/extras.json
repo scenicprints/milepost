@@ -1,5 +1,5 @@
 {
- "_comment": "Shared by the app and the prototype. sites: official pages, BEST EFFORT and not all verified — the nps.gov pattern is reliable, the commercial ones are not confirmed. normals: typical late-December high/low in F, hand-assigned regional approximations, NOT from a weather service. Replace with Open-Meteo historical normals when live weather lands.",
+ "_comment": "Shared by the app and the prototype. sites: official pages, BEST EFFORT and not all verified — the nps.gov pattern is reliable, the commercial ones are not confirmed. normals: typical late-December high/low in F, hand-assigned regional approximations, NOT from a weather service. Replace with Open-Meteo historical normals when live weather lands. bookings: stops that must be reserved, with how many days ahead (lead) the deadline falls before departure.",
  "sites": {
   "grand-canyon": "https://www.nps.gov/grca",
   "petrified-forest": "https://www.nps.gov/pefo",
@@ -265,5 +265,55 @@
    57,
    37
   ]
+ },
+ "bookings": {
+  "biltmore": {
+   "lead": 45,
+   "note": "Christmas at Biltmore sells out weeks ahead. Candlelight evenings go first."
+  },
+  "french-quarter": {
+   "lead": 60,
+   "note": "New Year's Eve in New Orleans — the room, not the quarter. Book early."
+  },
+  "grand-canyon": {
+   "lead": 45,
+   "note": "Only if you want to sleep on the rim. Day visits need nothing."
+  },
+  "carlsbad": {
+   "lead": 14,
+   "note": "Timed entry reservation required to walk in."
+  },
+  "georgia-aquarium": {
+   "lead": 14,
+   "note": "Timed ticket, and holiday week is its busiest of the year."
+  },
+  "desert-botanical": {
+   "lead": 21,
+   "note": "Las Noches de las Luminarias needs a timed ticket."
+  },
+  "pima-air": {
+   "lead": 21,
+   "note": "The boneyard bus tour is weekdays only and books out."
+  },
+  "dollywood": {
+   "lead": 14,
+   "note": "Closed some weekdays in winter — check the calendar before counting on it."
+  },
+  "graceland": {
+   "lead": 7,
+   "note": "Timed entry. Closed Christmas Day."
+  },
+  "space-center": {
+   "lead": 7,
+   "note": "Very busy over the holidays; a timed ticket saves the queue."
+  },
+  "sixth-floor": {
+   "lead": 7,
+   "note": "Timed tickets."
+  },
+  "balmorhea": {
+   "lead": 30,
+   "note": "Has closed for long repair stretches. Confirm it is open before detouring."
+  }
  }
 }

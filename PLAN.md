@@ -341,6 +341,40 @@ Photos cut. Android Auto scoped to riding alongside Maps. Built the clickable
 prototype: Rams visual language, transit-diagram route, leg-scoped tabs, place
 detail with links and December normals, map with routes and pins.
 
+**Session 12 — bookings, real weather, stats (1.1.0).**
+
+**FuelWise cannot be connected, and this is why.** `scenicprints/fuelwise-data`
+is empty — a 79-byte README, untouched since July. FuelWise only pushes
+`data.json` there once a PAT is pasted into it, and that never happened. Even if
+it had, the repo is **private** and Milepost is a **public** web app: reading it
+would mean publishing a credential. So Milepost has its own fill-up log using
+**FuelWise's exact `FillUp` schema** (`odometer`, `gallons`, `pricePerGallon`,
+`station`, `partial`), which keeps the two interchangeable, and MPG is computed
+the same way — only full fills close an interval; partials just add gallons.
+
+**Bookings.** `data/extras.json` gained a `bookings` map: which stops must be
+reserved and how many days ahead (`lead`). Deadline = departure minus lead, so
+without a departure date the app says so rather than inventing one. The place
+sheet gets a Booking block, Trip lists what's outstanding sorted by urgency.
+Verified with a Dec 18 departure: French Quarter Oct 19, Biltmore Nov 3.
+
+**Weather is real now.** `js/weather.js` uses Open-Meteo. Two endpoints for two
+questions: the forecast API when the planned date is inside 16 days (so nothing
+until December), and the **archive** API averaged over the same late-December
+window across 5 years for honest normals right now. That replaces the
+hand-assigned numbers, which were my estimates — Asheville was 49/29 by hand and
+is 51/31 in fact. Cached in localStorage, served cache-first, degrades to the
+table offline. The service worker ignores cross-origin so it never interferes.
+
+**Stats tab**, fifth tab. Derived from the plan, nothing stored: distance,
+pace, longest and shortest day, time stopped vs detouring, fuel estimated and
+measured, states crossed, highest point, winter-watch days, admission total with
+unpriced counted separately, firsts, tags, per-leg breakdown, countdown.
+
+Also finished the half-built notes: the store had `note`/`setNote` with no UI.
+There is a textarea in the place sheet now, saving debounced through
+`setNoteQuiet` so typing doesn't redraw the field away.
+
 **Session 11** — Kevin: "that last update didn't take, when I swipe down the
 refresh icon still appears, and I don't see settings anywhere."
 

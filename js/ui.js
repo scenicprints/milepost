@@ -10,6 +10,8 @@ import { buildDays, planTotals, suggestStops } from './plan.js';
 import * as mapview from './map.js';
 import * as syncmod from './sync.js';
 import { VERSION } from './version.js';
+import { tripStats, money } from './stats.js';
+import * as wx from './weather.js';
 
 let DATA = null;              // { route, stops, usa }
 const built = new Map();      // routeId -> built route
@@ -163,7 +165,8 @@ export function placeSheet(id) {
   const c = stopCost(s), hh = Math.floor(c.total / 60), mm = c.total % 60;
   const q = encodeURIComponent(`${s.name} ${s.town} ${s.state}`);
   const site = DATA.sites[s.id];
-  const wx = DATA.normals[s.town];
+  const nrm = DATA.normals[s.town];
+  const book = DATA.bookings[s.id];
 
   return `<div class="grab" data-grab><i></i></div>
     <div class="sh">
@@ -181,8 +184,21 @@ export function placeSheet(id) {
 
       <div class="sdiv"></div>
       <div class="slab">Late December</div>
-      ${wx ? `<div class="temps"><b>${wx[0]}°</b><s>${wx[1]}°</s><em>typical high / low</em></div>` : ""}
+      <div id="wx-${esc(s.id)}">${tempLine(nrm, null)}</div>
       ${s.winter ? `<div class="sbody">${esc(s.winter)}</div>` : ""}
+
+      ${book ? `<div class="sdiv"></div>
+        <div class="slab">Booking</div>
+        <div class="sbody">${esc(book.note)}</div>
+        <div class="srow">${bookDeadline(book)}</div>
+        <div class="links" style="margin-top:12px">
+          <button data-book="${esc(s.id)}">${store.isBooked(s.id) ? "Booked" : "Mark as booked"}<span>${store.isBooked(s.id) ? esc(store.bookedOn(s.id)) : "not yet"}</span></button>
+        </div>` : ""}
+
+      <div class="sdiv"></div>
+      <div class="slab">Notes</div>
+      <textarea class="tinput" rows="3" data-note="${esc(s.id)}"
+        placeholder="Anything worth remembering">${esc(store.note(s.id))}</textarea>
 
       ${s.first ? `<div class="sdiv"></div><div class="slab">A first</div>
         <div class="sbody">There is nothing in California like this.</div>` : ""}
@@ -255,6 +271,10 @@ export function renderTrip(upd = {}) {
         </div>` : ""}
 
       <div class="sdiv"></div>
+      <div class="slab">Bookings</div>
+      ${bookingList()}
+
+      <div class="sdiv"></div>
       <div class="slab">Winter watch</div>
       ${riskList()}
 
@@ -317,4 +337,175 @@ function dotLinks() {
       if (d) h += `<a href="${d.url}" target="_blank" rel="noopener">${esc(d.name)}<span>${esc(t.state)}</span></a>`;
     }
   return h;
+}
+
+// ============================================================== bookings
+/// Deadline = departure minus the lead time. Without a departure date there is
+/// no deadline to compute, which is the honest answer rather than a fake one.
+export function bookDeadline(book) {
+  const dep = store.departure;
+  if (!dep) return `Book about ${book.lead} days before you leave — set a departure date and this becomes a real date.`;
+  const d = new Date(dep + "T00:00:00");
+  d.setDate(d.getDate() - book.lead);
+  const iso = d.toISOString().slice(0, 10);
+  const left = Math.ceil((d - new Date()) / 86400000);
+  return left >= 0 ? `Book by ${iso} — ${left} days from now.` : `Book by ${iso} — that was ${-left} days ago.`;
+}
+
+function bookingList() {
+  const chosen = allStops().filter(s => store.isChosen(s.id) && DATA.bookings[s.id]);
+  if (!chosen.length)
+    return `<div class="sbody" style="font-size:13px;color:var(--ink2)">Nothing in your plan needs booking ahead.</div>`;
+  const dep = store.departure;
+  const withDate = chosen.map(s => {
+    const b = DATA.bookings[s.id];
+    let due = null;
+    if (dep) { const d = new Date(dep + "T00:00:00"); d.setDate(d.getDate() - b.lead); due = d; }
+    return { s, b, due };
+  }).sort((a, c) => (a.due && c.due ? a.due - c.due : c.b.lead - a.b.lead));
+
+  const open = withDate.filter(x => !store.isBooked(x.s.id)).length;
+  return `<div class="sbody" style="font-size:13px;color:var(--ink2)">
+      ${open ? `${open} of ${withDate.length} still to book.` : `All ${withDate.length} booked.`}
+      ${dep ? "" : " Set a departure date to turn the lead times into deadlines."}
+    </div>
+    <div class="links" style="margin-top:12px">
+      ${withDate.map(x => `<button data-stop="${x.s.id}">${esc(x.s.name)}<span>${
+        store.isBooked(x.s.id) ? "booked"
+          : x.due ? x.due.toISOString().slice(0, 10)
+          : x.b.lead + "d ahead"}</span></button>`).join("")}
+    </div>`;
+}
+
+// ============================================================== live weather
+/// Shows what we have now and upgrades in place when the network answers.
+function tempLine(nrm, live) {
+  if (live && live.hi != null)
+    return `<div class="temps"><b>${live.hi}°</b><s>${live.lo}°</s>
+      <em>forecast for ${esc(live.date)}${live.words ? " · " + esc(live.words) : ""}</em></div>`;
+  if (nrm)
+    return `<div class="temps"><b>${nrm.hi ?? nrm[0]}°</b><s>${nrm.lo ?? nrm[1]}°</s>
+      <em>${nrm.real ? `late-December average, last ${nrm.years} years` : "typical high / low"}</em></div>`;
+  return `<div class="srow">No temperatures for this one yet.</div>`;
+}
+
+/// Called after the sheet is on screen. Replaces the estimate with real data.
+export async function hydrateWeather(id) {
+  const st = allStops().find(x => x.id === id);
+  const host = document.getElementById("wx-" + id);
+  if (!st || !host) return;
+
+  const day = plannedDate(id);
+  const live = await wx.forecast(st.ll, day);
+  if (live) {
+    live.words = wx.describe(live.code);
+    host.innerHTML = tempLine(null, live);
+    return;
+  }
+  const real = await wx.normals(st.ll);
+  if (real) host.innerHTML = tempLine(real, null);
+}
+
+/// Which calendar day this stop falls on, given a departure date.
+export function plannedDate(id) {
+  const dep = store.departure;
+  if (!dep) return null;
+  let n = 0;
+  for (const r of selected()) {
+    for (const d of buildDays(r, store.chosen, store.pace)) {
+      if (d.stops.some(s => s.id === id)) {
+        const x = new Date(dep + "T00:00:00");
+        x.setDate(x.getDate() + n);
+        return x.toISOString().slice(0, 10);
+      }
+      n++;
+    }
+  }
+  return null;
+}
+
+// ============================================================== stats
+const n0 = v => Math.round(v).toLocaleString();
+const n1 = v => (Math.round(v * 10) / 10).toLocaleString();
+const usd = v => "$" + Math.round(v).toLocaleString();
+
+function row(k, v, sub) {
+  return `<div class="srow2"><span class="k">${k}</span><span class="v">${v}</span>${
+    sub ? `<span class="s">${sub}</span>` : ""}</div>`;
+}
+function block(title, rows) {
+  return `<div class="statblock"><div class="slab">${title}</div>${rows}</div>`;
+}
+
+export function renderStats() {
+  const S = tripStats(selected(), store.chosen, store);
+  const f = S.fuel;
+  const dep = store.departure;
+  const out = [];
+
+  out.push(`<div class="bignums">
+    <div><b>${n0(S.miles)}</b><span>miles</span></div>
+    <div><b>${S.days}</b><span>driving days</span></div>
+    <div><b>${n0(S.driveMins / 60)}</b><span>hours at the wheel</span></div>
+    <div><b>${S.stops}</b><span>stops</span></div>
+  </div>`);
+
+  out.push(block("The drive", [
+    row("Average day", n0(S.milesPerDay) + " mi", n1(S.hoursPerDay) + "h driving"),
+    row("Longest day", S.longest ? n0(S.longest.miles) + " mi" : "—",
+        S.longest ? esc(S.longest.from.name) + " → " + esc(S.longest.overnight.name) : ""),
+    row("Shortest day", S.shortest ? n0(S.shortest.miles) + " mi" : "—",
+        S.shortest ? esc(S.shortest.from.name) + " → " + esc(S.shortest.overnight.name) : ""),
+    row("Time stopped", n1(S.stopMins / 60) + "h", n1(S.detourMins / 60) + "h of it just detouring"),
+    row("Second nights", String(S.secondNights), "days you don't move on"),
+  ].join("")));
+
+  out.push(block("Fuel", [
+    row("Estimated", n0(S.gallons) + " gal", usd(S.fuelCost) + " at " + n1(S.mpg) + " mpg"),
+    row("Fill-ups logged", String(f.count), f.count ? usd(f.spend) + " spent" : "none yet"),
+    row("Measured mpg", f.avgMpg ? n1(f.avgMpg) : "—",
+        f.avgMpg ? `best ${n1(f.bestMpg)} · worst ${n1(f.worstMpg)}` : "needs two full fill-ups"),
+    row("Price per gallon", f.avgPrice ? "$" + n1(f.avgPrice) : "—", f.count ? "your average" : ""),
+  ].join("")));
+
+  out.push(`<div class="statblock"><div class="slab">Log a fill-up</div>
+    <div class="fillform">
+      <input id="f-odo" class="tinput" inputmode="decimal" placeholder="Odometer">
+      <input id="f-gal" class="tinput" inputmode="decimal" placeholder="Gallons">
+      <input id="f-ppg" class="tinput" inputmode="decimal" placeholder="$ / gal">
+    </div>
+    <div class="actions"><button data-addfill>Add</button>
+      <button data-partial="0" id="f-part">Full tank</button></div>
+    ${f.count ? `<div class="links" style="margin-top:6px">${store.fills.slice().reverse().map(x =>
+      `<button data-delfill="${x.id}">${n0(x.odometer)} mi · ${n1(x.gallons)} gal${x.partial ? " · partial" : ""}
+        <span>${usd(x.gallons * x.pricePerGallon)}</span></button>`).join("")}</div>` : ""}
+  </div>`);
+
+  out.push(block("The country", [
+    row("States", String(S.states.length), S.states.join(" · ")),
+    row("Highest point", S.high ? n0(S.high.elev) + " ft" : "—", S.high ? esc(S.high.name) : ""),
+    row("Winter watch days", String(S.riskDays), "of " + S.days),
+  ].join("")));
+
+  out.push(block("Places", [
+    row("In the plan", S.stops + " of " + S.available, "stops available on your routes"),
+    row("Firsts", S.firstsIn + " of " + S.firstsAll, "no California equivalent"),
+    row("Seen so far", String(S.seen), S.seen ? "and counting" : "trip hasn't started"),
+    row("Admission", usd(S.admission), S.unpriced ? S.unpriced + " with no price listed" : "everything priced"),
+  ].join("")));
+
+  if (S.tags.length) out.push(block("What you picked", S.tags.slice(0, 8)
+    .map(([t, c]) => row(t, String(c), "")).join("")));
+
+  out.push(block("Per leg", S.legs.map((l, i) =>
+    row(esc(DATA.route.legs[i].name), n0(l.totals.miles) + " mi",
+        l.totals.days + " days · " + l.totals.stops + " stops")).join("")));
+
+  if (dep) {
+    const left = Math.ceil((new Date(dep + "T00:00:00") - new Date()) / 86400000);
+    out.push(block("Countdown", row(left > 0 ? "Days until you leave" : "Days since you left",
+      String(Math.abs(left)), esc(dep))));
+  }
+
+  return `<div class="statsbody">${out.join("")}</div>`;
 }
