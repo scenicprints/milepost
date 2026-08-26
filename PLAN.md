@@ -9,7 +9,8 @@ something, it belongs here before you stop. This file is the only reason a new
 agent, or a new Claude account, can continue without losing the thread.
 
 - **Live app:** https://scenicprints.github.io/milepost/
-- **Design prototype:** https://claude.ai/code/artifact/1baa877e-f26e-4efe-9013-fab90d17b92e
+- **Design prototype (STALE, session 4):** https://claude.ai/code/artifact/1baa877e-f26e-4efe-9013-fab90d17b92e
+- **What's next mockup (session 16):** https://claude.ai/code/artifact/83665c31-a7df-4a3c-8d54-1a0654c8fdba
 - **Repo:** `scenicprints/milepost` (public)
 
 ---
@@ -276,6 +277,8 @@ so the difference is visible. **Kevin has not made the final call yet.**
 - The Great Lakes in `data/usa.json` are coarse. The route goes nowhere near
   them; cosmetic only.
 - The 32px favicon is legible but muddy. Redo alongside the UI port.
+- **Next screen: head and body disagree with no GPS.** See session 16.
+- **Next screen: the Navigate buttons are underlined.** See session 16.
 - Leg 2 mileage runs ~4% light.
 - The prototype duplicates `js/plan.js`. It will drift.
 
@@ -342,6 +345,38 @@ Poppy's look too, wants sleek and uncluttered, "pretend you are Dieter Rams."
 Photos cut. Android Auto scoped to riding alongside Maps. Built the clickable
 prototype: Rams visual language, transit-diagram route, leg-scoped tabs, place
 detail with links and December normals, map with routes and pins.
+
+**Session 16 — a look at the Next screen, and two faults it showed.**
+
+Kevin had never seen What's next with a real position, so it was captured and
+published as a clickable mockup:
+**https://claude.ai/code/artifact/83665c31-a7df-4a3c-8d54-1a0654c8fdba**
+
+**Nothing in it is redrawn.** The live app was driven in a browser with
+`navigator.geolocation.watchPosition` stubbed to 35.025 N, 110.560 W — I-40
+between Winslow and Holbrook AZ — and the rendered `#head`, `#scroll` and
+`#sheet` markup lifted straight out of the DOM, then dropped into a same-origin
+iframe carrying the real `css/app.css`. So it is the app's own output, not a
+drawing of it. **That is the method to reuse:** stub geolocation, drive the app,
+extract the DOM. Never hand-draw a screen that the app can render for you.
+
+That position lands at milepost 752 of 2,771: 26 mi to the Wigwam Motel, then
+Petrified Forest 46, Sandia 270, Blue Swallow 442; Gallup 125 mi / 2h 1m
+tonight; Continental Divide flagged 150 mi ahead; 27% of the leg done.
+
+**Two real faults the look turned up. Neither is fixed yet — both are Kevin's
+call.**
+
+1. **The no-GPS state contradicts itself.** `renderHead` uses
+   `whereAmI() || { mile: 0 }` while `renderNext` uses `fallbackSpot()`. With no
+   position the header therefore reads *0 mi in / 2,771 to go / 0%* while the
+   body of the same screen reads *behind you 241 mi / still to go 2,530 / 8.7%*.
+   Fix: have the head call `fallbackSpot()` too, or export one `here()` that
+   both use.
+2. **Two buttons are underlined.** `.links a` sets `text-decoration: none` but
+   `.actions .btn` and `.sact .btn` never do, and both are `<a>` tags — so
+   "Navigate there" on Next and "Navigate" in every place sheet render
+   underlined inside a solid orange button. One line of CSS.
 
 **Session 15 — what's next (1.3.0).**
 
