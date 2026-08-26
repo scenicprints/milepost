@@ -88,11 +88,21 @@ const SHORT = ["Carolina", "Houston", "Home"];
 export function renderRoute(legIx) {
   const leg = DATA.route.legs[legIx], rt = legRoute(legIx);
   let h = '<div class="routes">';
+  // The case for each option, not just its mileage. You pick a route at a rest
+  // stop with I-40 shut at Flagstaff, and "2,771 mi" against "2,984 mi" is not
+  // enough to decide on. The prose is already in route.json; it was just never
+  // shown. It sits OUTSIDE the button so reading it cannot swap your route.
   for (const opt of leg.routes) {
     const b = routeById(opt.id);
-    h += `<button class="rt" aria-pressed="${opt.id === rt.id}" data-route="${opt.id}" data-rleg="${leg.id}">
-      <span class="dot"></span><span class="rn">${esc(opt.name)}</span>
-      <span class="rm">${Math.round(b.miles).toLocaleString()} mi</span></button>`;
+    h += `<div class="rtopt">
+      <button class="rt" aria-pressed="${opt.id === rt.id}" data-route="${opt.id}" data-rleg="${leg.id}">
+        <span class="dot"></span><span class="rn">${esc(opt.name)}</span>
+        <span class="rm">${Math.round(b.miles).toLocaleString()} mi</span></button>
+      ${opt.road ? `<div class="rroad">${esc(opt.road)}</div>` : ""}
+      ${opt.character ? `<div class="rchar">${esc(opt.character)}</div>` : ""}
+      ${opt.why ? `<div class="rwhy">${esc(opt.why)}</div>` : ""}
+      ${opt.costs ? `<div class="rcost">${esc(opt.costs)}</div>` : ""}
+    </div>`;
   }
   h += `<button class="rt addrow" data-add><span class="dot plus">+</span>
       <span class="rn">Add a place of your own</span></button>`;

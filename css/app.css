@@ -120,6 +120,14 @@ input, textarea { font: inherit; color: inherit; }
 /* ------------------------------------------------------------------ route */
 .routes { padding: 20px 0 2px; }
 .rt { display: flex; align-items: center; gap: 13px; padding: 10px 0; width: 100%; border-bottom: 1px solid var(--rule); }
+/* One option and everything that argues for it. The prose is indented to the
+   route name's left edge — dot 11 + gap 13 — so every line starts on one edge. */
+.rtopt { border-bottom: 1px solid var(--rule); padding-bottom: 15px; }
+.rtopt .rt { border-bottom: 0; padding-bottom: 2px; }
+.rroad, .rchar, .rwhy, .rcost { padding-left: 24px; }
+.rroad { font-size: 10.5px; font-family: var(--mono); color: var(--ink3); letter-spacing: .05em; margin-top: 5px; }
+.rchar { font-size: 13px; line-height: 1.5; margin-top: 9px; }
+.rwhy, .rcost { font-size: 12.5px; line-height: 1.55; color: var(--ink2); margin-top: 7px; }
 .rt .dot { width: 11px; height: 11px; border-radius: 50%; border: 1.5px solid var(--rule2); flex: none; box-sizing: border-box; }
 .rt[aria-pressed="true"] .dot { border-color: var(--signal); background: var(--signal); }
 .rt .rn { font-size: 14px; flex: 1; }

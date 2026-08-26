@@ -347,6 +347,37 @@ Photos cut. Android Auto scoped to riding alongside Maps. Built the clickable
 prototype: Rams visual language, transit-diagram route, leg-scoped tabs, place
 detail with links and December normals, map with routes and pins.
 
+**Session 19 — the case for each route, which was written and never shown (1.4.0).**
+
+Kevin, on alternate routes: *"that was discussed on having multiple routes in
+case of closures or change in plans."* **Swapping always worked** — Route tab,
+tap an option, stops/mileage/days/map/header all recompute and it syncs. What
+was missing is everything you would need to *decide*.
+
+**Each route in `route.json` carries `road`, `character`, `why` and `costs`, and
+not one of them was rendered anywhere.** Zero uses in `js/`. The tab showed
+"The low road · 2,984 mi" and nothing about it being the bail-out when Flagstaff
+is buried, or that taking it costs you the Grand Canyon and means driving most
+of the return route twice. All four are on the Route tab now, for all six
+routes. No new data — it was already written.
+
+**The prose sits OUTSIDE the button.** The button stays dot + name + miles;
+the detail is a sibling in a `.rtopt` wrapper. Reading about a route can
+therefore never swap the one you are on, and the button keeps a sane accessible
+name instead of announcing four paragraphs. Verified: tapping the name swaps
+(2,771 → 2,984), tapping the prose does nothing.
+
+Grid holds — name, road, character, why and costs all start at x=48, the dot on
+the vertical at 24, mileage flush right. `road` is mono because it is a set of
+route numbers; the rest is Archivo, with `character` in ink and `why`/`costs` in
+`--ink2`. No new colour.
+
+**The cost, and Kevin knows about it:** the two options now take 539px, so on a
+375×812 phone they fill the first screen of the Route tab and the transit
+diagram starts just below the fold. It was ~110px before. If that reads as too
+much, **`character` is the one to cut** — it largely restates `why` — which
+brings it to roughly 380px. Cut information, not the feature.
+
 **Session 18 — the stop list is a placeholder, and it is being replaced.**
 
 **Kevin never approved the 68 stops.** They were seeded in session 1 as a
