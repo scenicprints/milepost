@@ -159,6 +159,7 @@ input, textarea { font: inherit; color: inherit; }
 .dstops { margin-top: 13px; display: flex; flex-direction: column; gap: 8px; }
 .dstop { display: flex; gap: 11px; font-size: 13px; align-items: baseline; width: 100%; }
 .dstop i { width: 5px; height: 5px; border-radius: 50%; background: var(--signal); flex: none; transform: translateY(-2px); }
+.dstop.seen span { text-decoration: line-through; text-decoration-color: var(--rule2); }
 .warn { font-size: 11.5px; font-family: var(--mono); color: var(--signal); margin-top: 9px; }
 
 /* -------------------------------------------------------------------- map */
@@ -178,6 +179,7 @@ input, textarea { font: inherit; color: inherit; }
 .mland { fill: var(--land); stroke: var(--rule2); }
 .mstate { fill: var(--ink3); letter-spacing: .1em; font-family: var(--mono); }
 .mlabel { fill: var(--ink2); font-family: var(--sans); }
+.mlabel.seen { text-decoration: line-through; }
 .mhalo { fill: none; stroke: var(--paper); stroke-linejoin: round; font-family: var(--sans); }
 .mroute { fill: none; stroke: var(--rule2); stroke-linejoin: round; stroke-linecap: round; }
 .mroute.act { stroke: var(--ink); }
@@ -265,7 +267,7 @@ input, textarea { font: inherit; color: inherit; }
 .actions { display: flex; gap: 10px; margin-top: 18px; }
 .actions button, .actions .btn { flex: 1; padding: 13px 0; text-align: center; font-size: 12.5px; border: 1px solid var(--rule2); }
 .actions .on { background: var(--signal); border-color: var(--signal); color: #FFF6F3; font-weight: 500; }
-.btn { border: 1px solid var(--rule2); padding: 11px 16px; font-size: 12.5px; }
+.btn { border: 1px solid var(--rule2); padding: 11px 16px; font-size: 12.5px; text-decoration: none; }
 .btn.on { background: var(--signal); border-color: var(--signal); color: #FFF6F3; font-weight: 500; }
 .btn.ghost { border-color: transparent; color: var(--ink2); }
 

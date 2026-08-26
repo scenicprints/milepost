@@ -64,11 +64,11 @@ export function renderHead(legIx, tab) {
       <div class="whole">${Math.round(wm).toLocaleString()} mi · ${wd} days total</div>
     </div>
     <div class="legname">${tab === "trip" ? "The whole trip"
-      : tab === "next" ? esc(DATA.route.legs[(whereAmI() || { legIx: 0 }).legIx].name)
+      : tab === "next" ? esc(DATA.route.legs[whereNow().legIx].name)
       : esc(DATA.route.legs[legIx].name)}</div>
     <div class="totals">
       ${tab === "next" ? (() => {
-        const h = whereAmI() || { mile: 0, route: legRoute(0) };
+        const h = whereNow();
         const pct = Math.min(100, Math.max(0, h.mile / h.route.miles * 100));
         return `<div><span class="tnum">${Math.round(h.mile).toLocaleString()}</span><span class="tlab">mi in</span></div>
           <div><span class="tnum">${Math.round(h.route.miles - h.mile).toLocaleString()}</span><span class="tlab">to go</span></div>
@@ -150,12 +150,15 @@ export function renderMap(legIx) {
     </div>`;
 }
 
+/// Which stops are marked seen, as a set the map can ask cheaply.
+const seenSet = () => new Set(allStops().filter(s => store.isSeen(s.id)).map(s => s.id));
+
 /// Paint the map for the scale it is currently shown at.
 export function paintMap(legIx, scale, view) {
   const svg = document.getElementById("msvg");
   if (!svg) return;
   svg.innerHTML = mapview.paint(DATA.usa, selected(), legRoute(legIx), {
-    chosen: store.chosen, pos: position, scale, view,
+    chosen: store.chosen, seen: seenSet(), pos: position, scale, view,
   });
 }
 
@@ -176,7 +179,7 @@ export function renderDays(legIx) {
       <div class="dmeta">${Math.round(d.miles).toLocaleString()} mi · ${fmtHours(d.driveMins)} driving${d.stopMins ? ` · ${fmtHours(d.stopMins)} stopped` : ""}</div>
       ${d.risks.length ? `<div class="warn">Winter watch — ${d.risks.map(r => esc(r.name)).join(", ")}</div>` : ""}
       ${d.stops.length ? `<div class="dstops">${d.stops.map(s =>
-        `<button class="dstop" data-stop="${s.id}"><i></i><span>${esc(s.name)}</span></button>`).join("")}</div>` : ""}
+        `<button class="dstop${store.isSeen(s.id) ? " seen" : ""}" data-stop="${s.id}"><i></i><span>${esc(s.name)}</span></button>`).join("")}</div>` : ""}
       ${bedRow(rt, d, legIx)}
     </div>`;
   });
@@ -577,6 +580,15 @@ export function whereAmI() {
   return best;
 }
 
+/// Where the Next screen reckons you are. GPS if there is any, otherwise the
+/// guess below.
+///
+/// **Both the header and the body must call this.** They used to differ — the
+/// header fell back to mile 0 while the body fell back to the first unseen
+/// stop — so with no GPS one screen showed "0 mi in / 0%" above "behind you
+/// 241 mi / 8.7%". One function, one answer.
+export function whereNow() { return whereAmI() || fallbackSpot(); }
+
 /// Falls back to the first thing you have not marked seen, so the screen is
 /// still useful parked in the driveway in August.
 function fallbackSpot() {
@@ -592,7 +604,7 @@ function fallbackSpot() {
 }
 
 export function renderNext() {
-  const here = whereAmI() || fallbackSpot();
+  const here = whereNow();
   const rt = here.route;
   const days = buildDays(rt, store.chosen, store.pace);
   const day = days.find(d => here.mile >= d.startMile - 1 && here.mile <= d.endMile + 1) || days[0];

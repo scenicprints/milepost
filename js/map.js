@@ -61,7 +61,7 @@ export function fitTransform(box, w, h) {
 /// Everything is drawn at `px / scale` so it renders at `px` on screen for the
 /// scale we are painting for. Repaint after a zoom and sizes are right again.
 export function paint(usa, routes, active, opts = {}) {
-  const { chosen = new Set(), pos = null, scale = 1, view = null } = opts;
+  const { chosen = new Set(), seen = new Set(), pos = null, scale = 1, view = null } = opts;
   const u = 1 / scale;
   const n = k => (k * u).toFixed(2);
 
@@ -113,7 +113,9 @@ export function paint(usa, routes, active, opts = {}) {
     const tail = ' text-anchor="start" x="' + bx.toFixed(1) + '" y="' + by.toFixed(1) +
       '" font-size="' + fs.toFixed(2) + '">' + esc(st.name) + "</text>";
     out.push('<text class="mhalo" stroke-width="' + n(3) + '"' + tail);
-    out.push('<text class="mlabel"' + tail);
+    // Been there: struck through, the same mark Route and Days use. Not a
+    // colour — the signal colour only ever means "this is in your plan".
+    out.push('<text class="mlabel' + (seen.has(st.id) ? " seen" : "") + '"' + tail);
   }
 
   const hp = xy(routes[0].waypoints[0].ll), hs = 10 * u;

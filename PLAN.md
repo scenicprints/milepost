@@ -256,7 +256,8 @@ so the difference is visible. **Kevin has not made the final call yet.**
 - Android Auto approximation.
 
 ### Next, in order
-1. **Whatever comes back from Kevin's testing of the ported design.**
+1. **Trip planning proper — this is what Kevin said is next.** See the open
+   questions below; the departure date and the North Carolina city both block it.
 2. **Decide Android Auto** — recommendation above is no.
 3. ~~"What's next" mode~~ **DONE, session 15.**
 4. **Fuel and services planning.** Kevin asked for "definitely stop at this gas
@@ -279,8 +280,6 @@ so the difference is visible. **Kevin has not made the final call yet.**
 - The Great Lakes in `data/usa.json` are coarse. The route goes nowhere near
   them; cosmetic only.
 - The 32px favicon is legible but muddy. Redo alongside the UI port.
-- **Next screen: head and body disagree with no GPS.** See session 16.
-- **Next screen: the Navigate buttons are underlined.** See session 16.
 - Leg 2 mileage runs ~4% light.
 - The prototype duplicates `js/plan.js`. It will drift.
 
@@ -347,6 +346,46 @@ Poppy's look too, wants sleek and uncluttered, "pretend you are Dieter Rams."
 Photos cut. Android Auto scoped to riding alongside Maps. Built the clickable
 prototype: Rams visual language, transit-diagram route, leg-scoped tabs, place
 detail with links and December normals, map with routes and pins.
+
+**Session 17 — both faults fixed, and "been there" now reaches the whole app (1.3.1).**
+
+**One answer to "where am I".** `renderHead` fell back to mile 0 while
+`renderNext` fell back to the first unseen stop, so with no GPS the header read
+*0 mi in / 0%* directly above *behind you 241 mi / 8.7%*. There is now one
+exported `whereNow()` — `whereAmI() || fallbackSpot()` — and both call it.
+**If you add a third reader of position, call `whereNow()`, not `whereAmI()`.**
+
+**The Navigate buttons are no longer underlined.** `.links a` set
+`text-decoration: none` but `.btn` never did, and "Navigate there" on Next and
+"Navigate" in every place sheet are `<a>` tags. Fixed on `.btn` so both, and
+anything else using it, are covered.
+
+**"Been there" now shows up everywhere the stop's name does.** It already
+updated Route, Trip and the sheet; **Days and the map did not**. Both do now,
+and all four use *the same mark*: the name struck through in `--rule2`. No new
+colour — the signal colour still only ever means "this is in your plan" — and
+no third pin state on the map, which would have been new design rather than the
+existing one applied consistently.
+
+`paintMap` now passes a `seen` set into `mapview.paint`, which puts the class on
+the label rather than the pin. Note the map only labels what fits at the current
+zoom, so a struck-through name appears when you zoom in far enough for that
+label to be placed at all. That is the existing collision-avoidance, not a bug.
+
+Verified against the **real app served from source**, not just the bundle,
+because the bundle re-stubs geolocation on reload and would have hidden the
+no-GPS path entirely: header and body now read 241 / 2,530 / 9% together, and
+they move together as stops are marked (341 / 2,430 / 12% after two). Marking
+one stop propagates to Route (`st on seen`), Days (`dstop seen`), the map label
+(`mlabel seen`, line-through), Trip's "Everywhere you've been" with its date,
+and the firsts counter.
+
+**Left alone deliberately, and Kevin should decide:** a seen stop still costs
+its time in `buildDays`, so Days keeps budgeting 2h 40m for a park you already
+walked. Dropping seen stops from the plan would make the remaining days honest,
+but it also reshuffles every day boundary mid-trip and "Day 1 — Modesto →
+Barstow" stops being a fixed thing. The header stop count is untouched for the
+same reason: it counts what is in the plan, not what is left.
 
 **Session 16 — the app itself, published (`tools/bundle-artifact.mjs`).**
 
