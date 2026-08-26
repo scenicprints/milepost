@@ -13,15 +13,15 @@
 // preferring fresh. Data, icons and the vendored SDK stay cache-first — they
 // are large, they rarely change, and a stale copy of them is harmless.
 
-const CACHE = 'milepost-v20';
+const CACHE = 'milepost-v21';
 
 const SHELL = [
   'index.html', 'manifest.webmanifest',
   'css/app.css',
   'js/app.js', 'js/ui.js', 'js/store.js', 'js/route.js', 'js/plan.js', 'js/map.js',
   'js/install.js', 'js/sync.js', 'js/firebase-config.js', 'js/version.js',
-  'js/weather.js', 'js/geocode.js',
-  'data/route.json', 'data/stops.json', 'data/usa.json', 'data/extras.json',
+  'js/weather.js', 'js/geocode.js', 'js/darksky.js',
+  'data/route.json', 'data/stops.json', 'data/usa.json', 'data/extras.json', 'data/darksky.json',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png',
   'icons/apple-touch-icon.png', 'icons/favicon-32.png',
   'vendor/firebase-app.js', 'vendor/firebase-firestore.js',

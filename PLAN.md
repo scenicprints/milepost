@@ -256,8 +256,11 @@ so the difference is visible. **Kevin has not made the final call yet.**
 - Android Auto approximation.
 
 ### Next, in order
-1. **Trip planning proper — this is what Kevin said is next.** See the open
-   questions below; the departure date and the North Carolina city both block it.
+1. **Trip planning proper.** A new stop list is being built in another Claude
+   conversation — see `STOPS-HANDOFF.md`. The departure date and the North
+   Carolina city both still block real planning.
+2. **Dark-sky data**, once the routes are settled. The framework is in and
+   `data/darksky.json` documents the schema and the licensing trap.
 2. **Decide Android Auto** — recommendation above is no.
 3. ~~"What's next" mode~~ **DONE, session 15.**
 4. **Fuel and services planning.** Kevin asked for "definitely stop at this gas
@@ -346,6 +349,50 @@ Poppy's look too, wants sleek and uncluttered, "pretend you are Dieter Rams."
 Photos cut. Android Auto scoped to riding alongside Maps. Built the clickable
 prototype: Rams visual language, transit-diagram route, leg-scoped tabs, place
 detail with links and December normals, map with routes and pins.
+
+**Session 22 — dark-sky overlay: the framework, with no data in it (1.6.0).**
+
+Kevin may sleep in the car or a tent, and wants to find places along the route
+dark enough to see the Milky Way. **He asked for the framework only** — the data
+comes after the stops and routes are settled, and it is a real research job.
+
+**`data/darksky.json` ships EMPTY, and the Sky button does not exist until it
+has zones.** That is deliberate: the stop list sat here as an unapproved
+placeholder for twenty sessions and got treated as real by everyone including
+me. No data beats data nobody approved, and a control with nothing behind it is
+a lie.
+
+**The colour decision, which is the only real design question here.** Every
+light-pollution map in the world is a rainbow — black, blue, green, yellow, red.
+This app has one colour and it means "in your plan". So **darkness is drawn as
+darkness**: one wash, denser the darker the sky, and the thing you hunt for is
+the dark patch. No legend to decode. It uses a new `--sky` token — `#191917` on
+the light ground, **`#000000` on the dark one** — so "dark" reads dark in both
+themes rather than inverting to a bright blob.
+
+Bortle 1–4 only, at fill-opacity .34 / .24 / .15 / .08. **5 and up is not
+drawn** — suburban sky, no Milky Way, so painting it is noise.
+
+- `js/darksky.js` — loads, validates, and a point-in-polygon `at(ll, zones)`,
+  which is the primitive a later "next dark stretch is 40 miles ahead" needs.
+- The layer paints straight after `mland` and under everything else, so routes,
+  pins and labels stay readable on top.
+- The toggle repaints the layer only; it never rebuilds the tab, so the map does
+  not move under you. Verified the transform is unchanged across a toggle, and a
+  30-move pinch is still monotonic with the overlay on.
+
+**The validator is loud on purpose.** Bad zones are dropped and named in the
+console rather than half-drawn — a silently wrong polygon is a lie about where
+it is safe to sleep. Tested with four deliberate failures: bortle out of range,
+**lat/lon swapped**, too few points, missing bortle. All four rejected and
+reported. The swapped-pair check matters because every published dataset you
+would convert from is GeoJSON, which is `[lon, lat]` — the opposite of this app.
+
+**Unresolved, and it is the research job:** the standard source is the World
+Atlas of Artificial Night Sky Brightness (Falchi et al. 2016), a VIIRS-derived
+raster, so using it means contouring it into rings. **It is CC BY-NC** — fine
+for a personal trip, requires attribution, rules out anything commercial.
+Whatever gets used goes in the file's `source` field.
 
 **Session 21 — Firsts removed from Trip, and what a third route would do (1.5.1).**
 

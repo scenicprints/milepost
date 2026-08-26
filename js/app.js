@@ -25,13 +25,15 @@ const $tabs = document.getElementById('tabs');
 const $sheet = document.getElementById('sheet');
 
 async function boot() {
-  const [route, stops, usa, extras] = await Promise.all([
+  const [route, stops, usa, extras, darksky] = await Promise.all([
     fetch('data/route.json').then(r => r.json()),
     fetch('data/stops.json').then(r => r.json()),
     fetch('data/usa.json').then(r => r.json()),
     fetch('data/extras.json').then(r => r.json()),
+    // Optional: the app works without it, and the Sky button simply never shows.
+    fetch('data/darksky.json').then(r => r.json()).catch(() => null),
   ]);
-  ui.init({ route, stops: stops.stops, usa,
+  ui.init({ route, stops: stops.stops, usa, darksky,
     sites: extras.sites, normals: extras.normals, bookings: extras.bookings || {} });
 
   // First run opens with a real plan rather than a blank app.
@@ -379,6 +381,16 @@ document.addEventListener('click', e => {
     const k = z.dataset.zoom;
     if (k === 'fit') { ui.resetTf(); applyTf(fitTf()); repaint(); }
     else zoomStep(k === 'in' ? 1.6 : 1 / 1.6);
+    return;
+  }
+
+  const sk = e.target.closest('[data-sky]');
+  if (sk) {
+    // Same as the drawer: repaint the layer, do not rebuild the tab, so the
+    // overlay never yanks the map out from under you.
+    ui.setSky(!ui.skyOn());
+    sk.setAttribute('aria-pressed', String(ui.skyOn()));
+    repaint();
     return;
   }
 

@@ -12,12 +12,20 @@ import * as syncmod from './sync.js';
 import { VERSION } from './version.js';
 import * as wx from './weather.js';
 import * as geo from './geocode.js';
+import * as darksky from './darksky.js';
 
 let DATA = null;              // { route, stops, usa }
 const built = new Map();      // routeId -> built route
 let position = null;          // [lat, lon] once geolocation is allowed
 
-export function init(data) { DATA = data; }
+export function init(data) {
+  DATA = data;
+  SKY = darksky.load(data.darksky);
+}
+let SKY = { zones: [], source: null };
+/// The overlay only exists once there is data behind it — no dead control.
+export const hasSky = () => SKY.zones.length > 0;
+export const skySource = () => SKY.source;
 export function setPosition(ll) { position = ll; }
 export function hasPosition() { return !!position; }
 
@@ -138,6 +146,12 @@ let drawer = false;
 export const drawerOpen = () => drawer;
 export const setDrawer = v => { drawer = !!v; };
 
+/// The dark-sky overlay. Off by default: it is for the night you are choosing
+/// where to sleep, not for every look at the map.
+let sky = false;
+export const skyOn = () => sky && hasSky();
+export const setSky = v => { sky = !!v; };
+
 /// One route option: the selector, then the case for taking it.
 function routeOption(leg, opt, chosenId) {
   const b = routeById(opt.id);
@@ -164,6 +178,8 @@ export function renderMap(legIx) {
         <button data-zoom="in" aria-label="Zoom in">+</button>
         <button data-zoom="out" aria-label="Zoom out">−</button>
         <button class="fit" data-zoom="fit" aria-label="Fit to leg">FIT</button>
+        ${hasSky() ? `<button class="fit sky" data-sky aria-pressed="${skyOn()}"
+          aria-label="Show where the sky is dark">SKY</button>` : ""}
       </div>
       <div class="mways${drawer ? " up" : ""}" id="mways">
         <button class="mwbar" data-drawer aria-expanded="${drawer}">
@@ -188,6 +204,7 @@ export function paintMap(legIx, scale, view) {
   svg.innerHTML = mapview.paint(DATA.usa, selected(), cur, {
     chosen: store.chosen, seen: seenSet(), pos: position, scale, view,
     alts: leg.routes.filter(o => o.id !== cur.id).map(o => routeById(o.id)),
+    sky: skyOn() ? SKY.zones : [],
   });
 }
 

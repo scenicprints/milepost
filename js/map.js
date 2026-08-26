@@ -61,7 +61,7 @@ export function fitTransform(box, w, h) {
 /// Everything is drawn at `px / scale` so it renders at `px` on screen for the
 /// scale we are painting for. Repaint after a zoom and sizes are right again.
 export function paint(usa, routes, active, opts = {}) {
-  const { chosen = new Set(), seen = new Set(), alts = [], pos = null, scale = 1, view = null } = opts;
+  const { chosen = new Set(), seen = new Set(), alts = [], sky = [], pos = null, scale = 1, view = null } = opts;
   const u = 1 / scale;
   const n = k => (k * u).toFixed(2);
 
@@ -73,6 +73,13 @@ export function paint(usa, routes, active, opts = {}) {
 
   const out = [];
   out.push('<path class="mland" d="' + poly(usa.outline) + ' Z" stroke-width="' + n(1) + '"/>');
+
+  // Dark sky, painted straight onto the land and under everything else, so the
+  // routes and pins stay readable on top of it. Darkness is drawn as darkness —
+  // see js/darksky.js for why it is not the usual rainbow.
+  for (const z of sky)
+    out.push('<path class="msky b' + z.bortle + '" d="' + poly(z.ring) + ' Z"><title>' +
+      esc(z.name || ('Bortle ' + z.bortle)) + "</title></path>");
 
   if (scale < 2.2) for (const l of usa.labels) {
     const q = xy(l.ll);
