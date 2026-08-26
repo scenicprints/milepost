@@ -20,7 +20,7 @@
 // concatenated, so module scope is preserved and nothing collides. Exports are
 // getters, so namespace imports (`import * as syncmod`) still see live values.
 
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -35,8 +35,31 @@ const POSITION = { lat: 35.025, lon: -110.56, accuracy: 12 };
 const MODULES = [
   'version.js', 'route.js', 'plan.js', 'store.js', 'map.js',
   'firebase-config.js', 'sync.js', 'weather.js', 'geocode.js', 'install.js',
-  'ui.js', 'app.js',
+  'darksky.js', 'ui.js', 'app.js',
 ];
+
+/// A module missing from MODULES produced a bundle that PARSED FINE and then
+/// died at boot — its registry entry was simply never created, so the importer
+/// got `undefined`. Adding a file to js/ and forgetting this list is the easy
+/// mistake, and it is invisible until the page runs. So check, don't trust.
+function auditGraph() {
+  const listed = new Set(MODULES);
+  const problems = [];
+  MODULES.forEach((file, i) => {
+    const src = readFileSync(resolve(ROOT, 'js', file), 'utf8');
+    const deps = [...src.matchAll(/^import\s+[\s\S]+?\s+from\s+'\.\/([\w.-]+)';/gm)].map(m => m[1]);
+    for (const d of deps) {
+      if (!listed.has(d)) problems.push(file + " imports ./" + d + ", which is not in MODULES");
+      else if (MODULES.indexOf(d) > i) problems.push(file + " imports ./" + d + ", which is listed AFTER it");
+    }
+  });
+  for (const f of readdirSync(resolve(ROOT, 'js')))
+    if (f.endsWith('.js') && !listed.has(f)) problems.push("js/" + f + " exists but is not in MODULES");
+  if (problems.length)
+    throw new Error('bundle-artifact: the module graph is wrong, the bundle would die at boot:\n  ' +
+      problems.join('\n  '));
+}
+auditGraph();
 
 /// Rewrites one ES module into a registry entry: imports read from the
 /// registry, exports become getters on the returned object.
@@ -78,9 +101,13 @@ function wrap(file) {
 
 const bundle = MODULES.map(wrap).join('\n\n');
 
+// Read the directory rather than list it by hand. A hand-kept list here missed
+// darksky.json, and the failure was invisible: the shim did not recognise the
+// path, the real fetch went out, it failed inside the artifact, and the feature
+// just silently did not exist. Every list in this file is now derived.
 const DATA = {};
-for (const f of ['route.json', 'stops.json', 'usa.json', 'extras.json'])
-  DATA['data/' + f] = JSON.parse(read('data/' + f));
+for (const f of readdirSync(resolve(ROOT, 'data')))
+  if (f.endsWith('.json')) DATA['data/' + f] = JSON.parse(read('data/' + f));
 
 const css = read('css/app.css');
 

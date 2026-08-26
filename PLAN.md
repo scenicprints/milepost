@@ -350,6 +350,36 @@ Photos cut. Android Auto scoped to riding alongside Maps. Built the clickable
 prototype: Rams visual language, transit-diagram route, leg-scoped tabs, place
 detail with links and December normals, map with routes and pins.
 
+**Session 22b — the bundler had two hand-kept lists and both were wrong.**
+
+Adding `js/darksky.js` and `data/darksky.json` broke the published artifact in
+two ways, and **neither showed up as an error in the app itself** — the live
+site was fine throughout, because a browser resolves ES modules and fetches
+files on its own. Only the bundle broke.
+
+1. **`MODULES` did not list `darksky.js`,** so `__M['./darksky.js']` was never
+   created and `ui.init` died on `darksky.load` at boot. The bundle *parsed*
+   perfectly; it just did not run.
+2. **The data list did not include `darksky.json`,** so the fetch shim did not
+   recognise the path, a real network fetch went out, failed inside the
+   artifact, and the Sky button silently never appeared. **This one was
+   invisible** — no error, no warning, just a missing feature.
+
+**Both lists are now derived, and the module graph is audited.** The data map
+reads `data/` off disk. `auditGraph()` refuses to build if any module imports
+something absent from `MODULES`, if a dependency is listed after its importer,
+or if a file in `js/` is not listed at all — verified by removing `darksky.js`
+from the list and confirming it throws.
+
+**The lesson worth keeping: the artifact bundle is a second runtime, and the app
+passing proves nothing about it.** Boot the bundle before publishing, don't just
+parse it.
+
+A throwaway artifact with **invented** zones exists so the overlay can be looked
+at before real data exists: https://claude.ai/code/artifact/2646e778-848b-4e4a-8f2b-ce9488eb12b3
+The shapes are rough boxes and every zone is named "Demo only — not real sky
+data". **Do not mistake it for a dataset, and do not copy it into the repo.**
+
 **Session 22 — dark-sky overlay: the framework, with no data in it (1.6.0).**
 
 Kevin may sleep in the car or a tent, and wants to find places along the route
