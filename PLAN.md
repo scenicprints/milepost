@@ -347,6 +347,35 @@ Photos cut. Android Auto scoped to riding alongside Maps. Built the clickable
 prototype: Rams visual language, transit-diagram route, leg-scoped tabs, place
 detail with links and December normals, map with routes and pins.
 
+**Session 18 — the stop list is a placeholder, and it is being replaced.**
+
+**Kevin never approved the 68 stops.** They were seeded in session 1 as a
+working set and have been treated as real ever since, including by me. He is
+building a proper list with a different Claude conversation.
+
+`tools/stops-handoff.mjs` writes **`STOPS-HANDOFF.md`** — the current list plus
+the contract a replacement has to satisfy. It imports the real `buildRoute` so
+the mileposts are the ones the app shows, not a re-derivation. **Re-run it
+whenever the data changes; a handoff with stale numbers is worse than none.**
+
+```
+node tools/stops-handoff.mjs
+```
+
+What the other conversation needs, and what the doc therefore carries: the
+stop schema field by field, that `detour` is **one way** and gets doubled, that
+`mile` is computed from `ll` and must never be authored, that anything more
+than 140 miles off the route (`MAX_OFF`) is **silently dropped**, that `routes`
+must name real route ids, that lodging is an ordinary stop with
+`kind: 'lodging'` rather than a parallel system, that a new town name needs a
+new `extras.json` normals entry or the stop shows no temperatures offline, and
+that nothing dated or personal may go in the data because the repo is public.
+
+**When the new list lands:** replace `data/stops.json`, add `normals` entries
+for any new towns, check `sites` and `bookings` for ids that no longer exist,
+re-run the handoff tool, and re-bundle the artifact. Route waypoints only need
+touching if the roads themselves change.
+
 **Session 17 — both faults fixed, and "been there" now reaches the whole app (1.3.1).**
 
 **One answer to "where am I".** `renderHead` fell back to mile 0 while
