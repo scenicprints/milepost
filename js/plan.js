@@ -44,7 +44,9 @@ function risksBetween(a, b, towns) {
 
 export function buildDays(route, chosenIds, pace = DEFAULT_PACE) {
   const budget = pace.hoursPerDay * 60;
-  const chosen = route.stops.filter(s => chosenIds.has(s.id));
+  // Lodging is where the day ENDS, not something you detour for, so it never
+  // competes for the day's hours. It gets matched to a night afterwards.
+  const chosen = route.stops.filter(s => chosenIds.has(s.id) && s.kind !== 'lodging');
   const pending = [...chosen];
   const days = [];
 

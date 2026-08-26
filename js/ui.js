@@ -11,6 +11,7 @@ import * as mapview from './map.js';
 import * as syncmod from './sync.js';
 import { VERSION } from './version.js';
 import * as wx from './weather.js';
+import * as geo from './geocode.js';
 
 let DATA = null;              // { route, stops, usa }
 const built = new Map();      // routeId -> built route
@@ -22,13 +23,25 @@ export function hasPosition() { return !!position; }
 
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
+/// Seed stops plus your own. A custom place lists every route on its leg and
+/// lets the geometry decide — buildRoute drops anything too far off pavement.
+function stopData() {
+  return DATA.stops.concat(store.custom);
+}
+
+let builtFor = '';
 export function routeById(id) {
+  const stamp = store.custom.map(c => c.id + c.ll.join()).join('|');
+  if (stamp !== builtFor) { built.clear(); builtFor = stamp; }
   if (built.has(id)) return built.get(id);
   for (const leg of DATA.route.legs)
     for (const r of leg.routes)
-      if (r.id === id) { const b = buildRoute(r, DATA.stops); built.set(id, b); return b; }
+      if (r.id === id) { const b = buildRoute(r, stopData()); built.set(id, b); return b; }
   return null;
 }
+
+export const legRouteIds = i => DATA.route.legs[i].routes.map(r => r.id);
+export const legNames = () => DATA.route.legs.map(l => l.name);
 
 export const legs = () => DATA.route.legs;
 export const selected = () => DATA.route.legs.map(l => routeById(store.routeFor(l.id)));
@@ -72,15 +85,22 @@ export function renderRoute(legIx) {
       <span class="dot"></span><span class="rn">${esc(opt.name)}</span>
       <span class="rm">${Math.round(b.miles).toLocaleString()} mi</span></button>`;
   }
+  h += `<button class="rt addrow" data-add><span class="dot plus">+</span>
+      <span class="rn">Add a place of your own</span></button>`;
   h += '</div><div class="line">';
 
   const nights = buildDays(rt, store.chosen, store.pace).slice(0, -1)
     .map(d => ({ m: d.overnight.mile, n: d.overnight.name }));
   let ni = 0;
-  const night = () => `<div class="night"><span class="bar"></span>
-    <span class="txt">Night — ${esc(nights[ni].n)}</span><span class="rule"></span></div>`;
+  const night = () => {
+    const bed = lodgingFor(rt, nights[ni].m);
+    return `<div class="night"><span class="bar"></span>
+      <span class="txt">Night — ${esc(nights[ni].n)}</span><span class="rule"></span>
+      ${bed ? `<button class="bed" data-stop="${bed.id}">${esc(bed.name)}</button>` : ""}</div>`;
+  };
 
   for (const s of rt.stops) {
+    if (s.kind === 'lodging') continue;          // shown on the night it belongs to
     while (ni < nights.length && nights[ni].m < s.mile) { h += night(); ni++; }
     const on = store.isChosen(s.id), seen = store.isSeen(s.id);
     h += `<div class="st ${on ? "on " : ""}${s.big ? "big " : ""}${seen ? "seen" : ""}">
@@ -148,6 +168,7 @@ export function renderDays(legIx) {
       ${d.risks.length ? `<div class="warn">Winter watch — ${d.risks.map(r => esc(r.name)).join(", ")}</div>` : ""}
       ${d.stops.length ? `<div class="dstops">${d.stops.map(s =>
         `<button class="dstop" data-stop="${s.id}"><i></i><span>${esc(s.name)}</span></button>`).join("")}</div>` : ""}
+      ${bedRow(rt, d, legIx)}
     </div>`;
   });
   return h + "</div>";
@@ -174,6 +195,8 @@ export function placeSheet(id) {
       <button class="sclose" data-close>Close</button>
     </div>
     <div class="sb">
+      ${store.isMine(s.id) ? `<div class="links" style="margin-top:14px">
+        <button data-edit="${esc(s.id)}">Edit this place<span>yours</span></button></div>` : ''}
       <div class="scost"><span class="n">${hh || mm}</span><span class="u">${hh ? "h" : "min"}</span>
         <span class="l">off your day</span></div>
       <div class="srow">${s.detour} min off the interstate, each way<br>${fmtHours(c.dwell)} on the ground${s.cost ? `<br>${esc(s.cost)}` : ""}</div>
@@ -421,4 +444,106 @@ export function plannedDate(id) {
     }
   }
   return null;
+}
+
+/// The lodging place nearest a night, if you have added one.
+export function lodgingFor(route, mile) {
+  let best = null, gap = 45;
+  for (const s of route.stops) {
+    if (s.kind !== 'lodging') continue;
+    const d = Math.abs(s.mile - mile);
+    if (d < gap) { gap = d; best = s; }
+  }
+  return best;
+}
+
+function bedRow(route, day, legIx) {
+  const b = lodgingFor(route, day.endMile);
+  if (b) return `<button class="bedrow" data-stop="${b.id}">Sleeping at ${esc(b.name)}</button>`;
+  return `<button class="bedrow add" data-addbed="${legIx}" data-town="${esc(day.overnight.name)}"
+    data-st="${esc(day.overnight.state || '')}">Add where you are sleeping</button>`;
+}
+
+// ============================================================== editor
+let draft = null;
+export const editing = () => draft;
+
+export function openEditor(seed) {
+  draft = Object.assign({
+    name: '', town: '', state: '', ll: null, dwell: 60, detour: 5,
+    kind: 'stop', leg: 0, why: '', query: '', results: null, busy: false,
+  }, seed || {});
+}
+export function closeEditor() { draft = null; }
+export function patchDraft(p) { if (draft) Object.assign(draft, p); }
+
+export async function runSearch(q) {
+  if (!draft) return;
+  draft.busy = true;
+  draft.query = q;
+  draft.results = null;
+  draft.failed = false;
+  const r = await geo.search(q);
+  if (!draft) return;
+  draft.busy = false;
+  if (r === null) draft.failed = true;
+  else draft.results = r;
+}
+
+export function editorSheet() {
+  const d = draft;
+  if (!d) return '';
+  const ready = !!d.ll && d.name.trim().length > 0;
+  const bed = d.kind === 'lodging';
+  return `<div class="grab" data-grab><i></i></div>
+    <div class="sh">
+      <div><div class="sloc">${d.id ? 'Editing' : 'Your own'}</div>
+        <div class="snm">${bed ? 'Where you sleep' : 'A place'}</div></div>
+      <button class="sclose" data-editor-close>Close</button>
+    </div>
+    <div class="sb">
+      <div class="seg2">
+        <button data-kind="stop" aria-pressed="${!bed}">A place to stop</button>
+        <button data-kind="lodging" aria-pressed="${bed}">Where you sleep</button>
+      </div>
+
+      <div class="field"><div class="slab">Name</div>
+        <input class="tinput" id="ed-name" value="${esc(d.name)}"
+          placeholder="${bed ? 'Comfort Inn, Barstow' : "Ada's mom"}"></div>
+
+      <div class="field"><div class="slab">Where</div>
+        <input class="tinput" id="ed-find" value="${esc(d.query)}"
+          placeholder="Address, or a town and state">
+        <div class="actions">
+          <button data-find>${d.busy ? 'Looking…' : 'Find it'}</button>
+          <button data-here>Use my location</button>
+        </div>
+        ${d.ll ? `<div class="srow">${esc(d.town || 'located')}${d.state ? ', ' + esc(d.state) : ''}
+            · ${d.ll[0].toFixed(3)}, ${d.ll[1].toFixed(3)}</div>` : ''}
+        ${d.failed ? `<div class="err">Could not reach the lookup. Try again, or use your location while you are there.</div>` : ''}
+        ${Array.isArray(d.results) && d.results.length === 0
+          ? `<div class="srow">Nothing found. Try a town and state.</div>` : ''}
+        ${Array.isArray(d.results) && d.results.length
+          ? `<div class="links">${d.results.map((r, i) =>
+              `<button data-pick="${i}">${esc(r.label)}<span>${esc(r.state)}</span></button>`).join('')}</div>` : ''}
+      </div>
+
+      <div class="field"><div class="slab">Which leg</div>
+        <div class="seg2 three">${legNames().map((n, i) =>
+          `<button data-leg-pick="${i}" aria-pressed="${d.leg === i}">${esc(SHORT[i])}</button>`).join('')}</div>
+      </div>
+
+      ${bed ? '' : `<div class="field"><div class="slab">Roughly how long</div>
+        <div class="seg2 three">${[30, 60, 120, 240].map(m =>
+          `<button data-dwell="${m}" aria-pressed="${d.dwell === m}">${m < 60 ? m + 'm' : (m / 60) + 'h'}</button>`).join('')}</div>
+      </div>`}
+
+      <div class="field"><div class="slab">Note</div>
+        <textarea class="tinput" rows="2" id="ed-why"
+          placeholder="${bed ? 'Confirmation number, check-in time' : 'Why it is worth stopping'}">${esc(d.why)}</textarea></div>
+    </div>
+    <div class="sact">
+      <button class="${ready ? 'prim' : ''}" data-editor-save>${d.id ? 'Save' : 'Add it'}</button>
+      ${d.id ? `<button data-editor-delete>Delete</button>` : ''}
+    </div>`;
 }

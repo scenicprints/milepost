@@ -17,6 +17,7 @@ const DEFAULTS = () => ({
   seen: {},              // stopId -> yyyy-mm-dd
   notes: {},             // stopId -> text
   booked: {},            // stopId -> yyyy-mm-dd it was booked
+  custom: [],            // your own places, same shape as data/stops.json entries
   pace: { ...DEFAULT_PACE },
   departure: null,       // yyyy-mm-dd, set by the user, never committed
   seeded: false,
@@ -93,6 +94,49 @@ class Store extends EventTarget {
     this.s.updatedAt = Date.now();
     try { localStorage.setItem(KEY, JSON.stringify({ ...this.s, chosen: [...this.chosen] })); } catch (_) {}
   }
+
+  // ---- your own places ----
+  //
+  // A hotel is not a separate kind of thing: it is a stop with kind 'lodging',
+  // which anchors it to the end of a day instead of costing detour time.
+  get custom() { return this.s.custom || (this.s.custom = []); }
+
+  addCustom(c) {
+    const id = 'c' + Date.now().toString(36);
+    this.custom.push({
+      id,
+      name: c.name,
+      town: c.town || '',
+      state: c.state || '',
+      ll: c.ll,
+      detour: Number(c.detour) || 0,
+      dwell: Number(c.dwell) || 60,
+      why: c.why || '',
+      kind: c.kind === 'lodging' ? 'lodging' : 'stop',
+      routes: c.routes || [],
+      mine: true,
+    });
+    if (c.kind !== 'lodging') this.chosen.add(id);
+    this.save();
+    return id;
+  }
+
+  updateCustom(id, patch) {
+    const c = this.custom.find(x => x.id === id);
+    if (!c) return;
+    Object.assign(c, patch);
+    this.save();
+  }
+
+  removeCustom(id) {
+    this.s.custom = this.custom.filter(x => x.id !== id);
+    this.chosen.delete(id);
+    delete this.s.seen[id];
+    delete this.s.notes[id];
+    this.save();
+  }
+
+  isMine(id) { return this.custom.some(x => x.id === id); }
 
   // ---- bookings ----
   isBooked(id) { return !!this.s.booked[id]; }

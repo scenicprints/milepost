@@ -57,7 +57,12 @@ function draw() {
   for (const b of $tabs.querySelectorAll('[data-tab]'))
     b.setAttribute('aria-selected', String(b.dataset.tab === tab));
 
-  if (sheet) {
+  if (ui.editing()) {
+    $sheet.innerHTML = ui.editorSheet();
+    $sheet.style.transform = '';
+    $sheet.className = 'sheet up';
+    wireSheetDrag();
+  } else if (sheet) {
     $sheet.innerHTML = ui.placeSheet(sheet.id);
     $sheet.style.transform = '';
     $sheet.className = 'sheet up';
@@ -229,6 +234,18 @@ function zoomStep(k) {
   schedulePaint(60);
 }
 
+/// The editor redraws on every choice, so pull the typed fields into the draft
+/// first or they would be wiped by the re-render.
+function readDraft() {
+  if (!ui.editing()) return;
+  const v = id => (document.getElementById(id) || {}).value;
+  const patch = {};
+  if (v('ed-name') != null) patch.name = v('ed-name');
+  if (v('ed-find') != null) patch.query = v('ed-find');
+  if (v('ed-why') != null) patch.why = v('ed-why');
+  ui.patchDraft(patch);
+}
+
 // ============================================================ sheet gestures
 //
 // Swipe the sheet down to put it away. Only starts when the sheet's own scroll
@@ -269,7 +286,7 @@ function wireSheetDrag() {
     $sheet.style.transform = '';
     // A short flick counts as much as a long drag.
     const quick = dy > 45 && (e.timeStamp - t0) < 260;
-    if (dy > 110 || quick) { sheet = null; draw(); }
+    if (dy > 110 || quick) { sheet = null; ui.closeEditor(); draw(); }
     dy = 0;
   };
   $sheet.addEventListener('pointerup', end);
@@ -344,6 +361,93 @@ document.addEventListener('click', e => {
 
   const bk = e.target.closest('[data-book]');
   if (bk) { store.toggleBooked(bk.dataset.book); return; }
+
+  // ---- the editor ----
+  if (e.target.closest('[data-add]')) { ui.openEditor({ leg: legIx }); draw(); return; }
+
+  const ab = e.target.closest('[data-addbed]');
+  if (ab) {
+    ui.openEditor({ leg: Number(ab.dataset.addbed), kind: 'lodging',
+                    query: [ab.dataset.town, ab.dataset.st].filter(Boolean).join(', ') });
+    draw();
+    return;
+  }
+
+  const ed = e.target.closest('[data-edit]');
+  if (ed) {
+    const c = store.custom.find(x => x.id === ed.dataset.edit);
+    if (c) { ui.openEditor({ ...c, query: [c.town, c.state].filter(Boolean).join(', ') }); sheet = null; draw(); }
+    return;
+  }
+
+  if (e.target.closest('[data-editor-close]')) { ui.closeEditor(); draw(); return; }
+
+  const kd = e.target.closest('[data-kind]');
+  if (kd) { readDraft(); ui.patchDraft({ kind: kd.dataset.kind }); draw(); return; }
+
+  const lp = e.target.closest('[data-leg-pick]');
+  if (lp) { readDraft(); ui.patchDraft({ leg: Number(lp.dataset.legPick) }); draw(); return; }
+
+  const dw = e.target.closest('[data-dwell]');
+  if (dw) { readDraft(); ui.patchDraft({ dwell: Number(dw.dataset.dwell) }); draw(); return; }
+
+  if (e.target.closest('[data-find]')) {
+    readDraft();
+    const q = (document.getElementById('ed-find') || {}).value || '';
+    ui.patchDraft({ query: q, busy: true });
+    draw();
+    ui.runSearch(q).then(draw);
+    return;
+  }
+
+  if (e.target.closest('[data-here]')) {
+    readDraft();
+    navigator.geolocation?.getCurrentPosition(
+      pos => { ui.patchDraft({ ll: [pos.coords.latitude, pos.coords.longitude], results: null, failed: false }); draw(); },
+      () => { ui.patchDraft({ failed: true }); draw(); },
+      { enableHighAccuracy: true, timeout: 12000 });
+    return;
+  }
+
+  const pk = e.target.closest('[data-pick]');
+  if (pk) {
+    readDraft();
+    const d = ui.editing();
+    const r = d && d.results && d.results[Number(pk.dataset.pick)];
+    if (r) ui.patchDraft({ ll: r.ll, town: r.town, state: r.state, results: null,
+                           name: d.name || r.label.split(',')[0] });
+    draw();
+    return;
+  }
+
+  if (e.target.closest('[data-editor-save]')) {
+    readDraft();
+    const d = ui.editing();
+    if (!d) return;
+    if (!d.ll || !d.name.trim()) {
+      const el = document.getElementById(d.name.trim() ? 'ed-find' : 'ed-name');
+      if (el) { el.style.borderColor = 'var(--signal)'; el.focus(); }
+      return;
+    }
+    const payload = {
+      name: d.name.trim(), town: d.town, state: d.state, ll: d.ll,
+      dwell: d.kind === 'lodging' ? 0 : d.dwell, detour: d.kind === 'lodging' ? 0 : 5,
+      why: d.why, kind: d.kind, routes: ui.legRouteIds(d.leg),
+    };
+    if (d.id) store.updateCustom(d.id, payload);
+    else store.addCustom(payload);
+    ui.closeEditor();
+    draw();
+    return;
+  }
+
+  if (e.target.closest('[data-editor-delete]')) {
+    const d = ui.editing();
+    if (d && d.id) store.removeCustom(d.id);
+    ui.closeEditor();
+    draw();
+    return;
+  }
 
   const st = e.target.closest('[data-stop]');
   if (st) { sheet = { kind: 'place', id: st.dataset.stop }; draw(); return; }

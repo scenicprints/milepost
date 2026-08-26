@@ -253,7 +253,8 @@ so the difference is visible. **Kevin has not made the final call yet.**
 ### Next, in order
 1. **Whatever comes back from Kevin's testing of the ported design.**
 2. **Decide Android Auto** — recommendation above is no.
-3. **Car mode** — huge type, glanceable, what's in the next 150 miles.
+3. **"What's next" mode** — where you actually are, what is coming up, how far
+   to a bed. NOT a "today" view: that assumes the schedule held, and it won't.
 4. **Fuel and services planning.** Kevin asked for "definitely stop at this gas
    station." Long dry stretches (Van Horn → Fort Stockton, the Mojave crossing)
    are real, and this is a genuinely useful feature that does not exist yet.
@@ -340,6 +341,32 @@ Poppy's look too, wants sleek and uncluttered, "pretend you are Dieter Rams."
 Photos cut. Android Auto scoped to riding alongside Maps. Built the clickable
 prototype: Rams visual language, transit-diagram route, leg-scoped tabs, place
 detail with links and December normals, map with routes and pins.
+
+**Session 14 — the editor (1.2.0).**
+
+**Kevin's correction, and he was right: a hotel is just a stop.** Same place,
+same coordinates, same navigate, same notes field for the confirmation number,
+and the existing booking feature already handles booked / book-by. So lodging is
+not a parallel system — it is `kind: 'lodging'` on an ordinary stop. The
+difference is that it anchors the END of a day instead of costing detour time:
+`buildDays` skips lodging entirely, and each night is matched to the nearest
+lodging place within 45 miles.
+
+**You can add your own places now.** `js/geocode.js` (Nominatim: free, no key,
+CORS-open, handles street addresses) plus "use my location", plus a manual
+fallback because Nominatim is rate-limited and can refuse. A custom place is
+assigned to a LEG, gets every route id on that leg, and the geometry decides —
+`buildRoute` drops anything more than 140 miles off the pavement. Add from the
+Route tab, or from "Add where you're sleeping" on any day in Days, which
+pre-fills the overnight town.
+
+`readDraft()` in app.js exists because the editor redraws on every choice: the
+typed fields must be pulled into the draft first or a redraw wipes them.
+
+**"What's next" replaces the planned "today" mode, and it is a better idea —
+Kevin's.** A today view assumes you are on schedule; one snow day at Flagstaff
+and every date is wrong for the rest of the trip. What's next keys off where you
+actually are. **Build it that way, and not before December.**
 
 **Session 13** — Stats removed at Kevin's call: "they look too cumbersome."
 Gone entirely — the tab, `js/stats.js`, the fuel log, its store model and its

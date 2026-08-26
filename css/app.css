@@ -268,3 +268,28 @@ input, textarea { font: inherit; color: inherit; }
 .btn { border: 1px solid var(--rule2); padding: 11px 16px; font-size: 12.5px; }
 .btn.on { background: var(--signal); border-color: var(--signal); color: #FFF6F3; font-weight: 500; }
 .btn.ghost { border-color: transparent; color: var(--ink2); }
+
+/* ----------------------------------------------------------------- editor */
+.rt.addrow { color: var(--ink2); }
+.rt .dot.plus {
+  display: grid; place-items: center; border-style: dashed;
+  font-family: var(--mono); font-size: 11px; line-height: 1; color: var(--ink2);
+}
+.night .bed, .bedrow {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .06em;
+  color: var(--signal); white-space: nowrap;
+}
+.bedrow {
+  display: block; width: 100%; margin-top: 12px; padding: 9px 0 0;
+  border-top: 1px solid var(--rule); text-align: left;
+}
+.bedrow.add { color: var(--ink2); }
+.seg2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+.seg2.three { grid-template-columns: repeat(3, 1fr); }
+.seg2 button {
+  padding: 11px 6px; text-align: center; font-size: 12px;
+  border: 1px solid var(--rule2); color: var(--ink2);
+}
+.seg2 button[aria-pressed="true"] {
+  border-color: var(--signal); color: var(--signal); font-weight: 500;
+}
