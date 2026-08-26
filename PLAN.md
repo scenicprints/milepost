@@ -10,7 +10,7 @@ agent, or a new Claude account, can continue without losing the thread.
 
 - **Live app:** https://scenicprints.github.io/milepost/
 - **Design prototype (STALE, session 4):** https://claude.ai/code/artifact/1baa877e-f26e-4efe-9013-fab90d17b92e
-- **What's next mockup (session 16):** https://claude.ai/code/artifact/83665c31-a7df-4a3c-8d54-1a0654c8fdba
+- **The app, published (session 16):** https://claude.ai/code/artifact/83665c31-a7df-4a3c-8d54-1a0654c8fdba
 - **Repo:** `scenicprints/milepost` (public)
 
 ---
@@ -24,7 +24,9 @@ same; the app additionally syncs, installs and persists.
 was rebuilt, and it predates the ported design, the Next screen, bookings, the
 editor and live weather. Do not read it as the current app and do not republish
 it as if it were. Either delete it or rebuild it from the real modules. The app
-itself — `index.html` + `js/` + `css/` — is the only current truth.
+itself — `index.html` + `js/` + `css/` — is the only current truth. **To show
+someone the app, run `tools/bundle-artifact.mjs` and publish that** — it reads
+the real modules, so it is the app rather than a copy of it.
 
 Kevin is testing this batch. He has more to add afterwards.
 
@@ -346,31 +348,55 @@ Photos cut. Android Auto scoped to riding alongside Maps. Built the clickable
 prototype: Rams visual language, transit-diagram route, leg-scoped tabs, place
 detail with links and December normals, map with routes and pins.
 
-**Session 16 — a look at the Next screen, and two faults it showed.**
+**Session 16 — the app itself, published (`tools/bundle-artifact.mjs`).**
 
-Kevin had never seen What's next with a real position, so it was captured and
-published as a clickable mockup:
-**https://claude.ai/code/artifact/83665c31-a7df-4a3c-8d54-1a0654c8fdba**
+Kevin had never seen What's next with a real position. **The first attempt was
+one screen in a display case** — captured DOM in a framed box with a caption and
+dead tab bar — and he rejected it flatly: *"it should look like the real app
+where I can navigate through it."* He was right. **A mockup of a screen is not
+a mockup of an app.**
 
-**Nothing in it is redrawn.** The live app was driven in a browser with
-`navigator.geolocation.watchPosition` stubbed to 35.025 N, 110.560 W — I-40
-between Winslow and Holbrook AZ — and the rendered `#head`, `#scroll` and
-`#sheet` markup lifted straight out of the DOM, then dropped into a same-origin
-iframe carrying the real `css/app.css`. So it is the app's own output, not a
-drawing of it. **That is the method to reuse:** stub geolocation, drive the app,
-extract the DOM. Never hand-draw a screen that the app can render for you.
+**`tools/bundle-artifact.mjs` bundles the whole app into one HTML file** and
+every tab works. It reads `js/`, `css/` and `data/` straight off disk, so unlike
+`prototype/` **it cannot drift** — there is no second copy of anything.
 
-That position lands at milepost 752 of 2,771: 26 mi to the Wigwam Motel, then
-Petrified Forest 46, Sandia 270, Blue Swallow 442; Gallup 125 mi / 2h 1m
-tonight; Continental Divide flagged 150 mi ahead; 27% of the leg done.
+```
+node tools/bundle-artifact.mjs out.html
+```
 
-**Two real faults the look turned up. Neither is fixed yet — both are Kevin's
-call.**
+**How the ES modules survive.** Each module is wrapped in its own IIFE and
+registered in a tiny `__M` map, rather than concatenated: module scope is
+preserved so nothing collides, and exports are `Object.defineProperty` getters
+so a namespace import (`import * as syncmod`) still sees live values —
+`sync.state` is reassigned, and a plain copy would freeze it. Blob-URL or
+import-map bundling was avoided because an artifact's CSP may refuse them.
+The bundler throws if it meets an `export` form it does not handle, so it fails
+loudly rather than emitting a broken file.
+
+**Exactly three things differ from the deployed app, all in the preamble:**
+geolocation is stubbed to a fixed fix (35.025 N, 110.560 W — I-40 between
+Winslow and Holbrook AZ, milepost 752 of 2,771), `fetch` serves `data/*.json`
+from inside the file, and the install walkthrough is pre-dismissed. Everything
+else off-network — Open-Meteo, Nominatim, Firestore, `sw.js` — simply fails,
+and **the app already degrades for exactly that case**: place sheets fall back
+to the `extras.json` estimates, which is the desert behaviour, on purpose.
+Firebase is a lazy dynamic import that is never reached without a saved code,
+so no secret is anywhere near this.
+
+Verified in the bundle, not just in tests: all five tabs render, leg switching,
+route swap (2,771 → 2,984 mi), place sheets, the editor, Trip. **The map
+gestures were re-measured as continuous pointer streams** per the session-8
+rule — a 20-move drag translates exactly 80/40 with no scale change, a 30-move
+pinch ramps monotonically at max frame ratio 1.09, and lifting a finger
+mid-pinch jumps by exactly 0. Console is clean apart from the `sw.js`
+registration failing, which is caught.
+
+**The two faults found by looking at the Next screen still stand, unfixed:**
 
 1. **The no-GPS state contradicts itself.** `renderHead` uses
    `whereAmI() || { mile: 0 }` while `renderNext` uses `fallbackSpot()`. With no
-   position the header therefore reads *0 mi in / 2,771 to go / 0%* while the
-   body of the same screen reads *behind you 241 mi / still to go 2,530 / 8.7%*.
+   position the header reads *0 mi in / 2,771 to go / 0%* while the body of the
+   same screen reads *behind you 241 mi / still to go 2,530 / 8.7%*.
    Fix: have the head call `fallbackSpot()` too, or export one `here()` that
    both use.
 2. **Two buttons are underlined.** `.links a` sets `text-decoration: none` but
