@@ -320,6 +320,15 @@ Android Auto is no.
 
 ## Session log
 
+**Session 18, second pass** — Kevin's rule made explicit: **if it is not on
+his list, it is not in the app.** All 31 remaining old placeholder stops are
+gone, legs 2 and 3 included (French Quarter, Space Center, Carlsbad, Hoover
+Dam, the whole set), with their bookings and orphaned normals. The app holds
+exactly the leg 1 pool, 67 stops, nothing else. Legs 2 and 3 are empty and
+stay empty until Kevin hands over their pools, the same way leg 1 arrived.
+Their day splits still compute from waypoints. Georgia Aquarium was on the
+list, so it stayed, rewritten as the pool's version on leg1-south. 1.7.2.
+
 **Session 18** — Kevin's fixes on the pool. (1) Leg 1 is now ONLY his list:
 the twelve old low-road stragglers (Joshua Tree through Sixth Floor) lost
 their leg 1 membership, they live on leg 2/3 where they belong, and Fort

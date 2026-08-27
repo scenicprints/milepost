@@ -3,34 +3,13 @@
  "sites": {
   "grand-canyon": "https://www.nps.gov/grca",
   "petrified-forest": "https://www.nps.gov/pefo",
-  "white-sands": "https://www.nps.gov/whsa",
-  "carlsbad": "https://www.nps.gov/cave",
-  "saguaro": "https://www.nps.gov/sagu",
-  "joshua-tree": "https://www.nps.gov/jotr",
   "sunset-crater": "https://www.nps.gov/sucr",
-  "mlk-park": "https://www.nps.gov/malu",
-  "vicksburg": "https://www.nps.gov/vick",
-  "hoover-dam": "https://www.usbr.gov/lc/hooverdam",
   "meteor-crater": "https://meteorcrater.com",
   "civil-rights-museum": "https://civilrightsmuseum.org",
   "dollywood": "https://www.dollywood.com",
-  "space-center": "https://spacecenter.org",
-  "alamo": "https://www.thealamo.org",
   "bearizona": "https://bearizona.com",
-  "palm-springs-tram": "https://pstramway.com",
-  "pima-air": "https://pimaair.org",
-  "desert-botanical": "https://dbg.org",
   "georgia-aquarium": "https://www.georgiaaquarium.org",
-  "legacy-museum": "https://legacysites.eji.org",
-  "uss-alabama": "https://www.ussalabama.com",
-  "natural-bridge-caverns": "https://naturalbridgecaverns.com",
-  "oak-alley": "https://www.oakalleyplantation.org",
-  "seven-magic-mountains": "https://sevenmagicmountains.com",
-  "sixth-floor": "https://www.jfk.org",
-  "birmingham-civil-rights": "https://www.bcri.org",
-  "griffith": "https://griffithobservatory.org",
   "palo-duro": "https://tpwd.texas.gov/state-parks/palo-duro-canyon",
-  "balmorhea": "https://tpwd.texas.gov/state-parks/balmorhea",
   "calico": "https://parks.sbcounty.gov/park/calico-ghost-town/",
   "tanger-barstow": "https://www.tanger.com/barstow",
   "tanger-sevierville": "https://www.tanger.com/sevierville",
@@ -66,10 +45,6 @@
   "laguna-burger": "https://www.lagunaburger.com"
  },
  "normals": {
-  "Keene": [
-   52,
-   32
-  ],
   "Barstow": [
    61,
    36
@@ -106,10 +81,6 @@
    51,
    22
   ],
-  "Ramah": [
-   47,
-   18
-  ],
   "Albuquerque": [
    49,
    27
@@ -126,17 +97,9 @@
    52,
    25
   ],
-  "Arcadia": [
-   51,
-   30
-  ],
   "Oklahoma City": [
    51,
    30
-  ],
-  "Hot Springs": [
-   52,
-   32
   ],
   "Little Rock": [
    52,
@@ -162,10 +125,6 @@
    49,
    29
   ],
-  "Burnsville": [
-   46,
-   26
-  ],
   "Charlotte": [
    54,
    34
@@ -173,118 +132,6 @@
   "Atlanta": [
    55,
    38
-  ],
-  "Montgomery": [
-   60,
-   38
-  ],
-  "Mobile": [
-   62,
-   42
-  ],
-  "Gulf Shores": [
-   62,
-   45
-  ],
-  "New Orleans": [
-   64,
-   47
-  ],
-  "Vacherie": [
-   64,
-   44
-  ],
-  "Houston": [
-   65,
-   46
-  ],
-  "San Antonio": [
-   64,
-   42
-  ],
-  "Toyahvale": [
-   60,
-   32
-  ],
-  "Marfa": [
-   58,
-   30
-  ],
-  "Carlsbad": [
-   58,
-   29
-  ],
-  "Alamogordo": [
-   56,
-   29
-  ],
-  "El Paso": [
-   58,
-   34
-  ],
-  "Tombstone": [
-   60,
-   33
-  ],
-  "Tucson": [
-   65,
-   40
-  ],
-  "Phoenix": [
-   67,
-   45
-  ],
-  "Cottonwood": [
-   63,
-   38
-  ],
-  "Palm Springs": [
-   70,
-   45
-  ],
-  "Los Angeles": [
-   68,
-   48
-  ],
-  "Niland": [
-   70,
-   44
-  ],
-  "Boulder City": [
-   57,
-   38
-  ],
-  "Las Vegas": [
-   57,
-   38
-  ],
-  "Jean": [
-   57,
-   36
-  ],
-  "Kelso": [
-   58,
-   33
-  ],
-  "Dallas": [
-   58,
-   39
-  ],
-  "Fort Worth": [
-   58,
-   38
-  ],
-  "Birmingham": [
-   55,
-   36
-  ],
-  "Vicksburg": [
-   57,
-   38
-  ],
-  "Jackson": [
-   57,
-   37
   ],
   "Yermo": [
    60,
@@ -348,45 +195,17 @@
   ]
  },
  "bookings": {
-  "french-quarter": {
-   "lead": 60,
-   "note": "New Year's Eve in New Orleans — the room, not the quarter. Book early."
-  },
   "grand-canyon": {
    "lead": 45,
    "note": "Only if you want to sleep on the rim. Day visits need nothing."
-  },
-  "carlsbad": {
-   "lead": 14,
-   "note": "Timed entry reservation required to walk in."
   },
   "georgia-aquarium": {
    "lead": 14,
    "note": "Timed ticket, and holiday week is its busiest of the year."
   },
-  "desert-botanical": {
-   "lead": 21,
-   "note": "Las Noches de las Luminarias needs a timed ticket."
-  },
-  "pima-air": {
-   "lead": 21,
-   "note": "The boneyard bus tour is weekdays only and books out."
-  },
   "dollywood": {
    "lead": 14,
    "note": "Closed some weekdays in winter — check the calendar before counting on it."
-  },
-  "space-center": {
-   "lead": 7,
-   "note": "Very busy over the holidays; a timed ticket saves the queue."
-  },
-  "sixth-floor": {
-   "lead": 7,
-   "note": "Timed tickets."
-  },
-  "balmorhea": {
-   "lead": 30,
-   "note": "Has closed for long repair stretches. Confirm it is open before detouring."
   },
   "palo-duro": {
    "lead": 14,
