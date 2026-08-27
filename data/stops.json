@@ -2369,30 +2369,6 @@
    "routes": [
     "leg3-vegas"
    ]
-  },
-  {
-   "id": "devils-rope",
-   "name": "Devil's Rope Museum",
-   "town": "McLean",
-   "state": "TX",
-   "ll": [
-    35.2314,
-    -100.5973
-   ],
-   "detour": 3,
-   "dwell": 45,
-   "cost": "Free",
-   "tags": [
-    "museum",
-    "route66",
-    "barbed-wire"
-   ],
-   "why": "A museum entirely about barbed wire. Hundreds of patented varieties, and how it ended the open range. Free, right off the interstate, and far more interesting than it sounds.",
-   "winter": "Open March to October only. It is shut for the season when you pass, so this is one for a summer trip rather than this one.",
-   "routes": [
-    "leg1-i40",
-    "leg1-south"
-   ]
   }
  ]
 }

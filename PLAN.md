@@ -320,6 +320,14 @@ Android Auto is no.
 
 ## Session log
 
+**Session 22** — Devil's Rope is out for good. It is closed November through
+February, so it cannot be visited on this trip, and a stop that cannot be
+reached does not belong in the app regardless of which list it came from.
+**The rule, stated properly: the list decides what is a candidate; a hard
+seasonal closure across the travel window decides what ships. When those
+conflict, say so and let Kevin call it — do not quietly drop it and do not
+quietly keep it.** 96 stops. 1.9.2.
+
 **Session 21** — Three things Kevin caught, all mine.
 
 **1. The low road never belonged.** `leg1-low` was never in any pool doc — it
