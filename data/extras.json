@@ -63,7 +63,8 @@
   "copper-breaks": "https://tpwd.texas.gov/state-parks/copper-breaks",
   "seven-magic-mountains": "https://sevenmagicmountains.com",
   "hoover-dam": "https://www.usbr.gov/lc/hooverdam",
-  "valley-of-fire": "https://parks.nv.gov/parks/valley-of-fire"
+  "valley-of-fire": "https://parks.nv.gov/parks/valley-of-fire",
+  "devils-rope": "https://www.barbwiremuseum.com"
  },
  "normals": {
   "Barstow": [
@@ -293,6 +294,10 @@
   "Overton": [
    57,
    31
+  ],
+  "McLean": [
+   51,
+   26
   ]
  },
  "bookings": {

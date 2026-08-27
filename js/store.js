@@ -20,7 +20,11 @@ const DEFAULTS = () => ({
   custom: [],            // your own places, same shape as data/stops.json entries
   pace: { ...DEFAULT_PACE },
   departure: null,       // yyyy-mm-dd, set by the user, never committed
-  seeded: false,
+  // Which stop ids the seeder has already had its say about. NOT a boolean:
+  // the stop list grows as each leg's pool arrives, and a one-time flag meant
+  // everything added later showed up unticked and stayed that way. Ids in here
+  // are never re-seeded, so a stop you deliberately untick stays unticked.
+  seededIds: [],
 });
 
 class Store extends EventTarget {

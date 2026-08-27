@@ -320,6 +320,37 @@ Android Auto is no.
 
 ## Session log
 
+**Session 21** — Three things Kevin caught, all mine.
+
+**1. The low road never belonged.** `leg1-low` was never in any pool doc — it
+was invented as a weather bailout and survived two "remove everything not on
+my list" passes because it was justified rather than checked. Its only stops
+were ones every other road already reached. Gone; leg 1 is the Route 66 road
+and the southern line.
+
+**2. Eateries showed grey and did not count.** The cause was `seeded`, a
+one-time boolean. The app seeded a plan on first ever run and never again, so
+every stop added afterwards arrived unticked. The old placeholder list was
+almost entirely sights and the pool REUSED those ids (grand-canyon,
+cadillac-ranch, beale-street...), so sights stayed ticked while the genuinely
+new ids — overwhelmingly the restaurants, which the old list barely had —
+came in grey. Replaced with `seededIds`, the set of ids the seeder has
+already ruled on: it runs every boot, acts only on ids it has never seen, so
+a new pool arrives ticked and anything deliberately unticked stays unticked.
+**Any future pool needs no special handling.** Verified against a planted
+old-format store: 22 of 25 eateries tick (the three left grey are the 3h+
+ones, which is what suggestStops intends).
+
+**3. Devil's Rope Museum is back.** It is on the leg 1 list, and it was cut
+on my own judgment because it closes November to February. Kevin's rule is
+that the list is the app; the closure belongs in the winter note where he can
+see it and cross it off himself, not in my head. 97 stops, matching 97 doc
+entries exactly.
+
+Audit run this session: every entry in all three pool docs is present, no app
+stop is absent from the docs, and nothing is silently dropped by MAX_OFF on
+any road. 1.9.1.
+
 **Session 20** — The leg 3 pool landed, and the trip is whole: all three legs
 are Kevin's lists, nothing else. Leg 3 replaces the old placeholder roads
 entirely with three route options: **The road home** (I-45, US-287,

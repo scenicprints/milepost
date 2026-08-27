@@ -45,7 +45,6 @@
    "winter": "Closed Monday and done by 6:30. Hours run loose, call before counting on it.",
    "routes": [
     "leg1-i40",
-    "leg1-low",
     "leg1-south",
     "leg3-i40",
     "leg3-waco",
@@ -73,7 +72,6 @@
    "winter": "Tuesday it closes at 3pm. Every other day it serves dinner.",
    "routes": [
     "leg1-i40",
-    "leg1-low",
     "leg1-south",
     "leg3-i40",
     "leg3-waco",
@@ -1072,7 +1070,6 @@
    "winter": "Sunday it opens at 1pm.",
    "routes": [
     "leg1-i40",
-    "leg1-low",
     "leg1-south"
    ]
   },
@@ -1096,7 +1093,6 @@
    "winter": "Closed Sunday and Monday.",
    "routes": [
     "leg1-i40",
-    "leg1-low",
     "leg1-south"
    ],
    "big": true,
@@ -1122,7 +1118,6 @@
    "winter": null,
    "routes": [
     "leg1-i40",
-    "leg1-low",
     "leg1-south"
    ],
    "first": true,
@@ -1148,7 +1143,6 @@
    "winter": null,
    "routes": [
     "leg1-i40",
-    "leg1-low",
     "leg1-south"
    ],
    "big": true
@@ -1173,7 +1167,6 @@
    "winter": null,
    "routes": [
     "leg1-i40",
-    "leg1-low",
     "leg1-south"
    ],
    "big": true,
@@ -1199,7 +1192,6 @@
    "winter": null,
    "routes": [
     "leg1-i40",
-    "leg1-low",
     "leg1-south"
    ]
   },
@@ -1223,7 +1215,6 @@
    "winter": null,
    "routes": [
     "leg1-i40",
-    "leg1-low",
     "leg1-south"
    ],
    "kind": "food"
@@ -1248,7 +1239,6 @@
    "winter": "Closed Tuesdays.",
    "routes": [
     "leg1-i40",
-    "leg1-low",
     "leg1-south"
    ],
    "first": true,
@@ -1274,7 +1264,6 @@
    "winter": "Closed Tuesday.",
    "routes": [
     "leg1-i40",
-    "leg1-low",
     "leg1-south"
    ],
    "kind": "food"
@@ -1299,7 +1288,6 @@
    "winter": null,
    "routes": [
     "leg1-i40",
-    "leg1-low",
     "leg1-south"
    ]
   },
@@ -1323,7 +1311,6 @@
    "winter": "Weekdays 10:30 to 2:45, Saturday 11 to 3, closed Sunday. Lunch or never.",
    "routes": [
     "leg1-i40",
-    "leg1-low",
     "leg1-south"
    ],
    "big": true,
@@ -1349,7 +1336,6 @@
    "winter": null,
    "routes": [
     "leg1-i40",
-    "leg1-low",
     "leg1-south"
    ]
   },
@@ -1371,8 +1357,7 @@
    "why": "The gold glass ball from the 1982 World's Fair, with an observation deck, beside a walkable square. Quick, and a good stretch stop.",
    "winter": null,
    "routes": [
-    "leg1-i40",
-    "leg1-low"
+    "leg1-i40"
    ]
   },
   {
@@ -1394,8 +1379,7 @@
    "why": "The longest pedestrian suspension bridge in North America, with glass floor panels mid-span and real views over the Smokies. Gatlinburg itself is a lot.",
    "winter": "Closes for high wind. Check before driving in.",
    "routes": [
-    "leg1-i40",
-    "leg1-low"
+    "leg1-i40"
    ]
   },
   {
@@ -1416,8 +1400,7 @@
    "why": "The biggest shopping stop on the eastern half, on the approach to Pigeon Forge. Budget for the Pigeon Forge traffic on top of the time inside.",
    "winter": null,
    "routes": [
-    "leg1-i40",
-    "leg1-low"
+    "leg1-i40"
    ]
   },
   {
@@ -1439,8 +1422,7 @@
    "why": "A full theme park in the foothills, and the Christmas run puts several million lights across the property. A genuine spectacle rather than a roadside stop, and a full day of the schedule.",
    "winter": "Closed some weekdays in winter. Check the calendar for your exact day before promising it.",
    "routes": [
-    "leg1-i40",
-    "leg1-low"
+    "leg1-i40"
    ],
    "big": true
   },
@@ -1463,8 +1445,7 @@
    "why": "Family-run with the smokers going out front and everything made in house, including the sauces. The highest rated food of any kind on this leg, and a 58-year-old reviewer called it the best barbecue he had eaten in his life.",
    "winter": "Closed Sunday and Monday.",
    "routes": [
-    "leg1-i40",
-    "leg1-low"
+    "leg1-i40"
    ],
    "big": true,
    "kind": "food"
@@ -1509,8 +1490,7 @@
    "why": "A small mountain town of craft shops and cafes east of Asheville, and it goes hard on Christmas. A gentle stop rather than another attraction.",
    "winter": null,
    "routes": [
-    "leg1-i40",
-    "leg1-low"
+    "leg1-i40"
    ]
   },
   {
@@ -1532,8 +1512,7 @@
    "why": "Compact art deco downtown of bookstores, breweries, buskers and some of the best food in the South. Very walkable, and an easy place to lose three hours.",
    "winter": null,
    "routes": [
-    "leg1-i40",
-    "leg1-low"
+    "leg1-i40"
    ]
   },
   {
@@ -1557,7 +1536,6 @@
    "winter": null,
    "routes": [
     "leg1-i40",
-    "leg1-low",
     "leg1-south"
    ],
    "first": true,
@@ -1584,7 +1562,6 @@
    "winter": "Closed Sunday and Monday, and parking is tight. Worth its own outing once you land.",
    "routes": [
     "leg1-i40",
-    "leg1-low",
     "leg1-south"
    ],
    "big": true,
@@ -1610,7 +1587,6 @@
    "winter": null,
    "routes": [
     "leg1-i40",
-    "leg1-low",
     "leg1-south"
    ],
    "big": true,
@@ -1636,7 +1612,6 @@
    "winter": "Opens 2:30pm and the hours run optimistic. Call before driving over.",
    "routes": [
     "leg1-i40",
-    "leg1-low",
     "leg1-south"
    ],
    "kind": "food"
@@ -1661,7 +1636,6 @@
    "winter": null,
    "routes": [
     "leg1-i40",
-    "leg1-low",
     "leg1-south"
    ]
   },
@@ -1684,7 +1658,6 @@
    "winter": "Holiday week crowds are brutal. Go early or go in January.",
    "routes": [
     "leg1-i40",
-    "leg1-low",
     "leg1-south"
    ]
   },
@@ -1709,7 +1682,6 @@
    "winter": null,
    "routes": [
     "leg1-i40",
-    "leg1-low",
     "leg1-south"
    ],
    "first": true,
@@ -2396,6 +2368,30 @@
    "winter": "The west entrance is closed Monday through Thursday for construction through 2026. Come in from the east on SR-169 and it is open every day, sunrise to sunset.",
    "routes": [
     "leg3-vegas"
+   ]
+  },
+  {
+   "id": "devils-rope",
+   "name": "Devil's Rope Museum",
+   "town": "McLean",
+   "state": "TX",
+   "ll": [
+    35.2314,
+    -100.5973
+   ],
+   "detour": 3,
+   "dwell": 45,
+   "cost": "Free",
+   "tags": [
+    "museum",
+    "route66",
+    "barbed-wire"
+   ],
+   "why": "A museum entirely about barbed wire. Hundreds of patented varieties, and how it ended the open range. Free, right off the interstate, and far more interesting than it sounds.",
+   "winter": "Open March to October only. It is shut for the season when you pass, so this is one for a summer trip rather than this one.",
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
    ]
   }
  ]

@@ -36,11 +36,23 @@ async function boot() {
   ui.init({ route, stops: stops.stops, usa, darksky,
     sites: extras.sites, normals: extras.normals, bookings: extras.bookings || {} });
 
-  // First run opens with a real plan rather than a blank app.
-  if (!store.s.seeded) {
-    for (const r of ui.selected()) store.choose(ui.suggestStops(r));
-    store.s.seeded = true;
-    store.save();
+  // Seed any stop the seeder has never considered. Runs on every boot, but
+  // only ever acts on ids it has not seen before — so a new pool arrives
+  // ticked like the rest, and anything you unticked stays unticked.
+  {
+    const seen = new Set(store.s.seededIds || []);
+    let fresh = false;
+    for (const r of ui.selected()) {
+      const pick = ui.suggestStops(r);
+      const add = new Set();
+      for (const s of r.stops) {
+        if (seen.has(s.id)) continue;
+        seen.add(s.id); fresh = true;
+        if (pick.has(s.id)) add.add(s.id);
+      }
+      if (add.size) store.choose(add);
+    }
+    if (fresh) { store.s.seededIds = [...seen]; store.save(); }
   }
 
   $tabs.innerHTML = TABS.map(t =>
