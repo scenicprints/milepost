@@ -2,7 +2,7 @@
 const http = require('http'), fs = require('fs'), path = require('path');
 const ROOT = path.join(__dirname, '..');
 const TYPES = { '.html':'text/html', '.js':'text/javascript', '.css':'text/css',
-                '.json':'application/json', '.webmanifest':'application/manifest+json' };
+                '.png':'image/png', '.json':'application/json', '.webmanifest':'application/manifest+json' };
 http.createServer((req, res) => {
   let p = decodeURIComponent(req.url.split('?')[0]);
   if (p === '/') p = '/index.html';

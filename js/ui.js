@@ -22,10 +22,10 @@ export function init(data) {
   DATA = data;
   SKY = darksky.load(data.darksky);
 }
-let SKY = { zones: [], source: null };
+let SKY = null;
 /// The overlay only exists once there is data behind it — no dead control.
-export const hasSky = () => SKY.zones.length > 0;
-export const skySource = () => SKY.source;
+export const hasSky = () => !!SKY;
+export const skySource = () => SKY && SKY.source;
 export function setPosition(ll) { position = ll; }
 export function hasPosition() { return !!position; }
 
@@ -212,6 +212,13 @@ export function renderMap(legIx) {
         ${hasSky() ? `<button class="fit sky" data-sky aria-pressed="${skyOn()}"
           aria-label="Show where the sky is dark">SKY</button>` : ""}
       </div>
+      ${hasSky() ? `<div class="skykey" id="skykey"${skyOn() ? "" : " hidden"}>
+        <span class="kt">Sky within 30 min of the road</span>
+        <span class="ks">
+          <i style="background:#12163a"></i><i style="background:#1a2350"></i><i style="background:#1a3a78"></i><i style="background:#206e60"></i><i style="background:#b0a838"></i><i style="background:#d67a28"></i><i style="background:#c63c2c"></i><i style="background:#e29696"></i><i style="background:#f6e8e8"></i>
+        </span>
+        <span class="kl"><b>dark</b><b>city</b></span>
+      </div>` : ""}
       <div class="mways${drawer ? " up" : ""}" id="mways">
         <button class="mwbar" data-drawer aria-expanded="${drawer}">
           <span class="t">${esc(rt.name)}</span>
@@ -235,7 +242,7 @@ export function paintMap(legIx, scale, view) {
   svg.innerHTML = mapview.paint(DATA.usa, selected(), cur, {
     chosen: store.chosen, seen: seenSet(), pos: position, scale, view,
     alts: leg.routes.filter(o => o.id !== cur.id).map(o => routeById(o.id)),
-    sky: skyOn() ? SKY.zones : [],
+    sky: skyOn() ? SKY : null,
   });
 }
 
@@ -276,7 +283,7 @@ export function placeSheet(id) {
   const site = DATA.sites[s.id];
   const nrm = DATA.normals[s.town];
   const book = DATA.bookings[s.id];
-  const dark = darksky.at(s.ll, SKY.zones);
+  const dark = darksky.at(s.id, SKY);
 
   return `<div class="grab" data-grab><i></i></div>
     <div class="sh">
@@ -301,9 +308,8 @@ export function placeSheet(id) {
 
       ${dark ? `<div class="sdiv"></div>
         <div class="slab">Night sky</div>
-        <div class="srow">Bortle ${dark.bortle}</div>
-        <div class="sbody">${esc(darksky.describe(dark.bortle))}</div>
-        ${dark.note ? `<div class="sbody">${esc(dark.note)}</div>` : ""}` : ""}
+        <div class="srow">Bortle ${dark.bortle} · ${dark.sqm} mag/arcsec²</div>
+        <div class="sbody">${esc(darksky.describe(dark.bortle))}</div>` : ""}
 
       ${book ? `<div class="sdiv"></div>
         <div class="slab">Booking</div>

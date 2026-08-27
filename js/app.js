@@ -430,6 +430,10 @@ document.addEventListener('click', e => {
     // overlay never yanks the map out from under you.
     ui.setSky(!ui.skyOn());
     sk.setAttribute('aria-pressed', String(ui.skyOn()));
+    // The key lives in the tab's markup, which this deliberately does not
+    // rebuild, so show and hide it here alongside the button.
+    const key = document.getElementById('skykey');
+    if (key) key.hidden = !ui.skyOn();
     repaint();
     return;
   }

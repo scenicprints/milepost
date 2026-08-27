@@ -1,91 +1,59 @@
-// Where the sky is dark enough to sleep under.
+// Where the sky is dark enough to pull off and sleep.
 //
-// The framework only. `data/darksky.json` ships empty and the Sky button does
-// not appear until it has zones — see the comment in that file for the schema
-// and for why it is empty.
+// TWO EARLIER ATTEMPTS FAILED, so that nobody rebuilds them:
+//   1. Bortle zones as filled polygons. On a map of a 5,900 mile trip, 45 of
+//      60 rendered under 12 pixels wide. Specks over the routes and pins.
+//   2. Darkness drawn along the route line instead. Readable, but it answers
+//      the wrong question — you cannot sleep on the interstate, so a stripe on
+//      the road tells you nothing about where to pull off.
 //
-// ON COLOUR, because it is the one real design decision here. Every light
-// pollution map in the world is a rainbow: black, blue, green, yellow, red,
-// white. This app has exactly one colour and it means "this is in your plan".
-// So darkness is drawn as darkness — a single wash, denser where the sky is
-// darker — and the thing you are hunting for is the dark patch. No legend to
-// decode, no colour that means something new, and it reads the same way in
-// both themes because it is painted with a token that flips.
+// What Kevin actually asked for: a HEAT MAP, covering everywhere within 30
+// minutes' drive of the route, so he can find somewhere dark to stop for the
+// night. Brightness is a continuous field, and a 25-mile-wide band contoured
+// into shapes is all slivers — so it ships as an image, `data/darksky.png`,
+// drawn as one <image> under the roads. No geometry, no fragmentation, and it
+// stays sharp because the map repaints its viewBox at every zoom.
+//
+// This file no longer validates polygons. It reads the sidecar: the image
+// bounds, and each stop's brightness sampled straight from the source raster
+// at its own coordinates — exact, rather than "which blob is it inside".
 
-/// Bortle classes worth drawing. 5 and up is suburban sky; you will not see
-/// the Milky Way, so painting it would only add noise.
-export const DARKEST = 1;
-export const FAINTEST = 4;
-
-const num = v => (typeof v === 'number' && isFinite(v) ? v : null);
-
-/// What each class actually looks like standing outside, in plain words. The
-/// number alone means nothing to anyone who has not memorised the scale.
 const WORDS = {
   1: 'No light pollution at all. The Milky Way casts a shadow.',
   2: 'Truly dark. The Milky Way is structured enough to see detail in it.',
   3: 'Rural. The Milky Way is obvious, with some glow on the horizon.',
   4: 'Rural edge. The Milky Way is there but washed out overhead.',
+  5: 'Suburban. You will see the brightest constellations and little else.',
+  6: 'Bright suburb. No Milky Way, and the sky glows grey.',
+  7: 'Suburban to city. Only the brightest stars get through.',
+  8: 'City. A few dozen stars on a good night.',
+  9: 'Inner city. The Moon and the planets, and that is the lot.',
 };
 export const describe = b => WORDS[b] || '';
 
-/// Reads whatever is in darksky.json and returns only the zones that are
-/// actually drawable. Anything malformed is dropped and reported rather than
-/// half-drawn, because a silently wrong polygon is a lie about where it is
-/// safe to sleep.
+/// True when the sky is worth stopping for.
+export const worthIt = b => b <= 3;
+
+/// Reads data/darksky.json. Returns null when there is nothing to draw, which
+/// keeps the Sky button off the map rather than showing an empty layer.
 export function load(raw) {
-  const zones = [], problems = [];
-  const list = (raw && Array.isArray(raw.zones)) ? raw.zones : [];
-
-  list.forEach((z, i) => {
-    const where = `zone ${i}${z && z.name ? ` (${z.name})` : ''}`;
-    const bortle = num(z && z.bortle);
-    if (bortle === null || bortle < DARKEST || bortle > FAINTEST)
-      return problems.push(`${where}: bortle must be ${DARKEST}-${FAINTEST}, got ${z && z.bortle}`);
-    if (!Array.isArray(z.ring) || z.ring.length < 3)
-      return problems.push(`${where}: ring needs at least 3 points`);
-
-    const ring = [];
-    for (const p of z.ring) {
-      const lat = num(p && p[0]), lon = num(p && p[1]);
-      // [lat, lon], not GeoJSON's [lon, lat]. A swapped pair is the mistake to
-      // expect when converting, and it is worth catching loudly here: no part
-      // of this trip is outside these bounds.
-      if (lat === null || lon === null || lat < 20 || lat > 55 || lon < -130 || lon > -60) {
-        problems.push(`${where}: point out of range ${JSON.stringify(p)} — are lat and lon swapped?`);
-        return;
-      }
-      ring.push([lat, lon]);
-    }
-    if (ring.length < 3) return;
-
-    zones.push({ bortle: Math.round(bortle), name: String(z.name || ''), ring,
-                 sqm: num(z && z.sqm), note: z && z.note ? String(z.note) : '' });
-  });
-
-  if (problems.length) console.warn('darksky.json:\n  ' + problems.join('\n  '));
-  return { zones, source: (raw && raw.source) || null, problems };
-}
-
-/// Even-odd ray cast. Rings are small and there are few of them, so this is
-/// cheap enough to call per stop or per overnight town.
-function inRing(ll, ring) {
-  const [y, x] = ll;
-  let inside = false;
-  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
-    const [yi, xi] = ring[i], [yj, xj] = ring[j];
-    if ((yi > y) !== (yj > y) && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi)
-      inside = !inside;
+  if (!raw || !raw.image || !Array.isArray(raw.bounds) || raw.bounds.length !== 4)
+    return null;
+  const [la0, la1, lo0, lo1] = raw.bounds.map(Number);
+  if (![la0, la1, lo0, lo1].every(v => isFinite(v)) || la1 <= la0 || lo1 <= lo0) {
+    console.warn('darksky.json: bounds look wrong', raw.bounds);
+    return null;
   }
-  return inside;
+  return {
+    image: 'data/' + String(raw.image).replace(/[^\w.-]/g, ''),
+    bounds: [la0, la1, lo0, lo1],
+    stops: (raw.stops && typeof raw.stops === 'object') ? raw.stops : {},
+    source: raw.source || null,
+  };
 }
 
-/// The darkest zone covering a point, or null. Darkest wins where they overlap,
-/// which is the honest answer: if two sources disagree you want the claim you
-/// can check by looking up.
-export function at(ll, zones) {
-  let best = null;
-  for (const z of zones)
-    if (inRing(ll, z.ring) && (!best || z.bortle < best.bortle)) best = z;
-  return best;
+/// The reading for one stop, or null. Sampled at build time from the raster.
+export function at(id, sky) {
+  const hit = sky && sky.stops ? sky.stops[id] : null;
+  return hit && typeof hit.bortle === 'number' ? hit : null;
 }

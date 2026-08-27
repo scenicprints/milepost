@@ -247,12 +247,21 @@ input, textarea { font: inherit; color: inherit; }
 /* Dark sky. One wash, denser the darker the sky — no rainbow, no legend. It is
    painted with a colour that flips with the theme so "dark" always reads dark:
    ink on the light ground, true black on the dark one. */
-.mdark {
-  fill: none; stroke: var(--sky); pointer-events: none;
-  stroke-linecap: round; stroke-linejoin: round;
+.mheat { pointer-events: none; }
+/* The key. A heat map without one is a guess, and this one was called
+   unreadable twice before it had a scale to read it against. */
+.skykey {
+  position: absolute; left: 12px; right: 12px; bottom: 12px;
+  background: var(--paper); border: 1px solid var(--rule);
+  padding: 7px 9px 6px; pointer-events: none;
 }
-.mdark.b2 { stroke-opacity: .55; }
-.mdark.b3 { stroke-opacity: .26; }
+.skykey .kt { display: block; font-family: var(--mono); font-size: 9.5px;
+  letter-spacing: .06em; color: var(--ink2); margin-bottom: 5px; }
+.skykey .ks { display: flex; height: 7px; }
+.skykey .ks i { flex: 1; display: block; }
+.skykey .kl { display: flex; justify-content: space-between; margin-top: 3px; }
+.skykey .kl b { font-family: var(--mono); font-size: 9px; font-weight: 400;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--ink3); }
 .zoom .sky[aria-pressed="true"] { color: var(--signal); border-color: var(--signal); }
 .mpin { fill: var(--paper); stroke: var(--rule2); cursor: pointer; }
 .mpin.on { fill: var(--signal); stroke: var(--signal); }

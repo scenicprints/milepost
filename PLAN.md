@@ -320,6 +320,46 @@ Android Auto is no.
 
 ## Session log
 
+**Session 25** — The light pollution map, third attempt, after Kevin called
+the first two useless. **Read this before touching the sky layer.**
+
+What he actually asked for, in his words: *"It should read like a heat map
+within 30 minute driving time from the route. This way I can pull off the road
+and sleep in a no light polluted area."*
+
+**What failed, so nobody rebuilds it:**
+1. **Bortle zones as filled polygons.** 45 of 60 rendered under 12 pixels
+   wide. Specks over the routes and pins. Cause: an 85-mile corridor clip cut
+   contiguous regions into slivers, and the size floor was far too low.
+2. **Darkness drawn along the route line.** Readable, but it answers the wrong
+   question — *you cannot sleep on the interstate*. A stripe on the road says
+   nothing about where to pull off. This was me redesigning the request
+   instead of repairing it.
+
+**What ships now: a raster.** `data/darksky.png`, one image drawn under the
+roads, covering everything within 25 miles of the route (30 minutes at back-
+road speed). Brightness is a continuous field, and a 25-mile band contoured
+into shapes is all slivers, so it does not become geometry at all. It stays
+sharp at every zoom because the map already re-bakes its viewBox.
+
+- **24 KB.** A smooth gradient encoded 3.4 MB, which is too much to cache on a
+  phone for an offline app. Nine flat bands, one per Bortle class, as a PNG8
+  with a transparent index. Banded also reads faster for "is this dark".
+- **A legend.** It was called unreadable twice before it had a scale to read
+  it against. The key lives in the tab markup, and the sky toggle deliberately
+  does NOT rebuild the tab (so the map never jumps), so `app.js` shows and
+  hides the key by hand next to the button. Change one, change the other.
+- **Per-stop readings are now exact** — sampled from the source raster at each
+  stop's own coordinates rather than by polygon containment, and they carry
+  the mag/arcsec² figure. Vegas Strip Bortle 9 (16.22), Memphis 8, Grand
+  Canyon 2 (21.89), Copper Breaks 2 (21.94) — which matches its Gold-tier
+  dark sky park certification, an independent check that the numbers are real.
+
+Rebuild with `scratch/heatmap.py`. The 3 GB source raster is not in the repo.
+**Extraction gotcha:** the script skips extracting when the .tif exists, so an
+interrupted extract leaves a truncated file that fails as "corrupted tile" —
+delete `wa/` and re-extract whole. 1.12.0.
+
 **Session 24** — The canyon road, and the sky layer redrawn after Kevin called
 it unreadable.
 

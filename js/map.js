@@ -31,95 +31,6 @@ export function xy(ll) {
 
 const poly = pts => pts.map((p, i) => (i ? "L" : "M") + xy(p).map(n => n.toFixed(3)).join(" ")).join(" ");
 
-// ---------------------------------------------------------------- dark sky
-//
-// First attempt drew the Bortle zones as filled areas. On a map of a 5,900
-// mile trip that is 45 grey specks under 12px wide plus three blobs — noise
-// laid over the routes and pins, and Kevin called it unreadable, correctly.
-//
-// The question is not two-dimensional. It is "where along MY ROAD is the sky
-// dark", which is a property of the line. So the road wears it: a dark casing
-// under the route, heavier where the sky is darker. No legend to decode, and
-// it cannot be confused with the signal colour, which still only ever means
-// "in your plan".
-const darkRuns = new Map();          // route id -> [{ bortle, pts }]
-
-function bbox(ring) {
-  let y0 = 1e9, y1 = -1e9, x0 = 1e9, x1 = -1e9;
-  for (const [y, x] of ring) {
-    if (y < y0) y0 = y; if (y > y1) y1 = y;
-    if (x < x0) x0 = x; if (x > x1) x1 = x;
-  }
-  return [y0, y1, x0, x1];
-}
-
-function inRing(ll, ring) {
-  const [y, x] = ll;
-  let inside = false;
-  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
-    const [yi, xi] = ring[i], [yj, xj] = ring[j];
-    if ((yi > y) !== (yj > y) && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi)
-      inside = !inside;
-  }
-  return inside;
-}
-
-/// Walk the road, find the darkest zone over each step, and return the runs.
-/// Cached per route: it depends on the road and the data, never on the zoom.
-function runsFor(route, zones) {
-  const hit = darkRuns.get(route.id);
-  if (hit) return hit;
-  const boxed = zones.map(z => ({ z, b: bbox(z.ring) }));
-  const pts = [];
-  const w = route.waypoints;
-  for (let i = 0; i < w.length - 1; i++) {
-    const a = w[i].ll, b = w[i + 1].ll;
-    const steps = Math.max(1, Math.round(Math.hypot(b[0] - a[0], b[1] - a[1]) / 0.08));
-    for (let k = 0; k < steps; k++) {
-      const t = k / steps;
-      pts.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]);
-    }
-  }
-  pts.push(w[w.length - 1].ll);
-
-  const cls = pts.map(p => {
-    let best = null;
-    for (const { z, b } of boxed) {
-      if (p[0] < b[0] || p[0] > b[1] || p[1] < b[2] || p[1] > b[3]) continue;
-      if ((best === null || z.bortle < best) && inRing(p, z.ring)) best = z.bortle;
-    }
-    return best;
-  });
-
-  // Samples are ~5.5 miles apart. Without this the road flickers in and out of
-  // darkness every time it clips a zone edge, which draws as a row of dashes
-  // and reads as noise. A stretch has to be long enough to actually drive
-  // through before it earns a mark; anything shorter joins what came before.
-  const MIN = 6;                                   // ~33 miles
-  for (let i = 0; i < cls.length;) {
-    let j = i;
-    while (j < cls.length && cls[j] === cls[i]) j++;
-    if (j - i < MIN && i > 0) {
-      const fill = cls[i - 1];
-      for (let k = i; k < j; k++) cls[k] = fill;
-      i = j;
-    } else i = j;
-  }
-
-  const runs = [];
-  let cur = null, run = [];
-  for (let i = 0; i < pts.length; i++) {
-    if (cls[i] !== cur) {
-      if (cur !== null && run.length > 1) { run.push(pts[i]); runs.push({ bortle: cur, pts: run }); }
-      cur = cls[i]; run = [pts[i]];
-    } else run.push(pts[i]);
-  }
-  if (cur !== null && run.length > 1) runs.push({ bortle: cur, pts: run });
-  darkRuns.set(route.id, runs);
-  return runs;
-}
-
-export const forgetDark = () => darkRuns.clear();
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 /// Bounding box of a route and its stops, in stage units.
@@ -167,12 +78,17 @@ export function paint(usa, routes, active, opts = {}) {
   // Dark sky, painted straight onto the land and under everything else, so the
   // routes and pins stay readable on top of it. Darkness is drawn as darkness —
   // see js/darksky.js for why it is not the usual rainbow.
-  // Darkness rides the road, drawn under everything so the route stays legible.
-  for (const r of sky.length ? runsFor(active, sky) : [])
-    out.push('<path class="mdark b' + r.bortle + '" d="' + poly(r.pts) +
-      '" stroke-width="' + n(r.bortle === 2 ? 9 : 6) + '"><title>Bortle ' +
-      r.bortle + (r.bortle === 2 ? " — the Milky Way has structure here"
-                                 : " — Milky Way visible, some glow") + "</title></path>");
+  // The light pollution heat map. A raster, not shapes: a 25-mile band
+  // contoured into polygons fragments into slivers, and twice that read as
+  // noise. One image, drawn under the roads so they stay legible.
+  if (sky && sky.image) {
+    const [la0, la1, lo0, lo1] = sky.bounds;
+    const tl = xy([la1, lo0]), br = xy([la0, lo1]);
+    out.push('<image class="mheat" href="' + esc(sky.image) + '" x="' + tl[0].toFixed(2) +
+      '" y="' + tl[1].toFixed(2) + '" width="' + (br[0] - tl[0]).toFixed(2) +
+      '" height="' + (br[1] - tl[1]).toFixed(2) +
+      '" preserveAspectRatio="none" image-rendering="optimizeQuality"/>');
+  }
 
   if (scale < 2.2) for (const l of usa.labels) {
     const q = xy(l.ll);
