@@ -1,12 +1,11 @@
-// The desktop planner.
+// The desktop planner: one road, in the order you drive it, tick what you want.
 //
-// Answers, in order: which stops are in, when do I reach each one, is it open
-// when I get there, when should I really be there, and how long is the whole
-// thing. See desk.html for why this is a second view rather than a wider phone.
+// See desk.html for why this is one column instead of two panes. Short version:
+// the two-pane version listed every stop twice and made "add" unfindable.
 //
-// Everything below is presentation. The arithmetic lives in js/itinerary.js and
-// js/winter.js, and the plan itself lives in js/store.js, which is shared with
-// the phone app and synced. This file must not invent state of its own.
+// Everything here is presentation. The arithmetic is js/itinerary.js and
+// js/winter.js; the plan lives in js/store.js, shared and synced with the phone.
+// This file holds no trip state of its own.
 
 import { store } from './store.js';
 import { buildRoute } from './route.js';
@@ -16,14 +15,15 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c =>
   ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
-let DATA = null, legIx = 0, kind = 'all';
-
-const WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const WD = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const dur = m => {
   m = Math.round(m);
   const h = Math.floor(m / 60);
-  return h ? `${h}h${m % 60 ? ' ' + (m % 60) + 'm' : ''}` : `${m}m`;
+  return h ? `${h}h${m % 60 ? ' ' + (m % 60) + 'm' : ''}` : `${m} min`;
 };
+
+let DATA = null, legIx = 0, find = '', onlyIn = false;
 
 async function boot() {
   const [route, stops, hours, winter] = await Promise.all([
@@ -34,18 +34,22 @@ async function boot() {
   ]);
   DATA = { route, stops: stops.stops, HOURS: hours, WINTER: winter };
 
-  $('leg').innerHTML = route.legs
-    .map((l, i) => `<option value="${i}">${esc(l.name)}</option>`).join('');
+  $('leg').innerHTML = route.legs.map((l, i) =>
+    `<option value="${i}">${esc(l.name)}</option>`).join('');
 
-  for (const el of ['leg', 'road', 'date', 'at', 'mph'])
-    $(el).addEventListener('change', () => { if (el === 'leg') { legIx = +$('leg').value; fillRoads(); } draw(); });
+  $('leg').addEventListener('change', () => { legIx = +$('leg').value; fillRoads(); draw(); });
+  for (const id of ['road', 'date', 'at', 'mph']) $(id).addEventListener('change', draw);
+  $('find').addEventListener('input', () => { find = $('find').value.toLowerCase(); draw(); });
+  $('onlyIn').addEventListener('change', () => { onlyIn = $('onlyIn').checked; draw(); });
 
-  for (const b of document.querySelectorAll('[data-kind]'))
-    b.addEventListener('click', () => {
-      kind = b.dataset.kind;
-      for (const o of document.querySelectorAll('[data-kind]')) o.classList.toggle('on', o === b);
-      draw();
-    });
+  $('clear').addEventListener('click', () => {
+    for (const s of current().route.stops) store.chosen.delete(s.id);
+    store.save(); draw();
+  });
+  $('addBig').addEventListener('click', () => {
+    for (const s of current().route.stops) if (s.big) store.chosen.add(s.id);
+    store.save(); draw();
+  });
 
   document.addEventListener('click', e => {
     const t = e.target.closest('[data-toggle]');
@@ -61,13 +65,12 @@ async function boot() {
 
 function fillRoads() {
   const leg = DATA.route.legs[legIx];
-  $('road').innerHTML = leg.routes
-    .map(r => `<option value="${r.id}">${esc(r.name)}</option>`).join('');
+  $('road').innerHTML = leg.routes.map(r =>
+    `<option value="${r.id}">${esc(r.name)}</option>`).join('');
   const saved = store.routeFor(leg.id);
   if (leg.routes.some(r => r.id === saved)) $('road').value = saved;
 }
 
-/// The current built route, and the itinerary over it.
 function current() {
   const leg = DATA.route.legs[legIx];
   const opt = leg.routes.find(r => r.id === $('road').value) || leg.routes[0];
@@ -82,69 +85,81 @@ function current() {
 
 function draw() {
   const { route, it } = current();
+  const byId = new Map(it.rows.map(r => [r.stop.id, r]));
+  const chosen = route.stops.filter(s => store.chosen.has(s.id) && s.kind !== 'lodging');
 
-  // ---- totals -----------------------------------------------------------
-  const days = it.dayCount;
   $('totals').innerHTML = `
+    <div><b>${it.dayCount}</b><span>${it.dayCount === 1 ? 'day' : 'days'}</span></div>
     <div><b>${Math.round(route.miles).toLocaleString()}</b><span>miles</span></div>
-    <div><b>${it.rows.length}</b><span>stops</span></div>
     <div><b>${dur(it.driveMin)}</b><span>driving</span></div>
-    <div><b>${dur(it.stopMin)}</b><span>stopped</span></div>
-    <div class="big"><b>${days}</b><span>${days === 1 ? 'day' : 'days'}</span></div>`;
+    <div><b>${dur(it.stopMin)}</b><span>at stops</span></div>`;
 
-  // ---- the pool: everything on this road, in or out ----------------------
-  const inPlan = new Set(it.rows.map(r => r.stop.id));
-  $('pool').innerHTML = route.stops
+  const bad = it.rows.filter(r => !r.ok).length;
+  $('counts').innerHTML =
+    `<b>${chosen.length}</b> picked of ${route.stops.filter(s => s.kind !== 'lodging').length} on this road` +
+    (bad ? ` <span class="pill bad">${bad} won't work</span>`
+         : chosen.length ? ` <span class="pill ok">all of them work</span>` : '');
+
+  // One pass down the road. Chosen stops carry a clock and open out; the rest
+  // stay as a single quiet line you can tick.
+  const list = route.stops
     .filter(s => s.kind !== 'lodging')
-    .filter(s => kind === 'all' || (kind === 'food') === (s.kind === 'food'))
-    .map(s => `<button class="poolrow${inPlan.has(s.id) ? ' on' : ''}" data-toggle="${esc(s.id)}">
-        <span class="tick"></span>
+    .filter(s => !onlyIn || store.chosen.has(s.id))
+    .filter(s => !find || (s.name + ' ' + s.town + ' ' + s.state).toLowerCase().includes(find));
+
+  let html = '', lastDay = -1;
+  if (!list.length) html = `<p class="empty">Nothing matches “${esc(find)}”.</p>`;
+  if (!chosen.length && !find)
+    html += `<p class="empty lead">Tick a place to put it in the plan. Start with
+      <button class="link" id="addBig2">the highlights</button> if you want a first pass.</p>`;
+
+  for (const s of list) {
+    const r = byId.get(s.id);
+
+    if (r && r.dayIx !== lastDay) {
+      lastDay = r.dayIx;
+      const d = it.days.find(x => x.ix === r.dayIx) || it.days[0];
+      html += `<section class="dayhead">
+        <h2>Day ${r.dayIx + 1}</h2>
+        <div class="date">${WD[d.date.getUTCDay()]} ${d.date.getUTCDate()} ${MON[d.date.getUTCMonth()]}</div>
+        <div class="win">Drive from <b>${hhmm(d.open)}</b> to <b>${hhmm(d.shut)}</b>
+          <em>${d.why === 'plows'
+            ? `${esc(d.riskName)} is clear behind the plows by ${hhmm(d.open)}`
+            : `first light ${hhmm(d.rise)}, dark ${hhmm(d.set)}`}</em></div>
+      </section>`;
+    }
+
+    if (!r) {
+      html += `<button class="pick out" data-toggle="${esc(s.id)}">
+        <span class="box"></span>
         <span class="nm">${esc(s.name)}${s.kind === 'food' ? '<i>eat</i>' : ''}</span>
         <span class="tw">${esc(s.town)}, ${esc(s.state)}</span>
         <span class="ct">${dur(s.detour * 2 + s.dwell)}</span>
-      </button>`).join('');
-
-  // ---- warnings ---------------------------------------------------------
-  const bad = it.rows.filter(r => !r.ok).length;
-  $('warn').innerHTML = bad
-    ? `<span class="pill bad">${bad} ${bad === 1 ? 'problem' : 'problems'}</span>`
-    : `<span class="pill ok">every stop works</span>`;
-
-  // ---- the itinerary, grouped by day ------------------------------------
-  let html = '', lastDay = -1;
-  if (!it.rows.length) html = `<p class="empty">Nothing chosen yet. Pick stops on the left and the clock fills in.</p>`;
-
-  for (const r of it.rows) {
-    if (r.dayIx !== lastDay) {
-      lastDay = r.dayIx;
-      const d = it.days.find(x => x.ix === r.dayIx) || it.days[0];
-      const date = d.date;
-      html += `<div class="day">
-        <h3>Day ${r.dayIx + 1} <span>${WD[date.getUTCDay()]} ${date.getUTCDate()} Dec</span></h3>
-        <div class="window">Road opens <b>${hhmm(d.open)}</b> ${d.why === 'plows'
-          ? `— ${esc(d.riskName)} is normally clear behind the plows by then`
-          : `— first light is ${hhmm(d.rise)}`}, dark at <b>${hhmm(d.set)}</b></div>
-      </div>`;
+      </button>`;
+      continue;
     }
 
     const h = r.hours;
-    html += `<div class="row${r.ok ? '' : ' bad'}">
-      <div class="when"><b>${r.arriveAt}</b><span>leave ${r.departAt}</span></div>
-      <div class="what">
-        <div class="nm">${esc(r.stop.name)}${r.stop.kind === 'food' ? '<i>eat</i>' : ''}</div>
-        <div class="sub">${esc(r.stop.town)}, ${esc(r.stop.state)}
-          · ${dur(r.driveMin)} to get here · ${dur(r.dwell)} there</div>
+    html += `<div class="pick in${r.ok ? '' : ' bad'}">
+      <button class="box on" data-toggle="${esc(s.id)}" aria-label="Remove"></button>
+      <div class="time"><b>${r.arriveAt}</b><span>until ${r.departAt}</span></div>
+      <div class="body">
+        <div class="nm">${esc(s.name)}${s.kind === 'food' ? '<i>eat</i>' : ''}</div>
+        <div class="tw">${esc(s.town)}, ${esc(s.state)} · ${dur(r.driveMin)} drive · ${dur(r.dwell)} here</div>
         ${r.flags.map(f => `<div class="flag ${f.level}">${esc(f.text)}</div>`).join('')}
       </div>
       <div class="hrs">
-        ${h && !h.shut ? `<div class="oc">${h.openAt ?? '—'} – ${h.closeAt ?? '—'}</div>` : ''}
-        ${h && h.shut ? `<div class="oc closed">closed</div>` : ''}
-        ${!h ? `<div class="oc none">hours unchecked</div>` : ''}
-        ${r.bestAt ? `<div class="best">best ${r.bestAt}</div>` : ''}
+        ${!h ? `<span class="none">hours not checked</span>`
+             : h.shut ? `<span class="closed">Closed today</span>`
+             : `<span class="oc">${h.openAt} – ${h.closeAt}</span>`}
+        ${r.bestAt ? `<span class="best">best ${r.bestAt}</span>` : ''}
       </div>
     </div>`;
   }
-  $('itin').innerHTML = html;
+
+  $('road').innerHTML = html;
+  const b2 = $('addBig2');
+  if (b2) b2.addEventListener('click', () => $('addBig').click());
 }
 
 boot();

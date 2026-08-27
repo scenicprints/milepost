@@ -316,6 +316,31 @@ Android Auto is no.
 
 ## Session log
 
+**Session 27** — The planner UI, rebuilt. Kevin on the first version: *"That UI
+is god awful. It is so hard to read and Unintuitive as hell. I cant even figure
+out how to create the list of places to go."* All three were fair.
+
+**The structural fault: two panes showed the SAME stops.** A pool on the left,
+the itinerary on the right, so "add a place" meant clicking a thing on the left
+that was already sitting on the right. There was no way to tell what the left
+pane was FOR. **It is now one column — the road, in the order you drive it.**
+Tick a place and it joins the plan and opens out with its arrival time; untick
+it and it shrinks back to a line. The list you build and the list you choose
+from are the same list, which is the only arrangement where "add" has an
+obvious meaning. **Do not reintroduce a separate pool.**
+
+**The readability fault: I used the phone's type scale on a 1280px screen.**
+9.5px mono labels, 11px body. Small type is not restraint when there is room,
+it is just small. Body is 15px now, names 16px, arrival times 20px mono, and
+mono is kept for clock faces only where tabular figures earn it. The tickbox is
+22px because it is the whole point of the screen.
+
+Added because building a list from nothing was impossible: **Clear all**, **Add
+the highlights** (everything flagged `big`), a search box, and an "only what I
+picked" filter. Empty state now says what to do rather than showing a blank.
+
+1.14.1.
+
 **Session 26** — The desktop planner, and the two data layers under it.
 **Read this before touching planning.**
 

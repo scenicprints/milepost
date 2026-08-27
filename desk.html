@@ -6,51 +6,48 @@
 <title>Milepost — planner</title>
 <!--
   The desktop planner. A SECOND VIEW over the same engine, not a second app.
+  index.html is for the road; this is for the table.
 
-  index.html is for the road: one hand, in a moving car, no signal. This is for
-  the table: deciding which of ~100 stops are in, what time you reach each one,
-  and whether it is open when you get there.
+  ONE COLUMN, ON PURPOSE. The first version had a pool on the left and the
+  itinerary on the right, which showed every stop TWICE and made "add a place"
+  mean clicking a thing on the left that was already sitting on the right.
+  Kevin could not work out how to build a list, and that duplication is why.
+
+  Now there is one road, in the order you drive it. Tick a place and it joins
+  the plan and grows its arrival time; untick it and it shrinks back to a line.
+  The list you are building and the list you are choosing from are the same
+  list, which is the only arrangement where "add" has an obvious meaning.
 
   It imports store.js, so it reads and writes the SAME plan as the phone and
-  syncs through the same Firestore document. Tick a stop here, it is ticked in
-  the car. That shared store is the contract between the two views — change its
-  shape carelessly and the two stop agreeing.
-
-  No build step, same as the rest of the app.
+  syncs through the same Firestore document.
 -->
 <link rel="stylesheet" href="css/fonts.css">
 <link rel="stylesheet" href="css/desk.css">
 </head>
 <body>
 <header class="bar">
-  <div class="brand">Milepost <span>planner</span></div>
-  <label>Leg <select id="leg"></select></label>
-  <label>Road <select id="road"></select></label>
-  <label>Leave <input type="date" id="date" value="2026-12-19"></label>
-  <label>at <input type="time" id="at" value="06:00"></label>
-  <label>mph <input type="number" id="mph" value="62" min="40" max="80" step="1"></label>
+  <div class="brand">Milepost</div>
+  <div class="ctl">
+    <label>Leg<select id="leg"></select></label>
+    <label>Road<select id="road"></select></label>
+    <label>Leave<input type="date" id="date" value="2026-12-19"></label>
+    <label>at<input type="time" id="at" value="06:00"></label>
+    <label>mph<input type="number" id="mph" value="62" min="40" max="80"></label>
+  </div>
   <div class="totals" id="totals"></div>
 </header>
 
-<main>
-  <section class="pane list">
-    <div class="paneHead">
-      <h2>Stops</h2>
-      <div class="filters">
-        <button data-kind="all" class="on">All</button>
-        <button data-kind="sight">Sights</button>
-        <button data-kind="food">Eateries</button>
-        <span class="hint">click to add or drop</span>
-      </div>
-    </div>
-    <div id="pool"></div>
-  </section>
+<div class="sub">
+  <div class="counts" id="counts"></div>
+  <div class="acts">
+    <input type="search" id="find" placeholder="Find a place…">
+    <button id="addBig">Add the highlights</button>
+    <button id="clear">Clear all</button>
+    <label class="only"><input type="checkbox" id="onlyIn"> Only what I picked</label>
+  </div>
+</div>
 
-  <section class="pane plan">
-    <div class="paneHead"><h2>The day, hour by hour</h2><div id="warn"></div></div>
-    <div id="itin"></div>
-  </section>
-</main>
+<main id="road"></main>
 
 <script type="module" src="js/desk.js"></script>
 </body>
