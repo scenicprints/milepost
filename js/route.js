@@ -89,7 +89,13 @@ export function buildRoute(route, allStops) {
     .filter(s => s.routes.includes(route.id))
     .map(s => {
       const p = project(s.ll, route.waypoints, cum);
-      return { ...s, mile: p.mile, offRoute: p.off };
+      // `detourBy` lets one stop cost different time on different roads. The
+      // Grand Canyon is an hour off the interstate from Williams, but on the
+      // canyon road the rim IS the road, so the same stop costs minutes. One
+      // stop id either way, so crossing it off crosses it off everywhere.
+      const detour = (s.detourBy && s.detourBy[route.id] != null)
+        ? s.detourBy[route.id] : s.detour;
+      return { ...s, detour, mile: p.mile, offRoute: p.off };
     })
     .filter(s => s.offRoute < MAX_OFF)
     .sort((a, b) => a.mile - b.mile);

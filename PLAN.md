@@ -320,6 +320,37 @@ Android Auto is no.
 
 ## Session log
 
+**Session 24** — The canyon road, and the sky layer redrawn after Kevin called
+it unreadable.
+
+**The canyon road** is now its own option on leg 1 (`leg1-canyon`) and leg 3
+(`leg3-canyon`). Instead of driving the 60 miles from Williams to the rim and
+the same 60 back, it goes THROUGH: in at one entrance, along Desert View Drive
+past Lipan, Moran and Grandview, out the other side. Leg 1 runs it west to
+east (Williams > village > Desert View > Cameron > Flagstaff); leg 3 runs it
+east to west. **Checked against the real numbers**: the loop is +128 miles
+over I-40, the out-and-back is 122 — within six miles, so it genuinely costs
+the same and repeats nothing. Desert View at 7,438 ft carries a snow risk
+note: it is the piece of the park that closes first, and NPS shuts Desert View
+Drive for winter weather while the south entrance stays open. The plain
+interstate is the fallback.
+
+**New in the data model: `detourBy`.** A stop can cost different time on
+different roads — the Grand Canyon is 60 minutes off the interstate from
+Williams but 3 minutes off the canyon road, because there the rim IS the road.
+One stop id either way, so crossing it off still crosses it off everywhere.
+Grand Canyon 4h30 -> 2h36, Sunset Crater 3h16 -> 2h42 (US-89 is the way
+through, and the Wupatki loop road leaves and rejoins it).
+
+**The sky layer was wrong and is redrawn.** Painting Bortle zones as filled
+areas put 45 polygons under 12 pixels wide on the map — specks over the routes
+and pins. The numbers were right and the rendering was useless, which is what
+comes of validating data and never looking at the screen. **Darkness now rides
+the road**: the active route wears a dark casing, heavier where the sky is
+darker, because "where along my road is it dark" is a property of the line and
+not of the country. Short flickers are smoothed out — a stretch must run about
+33 miles before it earns a mark. 60 polygons became 7 segments. 1.11.0.
+
 **Session 23** — The light pollution map, and the research job `darksky.json`
 had been holding since it shipped empty. **Source: Falchi et al. 2016 World
 Atlas of Artificial Night Sky Brightness** (GFZ, doi:10.5880/GFZ.1.4.2016.001),

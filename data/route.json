@@ -603,6 +603,320 @@
        ]
       }
      ]
+    },
+    {
+     "id": "leg1-canyon",
+     "name": "The canyon road",
+     "road": "I-40 to Williams, AZ-64 through the park, US-89 down to Flagstaff",
+     "character": "Through the canyon instead of out and back to it. You come in at Desert View, take the rim road past Lipan, Moran and Grandview as part of the driving, and leave by the other entrance.",
+     "why": "The out-and-back from Williams drives the same 60 miles twice. This costs about the same and does not repeat a mile of it, and the Watchtower end is the quiet entrance. It also puts Sunset Crater and Wupatki on the road rather than off it, since US-89 is the way through.",
+     "costs": "About 130 miles more than staying on I-40, near enough exactly what the out-and-back costs. Higher and more exposed, though: Desert View sits at 7,438 feet and is the first thing to close in weather. If the forecast is bad, take the plain interstate and do the canyon as a spur from Williams, or skip it.",
+     "waypoints": [
+      {
+       "name": "Modesto",
+       "state": "CA",
+       "ll": [
+        37.639,
+        -120.997
+       ]
+      },
+      {
+       "name": "Fresno",
+       "state": "CA",
+       "ll": [
+        36.746,
+        -119.772
+       ]
+      },
+      {
+       "name": "Bakersfield",
+       "state": "CA",
+       "ll": [
+        35.373,
+        -119.019
+       ]
+      },
+      {
+       "name": "Tehachapi Pass",
+       "state": "CA",
+       "ll": [
+        35.132,
+        -118.449
+       ],
+       "elev": 3793,
+       "risk": "chains",
+       "note": "Chain control posts here. Your FWD Accord needs chains ON under R2 — the exemption is AWD only."
+      },
+      {
+       "name": "Mojave",
+       "state": "CA",
+       "ll": [
+        35.053,
+        -118.174
+       ]
+      },
+      {
+       "name": "Barstow",
+       "state": "CA",
+       "ll": [
+        34.899,
+        -117.023
+       ],
+       "note": "I-40 begins. One road for the next 2,400 miles."
+      },
+      {
+       "name": "Needles",
+       "state": "CA",
+       "ll": [
+        34.848,
+        -114.614
+       ]
+      },
+      {
+       "name": "Kingman",
+       "state": "AZ",
+       "ll": [
+        35.189,
+        -114.053
+       ],
+       "elev": 3333,
+       "note": "Below the snow line. Sleep here if Flagstaff is getting hit and go over in the morning."
+      },
+      {
+       "name": "Seligman",
+       "state": "AZ",
+       "ll": [
+        35.326,
+        -112.874
+       ]
+      },
+      {
+       "name": "Williams",
+       "state": "AZ",
+       "ll": [
+        35.249,
+        -112.191
+       ],
+       "elev": 6766,
+       "note": "Turn north here for the Grand Canyon."
+      },
+      {
+       "name": "Valle",
+       "state": "AZ",
+       "ll": [
+        35.652,
+        -112.143
+       ],
+       "elev": 5999
+      },
+      {
+       "name": "Tusayan",
+       "state": "AZ",
+       "ll": [
+        35.976,
+        -112.126
+       ],
+       "elev": 6612
+      },
+      {
+       "name": "Grand Canyon Village",
+       "state": "AZ",
+       "ll": [
+        36.058,
+        -112.14
+       ],
+       "elev": 6800,
+       "risk": "snow",
+       "note": "The rim is plowed and open all winter, but the road in can close during a storm. (928) 638-7496 for conditions."
+      },
+      {
+       "name": "Desert View",
+       "state": "AZ",
+       "ll": [
+        36.043,
+        -111.826
+       ],
+       "elev": 7438,
+       "risk": "snow",
+       "note": "The highest point on this road, and the piece of the park that closes first in bad weather. Desert View Drive shuts for winter storms while the south entrance stays open."
+      },
+      {
+       "name": "Cameron",
+       "state": "AZ",
+       "ll": [
+        35.877,
+        -111.416
+       ],
+       "elev": 4200
+      },
+      {
+       "name": "Flagstaff",
+       "state": "AZ",
+       "ll": [
+        35.198,
+        -111.651
+       ],
+       "elev": 6909,
+       "risk": "snow",
+       "note": "The most likely place on this whole trip to find the interstate closed. Check the forecast 48 hours out."
+      },
+      {
+       "name": "Winslow",
+       "state": "AZ",
+       "ll": [
+        35.024,
+        -110.697
+       ]
+      },
+      {
+       "name": "Holbrook",
+       "state": "AZ",
+       "ll": [
+        34.902,
+        -110.159
+       ]
+      },
+      {
+       "name": "Gallup",
+       "state": "NM",
+       "ll": [
+        35.528,
+        -108.742
+       ]
+      },
+      {
+       "name": "Continental Divide",
+       "state": "NM",
+       "ll": [
+        35.44,
+        -108.35
+       ],
+       "elev": 7275,
+       "risk": "snow",
+       "note": "High point of the drive. Rain west of here ends up in the Pacific."
+      },
+      {
+       "name": "Albuquerque",
+       "state": "NM",
+       "ll": [
+        35.084,
+        -106.651
+       ],
+       "elev": 5312
+      },
+      {
+       "name": "Santa Rosa",
+       "state": "NM",
+       "ll": [
+        34.938,
+        -104.682
+       ]
+      },
+      {
+       "name": "Tucumcari",
+       "state": "NM",
+       "ll": [
+        35.172,
+        -103.725
+       ]
+      },
+      {
+       "name": "Amarillo",
+       "state": "TX",
+       "ll": [
+        35.222,
+        -101.831
+       ],
+       "elev": 3605,
+       "risk": "ice",
+       "note": "Here to Little Rock is ice-storm country in late December. Chains do nothing on ice — the only move is to not drive that day."
+      },
+      {
+       "name": "Oklahoma City",
+       "state": "OK",
+       "ll": [
+        35.468,
+        -97.516
+       ],
+       "risk": "ice"
+      },
+      {
+       "name": "Fort Smith",
+       "state": "AR",
+       "ll": [
+        35.386,
+        -94.398
+       ]
+      },
+      {
+       "name": "Little Rock",
+       "state": "AR",
+       "ll": [
+        34.746,
+        -92.289
+       ]
+      },
+      {
+       "name": "Memphis",
+       "state": "TN",
+       "ll": [
+        35.149,
+        -90.049
+       ],
+       "note": "You cross the Mississippi here."
+      },
+      {
+       "name": "Nashville",
+       "state": "TN",
+       "ll": [
+        36.163,
+        -86.781
+       ]
+      },
+      {
+       "name": "Knoxville",
+       "state": "TN",
+       "ll": [
+        35.961,
+        -83.921
+       ]
+      },
+      {
+       "name": "Asheville",
+       "state": "NC",
+       "ll": [
+        35.595,
+        -82.552
+       ],
+       "elev": 2134,
+       "risk": "ice",
+       "note": "I-40 climbs through the Smokies to get here and does ice up. The Blue Ridge Parkway closes outright."
+      },
+      {
+       "name": "Hickory",
+       "state": "NC",
+       "ll": [
+        35.733,
+        -81.341
+       ]
+      },
+      {
+       "name": "Statesville",
+       "state": "NC",
+       "ll": [
+        35.783,
+        -80.887
+       ]
+      },
+      {
+       "name": "Mooresville",
+       "state": "NC",
+       "ll": [
+        35.585,
+        -80.81
+       ]
+      }
+     ]
     }
    ]
   },
@@ -1746,6 +2060,333 @@
        "ll": [
         35.262,
         -116.074
+       ]
+      },
+      {
+       "name": "Barstow",
+       "state": "CA",
+       "ll": [
+        34.899,
+        -117.023
+       ],
+       "note": "I-40 begins. One road for the next 2,400 miles."
+      },
+      {
+       "name": "Mojave",
+       "state": "CA",
+       "ll": [
+        35.053,
+        -118.174
+       ]
+      },
+      {
+       "name": "Tehachapi Pass",
+       "state": "CA",
+       "ll": [
+        35.132,
+        -118.449
+       ],
+       "elev": 3793,
+       "risk": "chains",
+       "note": "Chain control posts here. Your FWD Accord needs chains ON under R2 — the exemption is AWD only."
+      },
+      {
+       "name": "Bakersfield",
+       "state": "CA",
+       "ll": [
+        35.373,
+        -119.019
+       ]
+      },
+      {
+       "name": "Fresno",
+       "state": "CA",
+       "ll": [
+        36.746,
+        -119.772
+       ]
+      },
+      {
+       "name": "Modesto",
+       "state": "CA",
+       "ll": [
+        37.639,
+        -120.997
+       ]
+      }
+     ]
+    },
+    {
+     "id": "leg3-canyon",
+     "name": "The canyon road",
+     "road": "US-89 up from Flagstaff, AZ-64 through the park, down to Williams",
+     "character": "Through the canyon instead of out and back to it. You come in at Desert View, take the rim road past Lipan, Moran and Grandview as part of the driving, and leave by the other entrance.",
+     "why": "The out-and-back from Williams drives the same 60 miles twice. This costs about the same and does not repeat a mile of it, and the Watchtower end is the quiet entrance. It also puts Sunset Crater and Wupatki on the road rather than off it, since US-89 is the way through.",
+     "costs": "About 130 miles more than staying on I-40, near enough exactly what the out-and-back costs. Higher and more exposed, though: Desert View sits at 7,438 feet and is the first thing to close in weather. If the forecast is bad, take the plain interstate and do the canyon as a spur from Williams, or skip it.",
+     "waypoints": [
+      {
+       "name": "Houston",
+       "state": "TX",
+       "ll": [
+        29.76,
+        -95.37
+       ]
+      },
+      {
+       "name": "Huntsville",
+       "state": "TX",
+       "ll": [
+        30.723,
+        -95.551
+       ]
+      },
+      {
+       "name": "Centerville",
+       "state": "TX",
+       "ll": [
+        31.259,
+        -95.978
+       ]
+      },
+      {
+       "name": "Corsicana",
+       "state": "TX",
+       "ll": [
+        32.095,
+        -96.469
+       ]
+      },
+      {
+       "name": "Dallas",
+       "state": "TX",
+       "ll": [
+        32.777,
+        -96.797
+       ]
+      },
+      {
+       "name": "Fort Worth",
+       "state": "TX",
+       "ll": [
+        32.755,
+        -97.331
+       ]
+      },
+      {
+       "name": "Decatur",
+       "state": "TX",
+       "ll": [
+        33.234,
+        -97.586
+       ]
+      },
+      {
+       "name": "Wichita Falls",
+       "state": "TX",
+       "ll": [
+        33.914,
+        -98.493
+       ]
+      },
+      {
+       "name": "Vernon",
+       "state": "TX",
+       "ll": [
+        34.155,
+        -99.266
+       ]
+      },
+      {
+       "name": "Quanah",
+       "state": "TX",
+       "ll": [
+        34.298,
+        -99.74
+       ]
+      },
+      {
+       "name": "Childress",
+       "state": "TX",
+       "ll": [
+        34.426,
+        -100.204
+       ],
+       "risk": "ice",
+       "note": "US-287 across the Panhandle ices the same as I-40. It is the same weather with fewer plows."
+      },
+      {
+       "name": "Clarendon",
+       "state": "TX",
+       "ll": [
+        34.938,
+        -100.892
+       ]
+      },
+      {
+       "name": "Amarillo",
+       "state": "TX",
+       "ll": [
+        35.222,
+        -101.831
+       ],
+       "elev": 3605,
+       "risk": "ice",
+       "note": "Here to Little Rock is ice-storm country in late December. Chains do nothing on ice — the only move is to not drive that day."
+      },
+      {
+       "name": "Tucumcari",
+       "state": "NM",
+       "ll": [
+        35.172,
+        -103.725
+       ]
+      },
+      {
+       "name": "Santa Rosa",
+       "state": "NM",
+       "ll": [
+        34.938,
+        -104.682
+       ]
+      },
+      {
+       "name": "Albuquerque",
+       "state": "NM",
+       "ll": [
+        35.084,
+        -106.651
+       ],
+       "elev": 5312
+      },
+      {
+       "name": "Continental Divide",
+       "state": "NM",
+       "ll": [
+        35.44,
+        -108.35
+       ],
+       "elev": 7275,
+       "risk": "snow",
+       "note": "High point of the drive. Rain west of here ends up in the Pacific."
+      },
+      {
+       "name": "Gallup",
+       "state": "NM",
+       "ll": [
+        35.528,
+        -108.742
+       ]
+      },
+      {
+       "name": "Holbrook",
+       "state": "AZ",
+       "ll": [
+        34.902,
+        -110.159
+       ]
+      },
+      {
+       "name": "Winslow",
+       "state": "AZ",
+       "ll": [
+        35.024,
+        -110.697
+       ]
+      },
+      {
+       "name": "Flagstaff",
+       "state": "AZ",
+       "ll": [
+        35.198,
+        -111.651
+       ],
+       "elev": 6909,
+       "risk": "snow",
+       "note": "The most likely place on this whole trip to find the interstate closed. Check the forecast 48 hours out."
+      },
+      {
+       "name": "Cameron",
+       "state": "AZ",
+       "ll": [
+        35.877,
+        -111.416
+       ],
+       "elev": 4200
+      },
+      {
+       "name": "Desert View",
+       "state": "AZ",
+       "ll": [
+        36.043,
+        -111.826
+       ],
+       "elev": 7438,
+       "risk": "snow",
+       "note": "The highest point on this road, and the piece of the park that closes first in bad weather. Desert View Drive shuts for winter storms while the south entrance stays open."
+      },
+      {
+       "name": "Grand Canyon Village",
+       "state": "AZ",
+       "ll": [
+        36.058,
+        -112.14
+       ],
+       "elev": 6800,
+       "risk": "snow",
+       "note": "The rim is plowed and open all winter, but the road in can close during a storm. (928) 638-7496 for conditions."
+      },
+      {
+       "name": "Tusayan",
+       "state": "AZ",
+       "ll": [
+        35.976,
+        -112.126
+       ],
+       "elev": 6612
+      },
+      {
+       "name": "Valle",
+       "state": "AZ",
+       "ll": [
+        35.652,
+        -112.143
+       ],
+       "elev": 5999
+      },
+      {
+       "name": "Williams",
+       "state": "AZ",
+       "ll": [
+        35.249,
+        -112.191
+       ],
+       "elev": 6766,
+       "note": "Turn north here for the Grand Canyon."
+      },
+      {
+       "name": "Seligman",
+       "state": "AZ",
+       "ll": [
+        35.326,
+        -112.874
+       ]
+      },
+      {
+       "name": "Kingman",
+       "state": "AZ",
+       "ll": [
+        35.189,
+        -114.053
+       ],
+       "elev": 3333,
+       "note": "Below the snow line. Sleep here if Flagstaff is getting hit and go over in the morning."
+      },
+      {
+       "name": "Needles",
+       "state": "CA",
+       "ll": [
+        34.848,
+        -114.614
        ]
       },
       {

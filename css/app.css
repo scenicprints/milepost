@@ -247,11 +247,12 @@ input, textarea { font: inherit; color: inherit; }
 /* Dark sky. One wash, denser the darker the sky — no rainbow, no legend. It is
    painted with a colour that flips with the theme so "dark" always reads dark:
    ink on the light ground, true black on the dark one. */
-.msky { stroke: none; fill: var(--sky); pointer-events: none; }
-.msky.b1 { fill-opacity: .34; }
-.msky.b2 { fill-opacity: .24; }
-.msky.b3 { fill-opacity: .15; }
-.msky.b4 { fill-opacity: .08; }
+.mdark {
+  fill: none; stroke: var(--sky); pointer-events: none;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.mdark.b2 { stroke-opacity: .55; }
+.mdark.b3 { stroke-opacity: .26; }
 .zoom .sky[aria-pressed="true"] { color: var(--signal); border-color: var(--signal); }
 .mpin { fill: var(--paper); stroke: var(--rule2); cursor: pointer; }
 .mpin.on { fill: var(--signal); stroke: var(--signal); }
