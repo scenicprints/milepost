@@ -96,6 +96,15 @@ export function renderHead(legIx, tab) {
 const SHORT = ["Carolina", "Houston", "Home"];
 
 // ============================================================== route
+/// Sights or eateries. Kevin asked for the two kept apart; 'all' shows the
+/// line as it runs, with food rows tagged.
+let kindFilter = 'all';
+export const setKindFilter = k => { kindFilter = k; };
+
+/// The time scale: total cost (detour both ways + dwell) bucketed for colour.
+const timeBucket = mins =>
+  mins < 45 ? 't0' : mins < 90 ? 't1' : mins < 180 ? 't2' : 't3';
+
 export function renderRoute(legIx) {
   const rt = legRoute(legIx);
   let h = '<div class="routes">';
@@ -103,7 +112,15 @@ export function renderRoute(legIx) {
   // split. This tab is the stops.
   h += `<button class="rt addrow" data-add><span class="dot plus">+</span>
       <span class="rn">Add a place of your own</span></button>`;
-  h += '</div><div class="line">';
+  h += `</div><div class="kinds">
+    <button data-kindfilter="all" aria-pressed="${kindFilter === 'all'}">All</button>
+    <button data-kindfilter="sight" aria-pressed="${kindFilter === 'sight'}">Sights</button>
+    <button data-kindfilter="food" aria-pressed="${kindFilter === 'food'}">Eateries</button>
+    <span class="scale"><i style="background:var(--t0)"></i>quick
+      <i style="background:var(--t1)"></i>1h
+      <i style="background:var(--t2)"></i>2h
+      <i style="background:var(--t3)"></i>3h+</span>
+  </div><div class="line">`;
 
   const nights = buildDays(rt, store.chosen, store.pace).slice(0, -1)
     .map(d => ({ m: d.overnight.mile, n: d.overnight.name }));
@@ -117,15 +134,19 @@ export function renderRoute(legIx) {
 
   for (const s of rt.stops) {
     if (s.kind === 'lodging') continue;          // shown on the night it belongs to
+    const isFood = s.kind === 'food';
+    if (kindFilter === 'food' && !isFood) continue;
+    if (kindFilter === 'sight' && isFood) continue;
     while (ni < nights.length && nights[ni].m < s.mile) { h += night(); ni++; }
     const on = store.isChosen(s.id), seen = store.isSeen(s.id);
-    h += `<div class="st ${on ? "on " : ""}${s.big ? "big " : ""}${seen ? "seen" : ""}">
+    const c = stopCost(s);
+    h += `<div class="st ${on ? "on " : ""}${s.big ? "big " : ""}${seen ? "seen " : ""}${timeBucket(c.total)}">
       <button class="mark" data-toggle="${s.id}" aria-label="Toggle ${esc(s.name)}"></button>
       <button class="body" data-stop="${s.id}">
-        <div class="nm">${esc(s.name)}</div>
+        <div class="nm">${esc(s.name)}${isFood ? '<span class="eat">eat</span>' : ""}</div>
         <div class="sub">${esc(s.town)}, ${esc(s.state)} · ${s.detour} min off</div>
       </button>
-      <div class="cost">${fmtHours(stopCost(s).total)}</div></div>`;
+      <div class="cost">${fmtHours(c.total)}</div></div>`;
   }
   while (ni < nights.length) { h += night(); ni++; }
   return h + "</div>";

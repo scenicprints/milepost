@@ -3,6 +3,10 @@
  * Rules, so a future edit doesn't drift:
  *   One signal colour. It means "in your plan" and nothing else. No green for
  *   done, no red for warnings, no coloured badges.
+ *   One deliberate exception, asked for by Kevin: the time scale. A stop's
+ *   total cost (detour both ways plus time on the ground) is tinted on a
+ *   four-step scale, quick to full-day. It colours the cost figure and the
+ *   tick beside it, nothing else, and it never means anything but time.
  *   Hierarchy comes from weight and space. Never from decoration.
  *   No cards, no shadows, no rounded corners except circles, which are round
  *   because they are dots on a line.
@@ -21,6 +25,10 @@
   --signal: #E0522A;
   --land:   #E5E3DD;
   --sky:    #191917;
+  --t0: #55793B;   /* under 45 min — barely costs the day */
+  --t1: #98761F;   /* to an hour and a half */
+  --t2: #B25A1D;   /* to three hours — half the afternoon */
+  --t3: #A33226;   /* three hours up — plan the day around it */
   --sans: "Archivo", Helvetica, Arial, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
@@ -36,6 +44,10 @@
     --signal: #F26840;
     --land:   #262622;
     --sky:    #000000;
+    --t0: #7FA55F;
+    --t1: #C29A3A;
+    --t2: #D97E3F;
+    --t3: #D1554A;
   }
 }
 :root[data-theme="dark"] {
@@ -48,6 +60,10 @@
   --signal: #F26840;
   --land:   #262622;
   --sky:    #000000;
+  --t0: #7FA55F;
+  --t1: #C29A3A;
+  --t2: #D97E3F;
+  --t3: #D1554A;
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -164,7 +180,26 @@ input, textarea { font: inherit; color: inherit; }
 .st.seen .nm { text-decoration: line-through; text-decoration-color: var(--rule2); }
 .st .sub { font-size: 11px; color: var(--ink2); font-family: var(--mono); margin-top: 3px; font-variant-numeric: tabular-nums; }
 .st .cost { font-size: 11px; font-family: var(--mono); color: var(--ink2); font-variant-numeric: tabular-nums; padding-top: 4px; flex: none; }
-.st.on .cost { color: var(--signal); }
+/* The time scale. A tick and the figure, tinted by how much of the day the
+   stop takes. Nothing else on the row is coloured. */
+.st .cost::before { content: ""; display: inline-block; width: 5px; height: 5px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; background: var(--rule2); }
+.st.t0 .cost::before { background: var(--t0); }
+.st.t1 .cost::before { background: var(--t1); }
+.st.t2 .cost::before { background: var(--t2); }
+.st.t3 .cost::before { background: var(--t3); }
+.st.t0 .cost { color: var(--t0); }
+.st.t1 .cost { color: var(--t1); }
+.st.t2 .cost { color: var(--t2); }
+.st.t3 .cost { color: var(--t3); }
+
+/* Sights and eateries, separated on request. The chips filter the line; the
+   EAT tag marks food rows even when the filter shows everything. */
+.kinds { display: flex; align-items: baseline; gap: 18px; padding: 18px 0 0; }
+.kinds button { font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink3); }
+.kinds button[aria-pressed="true"] { color: var(--ink); border-bottom: 1px solid var(--ink); padding-bottom: 1px; }
+.kinds .scale { margin-left: auto; display: flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 9.5px; color: var(--ink3); }
+.kinds .scale i { width: 5px; height: 5px; border-radius: 50%; display: inline-block; }
+.st .eat { font-size: 9px; font-family: var(--mono); letter-spacing: .1em; color: var(--ink3); text-transform: uppercase; margin-left: 7px; }
 
 .night { display: flex; align-items: center; gap: 16px; padding: 15px 0 14px; }
 .night .bar { width: 11px; height: 1px; background: var(--rule2); flex: none; }

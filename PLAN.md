@@ -17,6 +17,10 @@ agent, or a new Claude account, can continue without losing the thread.
 
 ## State
 
+**The leg 1 master pool is IN (session 17).** 66 researched stops across three
+route options, sights and eateries separated, time-cost colour coding on the
+Route tab. Kevin is testing.
+
 **The Rams design is PORTED and live.** The app and the prototype now look the
 same; the app additionally syncs, installs and persists.
 
@@ -28,7 +32,8 @@ itself — `index.html` + `js/` + `css/` — is the only current truth. **To sho
 someone the app, run `tools/bundle-artifact.mjs` and publish that** — it reads
 the real modules, so it is the app rather than a copy of it.
 
-Kevin is testing this batch. He has more to add afterwards.
+Kevin is testing this batch. He has more to add afterwards. He will hand over
+leg 2 and leg 3 pools the same way.
 
 ---
 
@@ -256,19 +261,15 @@ so the difference is visible. **Kevin has not made the final call yet.**
 - Android Auto approximation.
 
 ### Next, in order
-1. **Trip planning proper.** A new stop list is being built in another Claude
-   conversation — see `STOPS-HANDOFF.md`. The departure date and the North
-   Carolina city both still block real planning.
-2. **Dark-sky data**, once the routes are settled. The framework is in and
+1. **Kevin marks the leg 1 pool in the app.** Every pool stop is in, tap to
+   toggle. Cut what he says no to only when he says it.
+2. **Leg 2 and leg 3 pools**, same treatment, when he hands them over.
+3. **Dark-sky data**, once the routes are settled. The framework is in and
    `data/darksky.json` documents the schema and the licensing trap.
-2. **Decide Android Auto** — recommendation above is no.
-3. ~~"What's next" mode~~ **DONE, session 15.**
-4. **Fuel and services planning.** Kevin asked for "definitely stop at this gas
-   station." Long dry stretches (Van Horn → Fort Stockton, the Mojave crossing)
-   are real, and this is a genuinely useful feature that does not exist yet.
-5. **Live weather.** Open-Meteo, free, no key. Historical-normals endpoint to
-   replace the hand-assigned December numbers; live forecast inside 16 days.
-6. **Trip planning proper** — Kevin wants to sit down and plan it for real.
+4. **Live weather refinements** as the dates close in. Open-Meteo is wired.
+
+Killed by Kevin, do not revive: **Android Auto** (no, final) and **fuel and
+services planning** (gone).
 
 ### Known rough edges
 - **Google Fonts are not cached by the service worker** (it ignores cross-origin
@@ -290,13 +291,14 @@ so the difference is visible. **Kevin has not made the final call yet.**
 
 ## Open questions for Kevin
 
-- **What city in North Carolina?** Only the last ~300 miles change. Not blocking.
-- **Departure date.** Drives the countdown and which holiday events are live.
-- **Hotels or camping?** Changes what an overnight town needs to have.
-- **How many spare days** in the schedule? This is the winter plan.
-- **Android Auto: yes or no**, given the recommendation above.
+- **Hotels or camping?** His answer: it depends. So lodging stays per-night,
+  chosen in the app, and the seeded list assumes nothing.
+- **Spare days:** the schedule is tight. Plan days to the pace setting, do not
+  invent slack.
 
----
+Answered and closed: the North Carolina city is in the route data now. The
+departure window is decided and lives in the app only, never in this repo.
+Android Auto is no.
 
 ## Decisions, and why
 
@@ -317,6 +319,46 @@ so the difference is visible. **Kevin has not made the final call yet.**
 ---
 
 ## Session log
+
+**Session 17** — The leg 1 master pool landed. Kevin handed over a 68-stop
+researched pool (Modesto to Mooresville) and answered the open questions:
+Mooresville, tight schedule, Android Auto and fuel planning both dead. What
+went in:
+
+- **`data/stops.json`**: leg 1's placeholder list replaced wholesale by the
+  pool, 66 stops. Every stop re-verified this session: hours, winter closures,
+  prices, coordinates. Ids reused where the stop already existed
+  (`grand-canyon`, `cadillac-ranch`, `dollywood`...) so notes and seen-marks
+  survive. The pool's costs are round-trip, the app's `detour` is one-way, so
+  every pool number was halved on the way in. Old low-road-only stops
+  (Joshua Tree through Fort Worth) kept, the low road was outside the pool's
+  scope. Cut from the pool: **Devil's Rope Museum**, closed November through
+  February, it cannot be visited on this trip. Cut with the old list:
+  Biltmore, Graceland, Sun Studio, Ryman, OKC Memorial, Hot Springs,
+  Mount Mitchell, Big Texan, Pops 66, El Morro, Lowell, Standin' on the
+  Corner, Sandia Tram, Tehachapi Loop. If Kevin wants any back, say so and
+  they return.
+- **`data/route.json`**: leg 1 ends at Mooresville now (Asheville > Hickory >
+  Statesville > Mooresville), Raleigh placeholder gone, and there is a third
+  option, **`leg1-south`**: same road to Nashville, then I-24/I-75/I-85 through
+  Chattanooga and Atlanta, around the Smokies instead of through them.
+  Monteagle Mountain waypoint carries the ice risk. Both leg 2 routes now
+  start at Mooresville.
+- **`data/extras.json`**: 41 official sites added, 16 new town normals,
+  Palo Duro booking (day passes sell out holiday week). Biltmore and Graceland
+  bookings removed with their stops.
+- **UI**: the Route tab has All / Sights / Eateries chips (66 = 41 sights +
+  25 eateries), an EAT tag on food rows, and a four-step time colour scale on
+  each stop's cost figure (under 45m green, to 1.5h ochre, to 3h orange, 3h+
+  red). The scale is documented as the one deliberate exception to the
+  one-signal-colour rule, at Kevin's request. 1.7.0.
+
+Research flags worth keeping: Snow Cap winter hours are Facebook-only rumor,
+Edge Craft is Thu-Sat 11-3 and sells out, Arnold's is lunch-or-never, the
+NCRM closes Tuesdays, Old Town ABQ's full farolito display is Christmas Eve
+only, Blue Swallow shuts Jan-Feb but is lit mid-December, the Parthenon's
+HVAC closure ended, it is open again at $15. Naylamp's original Warr Acres
+location closed, the live one is 2106 SW 44th St.
 
 **Session 1** — Reviewed Poppy for reusable patterns. Established stack, route
 model, winter constraints, public/private split. Built route geometry, day

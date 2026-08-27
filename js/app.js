@@ -376,6 +376,9 @@ document.addEventListener('click', e => {
   const t = e.target.closest('[data-tab]');
   if (t) { tab = t.dataset.tab; sheet = null; draw(); return; }
 
+  const kf = e.target.closest('[data-kindfilter]');
+  if (kf) { ui.setKindFilter(kf.dataset.kindfilter); draw(); return; }
+
   const z = e.target.closest('[data-zoom]');
   if (z) {
     const k = z.dataset.zoom;

@@ -7,26 +7,17 @@
   "carlsbad": "https://www.nps.gov/cave",
   "saguaro": "https://www.nps.gov/sagu",
   "joshua-tree": "https://www.nps.gov/jotr",
-  "smokies": "https://www.nps.gov/grsm",
-  "hot-springs": "https://www.nps.gov/hosp",
   "sunset-crater": "https://www.nps.gov/sucr",
-  "el-morro": "https://www.nps.gov/elmo",
-  "central-high": "https://www.nps.gov/chsc",
   "mlk-park": "https://www.nps.gov/malu",
   "vicksburg": "https://www.nps.gov/vick",
   "hoover-dam": "https://www.usbr.gov/lc/hooverdam",
-  "biltmore": "https://www.biltmore.com",
-  "graceland": "https://www.graceland.com",
   "meteor-crater": "https://meteorcrater.com",
-  "civil-rights-museum": "https://www.civilrightsmuseum.org",
-  "ryman": "https://www.ryman.com",
+  "civil-rights-museum": "https://civilrightsmuseum.org",
   "dollywood": "https://www.dollywood.com",
   "space-center": "https://spacecenter.org",
   "alamo": "https://www.thealamo.org",
   "bearizona": "https://bearizona.com",
-  "lowell": "https://lowell.edu",
   "palm-springs-tram": "https://pstramway.com",
-  "sandia-tram": "https://sandiapeak.com",
   "pima-air": "https://pimaair.org",
   "desert-botanical": "https://dbg.org",
   "georgia-aquarium": "https://www.georgiaaquarium.org",
@@ -35,14 +26,44 @@
   "natural-bridge-caverns": "https://naturalbridgecaverns.com",
   "oak-alley": "https://www.oakalleyplantation.org",
   "seven-magic-mountains": "https://sevenmagicmountains.com",
-  "okc-memorial": "https://memorialmuseum.com",
   "sixth-floor": "https://www.jfk.org",
   "birmingham-civil-rights": "https://www.bcri.org",
   "griffith": "https://griffithobservatory.org",
   "palo-duro": "https://tpwd.texas.gov/state-parks/palo-duro-canyon",
   "balmorhea": "https://tpwd.texas.gov/state-parks/balmorhea",
-  "mount-mitchell": "https://www.ncparks.gov/state-parks/mount-mitchell-state-park",
-  "calico": "https://cms.sbcounty.gov/parks/parks/calico-ghost-town"
+  "calico": "https://parks.sbcounty.gov/park/calico-ghost-town/",
+  "tanger-barstow": "https://www.tanger.com/barstow",
+  "tanger-sevierville": "https://www.tanger.com/sevierville",
+  "peggy-sues": "https://www.peggysuesdiner.com",
+  "gc-caverns": "https://gccaverns.com",
+  "walnut-canyon": "https://www.nps.gov/waca",
+  "old-town-abq": "https://www.albuquerqueoldtown.com",
+  "route66-auto-museum": "https://www.route66automuseum.net",
+  "blue-hole": "https://www.santarosabluehole.com",
+  "blue-swallow": "https://blueswallowmotel.com",
+  "buc-ees": "https://buc-ees.com",
+  "delvins": "https://www.delvinsrestaurant.com",
+  "goldenlight": "https://goldenlightcafe.com",
+  "braums": "https://www.braums.com",
+  "edge-craft": "https://edgecraftbbq.com",
+  "cowboy-museum": "https://nationalcowboymuseum.org",
+  "clinton-library": "https://www.clintonlibrary.gov",
+  "wrights-bbq": "https://www.wrightsbbq.com",
+  "bass-pro-pyramid": "https://stores.basspro.com/us/tn/memphis/1-bass-pro-dr.html",
+  "gus-fried-chicken": "https://gusfriedchicken.com",
+  "limo-peruvian": "https://limoeatery.com",
+  "arnolds": "https://www.arnoldscountrykitchen.com",
+  "parthenon": "https://www.nashvilleparthenon.com",
+  "skybridge": "https://www.gatlinburgskypark.com",
+  "hardwood-bbq": "https://www.hardwood-bbq.com",
+  "tn-aquarium": "https://www.tnaqua.org",
+  "lexington-bbq": "https://www.lexbbq.com",
+  "midwood-smokehouse": "https://midwoodsmokehouse.com",
+  "saborcito-nica": "https://saborcitonicaencharlotte.com",
+  "discovery-place": "https://discoveryplace.org",
+  "concord-mills": "https://www.simon.com/mall/concord-mills",
+  "cook-out": "https://cookout.com",
+  "laguna-burger": "https://www.lagunaburger.com"
  },
  "normals": {
   "Keene": [
@@ -264,13 +285,69 @@
   "Jackson": [
    57,
    37
+  ],
+  "Yermo": [
+   60,
+   34
+  ],
+  "Peach Springs": [
+   52,
+   28
+  ],
+  "Gallup": [
+   46,
+   16
+  ],
+  "Laguna": [
+   47,
+   20
+  ],
+  "New Laguna": [
+   47,
+   20
+  ],
+  "Santa Rosa": [
+   50,
+   22
+  ],
+  "Shamrock": [
+   51,
+   26
+  ],
+  "Sevierville": [
+   50,
+   29
+  ],
+  "Chattanooga": [
+   51,
+   33
+  ],
+  "Black Mountain": [
+   47,
+   26
+  ],
+  "Knoxville": [
+   49,
+   31
+  ],
+  "Lexington": [
+   50,
+   30
+  ],
+  "Concord": [
+   52,
+   31
+  ],
+  "Mooresville": [
+   51,
+   31
+  ],
+  "Bakersfield": [
+   57,
+   39
   ]
  },
  "bookings": {
-  "biltmore": {
-   "lead": 45,
-   "note": "Christmas at Biltmore sells out weeks ahead. Candlelight evenings go first."
-  },
   "french-quarter": {
    "lead": 60,
    "note": "New Year's Eve in New Orleans — the room, not the quarter. Book early."
@@ -299,10 +376,6 @@
    "lead": 14,
    "note": "Closed some weekdays in winter — check the calendar before counting on it."
   },
-  "graceland": {
-   "lead": 7,
-   "note": "Timed entry. Closed Christmas Day."
-  },
   "space-center": {
    "lead": 7,
    "note": "Very busy over the holidays; a timed ticket saves the queue."
@@ -314,6 +387,10 @@
   "balmorhea": {
    "lead": 30,
    "note": "Has closed for long repair stretches. Confirm it is open before detouring."
+  },
+  "palo-duro": {
+   "lead": 14,
+   "note": "Day passes sell out in holiday week. Reserve entry online before you leave, camping needs longer."
   }
  }
 }

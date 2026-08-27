@@ -1,5 +1,10 @@
 # Milepost — the stop list as it stands, and what a replacement has to fit
 
+> **SUPERSEDED, session 17.** The replacement pool landed. Leg 1 in
+> `data/stops.json` is now the researched pool, not the placeholder list this
+> file describes. The contract in half two is still the law for leg 2 and
+> leg 3 pools.
+
 This is a handoff. Two halves: **what is in the app today**, which Kevin never
 approved and treats as a placeholder, and **the contract a replacement list has
 to satisfy** so it drops straight in without touching code.

@@ -1,1546 +1,2355 @@
 {
-  "_comment": "Every stop worth considering. 'routes' lists which route options it sits on — a stop shows up only when one of its routes is selected. 'detour' is MINUTES ONE WAY off the highway; the app doubles it and adds 'dwell' to show what it really costs the day. 'first' flags something Ada has no California equivalent for. 'big' means it's worth rebuilding the day around. 'winter' is the late-Dec / early-Jan caveat and is the field most likely to be wrong — verify before committing to any of them.",
-  "stops": [
-    {
-      "id": "tehachapi-loop",
-      "name": "Tehachapi Loop",
-      "town": "Keene",
-      "state": "CA",
-      "ll": [
-        35.202,
-        -118.59
-      ],
-      "detour": 12,
-      "dwell": 30,
-      "cost": "Free",
-      "tags": [
-        "roadside",
-        "trains"
-      ],
-      "why": "A freight train long enough to cross over the top of its own tail. It has been doing this since 1876 and it is still the thing railroad people drive across the country to watch.",
-      "winter": null,
-      "routes": [
-        "leg1-i40"
-      ]
-    },
-    {
-      "id": "calico",
-      "name": "Calico Ghost Town",
-      "town": "Barstow",
-      "state": "CA",
-      "ll": [
-        34.948,
-        -116.865
-      ],
-      "detour": 10,
-      "dwell": 120,
-      "cost": "$8",
-      "tags": [
-        "history",
-        "kids"
-      ],
-      "why": "A silver town that died in 1907 and got rebuilt as itself. Good legs-stretch two hours into the drive.",
-      "winter": "Cold and windy in December. Open year round.",
-      "routes": [
-        "leg1-i40"
-      ]
-    },
-    {
-      "id": "route66-museum",
-      "name": "Route 66 Mother Road Museum",
-      "town": "Barstow",
-      "state": "CA",
-      "ll": [
-        34.906,
-        -117.024
-      ],
-      "detour": 5,
-      "dwell": 45,
-      "cost": "Free",
-      "tags": [
-        "route66"
-      ],
-      "why": "Where the Route 66 thread starts. You'll be crossing and re-crossing the old road for the next 1,500 miles.",
-      "winter": "Closed Mon–Tue.",
-      "routes": [
-        "leg1-i40"
-      ]
-    },
-    {
-      "id": "oatman",
-      "name": "Oatman",
-      "town": "Oatman",
-      "state": "AZ",
-      "ll": [
-        35.026,
-        -114.383
-      ],
-      "detour": 45,
-      "dwell": 90,
-      "cost": "Free",
-      "tags": [
-        "route66",
-        "animals"
-      ],
-      "why": "Wild burros walk down the middle of the street and expect to be fed. The old Route 66 alignment to get there is a genuinely twisty mountain road.",
-      "winter": "The road over Sitgreaves Pass is narrow with no guardrail. Skip it in bad weather.",
-      "routes": [
-        "leg1-i40"
-      ]
-    },
-    {
-      "id": "seligman",
-      "name": "Seligman",
-      "town": "Seligman",
-      "state": "AZ",
-      "ll": [
-        35.326,
-        -112.874
-      ],
-      "detour": 8,
-      "dwell": 45,
-      "cost": "Free",
-      "tags": [
-        "route66"
-      ],
-      "why": "The town that talked Arizona into preserving Route 66, and the one Pixar's Radiator Springs was drawn from. Two blocks long, entirely made of it.",
-      "winter": null,
-      "routes": [
-        "leg1-i40"
-      ]
-    },
-    {
-      "id": "grand-canyon",
-      "name": "Grand Canyon, South Rim",
-      "town": "Grand Canyon Village",
-      "state": "AZ",
-      "ll": [
-        36.062,
-        -112.108
-      ],
-      "detour": 60,
-      "dwell": 180,
-      "cost": "$35/vehicle",
-      "tags": [
-        "nationalpark",
-        "view"
-      ],
-      "first": true,
-      "big": true,
-      "why": "There is nothing to say about this one. An hour north of Williams, and the single best reason the northern route exists.",
-      "winter": "SOUTH rim is open all year — the North Rim is closed Dec through May. Snow on the rim in late December is normal and makes it better. Roads are plowed.",
-      "routes": [
-        "leg1-i40"
-      ]
-    },
-    {
-      "id": "bearizona",
-      "name": "Bearizona",
-      "town": "Williams",
-      "state": "AZ",
-      "ll": [
-        35.256,
-        -112.146
-      ],
-      "detour": 5,
-      "dwell": 120,
-      "cost": "$35",
-      "tags": [
-        "animals"
-      ],
-      "why": "Drive-through wildlife park — wolves and bison walk past the car. Right at the Grand Canyon turn-off.",
-      "winter": "Open year round; the drive-through loop stays open in snow.",
-      "routes": [
-        "leg1-i40"
-      ]
-    },
-    {
-      "id": "lowell",
-      "name": "Lowell Observatory",
-      "town": "Flagstaff",
-      "state": "AZ",
-      "ll": [
-        35.203,
-        -111.664
-      ],
-      "detour": 10,
-      "dwell": 120,
-      "cost": "$29",
-      "tags": [
-        "night",
-        "science"
-      ],
-      "first": true,
-      "why": "Pluto was found here, from this hill, in 1930. Evening telescope viewing at 7,000 feet in winter air is about as good as the sky gets.",
-      "winter": "Open, and December nights are the clearest of the year — dress for 20°F standing still.",
-      "routes": [
-        "leg1-i40"
-      ]
-    },
-    {
-      "id": "sunset-crater",
-      "name": "Sunset Crater & Wupatki",
-      "town": "Flagstaff",
-      "state": "AZ",
-      "ll": [
-        35.365,
-        -111.508
-      ],
-      "detour": 25,
-      "dwell": 150,
-      "cost": "$25/vehicle",
-      "tags": [
-        "nationalpark",
-        "volcano"
-      ],
-      "why": "A black volcanic cinder field that erupted around 1085, and eight hundred year old pueblos on the far side of the same loop road.",
-      "winter": "The 34-mile loop road can close after snow. Check before turning off.",
-      "routes": [
-        "leg1-i40"
-      ]
-    },
-    {
-      "id": "meteor-crater",
-      "name": "Meteor Crater",
-      "town": "Winslow",
-      "state": "AZ",
-      "ll": [
-        35.027,
-        -111.022
-      ],
-      "detour": 6,
-      "dwell": 90,
-      "cost": "$29",
-      "tags": [
-        "science",
-        "view"
-      ],
-      "first": true,
-      "why": "A mile-wide hole punched in the desert 50,000 years ago, six minutes off the interstate. The cheapest astonishment-per-minute on the entire route.",
-      "winter": "Open year round. Exposed and brutally windy on the rim in winter.",
-      "routes": [
-        "leg1-i40"
-      ]
-    },
-    {
-      "id": "standin-corner",
-      "name": "Standin' on the Corner Park",
-      "town": "Winslow",
-      "state": "AZ",
-      "ll": [
-        35.024,
-        -110.696
-      ],
-      "detour": 4,
-      "dwell": 20,
-      "cost": "Free",
-      "tags": [
-        "route66",
-        "quick"
-      ],
-      "why": "Yes, that corner. Four minutes off the freeway, takes fifteen, and you will have the song in your head until Albuquerque.",
-      "winter": null,
-      "routes": [
-        "leg1-i40"
-      ]
-    },
-    {
-      "id": "petrified-forest",
-      "name": "Petrified Forest & Painted Desert",
-      "town": "Holbrook",
-      "state": "AZ",
-      "ll": [
-        34.909,
-        -109.807
-      ],
-      "detour": 5,
-      "dwell": 150,
-      "cost": "$25/vehicle",
-      "tags": [
-        "nationalpark",
-        "view"
-      ],
-      "first": true,
-      "big": true,
-      "why": "The best-value stop of the whole trip: the 28-mile park road runs parallel to I-40 and drops you back on it, so most of the time isn't a detour at all. Fossil logs turned to solid quartz, and a badlands painted in bands of red and violet.",
-      "winter": "Open year round, gates close around 5pm in winter — go in the morning, not at dusk.",
-      "routes": [
-        "leg1-i40"
-      ]
-    },
-    {
-      "id": "wigwam-motel",
-      "name": "Wigwam Motel",
-      "town": "Holbrook",
-      "state": "AZ",
-      "ll": [
-        34.9,
-        -110.156
-      ],
-      "detour": 5,
-      "dwell": 15,
-      "cost": "Free to look",
-      "tags": [
-        "route66",
-        "sleep"
-      ],
-      "why": "Fifteen concrete teepees you can actually sleep in, built in 1950. Even if you don't stay, it's worth the photo.",
-      "winter": null,
-      "routes": [
-        "leg1-i40"
-      ]
-    },
-    {
-      "id": "el-morro",
-      "name": "El Morro National Monument",
-      "town": "Ramah",
-      "state": "NM",
-      "ll": [
-        35.039,
-        -108.348
-      ],
-      "detour": 40,
-      "dwell": 90,
-      "cost": "Free",
-      "tags": [
-        "history"
-      ],
-      "why": "A sandstone bluff with a waterhole at its base, carved with signatures — Ancestral Puebloan petroglyphs, then Spanish conquistadors from 1605, then American cavalry. Four hundred years of people writing their name on the same rock.",
-      "winter": "Trails can be icy; the inscription loop is usually walkable.",
-      "routes": [
-        "leg1-i40"
-      ]
-    },
-    {
-      "id": "sandia-tram",
-      "name": "Sandia Peak Tramway",
-      "town": "Albuquerque",
-      "state": "NM",
-      "ll": [
-        35.208,
-        -106.451
-      ],
-      "detour": 20,
-      "dwell": 150,
-      "cost": "$29",
-      "tags": [
-        "view",
-        "ride"
-      ],
-      "first": true,
-      "big": true,
-      "why": "Two and a half miles of cable up the face of the mountain to 10,378 feet. On a clear day you can see 11,000 square miles of New Mexico, and Albuquerque is a grid of lights underneath you at sunset.",
-      "winter": "Runs in winter. It's usually 25–30°F colder at the top than the parking lot — bring real coats.",
-      "routes": [
-        "leg1-i40"
-      ]
-    },
-    {
-      "id": "old-town-abq",
-      "name": "Old Town Albuquerque",
-      "town": "Albuquerque",
-      "state": "NM",
-      "ll": [
-        35.097,
-        -106.67
-      ],
-      "detour": 10,
-      "dwell": 120,
-      "cost": "Free",
-      "tags": [
-        "food",
-        "history"
-      ],
-      "why": "Adobe plaza from 1706, green chile on everything. Good dinner stop that isn't another interstate exit.",
-      "winter": "Farolitos — paper-bag lanterns — line the whole plaza through Christmas. It is genuinely beautiful and it's happening exactly when you'd pass through.",
-      "routes": [
-        "leg1-i40"
-      ]
-    },
-    {
-      "id": "blue-swallow",
-      "name": "Blue Swallow Motel & Tucumcari neon",
-      "town": "Tucumcari",
-      "state": "NM",
-      "ll": [
-        35.17,
-        -103.722
-      ],
-      "detour": 5,
-      "dwell": 30,
-      "cost": "Free",
-      "tags": [
-        "route66",
-        "night"
-      ],
-      "why": "The best surviving stretch of Route 66 neon anywhere. Only works after dark — which makes it a good reason to stop for the night here rather than push on.",
-      "winter": null,
-      "routes": [
-        "leg1-i40"
-      ]
-    },
-    {
-      "id": "cadillac-ranch",
-      "name": "Cadillac Ranch",
-      "town": "Amarillo",
-      "state": "TX",
-      "ll": [
-        35.187,
-        -101.987
-      ],
-      "detour": 5,
-      "dwell": 40,
-      "cost": "Free",
-      "tags": [
-        "roadside",
-        "quick"
-      ],
-      "first": true,
-      "why": "Ten Cadillacs buried nose-down in a field, and you are not just allowed to spray paint them, you're expected to. Buy a can in Amarillo first. This is the trip photo.",
-      "winter": "Open always, it's a field. Muddy after rain — wear the shoes you don't care about.",
-      "routes": [
-        "leg1-i40"
-      ]
-    },
-    {
-      "id": "palo-duro",
-      "name": "Palo Duro Canyon",
-      "town": "Canyon",
-      "state": "TX",
-      "ll": [
-        34.937,
-        -101.693
-      ],
-      "detour": 40,
-      "dwell": 150,
-      "cost": "$8/person",
-      "tags": [
-        "view",
-        "hike"
-      ],
-      "first": true,
-      "why": "The second largest canyon in the country, 800 feet deep, and almost nobody outside Texas knows it's there. Completely invisible until you're at the edge of it.",
-      "winter": "Open year round and quiet in winter. The road to the floor is steep.",
-      "routes": [
-        "leg1-i40"
-      ]
-    },
-    {
-      "id": "big-texan",
-      "name": "The Big Texan Steak Ranch",
-      "town": "Amarillo",
-      "state": "TX",
-      "ll": [
-        35.207,
-        -101.769
-      ],
-      "detour": 3,
-      "dwell": 90,
-      "cost": "$$",
-      "tags": [
-        "food"
-      ],
-      "why": "The 72-ounce steak that's free if you finish it in an hour. You are not going to do that, but you should eat here anyway.",
-      "winter": null,
-      "routes": [
-        "leg1-i40"
-      ]
-    },
-    {
-      "id": "pops-66",
-      "name": "POPS 66 Soda Ranch",
-      "town": "Arcadia",
-      "state": "OK",
-      "ll": [
-        35.66,
-        -97.325
-      ],
-      "detour": 15,
-      "dwell": 45,
-      "cost": "$",
-      "tags": [
-        "route66",
-        "food"
-      ],
-      "why": "A 66-foot lit soda bottle on old Route 66, and about 700 kinds of soda inside. Good lunch break outside Oklahoma City.",
-      "winter": null,
-      "routes": [
-        "leg1-i40"
-      ]
-    },
-    {
-      "id": "okc-memorial",
-      "name": "Oklahoma City National Memorial",
-      "town": "Oklahoma City",
-      "state": "OK",
-      "ll": [
-        35.473,
-        -97.517
-      ],
-      "detour": 6,
-      "dwell": 75,
-      "cost": "Free outdoors",
-      "tags": [
-        "history"
-      ],
-      "why": "168 empty chairs, one for each person, arranged in the footprint of the building. The outdoor memorial is free and open all the time and takes twenty minutes.",
-      "winter": "Outdoor memorial open 24 hours.",
-      "routes": [
-        "leg1-i40"
-      ]
-    },
-    {
-      "id": "central-high",
-      "name": "Little Rock Central High School",
-      "town": "Little Rock",
-      "state": "AR",
-      "ll": [
-        34.739,
-        -92.298
-      ],
-      "detour": 10,
-      "dwell": 60,
-      "cost": "Free",
-      "tags": [
-        "history"
-      ],
-      "why": "Still a working high school, and the place nine teenagers walked into in 1957 behind the 101st Airborne. The visitor center across the street is a National Park site.",
-      "winter": "Visitor center closed Christmas Day.",
-      "routes": [
-        "leg1-i40",
-        "leg1-low"
-      ]
-    },
-    {
-      "id": "hot-springs",
-      "name": "Hot Springs National Park",
-      "town": "Hot Springs",
-      "state": "AR",
-      "ll": [
-        34.513,
-        -93.053
-      ],
-      "detour": 55,
-      "dwell": 150,
-      "cost": "Free park",
-      "tags": [
-        "nationalpark"
-      ],
-      "why": "A row of grand 1900s bathhouses built over natural hot springs, in the middle of a small town. You can still get in the water at two of them.",
-      "winter": "A hot bath in December is the entire point.",
-      "routes": [
-        "leg1-i40",
-        "leg1-low"
-      ]
-    },
-    {
-      "id": "graceland",
-      "name": "Graceland",
-      "town": "Memphis",
-      "state": "TN",
-      "ll": [
-        35.048,
-        -90.027
-      ],
-      "detour": 15,
-      "dwell": 180,
-      "cost": "$85",
-      "tags": [
-        "music"
-      ],
-      "big": true,
-      "why": "Elvis's house, preserved exactly as 1977 left it. Expensive and completely worth it — the jungle room alone.",
-      "winter": "Closed Christmas Day. Decorated for Christmas from late November, which is how he actually had it.",
-      "routes": [
-        "leg1-i40",
-        "leg1-low"
-      ]
-    },
-    {
-      "id": "sun-studio",
-      "name": "Sun Studio",
-      "town": "Memphis",
-      "state": "TN",
-      "ll": [
-        35.139,
-        -90.026
-      ],
-      "detour": 8,
-      "dwell": 60,
-      "cost": "$18",
-      "tags": [
-        "music"
-      ],
-      "why": "One small room where Elvis, Johnny Cash, Roy Orbison and Jerry Lee Lewis all recorded. Still a working studio at night. You can hold the microphone.",
-      "winter": null,
-      "routes": [
-        "leg1-i40",
-        "leg1-low"
-      ]
-    },
-    {
-      "id": "civil-rights-museum",
-      "name": "National Civil Rights Museum",
-      "town": "Memphis",
-      "state": "TN",
-      "ll": [
-        35.134,
-        -90.058
-      ],
-      "detour": 8,
-      "dwell": 180,
-      "cost": "$18",
-      "tags": [
-        "history"
-      ],
-      "big": true,
-      "why": "Built around the Lorraine Motel, with Dr. King's room left as it was. One of the best museums in the country, and not a quick stop — give it a real afternoon.",
-      "winter": "Closed Tuesdays.",
-      "routes": [
-        "leg1-i40",
-        "leg1-low"
-      ]
-    },
-    {
-      "id": "beale-street",
-      "name": "Beale Street",
-      "town": "Memphis",
-      "state": "TN",
-      "ll": [
-        35.139,
-        -90.052
-      ],
-      "detour": 8,
-      "dwell": 150,
-      "cost": "Free",
-      "tags": [
-        "music",
-        "food",
-        "night"
-      ],
-      "why": "Live blues coming out of every door, and barbecue. If you only do one night out on the way east, do it here.",
-      "winter": null,
-      "routes": [
-        "leg1-i40",
-        "leg1-low"
-      ]
-    },
-    {
-      "id": "mississippi-crossing",
-      "name": "Crossing the Mississippi",
-      "town": "Memphis",
-      "state": "TN",
-      "ll": [
-        35.12,
-        -90.12
-      ],
-      "detour": 0,
-      "dwell": 5,
-      "cost": "Free",
-      "tags": [
-        "quick",
-        "view"
-      ],
-      "first": true,
-      "why": "The bridge itself. Half the continent drains through the water underneath you, and there is no river in California remotely like it. Just know it's coming so you look.",
-      "winter": null,
-      "routes": [
-        "leg1-i40",
-        "leg1-low"
-      ]
-    },
-    {
-      "id": "broadway-nashville",
-      "name": "Broadway",
-      "town": "Nashville",
-      "state": "TN",
-      "ll": [
-        36.161,
-        -86.778
-      ],
-      "detour": 8,
-      "dwell": 180,
-      "cost": "Free",
-      "tags": [
-        "music",
-        "night"
-      ],
-      "why": "Three blocks of honky-tonks, live band in every one, no cover in most. Loud and touristy and completely worth doing once.",
-      "winter": null,
-      "routes": [
-        "leg1-i40",
-        "leg1-low"
-      ]
-    },
-    {
-      "id": "ryman",
-      "name": "Ryman Auditorium",
-      "town": "Nashville",
-      "state": "TN",
-      "ll": [
-        36.161,
-        -86.778
-      ],
-      "detour": 8,
-      "dwell": 75,
-      "cost": "$32",
-      "tags": [
-        "music"
-      ],
-      "why": "The mother church of country music — a former revival hall with pews for seats and famously perfect sound. Self-guided tour by day.",
-      "winter": null,
-      "routes": [
-        "leg1-i40",
-        "leg1-low"
-      ]
-    },
-    {
-      "id": "smokies",
-      "name": "Great Smoky Mountains — Newfound Gap",
-      "town": "Gatlinburg",
-      "state": "TN",
-      "ll": [
-        35.611,
-        -83.426
-      ],
-      "detour": 45,
-      "dwell": 150,
-      "cost": "Free park",
-      "tags": [
-        "nationalpark",
-        "view"
-      ],
-      "first": true,
-      "why": "The most visited national park in the country, and the road climbs to 5,046 feet at the state line. Eastern mountains look nothing like the Sierra — older, softer, and wrapped in haze.",
-      "winter": "Newfound Gap Road closes with snow and ice, sometimes for days. Check nps.gov before committing. Clingmans Dome Road is closed all winter.",
-      "routes": [
-        "leg1-i40",
-        "leg1-low"
-      ]
-    },
-    {
-      "id": "dollywood",
-      "name": "Dollywood",
-      "town": "Pigeon Forge",
-      "state": "TN",
-      "ll": [
-        35.795,
-        -83.531
-      ],
-      "detour": 40,
-      "dwell": 300,
-      "cost": "$99",
-      "tags": [
-        "kids"
-      ],
-      "why": "A full day, so only if the schedule has one. Its Christmas run is a genuine spectacle — several million lights.",
-      "winter": "Smoky Mountain Christmas runs through early January. Closed some weekdays in winter — check the calendar.",
-      "routes": [
-        "leg1-i40",
-        "leg1-low"
-      ]
-    },
-    {
-      "id": "biltmore",
-      "name": "Biltmore Estate",
-      "town": "Asheville",
-      "state": "NC",
-      "ll": [
-        35.54,
-        -82.552
-      ],
-      "detour": 12,
-      "dwell": 240,
-      "cost": "$90+",
-      "tags": [
-        "history"
-      ],
-      "big": true,
-      "why": "The largest house in America, 250 rooms, finished in 1895. At Christmas they put a 35-foot tree in the banquet hall and light the whole place by candle in the evenings.",
-      "winter": "Christmas at Biltmore runs through early January and sells out — book weeks ahead. This one genuinely needs a reservation.",
-      "routes": [
-        "leg1-i40",
-        "leg1-low"
-      ]
-    },
-    {
-      "id": "mount-mitchell",
-      "name": "Mount Mitchell",
-      "town": "Burnsville",
-      "state": "NC",
-      "ll": [
-        35.765,
-        -82.265
-      ],
-      "detour": 50,
-      "dwell": 90,
-      "cost": "Free",
-      "tags": [
-        "view"
-      ],
-      "why": "6,684 feet — the highest point anywhere east of the Mississippi. You can drive nearly to the top.",
-      "winter": "Reached via the Blue Ridge Parkway, which CLOSES for ice and snow all winter. Assume it's shut and treat an open day as a gift.",
-      "routes": [
-        "leg1-i40",
-        "leg1-low"
-      ]
-    },
-    {
-      "id": "nascar-hof",
-      "name": "NASCAR Hall of Fame",
-      "town": "Charlotte",
-      "state": "NC",
-      "ll": [
-        35.223,
-        -80.84
-      ],
-      "detour": 6,
-      "dwell": 120,
-      "cost": "$28",
-      "tags": [
-        "museum"
-      ],
-      "why": "You're driving straight past it and it's better than it sounds — the banked track display alone shows you how steep 33 degrees actually is.",
-      "winter": null,
-      "routes": [
-        "leg2-gulf",
-        "leg2-inland"
-      ]
-    },
-    {
-      "id": "georgia-aquarium",
-      "name": "Georgia Aquarium",
-      "town": "Atlanta",
-      "state": "GA",
-      "ll": [
-        33.763,
-        -84.395
-      ],
-      "detour": 10,
-      "dwell": 180,
-      "cost": "$45",
-      "tags": [
-        "animals"
-      ],
-      "first": true,
-      "why": "One of the largest in the world, with whale sharks — which exist in about four aquariums on earth.",
-      "winter": "Book a timed ticket; the holiday week is its busiest of the year.",
-      "routes": [
-        "leg2-gulf",
-        "leg2-inland"
-      ]
-    },
-    {
-      "id": "mlk-park",
-      "name": "MLK National Historical Park",
-      "town": "Atlanta",
-      "state": "GA",
-      "ll": [
-        33.756,
-        -84.372
-      ],
-      "detour": 10,
-      "dwell": 120,
-      "cost": "Free",
-      "tags": [
-        "history"
-      ],
-      "why": "His birth home, Ebenezer Baptist where he preached, and his tomb — all on two blocks, all free.",
-      "winter": "Birth home tours are first-come and limited; get there early.",
-      "routes": [
-        "leg2-gulf",
-        "leg2-inland"
-      ]
-    },
-    {
-      "id": "legacy-museum",
-      "name": "Legacy Museum & National Memorial for Peace and Justice",
-      "town": "Montgomery",
-      "state": "AL",
-      "ll": [
-        32.375,
-        -86.313
-      ],
-      "detour": 8,
-      "dwell": 210,
-      "cost": "$5",
-      "tags": [
-        "history"
-      ],
-      "big": true,
-      "why": "Eight hundred hanging steel columns, one for every county where a lynching happened. The most powerful museum in the American South and it costs five dollars.",
-      "winter": "Closed Tuesdays. Give it three hours or don't start.",
-      "routes": [
-        "leg2-gulf"
-      ]
-    },
-    {
-      "id": "uss-alabama",
-      "name": "USS Alabama Battleship",
-      "town": "Mobile",
-      "state": "AL",
-      "ll": [
-        30.682,
-        -88.014
-      ],
-      "detour": 4,
-      "dwell": 150,
-      "cost": "$18",
-      "tags": [
-        "museum"
-      ],
-      "why": "A World War II battleship you walk through top to bottom, plus a submarine, four minutes off I-10.",
-      "winter": null,
-      "routes": [
-        "leg2-gulf"
-      ]
-    },
-    {
-      "id": "gulf-beach",
-      "name": "First look at the Gulf",
-      "town": "Gulf Shores",
-      "state": "AL",
-      "ll": [
-        30.246,
-        -87.701
-      ],
-      "detour": 45,
-      "dwell": 60,
-      "cost": "Free",
-      "tags": [
-        "view",
-        "beach"
-      ],
-      "first": true,
-      "why": "Warm, flat, pale green water and sand like sugar. Nothing about it resembles the Pacific she grew up on — and in December you'll have the beach to yourselves.",
-      "winter": "Too cold to swim, perfect to walk.",
-      "routes": [
-        "leg2-gulf"
-      ]
-    },
-    {
-      "id": "french-quarter",
-      "name": "The French Quarter",
-      "town": "New Orleans",
-      "state": "LA",
-      "ll": [
-        29.957,
-        -90.064
-      ],
-      "detour": 15,
-      "dwell": 300,
-      "cost": "Free",
-      "tags": [
-        "food",
-        "music",
-        "night"
-      ],
-      "first": true,
-      "big": true,
-      "why": "Beignets at Café du Monde, brass bands on Royal Street, two hundred year old ironwork. There is nowhere else in the country that feels like this and it is worth an overnight, not a drive-through.",
-      "winter": "You'd be here right around New Year's — which is spectacular and also means book a room early and expect crowds.",
-      "routes": [
-        "leg2-gulf"
-      ]
-    },
-    {
-      "id": "oak-alley",
-      "name": "Oak Alley Plantation",
-      "town": "Vacherie",
-      "state": "LA",
-      "ll": [
-        30.005,
-        -90.798
-      ],
-      "detour": 35,
-      "dwell": 120,
-      "cost": "$28",
-      "tags": [
-        "history"
-      ],
-      "why": "A quarter-mile corridor of 300-year-old live oaks, and an unflinching museum about the people who were enslaved there. Both halves matter.",
-      "winter": null,
-      "routes": [
-        "leg2-gulf"
-      ]
-    },
-    {
-      "id": "space-center",
-      "name": "Space Center Houston",
-      "town": "Houston",
-      "state": "TX",
-      "ll": [
-        29.552,
-        -95.098
-      ],
-      "detour": 25,
-      "dwell": 240,
-      "cost": "$30",
-      "tags": [
-        "science"
-      ],
-      "first": true,
-      "big": true,
-      "why": "The actual Apollo mission control room, restored to 1969 down to the ashtrays, and a complete Saturn V lying on its side in a building built around it.",
-      "winter": "Open through the holidays except Christmas Day. Very busy that week.",
-      "routes": [
-        "leg2-gulf",
-        "leg2-inland"
-      ]
-    },
-    {
-      "id": "alamo",
-      "name": "The Alamo",
-      "town": "San Antonio",
-      "state": "TX",
-      "ll": [
-        29.426,
-        -98.486
-      ],
-      "detour": 8,
-      "dwell": 90,
-      "cost": "Free",
-      "tags": [
-        "history"
-      ],
-      "why": "Smaller than everyone expects and right in the middle of downtown. Free, and it takes an hour.",
-      "winter": null,
-      "routes": [
-        "leg3-i10",
-        "leg3-vegas"
-      ]
-    },
-    {
-      "id": "river-walk",
-      "name": "San Antonio River Walk",
-      "town": "San Antonio",
-      "state": "TX",
-      "ll": [
-        29.424,
-        -98.487
-      ],
-      "detour": 8,
-      "dwell": 180,
-      "cost": "Free",
-      "tags": [
-        "food",
-        "night",
-        "view"
-      ],
-      "first": true,
-      "big": true,
-      "why": "A river one level below the street, lined with restaurants for miles. In December and early January the whole thing is strung with lights over the water and you take a boat through it.",
-      "winter": "The holiday lights run through early January — you would be passing at exactly the right moment. Verify the end date before counting on it.",
-      "routes": [
-        "leg3-i10",
-        "leg3-vegas"
-      ]
-    },
-    {
-      "id": "natural-bridge-caverns",
-      "name": "Natural Bridge Caverns",
-      "town": "San Antonio",
-      "state": "TX",
-      "ll": [
-        29.692,
-        -98.343
-      ],
-      "detour": 25,
-      "dwell": 120,
-      "cost": "$32",
-      "tags": [
-        "cave"
-      ],
-      "why": "The largest commercial cave in Texas, and 70°F underground no matter what the weather does.",
-      "winter": "Weather-proof. A good rainy-day answer.",
-      "routes": [
-        "leg3-i10",
-        "leg3-vegas"
-      ]
-    },
-    {
-      "id": "balmorhea",
-      "name": "Balmorhea State Park",
-      "town": "Toyahvale",
-      "state": "TX",
-      "ll": [
-        30.945,
-        -103.787
-      ],
-      "detour": 12,
-      "dwell": 60,
-      "cost": "$7",
-      "tags": [
-        "water"
-      ],
-      "why": "A 1.3-acre spring-fed pool in the middle of nowhere, 72°F all year, with fish in it. Utterly surreal after four hours of West Texas.",
-      "winter": "Open in winter but check — it has closed for long repair stretches. Confirm before detouring.",
-      "routes": [
-        "leg3-i10",
-        "leg3-vegas",
-        "leg1-low"
-      ]
-    },
-    {
-      "id": "marfa-lights",
-      "name": "Marfa Lights Viewing Area",
-      "town": "Marfa",
-      "state": "TX",
-      "ll": [
-        30.271,
-        -103.925
-      ],
-      "detour": 60,
-      "dwell": 60,
-      "cost": "Free",
-      "tags": [
-        "night",
-        "roadside"
-      ],
-      "why": "Unexplained lights on the horizon that people have been arguing about since 1883. There's an official pull-out with a viewing platform. Might see nothing. That's part of it.",
-      "winter": "Needs full dark and a clear night. Only worth it if you're sleeping nearby anyway.",
-      "routes": [
-        "leg3-i10",
-        "leg3-vegas"
-      ]
-    },
-    {
-      "id": "carlsbad",
-      "name": "Carlsbad Caverns",
-      "town": "Carlsbad",
-      "state": "NM",
-      "ll": [
-        32.175,
-        -104.444
-      ],
-      "detour": 110,
-      "dwell": 240,
-      "cost": "$15/person",
-      "tags": [
-        "cave",
-        "nationalpark"
-      ],
-      "first": true,
-      "big": true,
-      "why": "You walk down into it through a hole in the desert and end up 750 feet underground in a room the size of six football fields. A big detour and one of the great places on the continent.",
-      "winter": "Fully weather-proof — 56°F underground always. The bat flights are summer only, so winter costs you nothing but the drive. Entry reservations required.",
-      "routes": [
-        "leg3-i10",
-        "leg3-vegas",
-        "leg1-low"
-      ]
-    },
-    {
-      "id": "white-sands",
-      "name": "White Sands National Park",
-      "town": "Alamogordo",
-      "state": "NM",
-      "ll": [
-        32.779,
-        -106.172
-      ],
-      "detour": 50,
-      "dwell": 180,
-      "cost": "$25/vehicle",
-      "tags": [
-        "nationalpark",
-        "view"
-      ],
-      "first": true,
-      "big": true,
-      "why": "275 square miles of pure white gypsum dunes. You buy a plastic saucer at the gift shop and sled down them. There is nothing like it anywhere else on earth and the detour off I-10 is worth every mile.",
-      "winter": "Open in winter and the light is best then. It closes for a few hours at a time for missile range tests — check the park's closure page the morning of.",
-      "routes": [
-        "leg3-i10",
-        "leg3-vegas",
-        "leg1-low"
-      ]
-    },
-    {
-      "id": "franklin-mountains",
-      "name": "Scenic Drive Overlook",
-      "town": "El Paso",
-      "state": "TX",
-      "ll": [
-        31.792,
-        -106.484
-      ],
-      "detour": 15,
-      "dwell": 40,
-      "cost": "Free",
-      "tags": [
-        "view"
-      ],
-      "why": "One overlook, two countries, three states. El Paso and Ciudad Juárez spread out below as one continuous city split by a line.",
-      "winter": "Best at dusk when both sides light up.",
-      "routes": [
-        "leg3-i10",
-        "leg3-vegas",
-        "leg1-low"
-      ]
-    },
-    {
-      "id": "tombstone",
-      "name": "Tombstone",
-      "town": "Tombstone",
-      "state": "AZ",
-      "ll": [
-        31.713,
-        -110.068
-      ],
-      "detour": 45,
-      "dwell": 150,
-      "cost": "$",
-      "tags": [
-        "history"
-      ],
-      "why": "The OK Corral, Boot Hill, and a main street that leans hard into it. Touristy in a way that's honestly fine.",
-      "winter": "Mild and pleasant in winter.",
-      "routes": [
-        "leg3-i10",
-        "leg3-vegas",
-        "leg1-low"
-      ]
-    },
-    {
-      "id": "saguaro",
-      "name": "Saguaro National Park",
-      "town": "Tucson",
-      "state": "AZ",
-      "ll": [
-        32.253,
-        -111.167
-      ],
-      "detour": 25,
-      "dwell": 120,
-      "cost": "$25/vehicle",
-      "tags": [
-        "nationalpark",
-        "view"
-      ],
-      "why": "Forests of cactus fifty feet tall and two hundred years old. The loop drive at sunset is the one.",
-      "winter": "Peak season — winter is the best time of year to be here.",
-      "routes": [
-        "leg3-i10",
-        "leg3-vegas",
-        "leg1-low"
-      ]
-    },
-    {
-      "id": "pima-air",
-      "name": "Pima Air & Space Museum",
-      "town": "Tucson",
-      "state": "AZ",
-      "ll": [
-        32.14,
-        -110.87
-      ],
-      "detour": 10,
-      "dwell": 180,
-      "cost": "$22",
-      "tags": [
-        "museum"
-      ],
-      "why": "Four hundred aircraft parked in the desert, including an SR-71 and a Boeing 787. Add the bus tour of the boneyard next door — 4,000 mothballed military planes in rows.",
-      "winter": "Boneyard tours are weekdays only and need advance booking.",
-      "routes": [
-        "leg3-i10",
-        "leg3-vegas",
-        "leg1-low"
-      ]
-    },
-    {
-      "id": "desert-botanical",
-      "name": "Desert Botanical Garden",
-      "town": "Phoenix",
-      "state": "AZ",
-      "ll": [
-        33.462,
-        -111.945
-      ],
-      "detour": 15,
-      "dwell": 120,
-      "cost": "$30",
-      "tags": [
-        "garden"
-      ],
-      "why": "The best desert-plant collection anywhere, and in December they light the paths with thousands of luminarias after dark.",
-      "winter": "Las Noches de las Luminarias runs through early January and needs a timed ticket.",
-      "routes": [
-        "leg3-i10",
-        "leg3-vegas",
-        "leg1-low"
-      ]
-    },
-    {
-      "id": "joshua-tree",
-      "name": "Joshua Tree National Park",
-      "town": "Cottonwood",
-      "state": "CA",
-      "ll": [
-        33.739,
-        -115.813
-      ],
-      "detour": 10,
-      "dwell": 120,
-      "cost": "$30/vehicle",
-      "tags": [
-        "nationalpark",
-        "view"
-      ],
-      "why": "The Cottonwood entrance is right on I-10, so this is a cheap detour on the last full day. Boulder piles and the trees themselves, which look invented.",
-      "winter": "Winter is the good season. Nights drop below freezing.",
-      "routes": [
-        "leg3-i10",
-        "leg1-low"
-      ]
-    },
-    {
-      "id": "palm-springs-tram",
-      "name": "Palm Springs Aerial Tramway",
-      "town": "Palm Springs",
-      "state": "CA",
-      "ll": [
-        33.836,
-        -116.613
-      ],
-      "detour": 20,
-      "dwell": 150,
-      "cost": "$30",
-      "tags": [
-        "view",
-        "ride"
-      ],
-      "why": "Rotating cable car from the desert floor to 8,500 feet in ten minutes — from palm trees to pine snow. If you skipped Sandia, take this one.",
-      "winter": "There is usually snow at the top while it's 70°F at the bottom, which is the whole trick.",
-      "routes": [
-        "leg3-i10",
-        "leg1-low"
-      ]
-    },
-    {
-      "id": "griffith",
-      "name": "Griffith Observatory",
-      "town": "Los Angeles",
-      "state": "CA",
-      "ll": [
-        34.118,
-        -118.3
-      ],
-      "detour": 25,
-      "dwell": 120,
-      "cost": "Free",
-      "tags": [
-        "view",
-        "night",
-        "science"
-      ],
-      "why": "Free, and the view of the whole basin at night is the last big thing before the drive turns into just getting home.",
-      "winter": "Closed Mondays. Parking is genuinely awful — go early or late.",
-      "routes": [
-        "leg3-i10"
-      ]
-    },
-    {
-      "id": "salvation-mountain",
-      "name": "Salvation Mountain",
-      "town": "Niland",
-      "state": "CA",
-      "ll": [
-        33.254,
-        -115.472
-      ],
-      "detour": 40,
-      "dwell": 60,
-      "cost": "Free",
-      "tags": [
-        "roadside",
-        "art"
-      ],
-      "why": "A hillside one man covered in half a million gallons of paint over thirty years. Strange, sincere, and completely unlike anything else.",
-      "winter": "Winter is the only tolerable time — it's 115°F here in summer.",
-      "routes": [
-        "leg3-i10"
-      ]
-    },
-    {
-      "id": "sixth-floor",
-      "name": "The Sixth Floor Museum",
-      "town": "Dallas",
-      "state": "TX",
-      "routes": [
-        "leg1-low",
-        "leg2-inland"
-      ],
-      "ll": [
-        32.779,
-        -96.808
-      ],
-      "detour": 10,
-      "dwell": 120,
-      "cost": "$24",
-      "tags": [
-        "history"
-      ],
-      "why": "The Texas School Book Depository, from the window itself. They preserved the corner exactly as it was found and the whole story is told from inside the room.",
-      "winter": "Open through the holidays except Christmas Day. Timed tickets."
-    },
-    {
-      "id": "fort-worth-stockyards",
-      "name": "Fort Worth Stockyards",
-      "town": "Fort Worth",
-      "state": "TX",
-      "routes": [
-        "leg1-low"
-      ],
-      "ll": [
-        32.789,
-        -97.347
-      ],
-      "detour": 15,
-      "dwell": 120,
-      "cost": "Free",
-      "tags": [
-        "history",
-        "food"
-      ],
-      "why": "A longhorn cattle drive down a brick street twice a day, every day, plus the honky-tonks around it. Cornier than Nashville and somehow better for it.",
-      "winter": null
-    },
-    {
-      "id": "birmingham-civil-rights",
-      "name": "Birmingham Civil Rights Institute",
-      "town": "Birmingham",
-      "state": "AL",
-      "routes": [
-        "leg2-inland"
-      ],
-      "ll": [
-        33.516,
-        -86.815
-      ],
-      "detour": 8,
-      "dwell": 150,
-      "cost": "$15",
-      "tags": [
-        "history"
-      ],
-      "big": true,
-      "why": "Across the street from the 16th Street Baptist Church and Kelly Ingram Park, where the fire hoses were turned on children in 1963. The museum and those two blocks are one thing.",
-      "winter": "Closed Mondays."
-    },
-    {
-      "id": "vicksburg",
-      "name": "Vicksburg National Military Park",
-      "town": "Vicksburg",
-      "state": "MS",
-      "routes": [
-        "leg2-inland"
-      ],
-      "ll": [
-        32.346,
-        -90.853
-      ],
-      "detour": 12,
-      "dwell": 150,
-      "cost": "$20/vehicle",
-      "tags": [
-        "history"
-      ],
-      "why": "A 16-mile drive through the siege lines above the Mississippi, plus a Union ironclad raised out of the river mud a century later.",
-      "winter": "Open year round, quiet in winter."
-    },
-    {
-      "id": "hoover-dam",
-      "name": "Hoover Dam",
-      "town": "Boulder City",
-      "state": "NV",
-      "routes": [
-        "leg3-vegas"
-      ],
-      "ll": [
-        36.016,
-        -114.737
-      ],
-      "detour": 15,
-      "dwell": 120,
-      "cost": "$10 parking",
-      "tags": [
-        "history",
-        "view"
-      ],
-      "first": true,
-      "big": true,
-      "why": "726 feet of concrete wedged into Black Canyon in the middle of the Depression. You can walk out on the bypass bridge and look straight down the face of it for free.",
-      "winter": "Open year round and December is the pleasant time to be here. Security screening on the dam road."
-    },
-    {
-      "id": "vegas-strip",
-      "name": "The Strip",
-      "town": "Las Vegas",
-      "state": "NV",
-      "routes": [
-        "leg3-vegas"
-      ],
-      "ll": [
-        36.114,
-        -115.173
-      ],
-      "detour": 10,
-      "dwell": 240,
-      "cost": "Free to walk",
-      "tags": [
-        "night"
-      ],
-      "first": true,
-      "why": "Whatever you think of it, there is nothing else like it, and walking it at night once is worth doing. The Bellagio fountains are free and run every half hour.",
-      "winter": "Cold at night in December — colder than people expect in a desert."
-    },
-    {
-      "id": "seven-magic-mountains",
-      "name": "Seven Magic Mountains",
-      "town": "Jean",
-      "state": "NV",
-      "routes": [
-        "leg3-vegas"
-      ],
-      "ll": [
-        35.842,
-        -115.28
-      ],
-      "detour": 8,
-      "dwell": 30,
-      "cost": "Free",
-      "tags": [
-        "art",
-        "roadside",
-        "quick"
-      ],
-      "why": "Seven stacks of boulders painted in fluorescent colors standing alone in the desert south of Vegas. Ten minutes, free, and it photographs better than almost anything on the trip.",
-      "winter": null
-    },
-    {
-      "id": "kelso-dunes",
-      "name": "Kelso Dunes, Mojave National Preserve",
-      "town": "Kelso",
-      "state": "CA",
-      "routes": [
-        "leg3-vegas",
-        "leg1-i40"
-      ],
-      "ll": [
-        34.891,
-        -115.711
-      ],
-      "detour": 35,
-      "dwell": 120,
-      "cost": "Free",
-      "tags": [
-        "nationalpark",
-        "view"
-      ],
-      "why": "Six hundred foot sand dunes that boom audibly when you slide down them. Almost nobody stops, which is most of the appeal.",
-      "winter": "Winter is the only comfortable season. Last few miles are graded dirt."
-    }
-  ]
+ "_comment": "Every stop worth considering. 'routes' lists which route options it sits on — a stop shows up only when one of its routes is selected. 'detour' is MINUTES ONE WAY off the highway; the app doubles it and adds 'dwell' to show what it really costs the day. 'first' flags something Ada has no California equivalent for. 'big' means it's worth rebuilding the day around. 'winter' is the late-Dec / early-Jan caveat and is the field most likely to be wrong — verify before committing to any of them.",
+ "stops": [
+  {
+   "id": "nascar-hof",
+   "name": "NASCAR Hall of Fame",
+   "town": "Charlotte",
+   "state": "NC",
+   "ll": [
+    35.223,
+    -80.84
+   ],
+   "detour": 6,
+   "dwell": 120,
+   "cost": "$28",
+   "tags": [
+    "museum"
+   ],
+   "why": "You're driving straight past it and it's better than it sounds — the banked track display alone shows you how steep 33 degrees actually is.",
+   "winter": null,
+   "routes": [
+    "leg2-gulf",
+    "leg2-inland"
+   ]
+  },
+  {
+   "id": "georgia-aquarium",
+   "name": "Georgia Aquarium",
+   "town": "Atlanta",
+   "state": "GA",
+   "ll": [
+    33.763,
+    -84.395
+   ],
+   "detour": 10,
+   "dwell": 180,
+   "cost": "$45",
+   "tags": [
+    "animals"
+   ],
+   "first": true,
+   "why": "One of the largest in the world, with whale sharks — which exist in about four aquariums on earth.",
+   "winter": "Book a timed ticket; the holiday week is its busiest of the year.",
+   "routes": [
+    "leg2-gulf",
+    "leg2-inland",
+    "leg1-south"
+   ]
+  },
+  {
+   "id": "mlk-park",
+   "name": "MLK National Historical Park",
+   "town": "Atlanta",
+   "state": "GA",
+   "ll": [
+    33.756,
+    -84.372
+   ],
+   "detour": 10,
+   "dwell": 120,
+   "cost": "Free",
+   "tags": [
+    "history"
+   ],
+   "why": "His birth home, Ebenezer Baptist where he preached, and his tomb — all on two blocks, all free.",
+   "winter": "Birth home tours are first-come and limited; get there early.",
+   "routes": [
+    "leg2-gulf",
+    "leg2-inland"
+   ]
+  },
+  {
+   "id": "legacy-museum",
+   "name": "Legacy Museum & National Memorial for Peace and Justice",
+   "town": "Montgomery",
+   "state": "AL",
+   "ll": [
+    32.375,
+    -86.313
+   ],
+   "detour": 8,
+   "dwell": 210,
+   "cost": "$5",
+   "tags": [
+    "history"
+   ],
+   "big": true,
+   "why": "Eight hundred hanging steel columns, one for every county where a lynching happened. The most powerful museum in the American South and it costs five dollars.",
+   "winter": "Closed Tuesdays. Give it three hours or don't start.",
+   "routes": [
+    "leg2-gulf"
+   ]
+  },
+  {
+   "id": "uss-alabama",
+   "name": "USS Alabama Battleship",
+   "town": "Mobile",
+   "state": "AL",
+   "ll": [
+    30.682,
+    -88.014
+   ],
+   "detour": 4,
+   "dwell": 150,
+   "cost": "$18",
+   "tags": [
+    "museum"
+   ],
+   "why": "A World War II battleship you walk through top to bottom, plus a submarine, four minutes off I-10.",
+   "winter": null,
+   "routes": [
+    "leg2-gulf"
+   ]
+  },
+  {
+   "id": "gulf-beach",
+   "name": "First look at the Gulf",
+   "town": "Gulf Shores",
+   "state": "AL",
+   "ll": [
+    30.246,
+    -87.701
+   ],
+   "detour": 45,
+   "dwell": 60,
+   "cost": "Free",
+   "tags": [
+    "view",
+    "beach"
+   ],
+   "first": true,
+   "why": "Warm, flat, pale green water and sand like sugar. Nothing about it resembles the Pacific she grew up on — and in December you'll have the beach to yourselves.",
+   "winter": "Too cold to swim, perfect to walk.",
+   "routes": [
+    "leg2-gulf"
+   ]
+  },
+  {
+   "id": "french-quarter",
+   "name": "The French Quarter",
+   "town": "New Orleans",
+   "state": "LA",
+   "ll": [
+    29.957,
+    -90.064
+   ],
+   "detour": 15,
+   "dwell": 300,
+   "cost": "Free",
+   "tags": [
+    "food",
+    "music",
+    "night"
+   ],
+   "first": true,
+   "big": true,
+   "why": "Beignets at Café du Monde, brass bands on Royal Street, two hundred year old ironwork. There is nowhere else in the country that feels like this and it is worth an overnight, not a drive-through.",
+   "winter": "You'd be here right around New Year's — which is spectacular and also means book a room early and expect crowds.",
+   "routes": [
+    "leg2-gulf"
+   ]
+  },
+  {
+   "id": "oak-alley",
+   "name": "Oak Alley Plantation",
+   "town": "Vacherie",
+   "state": "LA",
+   "ll": [
+    30.005,
+    -90.798
+   ],
+   "detour": 35,
+   "dwell": 120,
+   "cost": "$28",
+   "tags": [
+    "history"
+   ],
+   "why": "A quarter-mile corridor of 300-year-old live oaks, and an unflinching museum about the people who were enslaved there. Both halves matter.",
+   "winter": null,
+   "routes": [
+    "leg2-gulf"
+   ]
+  },
+  {
+   "id": "space-center",
+   "name": "Space Center Houston",
+   "town": "Houston",
+   "state": "TX",
+   "ll": [
+    29.552,
+    -95.098
+   ],
+   "detour": 25,
+   "dwell": 240,
+   "cost": "$30",
+   "tags": [
+    "science"
+   ],
+   "first": true,
+   "big": true,
+   "why": "The actual Apollo mission control room, restored to 1969 down to the ashtrays, and a complete Saturn V lying on its side in a building built around it.",
+   "winter": "Open through the holidays except Christmas Day. Very busy that week.",
+   "routes": [
+    "leg2-gulf",
+    "leg2-inland"
+   ]
+  },
+  {
+   "id": "alamo",
+   "name": "The Alamo",
+   "town": "San Antonio",
+   "state": "TX",
+   "ll": [
+    29.426,
+    -98.486
+   ],
+   "detour": 8,
+   "dwell": 90,
+   "cost": "Free",
+   "tags": [
+    "history"
+   ],
+   "why": "Smaller than everyone expects and right in the middle of downtown. Free, and it takes an hour.",
+   "winter": null,
+   "routes": [
+    "leg3-i10",
+    "leg3-vegas"
+   ]
+  },
+  {
+   "id": "river-walk",
+   "name": "San Antonio River Walk",
+   "town": "San Antonio",
+   "state": "TX",
+   "ll": [
+    29.424,
+    -98.487
+   ],
+   "detour": 8,
+   "dwell": 180,
+   "cost": "Free",
+   "tags": [
+    "food",
+    "night",
+    "view"
+   ],
+   "first": true,
+   "big": true,
+   "why": "A river one level below the street, lined with restaurants for miles. In December and early January the whole thing is strung with lights over the water and you take a boat through it.",
+   "winter": "The holiday lights run through early January — you would be passing at exactly the right moment. Verify the end date before counting on it.",
+   "routes": [
+    "leg3-i10",
+    "leg3-vegas"
+   ]
+  },
+  {
+   "id": "natural-bridge-caverns",
+   "name": "Natural Bridge Caverns",
+   "town": "San Antonio",
+   "state": "TX",
+   "ll": [
+    29.692,
+    -98.343
+   ],
+   "detour": 25,
+   "dwell": 120,
+   "cost": "$32",
+   "tags": [
+    "cave"
+   ],
+   "why": "The largest commercial cave in Texas, and 70°F underground no matter what the weather does.",
+   "winter": "Weather-proof. A good rainy-day answer.",
+   "routes": [
+    "leg3-i10",
+    "leg3-vegas"
+   ]
+  },
+  {
+   "id": "balmorhea",
+   "name": "Balmorhea State Park",
+   "town": "Toyahvale",
+   "state": "TX",
+   "ll": [
+    30.945,
+    -103.787
+   ],
+   "detour": 12,
+   "dwell": 60,
+   "cost": "$7",
+   "tags": [
+    "water"
+   ],
+   "why": "A 1.3-acre spring-fed pool in the middle of nowhere, 72°F all year, with fish in it. Utterly surreal after four hours of West Texas.",
+   "winter": "Open in winter but check — it has closed for long repair stretches. Confirm before detouring.",
+   "routes": [
+    "leg3-i10",
+    "leg3-vegas",
+    "leg1-low"
+   ]
+  },
+  {
+   "id": "marfa-lights",
+   "name": "Marfa Lights Viewing Area",
+   "town": "Marfa",
+   "state": "TX",
+   "ll": [
+    30.271,
+    -103.925
+   ],
+   "detour": 60,
+   "dwell": 60,
+   "cost": "Free",
+   "tags": [
+    "night",
+    "roadside"
+   ],
+   "why": "Unexplained lights on the horizon that people have been arguing about since 1883. There's an official pull-out with a viewing platform. Might see nothing. That's part of it.",
+   "winter": "Needs full dark and a clear night. Only worth it if you're sleeping nearby anyway.",
+   "routes": [
+    "leg3-i10",
+    "leg3-vegas"
+   ]
+  },
+  {
+   "id": "carlsbad",
+   "name": "Carlsbad Caverns",
+   "town": "Carlsbad",
+   "state": "NM",
+   "ll": [
+    32.175,
+    -104.444
+   ],
+   "detour": 110,
+   "dwell": 240,
+   "cost": "$15/person",
+   "tags": [
+    "cave",
+    "nationalpark"
+   ],
+   "first": true,
+   "big": true,
+   "why": "You walk down into it through a hole in the desert and end up 750 feet underground in a room the size of six football fields. A big detour and one of the great places on the continent.",
+   "winter": "Fully weather-proof — 56°F underground always. The bat flights are summer only, so winter costs you nothing but the drive. Entry reservations required.",
+   "routes": [
+    "leg3-i10",
+    "leg3-vegas",
+    "leg1-low"
+   ]
+  },
+  {
+   "id": "white-sands",
+   "name": "White Sands National Park",
+   "town": "Alamogordo",
+   "state": "NM",
+   "ll": [
+    32.779,
+    -106.172
+   ],
+   "detour": 50,
+   "dwell": 180,
+   "cost": "$25/vehicle",
+   "tags": [
+    "nationalpark",
+    "view"
+   ],
+   "first": true,
+   "big": true,
+   "why": "275 square miles of pure white gypsum dunes. You buy a plastic saucer at the gift shop and sled down them. There is nothing like it anywhere else on earth and the detour off I-10 is worth every mile.",
+   "winter": "Open in winter and the light is best then. It closes for a few hours at a time for missile range tests — check the park's closure page the morning of.",
+   "routes": [
+    "leg3-i10",
+    "leg3-vegas",
+    "leg1-low"
+   ]
+  },
+  {
+   "id": "franklin-mountains",
+   "name": "Scenic Drive Overlook",
+   "town": "El Paso",
+   "state": "TX",
+   "ll": [
+    31.792,
+    -106.484
+   ],
+   "detour": 15,
+   "dwell": 40,
+   "cost": "Free",
+   "tags": [
+    "view"
+   ],
+   "why": "One overlook, two countries, three states. El Paso and Ciudad Juárez spread out below as one continuous city split by a line.",
+   "winter": "Best at dusk when both sides light up.",
+   "routes": [
+    "leg3-i10",
+    "leg3-vegas",
+    "leg1-low"
+   ]
+  },
+  {
+   "id": "tombstone",
+   "name": "Tombstone",
+   "town": "Tombstone",
+   "state": "AZ",
+   "ll": [
+    31.713,
+    -110.068
+   ],
+   "detour": 45,
+   "dwell": 150,
+   "cost": "$",
+   "tags": [
+    "history"
+   ],
+   "why": "The OK Corral, Boot Hill, and a main street that leans hard into it. Touristy in a way that's honestly fine.",
+   "winter": "Mild and pleasant in winter.",
+   "routes": [
+    "leg3-i10",
+    "leg3-vegas",
+    "leg1-low"
+   ]
+  },
+  {
+   "id": "saguaro",
+   "name": "Saguaro National Park",
+   "town": "Tucson",
+   "state": "AZ",
+   "ll": [
+    32.253,
+    -111.167
+   ],
+   "detour": 25,
+   "dwell": 120,
+   "cost": "$25/vehicle",
+   "tags": [
+    "nationalpark",
+    "view"
+   ],
+   "why": "Forests of cactus fifty feet tall and two hundred years old. The loop drive at sunset is the one.",
+   "winter": "Peak season — winter is the best time of year to be here.",
+   "routes": [
+    "leg3-i10",
+    "leg3-vegas",
+    "leg1-low"
+   ]
+  },
+  {
+   "id": "pima-air",
+   "name": "Pima Air & Space Museum",
+   "town": "Tucson",
+   "state": "AZ",
+   "ll": [
+    32.14,
+    -110.87
+   ],
+   "detour": 10,
+   "dwell": 180,
+   "cost": "$22",
+   "tags": [
+    "museum"
+   ],
+   "why": "Four hundred aircraft parked in the desert, including an SR-71 and a Boeing 787. Add the bus tour of the boneyard next door — 4,000 mothballed military planes in rows.",
+   "winter": "Boneyard tours are weekdays only and need advance booking.",
+   "routes": [
+    "leg3-i10",
+    "leg3-vegas",
+    "leg1-low"
+   ]
+  },
+  {
+   "id": "desert-botanical",
+   "name": "Desert Botanical Garden",
+   "town": "Phoenix",
+   "state": "AZ",
+   "ll": [
+    33.462,
+    -111.945
+   ],
+   "detour": 15,
+   "dwell": 120,
+   "cost": "$30",
+   "tags": [
+    "garden"
+   ],
+   "why": "The best desert-plant collection anywhere, and in December they light the paths with thousands of luminarias after dark.",
+   "winter": "Las Noches de las Luminarias runs through early January and needs a timed ticket.",
+   "routes": [
+    "leg3-i10",
+    "leg3-vegas",
+    "leg1-low"
+   ]
+  },
+  {
+   "id": "joshua-tree",
+   "name": "Joshua Tree National Park",
+   "town": "Cottonwood",
+   "state": "CA",
+   "ll": [
+    33.739,
+    -115.813
+   ],
+   "detour": 10,
+   "dwell": 120,
+   "cost": "$30/vehicle",
+   "tags": [
+    "nationalpark",
+    "view"
+   ],
+   "why": "The Cottonwood entrance is right on I-10, so this is a cheap detour on the last full day. Boulder piles and the trees themselves, which look invented.",
+   "winter": "Winter is the good season. Nights drop below freezing.",
+   "routes": [
+    "leg3-i10",
+    "leg1-low"
+   ]
+  },
+  {
+   "id": "palm-springs-tram",
+   "name": "Palm Springs Aerial Tramway",
+   "town": "Palm Springs",
+   "state": "CA",
+   "ll": [
+    33.836,
+    -116.613
+   ],
+   "detour": 20,
+   "dwell": 150,
+   "cost": "$30",
+   "tags": [
+    "view",
+    "ride"
+   ],
+   "why": "Rotating cable car from the desert floor to 8,500 feet in ten minutes — from palm trees to pine snow. If you skipped Sandia, take this one.",
+   "winter": "There is usually snow at the top while it's 70°F at the bottom, which is the whole trick.",
+   "routes": [
+    "leg3-i10",
+    "leg1-low"
+   ]
+  },
+  {
+   "id": "griffith",
+   "name": "Griffith Observatory",
+   "town": "Los Angeles",
+   "state": "CA",
+   "ll": [
+    34.118,
+    -118.3
+   ],
+   "detour": 25,
+   "dwell": 120,
+   "cost": "Free",
+   "tags": [
+    "view",
+    "night",
+    "science"
+   ],
+   "why": "Free, and the view of the whole basin at night is the last big thing before the drive turns into just getting home.",
+   "winter": "Closed Mondays. Parking is genuinely awful — go early or late.",
+   "routes": [
+    "leg3-i10"
+   ]
+  },
+  {
+   "id": "salvation-mountain",
+   "name": "Salvation Mountain",
+   "town": "Niland",
+   "state": "CA",
+   "ll": [
+    33.254,
+    -115.472
+   ],
+   "detour": 40,
+   "dwell": 60,
+   "cost": "Free",
+   "tags": [
+    "roadside",
+    "art"
+   ],
+   "why": "A hillside one man covered in half a million gallons of paint over thirty years. Strange, sincere, and completely unlike anything else.",
+   "winter": "Winter is the only tolerable time — it's 115°F here in summer.",
+   "routes": [
+    "leg3-i10"
+   ]
+  },
+  {
+   "id": "sixth-floor",
+   "name": "The Sixth Floor Museum",
+   "town": "Dallas",
+   "state": "TX",
+   "routes": [
+    "leg1-low",
+    "leg2-inland"
+   ],
+   "ll": [
+    32.779,
+    -96.808
+   ],
+   "detour": 10,
+   "dwell": 120,
+   "cost": "$24",
+   "tags": [
+    "history"
+   ],
+   "why": "The Texas School Book Depository, from the window itself. They preserved the corner exactly as it was found and the whole story is told from inside the room.",
+   "winter": "Open through the holidays except Christmas Day. Timed tickets."
+  },
+  {
+   "id": "fort-worth-stockyards",
+   "name": "Fort Worth Stockyards",
+   "town": "Fort Worth",
+   "state": "TX",
+   "routes": [
+    "leg1-low"
+   ],
+   "ll": [
+    32.789,
+    -97.347
+   ],
+   "detour": 15,
+   "dwell": 120,
+   "cost": "Free",
+   "tags": [
+    "history",
+    "food"
+   ],
+   "why": "A longhorn cattle drive down a brick street twice a day, every day, plus the honky-tonks around it. Cornier than Nashville and somehow better for it.",
+   "winter": null
+  },
+  {
+   "id": "birmingham-civil-rights",
+   "name": "Birmingham Civil Rights Institute",
+   "town": "Birmingham",
+   "state": "AL",
+   "routes": [
+    "leg2-inland"
+   ],
+   "ll": [
+    33.516,
+    -86.815
+   ],
+   "detour": 8,
+   "dwell": 150,
+   "cost": "$15",
+   "tags": [
+    "history"
+   ],
+   "big": true,
+   "why": "Across the street from the 16th Street Baptist Church and Kelly Ingram Park, where the fire hoses were turned on children in 1963. The museum and those two blocks are one thing.",
+   "winter": "Closed Mondays."
+  },
+  {
+   "id": "vicksburg",
+   "name": "Vicksburg National Military Park",
+   "town": "Vicksburg",
+   "state": "MS",
+   "routes": [
+    "leg2-inland"
+   ],
+   "ll": [
+    32.346,
+    -90.853
+   ],
+   "detour": 12,
+   "dwell": 150,
+   "cost": "$20/vehicle",
+   "tags": [
+    "history"
+   ],
+   "why": "A 16-mile drive through the siege lines above the Mississippi, plus a Union ironclad raised out of the river mud a century later.",
+   "winter": "Open year round, quiet in winter."
+  },
+  {
+   "id": "hoover-dam",
+   "name": "Hoover Dam",
+   "town": "Boulder City",
+   "state": "NV",
+   "routes": [
+    "leg3-vegas"
+   ],
+   "ll": [
+    36.016,
+    -114.737
+   ],
+   "detour": 15,
+   "dwell": 120,
+   "cost": "$10 parking",
+   "tags": [
+    "history",
+    "view"
+   ],
+   "first": true,
+   "big": true,
+   "why": "726 feet of concrete wedged into Black Canyon in the middle of the Depression. You can walk out on the bypass bridge and look straight down the face of it for free.",
+   "winter": "Open year round and December is the pleasant time to be here. Security screening on the dam road."
+  },
+  {
+   "id": "vegas-strip",
+   "name": "The Strip",
+   "town": "Las Vegas",
+   "state": "NV",
+   "routes": [
+    "leg3-vegas"
+   ],
+   "ll": [
+    36.114,
+    -115.173
+   ],
+   "detour": 10,
+   "dwell": 240,
+   "cost": "Free to walk",
+   "tags": [
+    "night"
+   ],
+   "first": true,
+   "why": "Whatever you think of it, there is nothing else like it, and walking it at night once is worth doing. The Bellagio fountains are free and run every half hour.",
+   "winter": "Cold at night in December — colder than people expect in a desert."
+  },
+  {
+   "id": "seven-magic-mountains",
+   "name": "Seven Magic Mountains",
+   "town": "Jean",
+   "state": "NV",
+   "routes": [
+    "leg3-vegas"
+   ],
+   "ll": [
+    35.842,
+    -115.28
+   ],
+   "detour": 8,
+   "dwell": 30,
+   "cost": "Free",
+   "tags": [
+    "art",
+    "roadside",
+    "quick"
+   ],
+   "why": "Seven stacks of boulders painted in fluorescent colors standing alone in the desert south of Vegas. Ten minutes, free, and it photographs better than almost anything on the trip.",
+   "winter": null
+  },
+  {
+   "id": "kelso-dunes",
+   "name": "Kelso Dunes, Mojave National Preserve",
+   "town": "Kelso",
+   "state": "CA",
+   "routes": [
+    "leg3-vegas"
+   ],
+   "ll": [
+    34.891,
+    -115.711
+   ],
+   "detour": 35,
+   "dwell": 120,
+   "cost": "Free",
+   "tags": [
+    "nationalpark",
+    "view"
+   ],
+   "why": "Six hundred foot sand dunes that boom audibly when you slide down them. Almost nobody stops, which is most of the appeal.",
+   "winter": "Winter is the only comfortable season. Last few miles are graded dirt."
+  },
+  {
+   "id": "aji-amarillo",
+   "name": "Aji Amarillo",
+   "town": "Bakersfield",
+   "state": "CA",
+   "ll": [
+    35.373,
+    -119.019
+   ],
+   "detour": 6,
+   "dwell": 45,
+   "cost": "$",
+   "tags": [
+    "food",
+    "peruvian"
+   ],
+   "why": "A Peruvian counter operating inside a swap meet, huge portions for almost nothing. It is a stall, not a restaurant, and it keeps stall hours.",
+   "winter": "Closed Monday and done by 6:30. Hours run loose, call before counting on it.",
+   "routes": [
+    "leg1-i40",
+    "leg1-low",
+    "leg1-south"
+   ],
+   "kind": "food"
+  },
+  {
+   "id": "pyrenees-cafe",
+   "name": "Pyrenees Cafe",
+   "town": "Bakersfield",
+   "state": "CA",
+   "ll": [
+    35.3805,
+    -118.985
+   ],
+   "detour": 6,
+   "dwell": 75,
+   "cost": "$$",
+   "tags": [
+    "food",
+    "basque"
+   ],
+   "why": "Boardinghouse cooking at long communal tables since 1901, the last Basque house in town that manages to open seven days. Three hours from home, so it only works if you left hungry.",
+   "winter": "Tuesday it closes at 3pm. Every other day it serves dinner.",
+   "routes": [
+    "leg1-i40",
+    "leg1-low",
+    "leg1-south"
+   ],
+   "big": true,
+   "kind": "food"
+  },
+  {
+   "id": "tanger-barstow",
+   "name": "Tanger Outlets",
+   "town": "Barstow",
+   "state": "CA",
+   "ll": [
+    34.8497,
+    -117.085
+   ],
+   "detour": 0,
+   "dwell": 90,
+   "cost": "Free to walk",
+   "tags": [
+    "shopping"
+   ],
+   "why": "A full outlet mall right at the I-15 and I-40 split, the best shopping on the western half of the drive. Outlets always eat more time than you plan for.",
+   "winter": null,
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ]
+  },
+  {
+   "id": "peggy-sues",
+   "name": "Peggy Sue's 50's Diner",
+   "town": "Yermo",
+   "state": "CA",
+   "ll": [
+    34.909,
+    -116.884
+   ],
+   "detour": 4,
+   "dwell": 60,
+   "cost": "$$",
+   "tags": [
+    "food",
+    "diner",
+    "route66"
+   ],
+   "why": "Full 1950s kitsch, chrome, jukebox, Elvis on the wall, and a dinosaur park out back. Seventeen thousand reviews, and the root beer float comes with a shot of extra root beer. The food is fine rather than good, you come for the room.",
+   "winter": null,
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ],
+   "kind": "food"
+  },
+  {
+   "id": "calico",
+   "name": "Calico Ghost Town",
+   "town": "Barstow",
+   "state": "CA",
+   "ll": [
+    34.9481,
+    -116.8645
+   ],
+   "detour": 8,
+   "dwell": 120,
+   "cost": "$8 each",
+   "tags": [
+    "ghost-town",
+    "mining"
+   ],
+   "why": "A silver town that died in 1907, bought whole by Walter Knott and rebuilt as itself. A good legs stretch a couple of hours in, if you can take the wind.",
+   "winter": "Open 9 to 5. Cold and very windy on the mesa in December.",
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ]
+  },
+  {
+   "id": "seligman",
+   "name": "Seligman",
+   "town": "Seligman",
+   "state": "AZ",
+   "ll": [
+    35.3258,
+    -112.8747
+   ],
+   "detour": 4,
+   "dwell": 45,
+   "cost": "Free",
+   "tags": [
+    "route66"
+   ],
+   "why": "The town whose barber led the fight to save Route 66, and the model for Radiator Springs. It is two blocks, and the two blocks are worth it.",
+   "winter": null,
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ]
+  },
+  {
+   "id": "snow-cap",
+   "name": "Delgadillo's Snow Cap",
+   "town": "Seligman",
+   "state": "AZ",
+   "ll": [
+    35.3256,
+    -112.873
+   ],
+   "detour": 4,
+   "dwell": 45,
+   "cost": "$",
+   "tags": [
+    "food",
+    "route66"
+   ],
+   "why": "A 1953 drive-in where the family has been pranking customers for seventy years. Fake menus, doors to nowhere, mustard bottles that squirt string. The food is beside the point, the show comes free with lunch.",
+   "winter": "Winter hours are unreliable and they post closures on Facebook. Check before counting on lunch.",
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ],
+   "kind": "food"
+  },
+  {
+   "id": "mr-dz",
+   "name": "Mr. D'z Route 66 Diner",
+   "town": "Kingman",
+   "state": "AZ",
+   "ll": [
+    35.1894,
+    -114.053
+   ],
+   "detour": 4,
+   "dwell": 60,
+   "cost": "$$",
+   "tags": [
+    "food",
+    "diner",
+    "route66"
+   ],
+   "why": "Turquoise and pink diner on the old road through Kingman, with house-made root beer in a frosted mug. Open 7am to 9pm every day. Come for the root beer and the room, not the cooking.",
+   "winter": null,
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ],
+   "kind": "food"
+  },
+  {
+   "id": "gc-caverns",
+   "name": "Grand Canyon Caverns",
+   "town": "Peach Springs",
+   "state": "AZ",
+   "ll": [
+    35.528,
+    -113.231
+   ],
+   "detour": 8,
+   "dwell": 90,
+   "cost": "$21 the tour",
+   "tags": [
+    "cavern",
+    "route66"
+   ],
+   "why": "The largest dry cavern in the country. An elevator drops 210 feet into it, there is a hotel suite at the bottom, and it is 56 degrees inside no matter what the desert is doing.",
+   "winter": "Open all winter except Christmas Day, but off-season tour times vary. Call first.",
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ]
+  },
+  {
+   "id": "oatman",
+   "name": "Oatman",
+   "town": "Oatman",
+   "state": "AZ",
+   "ll": [
+    35.0261,
+    -114.383
+   ],
+   "detour": 15,
+   "dwell": 90,
+   "cost": "Free, cash for burro feed",
+   "tags": [
+    "route66",
+    "burros"
+   ],
+   "why": "A mining town where descendants of abandoned pack burros walk down the main street and expect to be fed. Ada will remember this longer than most things on the list.",
+   "winter": "Come in from the Topock side. The Kingman approach over Sitgreaves Pass is 191 turns with no guardrails. Before 11am for parking, and bring cash.",
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ],
+   "first": true
+  },
+  {
+   "id": "downtown-flagstaff",
+   "name": "Historic downtown Flagstaff",
+   "town": "Flagstaff",
+   "state": "AZ",
+   "ll": [
+    35.1983,
+    -111.6513
+   ],
+   "detour": 4,
+   "dwell": 90,
+   "cost": "Free to walk",
+   "tags": [
+    "downtown"
+   ],
+   "why": "Compact brick downtown of bookstores, breweries and restaurants under the San Francisco Peaks. The best place to eat and stretch on the whole desert crossing, and an easy place to lose two hours.",
+   "winter": null,
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ]
+  },
+  {
+   "id": "puebla-sunrise",
+   "name": "Puebla Sunrise Cafe",
+   "town": "Flagstaff",
+   "state": "AZ",
+   "ll": [
+    35.1975,
+    -111.652
+   ],
+   "detour": 4,
+   "dwell": 60,
+   "cost": "$",
+   "tags": [
+    "food",
+    "mexican"
+   ],
+   "why": "Small family-run breakfast place downtown. Green chile omelettes, chorizo scrambles, and a reviewer who grew up in Mexico calls it the most authentic he has found in this country.",
+   "winter": "Breakfast and lunch only, 7am to 3pm. It has to shape your morning.",
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ],
+   "kind": "food"
+  },
+  {
+   "id": "bearizona",
+   "name": "Bearizona",
+   "town": "Williams",
+   "state": "AZ",
+   "ll": [
+    35.2417,
+    -112.1637
+   ],
+   "detour": 4,
+   "dwell": 90,
+   "cost": "$30 each on a weekday, kids $20",
+   "tags": [
+    "wildlife"
+   ],
+   "why": "Drive-through wildlife park where wolves, bison and bears walk past the car. You never get out, which is exactly right in December.",
+   "winter": "The drive-through loop stays open in snow, and the animals are livelier in the cold.",
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ]
+  },
+  {
+   "id": "walnut-canyon",
+   "name": "Walnut Canyon",
+   "town": "Flagstaff",
+   "state": "AZ",
+   "ll": [
+    35.1717,
+    -111.5093
+   ],
+   "detour": 8,
+   "dwell": 75,
+   "cost": "$15 each",
+   "tags": [
+    "ruins",
+    "hike"
+   ],
+   "why": "Cliff dwellings built into the limestone ledges of a narrow canyon, a short visit close to the interstate.",
+   "winter": "The Island Trail stair descent closes for ice. After a storm you may only get the rim. Trails close an hour before the 5pm gate.",
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ]
+  },
+  {
+   "id": "sunset-crater",
+   "name": "Sunset Crater & Wupatki",
+   "town": "Flagstaff",
+   "state": "AZ",
+   "ll": [
+    35.3651,
+    -111.5436
+   ],
+   "detour": 23,
+   "dwell": 150,
+   "cost": "$25 the car, covers both",
+   "tags": [
+    "volcano",
+    "ruins"
+   ],
+   "why": "A black cinder field from an eruption around 1085, and at the far end of the same road, red sandstone pueblos abandoned eight hundred years ago. Two completely different things on one loop road.",
+   "winter": "The loop ices and closes after snow, and it is a long way in to be turned around. Skip it in bad weather.",
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ]
+  },
+  {
+   "id": "grand-canyon",
+   "name": "Grand Canyon, South Rim",
+   "town": "Grand Canyon Village",
+   "state": "AZ",
+   "ll": [
+    36.0544,
+    -112.1401
+   ],
+   "detour": 60,
+   "dwell": 150,
+   "cost": "$35 the car",
+   "tags": [
+    "canyon",
+    "big-one"
+   ],
+   "why": "A mile deep, eighteen miles across, and nothing on earth to compare it to. Snow on the rim makes it better, not worse.",
+   "winter": "Open all winter and plowed. The entrance road can close during a storm, check conditions at (928) 638-7496 before committing to the turn.",
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ],
+   "first": true,
+   "big": true
+  },
+  {
+   "id": "wigwam-motel",
+   "name": "Wigwam Motel",
+   "town": "Holbrook",
+   "state": "AZ",
+   "ll": [
+    34.9019,
+    -110.166
+   ],
+   "detour": 4,
+   "dwell": 15,
+   "cost": "Free to look",
+   "tags": [
+    "route66",
+    "motel"
+   ],
+   "why": "Fifteen concrete teepees from 1950 with period cars parked outside each one. Nothing to do but look, and the look is worth the four minutes.",
+   "winter": null,
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ]
+  },
+  {
+   "id": "meteor-crater",
+   "name": "Meteor Crater",
+   "town": "Winslow",
+   "state": "AZ",
+   "ll": [
+    35.0274,
+    -111.0225
+   ],
+   "detour": 6,
+   "dwell": 90,
+   "cost": "$29 each",
+   "tags": [
+    "crater"
+   ],
+   "why": "A hole nearly a mile across and 550 feet deep, punched by an iron asteroid about 50,000 years ago. The best astonishment per minute on the route.",
+   "winter": "Winter hours 8 to 5, and the rim is brutally windy. Bring the heavy coat in from the car.",
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ],
+   "first": true,
+   "big": true
+  },
+  {
+   "id": "petrified-forest",
+   "name": "Petrified Forest & Painted Desert",
+   "town": "Holbrook",
+   "state": "AZ",
+   "ll": [
+    35.065,
+    -109.781
+   ],
+   "detour": 10,
+   "dwell": 120,
+   "cost": "$25 the car",
+   "tags": [
+    "national-park",
+    "badlands"
+   ],
+   "why": "A national park you drive through rather than into. Fossil logs turned to solid quartz, badlands banded red and violet, and the 1920s Painted Desert Inn free on the rim. The park road runs alongside the interstate and puts you back on it, so most of the time is not a detour at all.",
+   "winter": "Gates run 8 to 5 in winter, closed Christmas Day, and opening can be delayed after snow. Morning or nothing.",
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ],
+   "first": true,
+   "big": true
+  },
+  {
+   "id": "earls-gallup",
+   "name": "Earl's Family Restaurant",
+   "town": "Gallup",
+   "state": "NM",
+   "ll": [
+    35.5233,
+    -108.7223
+   ],
+   "detour": 4,
+   "dwell": 60,
+   "cost": "$",
+   "tags": [
+    "food",
+    "route66",
+    "navajo"
+   ],
+   "why": "Route 66 institution since 1947. Navajo tacos on frybread, huevos rancheros, green chile, and Navajo and Zuni artisans coming table to table selling jewelry straight from the maker. Half plates available, and you will want one.",
+   "winter": "Sunday it closes at 2pm.",
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ],
+   "kind": "food"
+  },
+  {
+   "id": "el-rancho",
+   "name": "El Rancho Hotel",
+   "town": "Gallup",
+   "state": "NM",
+   "ll": [
+    35.5253,
+    -108.713
+   ],
+   "detour": 4,
+   "dwell": 20,
+   "cost": "Free to walk in",
+   "tags": [
+    "route66",
+    "hollywood"
+   ],
+   "why": "Built in 1937 for the crews shooting Westerns here. A two-story log and balcony lobby hung with signed photos of everyone who stayed. Same exit as Earl's.",
+   "winter": null,
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ]
+  },
+  {
+   "id": "laguna-burger",
+   "name": "Laguna Burger",
+   "town": "New Laguna",
+   "state": "NM",
+   "ll": [
+    35.0355,
+    -107.4245
+   ],
+   "detour": 5,
+   "dwell": 45,
+   "cost": "$",
+   "tags": [
+    "food",
+    "burger",
+    "route66"
+   ],
+   "why": "The original green chile cheeseburger counter, inside a gas station on old Route 66 at Laguna Pueblo. Hand-cut fries, open 6am to 8pm seven days. Seating is tight and the line can be long, it is worth both.",
+   "winter": null,
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ],
+   "kind": "food"
+  },
+  {
+   "id": "laguna-mission",
+   "name": "Laguna Pueblo & San Jose Mission",
+   "town": "Laguna",
+   "state": "NM",
+   "ll": [
+    35.0367,
+    -107.3855
+   ],
+   "detour": 5,
+   "dwell": 20,
+   "cost": "Free",
+   "tags": [
+    "mission",
+    "pueblo"
+   ],
+   "why": "A brilliant white adobe mission church from 1699 above the pueblo, visible from the interstate. Same exit as the burger.",
+   "winter": "An active community with strict rules, and the church is often closed. If it is, look from outside and move on.",
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ]
+  },
+  {
+   "id": "old-town-abq",
+   "name": "Old Town Albuquerque",
+   "town": "Albuquerque",
+   "state": "NM",
+   "ll": [
+    35.0965,
+    -106.6702
+   ],
+   "detour": 10,
+   "dwell": 90,
+   "cost": "Free",
+   "tags": [
+    "plaza",
+    "christmas"
+   ],
+   "why": "An adobe plaza from 1706 around the San Felipe de Neri church. In the weeks before Christmas the walls and rooftops are lined with farolitos, candles in sand inside paper bags. Only works after dark.",
+   "winter": "The full farolito display is Christmas Eve itself. Earlier in the week the plaza is still lit for the season.",
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ],
+   "big": true
+  },
+  {
+   "id": "route66-auto-museum",
+   "name": "Route 66 Auto Museum",
+   "town": "Santa Rosa",
+   "state": "NM",
+   "ll": [
+    34.9385,
+    -104.662
+   ],
+   "detour": 3,
+   "dwell": 30,
+   "cost": "$5",
+   "tags": [
+    "cars",
+    "route66"
+   ],
+   "why": "Restored hot rods and memorabilia attached to a working body shop, right off the interstate. Small, cheap, and open 7:30 to 5 every day.",
+   "winter": null,
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ]
+  },
+  {
+   "id": "blue-hole",
+   "name": "Blue Hole",
+   "town": "Santa Rosa",
+   "state": "NM",
+   "ll": [
+    34.9407,
+    -104.6745
+   ],
+   "detour": 5,
+   "dwell": 30,
+   "cost": "Free",
+   "tags": [
+    "spring"
+   ],
+   "why": "An 81-foot artesian spring in dry New Mexico, so clear you see the bottom from the rim. Divers train in it year round. You are looking, not swimming, and it is completely unexpected in that landscape.",
+   "winter": null,
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ]
+  },
+  {
+   "id": "blue-swallow",
+   "name": "Tucumcari neon & Blue Swallow Motel",
+   "town": "Tucumcari",
+   "state": "NM",
+   "ll": [
+    35.1718,
+    -103.7025
+   ],
+   "detour": 5,
+   "dwell": 30,
+   "cost": "Free",
+   "tags": [
+    "route66",
+    "neon"
+   ],
+   "why": "The best surviving stretch of Route 66 neon anywhere, centered on a 1939 motel with individual garages. Tee Pee Curios and its 1944 sign are on the same strip. Dark falls by 5pm in December, so it is easy to catch lit.",
+   "winter": "The motel itself shuts for January and February. Mid-December the neon is still on.",
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ]
+  },
+  {
+   "id": "mesalands",
+   "name": "Mesalands Dinosaur Museum",
+   "town": "Tucumcari",
+   "state": "NM",
+   "ll": [
+    35.1697,
+    -103.7203
+   ],
+   "detour": 5,
+   "dwell": 60,
+   "cost": "A few dollars",
+   "tags": [
+    "dinosaurs"
+   ],
+   "why": "Bronze casts of real dinosaur skeletons, made in the college's own foundry, and you are allowed to touch them. Small, and the casts are beautiful.",
+   "winter": "Winter hours are Tuesday to Saturday, afternoons only.",
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ]
+  },
+  {
+   "id": "buc-ees",
+   "name": "Buc-ee's",
+   "town": "Amarillo",
+   "state": "TX",
+   "ll": [
+    35.191,
+    -101.728
+   ],
+   "detour": 0,
+   "dwell": 45,
+   "cost": "Free to walk through",
+   "tags": [
+    "food",
+    "rest-stop"
+   ],
+   "why": "A hundred-plus pumps, brisket chopped in front of you, a wall of jerky, and award-winning bathrooms. The best rest stop you will ever use. You will walk out having spent sixty dollars on snacks.",
+   "winter": null,
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ],
+   "first": true,
+   "big": true,
+   "kind": "food"
+  },
+  {
+   "id": "cadillac-ranch",
+   "name": "Cadillac Ranch",
+   "town": "Amarillo",
+   "state": "TX",
+   "ll": [
+    35.1872,
+    -101.987
+   ],
+   "detour": 3,
+   "dwell": 30,
+   "cost": "Free, buy spray paint in town first",
+   "tags": [
+    "route66",
+    "art"
+   ],
+   "why": "Ten Cadillacs buried nose down in a wheat field at the angle of the Great Pyramid, layered in decades of spray paint. You are expected to add yours. This is the trip photo.",
+   "winter": "Deep mud after rain or snowmelt. Wear the boots, buy the paint before you get there.",
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ],
+   "first": true,
+   "big": true
+  },
+  {
+   "id": "u-drop-inn",
+   "name": "U-Drop Inn",
+   "town": "Shamrock",
+   "state": "TX",
+   "ll": [
+    35.2265,
+    -100.249
+   ],
+   "detour": 3,
+   "dwell": 15,
+   "cost": "Free",
+   "tags": [
+    "route66",
+    "art-deco"
+   ],
+   "why": "A 1936 art deco gas station in green and gold tile, the model for Ramone's in Cars. The exterior is the whole thing, and it is beautiful at night when the neon is on.",
+   "winter": null,
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ]
+  },
+  {
+   "id": "delvins",
+   "name": "Delvin's Restaurant",
+   "town": "Amarillo",
+   "state": "TX",
+   "ll": [
+    35.2225,
+    -101.8313
+   ],
+   "detour": 6,
+   "dwell": 60,
+   "cost": "$$",
+   "tags": [
+    "food",
+    "barbecue",
+    "soul-food"
+   ],
+   "why": "Barbecue crossed with soul food. Ribs and brisket alongside twice-baked potato casserole and German chocolate cake, and the highest rated barbecue in Amarillo.",
+   "winter": "Closed Sunday and Monday. Closes 4pm Tuesday to Thursday, 6pm Friday and Saturday. Plan lunch, not dinner.",
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ],
+   "big": true,
+   "kind": "food"
+  },
+  {
+   "id": "goldenlight",
+   "name": "GoldenLight Cafe & Cantina",
+   "town": "Amarillo",
+   "state": "TX",
+   "ll": [
+    35.2043,
+    -101.857
+   ],
+   "detour": 6,
+   "dwell": 60,
+   "cost": "$",
+   "tags": [
+    "food",
+    "burger",
+    "route66"
+   ],
+   "why": "Route 66 burger dive open since 1946, the oldest continuously operating cafe on the Texas stretch. Green chile cheeseburgers, live music, about thirty seats, and reviewers who call it maybe the best burger ever.",
+   "winter": "Closed Sunday.",
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ],
+   "kind": "food"
+  },
+  {
+   "id": "palo-duro",
+   "name": "Palo Duro Canyon",
+   "town": "Canyon",
+   "state": "TX",
+   "ll": [
+    34.9877,
+    -101.6653
+   ],
+   "detour": 23,
+   "dwell": 150,
+   "cost": "$8 each",
+   "tags": [
+    "canyon",
+    "state-park"
+   ],
+   "why": "The second largest canyon in the country, 800 feet deep and invisible until you reach the rim. You can drive to the floor.",
+   "winter": "Winter gates are 8 to 6 most nights, 8 to 8 Friday and Saturday. The descent is steep with tight switchbacks, do not take it iced. Day passes sell out, reserve online.",
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ],
+   "big": true
+  },
+  {
+   "id": "braums",
+   "name": "Braum's",
+   "town": "Oklahoma City",
+   "state": "OK",
+   "ll": [
+    35.465,
+    -97.754
+   ],
+   "detour": 2,
+   "dwell": 30,
+   "cost": "$",
+   "tags": [
+    "food",
+    "ice-cream"
+   ],
+   "why": "Burger stand, ice cream shop and small grocery in one. They only build within about 300 miles of their own dairy, which is why you have never seen one. All across Oklahoma and the Panhandle, pick any of them.",
+   "winter": null,
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ],
+   "first": true,
+   "big": true,
+   "kind": "food"
+  },
+  {
+   "id": "edge-craft",
+   "name": "Edge Craft Barbecue",
+   "town": "Oklahoma City",
+   "state": "OK",
+   "ll": [
+    35.4629,
+    -97.5586
+   ],
+   "detour": 5,
+   "dwell": 60,
+   "cost": "$$",
+   "tags": [
+    "food",
+    "barbecue"
+   ],
+   "why": "Texas-style done by an actual pitmaster. Brisket sold lean or fatty by your choice, ribs with real bark, and the Texas Trinity platter is a pound of brisket, a pound of ribs and two sausages.",
+   "winter": "Thursday to Saturday only, 11 to 3, and they sell out. The line forms before the door opens.",
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ],
+   "kind": "food"
+  },
+  {
+   "id": "naylamp",
+   "name": "Naylamp",
+   "town": "Oklahoma City",
+   "state": "OK",
+   "ll": [
+    35.4227,
+    -97.5583
+   ],
+   "detour": 6,
+   "dwell": 60,
+   "cost": "$",
+   "tags": [
+    "food",
+    "peruvian"
+   ],
+   "why": "Family-run Peruvian at family prices. Seco de carne, ceviche, lomo saltado, and the best food value in the middle third of the country. Open seven days.",
+   "winter": null,
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ],
+   "kind": "food"
+  },
+  {
+   "id": "bricktown",
+   "name": "Bricktown",
+   "town": "Oklahoma City",
+   "state": "OK",
+   "ll": [
+    35.4653,
+    -97.51
+   ],
+   "detour": 6,
+   "dwell": 90,
+   "cost": "Free to walk",
+   "tags": [
+    "district",
+    "canal"
+   ],
+   "why": "A warehouse district rebuilt around a mile-long canal, with water taxis and restaurants. Walkable and a good place to eat and stretch, though it is built for evenings and you may pass at noon.",
+   "winter": null,
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ]
+  },
+  {
+   "id": "cowboy-museum",
+   "name": "National Cowboy & Western Heritage Museum",
+   "town": "Oklahoma City",
+   "state": "OK",
+   "ll": [
+    35.5361,
+    -97.4867
+   ],
+   "detour": 10,
+   "dwell": 120,
+   "cost": "$25 each",
+   "tags": [
+    "museum",
+    "western"
+   ],
+   "why": "Western art, rodeo history and a full-scale frontier town indoors. Much better than the name suggests.",
+   "winter": "Sunday it opens at noon.",
+   "routes": [
+    "leg1-i40",
+    "leg1-south"
+   ]
+  },
+  {
+   "id": "clinton-library",
+   "name": "Clinton Presidential Library",
+   "town": "Little Rock",
+   "state": "AR",
+   "ll": [
+    34.7469,
+    -92.2589
+   ],
+   "detour": 8,
+   "dwell": 120,
+   "cost": "$10 each",
+   "tags": [
+    "museum",
+    "presidential"
+   ],
+   "why": "The archive and museum on the Arkansas River, with a full-scale replica of the Oval Office. Riverside, well done, and completely weather-proof.",
+   "winter": "Sunday it opens at 1pm.",
+   "routes": [
+    "leg1-i40",
+    "leg1-low",
+    "leg1-south"
+   ]
+  },
+  {
+   "id": "wrights-bbq",
+   "name": "Wright's Barbecue",
+   "town": "Little Rock",
+   "state": "AR",
+   "ll": [
+    34.7595,
+    -92.305
+   ],
+   "detour": 9,
+   "dwell": 60,
+   "cost": "$$",
+   "tags": [
+    "food",
+    "barbecue"
+   ],
+   "why": "Cafeteria-line barbecue from an Arkansas competition family. Brisket, bacon burnt ends, deviled-egg potato salad, and a line that always exists but always moves.",
+   "winter": "Closed Sunday and Monday.",
+   "routes": [
+    "leg1-i40",
+    "leg1-low",
+    "leg1-south"
+   ],
+   "big": true,
+   "kind": "food"
+  },
+  {
+   "id": "mississippi-crossing",
+   "name": "Crossing the Mississippi",
+   "town": "Memphis",
+   "state": "TN",
+   "ll": [
+    35.1512,
+    -90.0669
+   ],
+   "detour": 0,
+   "dwell": 5,
+   "cost": "Free",
+   "tags": [
+    "river",
+    "moment"
+   ],
+   "why": "The bridge itself. Half a continent drains through the water underneath you, and there is no river in California remotely like it.",
+   "winter": null,
+   "routes": [
+    "leg1-i40",
+    "leg1-low",
+    "leg1-south"
+   ],
+   "first": true,
+   "big": true
+  },
+  {
+   "id": "bass-pro-pyramid",
+   "name": "Bass Pro Pyramid",
+   "town": "Memphis",
+   "state": "TN",
+   "ll": [
+    35.1556,
+    -90.0525
+   ],
+   "detour": 4,
+   "dwell": 90,
+   "cost": "Free, $8 for the elevator",
+   "tags": [
+    "absurd",
+    "pyramid"
+   ],
+   "why": "A 32-story glass pyramid holding a cypress swamp, live alligators, a hotel, and the tallest free-standing elevator in the country. Technically a sporting goods store. Right off the bridge as you arrive.",
+   "winter": null,
+   "routes": [
+    "leg1-i40",
+    "leg1-low",
+    "leg1-south"
+   ],
+   "big": true
+  },
+  {
+   "id": "gus-fried-chicken",
+   "name": "Gus's World Famous Fried Chicken",
+   "town": "Memphis",
+   "state": "TN",
+   "ll": [
+    35.1379,
+    -90.0596
+   ],
+   "detour": 7,
+   "dwell": 60,
+   "cost": "$",
+   "tags": [
+    "food",
+    "fried-chicken"
+   ],
+   "why": "Started in a tiny town outside Memphis and spread across the country on reputation alone. Thin, spicy, shatteringly crisp, and cheap. One of the great American fried chickens.",
+   "winter": null,
+   "routes": [
+    "leg1-i40",
+    "leg1-low",
+    "leg1-south"
+   ],
+   "big": true,
+   "kind": "food"
+  },
+  {
+   "id": "beale-street",
+   "name": "Beale Street",
+   "town": "Memphis",
+   "state": "TN",
+   "ll": [
+    35.1398,
+    -90.0523
+   ],
+   "detour": 7,
+   "dwell": 120,
+   "cost": "Free to walk, drinks cost",
+   "tags": [
+    "blues",
+    "nightlife"
+   ],
+   "why": "Three blocks of blues clubs and barbecue with live music out of every open door. If you do one night out heading east, this is it, and evenings are what the schedule is shortest on.",
+   "winter": null,
+   "routes": [
+    "leg1-i40",
+    "leg1-low",
+    "leg1-south"
+   ]
+  },
+  {
+   "id": "dyers-burgers",
+   "name": "Dyer's Burgers",
+   "town": "Memphis",
+   "state": "TN",
+   "ll": [
+    35.1399,
+    -90.0533
+   ],
+   "detour": 7,
+   "dwell": 45,
+   "cost": "$",
+   "tags": [
+    "food",
+    "burger"
+   ],
+   "why": "On Beale since 1912. The burgers are fried in grease strained and carried forward from the original batch for over a century. It moves by police escort when the restaurant relocates. A good burger with an unrepeatable story, plus an automatic 20 percent tip.",
+   "winter": null,
+   "routes": [
+    "leg1-i40",
+    "leg1-low",
+    "leg1-south"
+   ],
+   "kind": "food"
+  },
+  {
+   "id": "civil-rights-museum",
+   "name": "National Civil Rights Museum",
+   "town": "Memphis",
+   "state": "TN",
+   "ll": [
+    35.1347,
+    -90.0577
+   ],
+   "detour": 7,
+   "dwell": 180,
+   "cost": "$25 each",
+   "tags": [
+    "museum",
+    "history"
+   ],
+   "why": "Built around the Lorraine Motel, with Dr. King's room preserved as it was that day. Arguably the best museum on the entire trip. It needs three real hours or none, and it is heavy.",
+   "winter": "Closed Tuesdays.",
+   "routes": [
+    "leg1-i40",
+    "leg1-low",
+    "leg1-south"
+   ],
+   "first": true,
+   "big": true
+  },
+  {
+   "id": "limo-peruvian",
+   "name": "Limo Peruvian Eatery",
+   "town": "Nashville",
+   "state": "TN",
+   "ll": [
+    36.1717,
+    -86.7583
+   ],
+   "detour": 8,
+   "dwell": 75,
+   "cost": "$$$",
+   "tags": [
+    "food",
+    "peruvian"
+   ],
+   "why": "Chef-driven Peruvian in East Nashville. Ceviche trio, tuna tacos, picarones, and a reviewer's husband from Lima calling it the closest to real he has found here. Not cheap.",
+   "winter": "Closed Tuesday.",
+   "routes": [
+    "leg1-i40",
+    "leg1-low",
+    "leg1-south"
+   ],
+   "kind": "food"
+  },
+  {
+   "id": "broadway-nashville",
+   "name": "Broadway",
+   "town": "Nashville",
+   "state": "TN",
+   "ll": [
+    36.161,
+    -86.7785
+   ],
+   "detour": 9,
+   "dwell": 120,
+   "cost": "Free, no cover in most",
+   "tags": [
+    "honky-tonk",
+    "music"
+   ],
+   "why": "Three blocks of honky-tonks with a live band in every one, from late morning until closing. The playing is genuinely good. Loud, touristy, and you may have already spent your evening in Memphis.",
+   "winter": null,
+   "routes": [
+    "leg1-i40",
+    "leg1-low",
+    "leg1-south"
+   ]
+  },
+  {
+   "id": "arnolds",
+   "name": "Arnold's Country Kitchen",
+   "town": "Nashville",
+   "state": "TN",
+   "ll": [
+    36.1541,
+    -86.7827
+   ],
+   "detour": 9,
+   "dwell": 60,
+   "cost": "$",
+   "tags": [
+    "food",
+    "meat-and-three"
+   ],
+   "why": "The classic Nashville meat and three. Pick a meat and three vegetables off the steam line, cafeteria style. James Beard recognised, and locals fill it by five past eleven. The most genuinely Southern meal on this leg.",
+   "winter": "Weekdays 10:30 to 2:45, Saturday 11 to 3, closed Sunday. Lunch or never.",
+   "routes": [
+    "leg1-i40",
+    "leg1-low",
+    "leg1-south"
+   ],
+   "big": true,
+   "kind": "food"
+  },
+  {
+   "id": "parthenon",
+   "name": "The Parthenon",
+   "town": "Nashville",
+   "state": "TN",
+   "ll": [
+    36.1497,
+    -86.8133
+   ],
+   "detour": 10,
+   "dwell": 45,
+   "cost": "Free outside, $15 in",
+   "tags": [
+    "replica",
+    "odd"
+   ],
+   "why": "A full-scale replica of the Athens Parthenon, complete, standing in a city park. Built for the 1897 exposition and never taken down. Odd rather than beautiful, and the scale is startling.",
+   "winter": null,
+   "routes": [
+    "leg1-i40",
+    "leg1-low",
+    "leg1-south"
+   ]
+  },
+  {
+   "id": "sunsphere",
+   "name": "Sunsphere & Market Square",
+   "town": "Knoxville",
+   "state": "TN",
+   "ll": [
+    35.9615,
+    -83.9214
+   ],
+   "detour": 5,
+   "dwell": 30,
+   "cost": "Cheap",
+   "tags": [
+    "landmark"
+   ],
+   "why": "The gold glass ball from the 1982 World's Fair, with an observation deck, beside a walkable square. Quick, and a good stretch stop.",
+   "winter": null,
+   "routes": [
+    "leg1-i40",
+    "leg1-low"
+   ]
+  },
+  {
+   "id": "skybridge",
+   "name": "Gatlinburg SkyBridge",
+   "town": "Gatlinburg",
+   "state": "TN",
+   "ll": [
+    35.713,
+    -83.519
+   ],
+   "detour": 5,
+   "dwell": 90,
+   "cost": "$35 each",
+   "tags": [
+    "bridge",
+    "views"
+   ],
+   "why": "The longest pedestrian suspension bridge in North America, with glass floor panels mid-span and real views over the Smokies. Gatlinburg itself is a lot.",
+   "winter": "Closes for high wind. Check before driving in.",
+   "routes": [
+    "leg1-i40",
+    "leg1-low"
+   ]
+  },
+  {
+   "id": "tanger-sevierville",
+   "name": "Tanger Outlets",
+   "town": "Sevierville",
+   "state": "TN",
+   "ll": [
+    35.8291,
+    -83.5773
+   ],
+   "detour": 5,
+   "dwell": 120,
+   "cost": "Free to walk",
+   "tags": [
+    "shopping"
+   ],
+   "why": "The biggest shopping stop on the eastern half, on the approach to Pigeon Forge. Budget for the Pigeon Forge traffic on top of the time inside.",
+   "winter": null,
+   "routes": [
+    "leg1-i40",
+    "leg1-low"
+   ]
+  },
+  {
+   "id": "dollywood",
+   "name": "Dollywood",
+   "town": "Pigeon Forge",
+   "state": "TN",
+   "ll": [
+    35.7903,
+    -83.5305
+   ],
+   "detour": 8,
+   "dwell": 480,
+   "cost": "$99 each",
+   "tags": [
+    "theme-park",
+    "christmas"
+   ],
+   "why": "A full theme park in the foothills, and the Christmas run puts several million lights across the property. A genuine spectacle rather than a roadside stop, and a full day of the schedule.",
+   "winter": "Closed some weekdays in winter. Check the calendar for your exact day before promising it.",
+   "routes": [
+    "leg1-i40",
+    "leg1-low"
+   ],
+   "big": true
+  },
+  {
+   "id": "hardwood-bbq",
+   "name": "HardWood BBQ",
+   "town": "Knoxville",
+   "state": "TN",
+   "ll": [
+    35.923,
+    -83.878
+   ],
+   "detour": 11,
+   "dwell": 60,
+   "cost": "$$",
+   "tags": [
+    "food",
+    "barbecue"
+   ],
+   "why": "Family-run with the smokers going out front and everything made in house, including the sauces. The highest rated food of any kind on this leg, and a 58-year-old reviewer called it the best barbecue he had eaten in his life.",
+   "winter": "Closed Sunday and Monday.",
+   "routes": [
+    "leg1-i40",
+    "leg1-low"
+   ],
+   "big": true,
+   "kind": "food"
+  },
+  {
+   "id": "tn-aquarium",
+   "name": "Tennessee Aquarium",
+   "town": "Chattanooga",
+   "state": "TN",
+   "ll": [
+    35.0556,
+    -85.311
+   ],
+   "detour": 10,
+   "dwell": 150,
+   "cost": "$40 each",
+   "tags": [
+    "aquarium"
+   ],
+   "why": "Two riverfront buildings, one tracing a river from the mountains to the sea, one saltwater. One of the best aquariums in the country, right downtown.",
+   "winter": "Holiday week is its busiest.",
+   "routes": [
+    "leg1-south"
+   ]
+  },
+  {
+   "id": "black-mountain",
+   "name": "Black Mountain",
+   "town": "Black Mountain",
+   "state": "NC",
+   "ll": [
+    35.6179,
+    -82.3212
+   ],
+   "detour": 4,
+   "dwell": 60,
+   "cost": "Free to walk",
+   "tags": [
+    "small-town",
+    "christmas"
+   ],
+   "why": "A small mountain town of craft shops and cafes east of Asheville, and it goes hard on Christmas. A gentle stop rather than another attraction.",
+   "winter": null,
+   "routes": [
+    "leg1-i40",
+    "leg1-low"
+   ]
+  },
+  {
+   "id": "downtown-asheville",
+   "name": "Downtown Asheville",
+   "town": "Asheville",
+   "state": "NC",
+   "ll": [
+    35.595,
+    -82.5515
+   ],
+   "detour": 9,
+   "dwell": 120,
+   "cost": "Free to walk",
+   "tags": [
+    "downtown",
+    "food"
+   ],
+   "why": "Compact art deco downtown of bookstores, breweries, buskers and some of the best food in the South. Very walkable, and an easy place to lose three hours.",
+   "winter": null,
+   "routes": [
+    "leg1-i40",
+    "leg1-low"
+   ]
+  },
+  {
+   "id": "cook-out",
+   "name": "Cook Out",
+   "town": "Mooresville",
+   "state": "NC",
+   "ll": [
+    35.5697,
+    -80.8542
+   ],
+   "detour": 2,
+   "dwell": 30,
+   "cost": "$",
+   "tags": [
+    "food",
+    "burgers",
+    "milkshakes"
+   ],
+   "why": "Absurdly cheap trays and forty-plus real ice cream milkshakes, open late, all over North Carolina. You can feed two people properly for about fifteen dollars. Many locations are drive-thru only.",
+   "winter": null,
+   "routes": [
+    "leg1-i40",
+    "leg1-low",
+    "leg1-south"
+   ],
+   "first": true,
+   "big": true,
+   "kind": "food"
+  },
+  {
+   "id": "lexington-bbq",
+   "name": "Lexington Barbecue",
+   "town": "Lexington",
+   "state": "NC",
+   "ll": [
+    35.834,
+    -80.2675
+   ],
+   "detour": 35,
+   "dwell": 60,
+   "cost": "$",
+   "tags": [
+    "food",
+    "barbecue"
+   ],
+   "why": "The defining Lexington-style house. Pork shoulder over hardwood coals, chopped or sliced, with red dip and red slaw, and the sandwich comes on a bun cut only partway so nothing falls out. Widely called the best barbecue in North Carolina.",
+   "winter": "Closed Sunday and Monday, and parking is tight. Worth its own outing once you land.",
+   "routes": [
+    "leg1-i40",
+    "leg1-low",
+    "leg1-south"
+   ],
+   "big": true,
+   "kind": "food"
+  },
+  {
+   "id": "midwood-smokehouse",
+   "name": "Midwood Smokehouse",
+   "town": "Charlotte",
+   "state": "NC",
+   "ll": [
+    35.2205,
+    -80.811
+   ],
+   "detour": 8,
+   "dwell": 90,
+   "cost": "$$",
+   "tags": [
+    "food",
+    "barbecue"
+   ],
+   "why": "Charlotte's best-known barbecue, pit-cooked over hickory and oak with all four regional styles on one menu. The burnt ends get named as the standout. Open daily.",
+   "winter": null,
+   "routes": [
+    "leg1-i40",
+    "leg1-low",
+    "leg1-south"
+   ],
+   "big": true,
+   "kind": "food"
+  },
+  {
+   "id": "saborcito-nica",
+   "name": "Saborcito Nica",
+   "town": "Charlotte",
+   "state": "NC",
+   "ll": [
+    35.241,
+    -80.777
+   ],
+   "detour": 9,
+   "dwell": 45,
+   "cost": "$",
+   "tags": [
+    "food",
+    "nicaraguan"
+   ],
+   "why": "Nicaraguan food truck doing carne asada, nacatamales, tostones, quesillo. A regular writes that he has tried everyone in Charlotte selling carne asada and there is no comparison.",
+   "winter": "Opens 2:30pm and the hours run optimistic. Call before driving over.",
+   "routes": [
+    "leg1-i40",
+    "leg1-low",
+    "leg1-south"
+   ],
+   "kind": "food"
+  },
+  {
+   "id": "discovery-place",
+   "name": "Discovery Place",
+   "town": "Charlotte",
+   "state": "NC",
+   "ll": [
+    35.229,
+    -80.8395
+   ],
+   "detour": 9,
+   "dwell": 120,
+   "cost": "About $25 each",
+   "tags": [
+    "museum",
+    "science"
+   ],
+   "why": "Hands-on science museum downtown with an aquarium and rainforest. Aimed at kids, and the best rainy day option in the city.",
+   "winter": null,
+   "routes": [
+    "leg1-i40",
+    "leg1-low",
+    "leg1-south"
+   ]
+  },
+  {
+   "id": "concord-mills",
+   "name": "Concord Mills",
+   "town": "Concord",
+   "state": "NC",
+   "ll": [
+    35.369,
+    -80.722
+   ],
+   "detour": 10,
+   "dwell": 120,
+   "cost": "Free to walk",
+   "tags": [
+    "shopping"
+   ],
+   "why": "One of the largest outlet malls in the Southeast, minutes from the Nicaraguan grocery, so the two make one efficient trip.",
+   "winter": "Holiday week crowds are brutal. Go early or go in January.",
+   "routes": [
+    "leg1-i40",
+    "leg1-low",
+    "leg1-south"
+   ]
+  },
+  {
+   "id": "rinconcito-nica",
+   "name": "Rinconcito Nica",
+   "town": "Concord",
+   "state": "NC",
+   "ll": [
+    35.402,
+    -80.6
+   ],
+   "detour": 13,
+   "dwell": 60,
+   "cost": "Bring an empty cart",
+   "tags": [
+    "food",
+    "nicaraguan",
+    "grocery"
+   ],
+   "why": "A Nicaraguan grocery, not a restaurant. Shelves of products from home, the drinks, the cheeses, the sweets, the actual brands, and the reviews are people saying it is the real thing, in Spanish. Open seven days, 9 to 8:30.",
+   "winter": null,
+   "routes": [
+    "leg1-i40",
+    "leg1-low",
+    "leg1-south"
+   ],
+   "first": true,
+   "big": true,
+   "kind": "food"
+  }
+ ]
 }
