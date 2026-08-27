@@ -320,6 +320,47 @@ Android Auto is no.
 
 ## Session log
 
+**Session 23** — The light pollution map, and the research job `darksky.json`
+had been holding since it shipped empty. **Source: Falchi et al. 2016 World
+Atlas of Artificial Night Sky Brightness** (GFZ, doi:10.5880/GFZ.1.4.2016.001),
+684 MB zip, no login. The licensing note in the old comment was half right:
+the trap is not CC BY-NC, it is the README inside the archive, which says
+further distribution and commercial use are both prohibited and requires
+citing two references. Both citations are in `source`. **Kevin was told the
+repo is public and that publishing derived rings is a grey area, and chose to
+push it.** The alternative, if it ever needs to be undone: VIIRS from NOAA/EOG
+is public domain but needs a free account to download.
+
+Pipeline (scratch only, not in the repo): crop the 3 GB raster to the
+corridor, artificial mcd/m2 -> mag/arcsec2, threshold to Bortle, contour with
+skimage, simplify, clip to land. 60 zones, 1,453 points, 72 KB.
+
+**Four bugs caught by validating instead of trusting the output. Any rebuild
+must keep all four fixes:**
+1. Naming and hole-testing by centroid is wrong here — corridor-clipped bands
+   are long curves whose centroid falls outside themselves. It rejected 100%
+   of zones.
+2. `find_contours` returns CLOSED rings (first point == last). Feeding that to
+   Douglas-Peucker gives a zero-length baseline, every point measures zero
+   distance, and the ring collapses to 2 points and is dropped. Simplify as
+   two open halves.
+3. Holes must be filled before contouring or a bright city inside a dark
+   region comes back as its own contour and is painted AS IF DARK. The cost is
+   that bright pockets are not cut out, which `source` states.
+4. **The atlas covers the sea.** Open ocean is genuinely dark, so three zones
+   landed in the Gulf of Mexico, two of them Bortle 2 — the best sky on the
+   gulf route, 40 miles offshore. Masked to `usa.json`'s outline.
+
+Two facts about this trip: **there is no Bortle 1 anywhere on the corridor**
+(darkest cell 21.98 against a 21.99 threshold), and **Bortle 4 covers 91% of
+it**, so drawing it is a flat tint over everything and it is skipped. The map
+carries Bortle 2 and 3.
+
+Also wired `darksky.at()`, which was written for this and never called: each
+place sheet now gives its Bortle class in plain words. The zone NAME is
+deliberately not shown there — one Bortle 3 zone spans several states and gets
+named after an arbitrary town inside it. 1.10.0.
+
 **Session 22** — Devil's Rope is out for good. It is closed November through
 February, so it cannot be visited on this trip, and a stop that cannot be
 reached does not belong in the app regardless of which list it came from.

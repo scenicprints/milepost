@@ -19,6 +19,16 @@ export const FAINTEST = 4;
 
 const num = v => (typeof v === 'number' && isFinite(v) ? v : null);
 
+/// What each class actually looks like standing outside, in plain words. The
+/// number alone means nothing to anyone who has not memorised the scale.
+const WORDS = {
+  1: 'No light pollution at all. The Milky Way casts a shadow.',
+  2: 'Truly dark. The Milky Way is structured enough to see detail in it.',
+  3: 'Rural. The Milky Way is obvious, with some glow on the horizon.',
+  4: 'Rural edge. The Milky Way is there but washed out overhead.',
+};
+export const describe = b => WORDS[b] || '';
+
 /// Reads whatever is in darksky.json and returns only the zones that are
 /// actually drawable. Anything malformed is dropped and reported rather than
 /// half-drawn, because a silently wrong polygon is a lie about where it is

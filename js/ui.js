@@ -276,6 +276,7 @@ export function placeSheet(id) {
   const site = DATA.sites[s.id];
   const nrm = DATA.normals[s.town];
   const book = DATA.bookings[s.id];
+  const dark = darksky.at(s.ll, SKY.zones);
 
   return `<div class="grab" data-grab><i></i></div>
     <div class="sh">
@@ -297,6 +298,12 @@ export function placeSheet(id) {
       <div class="slab">Late December</div>
       <div id="wx-${esc(s.id)}">${tempLine(nrm, null)}</div>
       ${s.winter ? `<div class="sbody">${esc(s.winter)}</div>` : ""}
+
+      ${dark ? `<div class="sdiv"></div>
+        <div class="slab">Night sky</div>
+        <div class="srow">Bortle ${dark.bortle}</div>
+        <div class="sbody">${esc(darksky.describe(dark.bortle))}</div>
+        ${dark.note ? `<div class="sbody">${esc(dark.note)}</div>` : ""}` : ""}
 
       ${book ? `<div class="sdiv"></div>
         <div class="slab">Booking</div>
