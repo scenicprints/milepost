@@ -52,8 +52,18 @@ export const legRouteIds = i => DATA.route.legs[i].routes.map(r => r.id);
 export const legNames = () => DATA.route.legs.map(l => l.name);
 
 export const legs = () => DATA.route.legs;
-export const selected = () => DATA.route.legs.map(l => routeById(store.routeFor(l.id)));
-export const legRoute = i => routeById(store.routeFor(DATA.route.legs[i].id));
+/// The stored choice can name a route that no longer exists — route options
+/// get replaced as the plan matures, and the store (and its Firestore copy)
+/// remembers the old id. Fall back to the leg's default rather than crashing.
+function legChoice(l) {
+  const r = routeById(store.routeFor(l.id));
+  if (r) return r;
+  const def = l.routes.find(o => o.default) || l.routes[0];
+  store.setRoute(l.id, def.id);
+  return routeById(def.id);
+}
+export const selected = () => DATA.route.legs.map(legChoice);
+export const legRoute = i => legChoice(DATA.route.legs[i]);
 export const allStops = () => selected().flatMap(r => r.stops);
 export { suggestStops };
 

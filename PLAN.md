@@ -320,6 +320,27 @@ Android Auto is no.
 
 ## Session log
 
+**Session 20** — The leg 3 pool landed, and the trip is whole: all three legs
+are Kevin's lists, nothing else. Leg 3 replaces the old placeholder roads
+entirely with three route options: **The road home** (I-45, US-287,
+then leg 1's I-40 in reverse), **The Waco line** (TX-6 through Waco, for the
+mammoths, at the price of the Sam Houston statue), and **The Vegas
+diversion** (north at Kingman for Hoover Dam, the Strip and Seven Magic
+Mountains, rejoining at Barstow, +4 hours, and it forfeits Oatman).
+8 new stops; 33 leg 1 corridor stops from Amarillo westward joined leg 3
+under their existing ids, so marking one seen strikes it on both legs, which
+is what Kevin asked for. Ignored by instruction (on no list): Big Texan,
+Tyler's, the livestock auction, Acoma, the borax mine, Tehachapi Loop,
+Barstow's Route 66 museum. Research: Waco Mammoth is CLOSED New Year's Day.
+Valley of Fire's west entrance is closed Mon-Thu through 2026, enter from
+SR-169. Seven Magic Mountains is confirmed standing through the trip. La
+Chavala Linda is closed Monday, opens mid-afternoon weekdays. Copper Breaks
+is $3. Hoover crest walk is free 5am-9pm with free Arizona-side lots.
+US-287 at Childress carries an ice risk note. **Bug fixed on the way in:**
+the store (and its Firestore copy) remembered route ids that no longer exist
+(leg3-i10) and the app crashed at boot; `legChoice` in ui.js now falls back
+to the leg's default route and heals the store. 96 stops. 1.9.0.
+
 **Session 19** — The leg 2 pool landed, same contract as leg 1. 21 stops,
 Mooresville to Houston, all verified this session. What the research changed:
 Gator Country is $15 each, not the pool's $30. The Birmingham Civil Rights

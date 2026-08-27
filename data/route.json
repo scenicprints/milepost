@@ -1127,13 +1127,13 @@
    "to": "Modesto, CA",
    "routes": [
     {
-     "id": "leg3-i10",
-     "name": "The desert road",
-     "road": "I-10 · I-5",
+     "id": "leg3-i40",
+     "name": "The road home",
      "default": true,
-     "character": "The low road home. Nothing repeated, nothing above 4,600 feet, best desert on the continent.",
-     "why": "San Antonio's River Walk, White Sands, Carlsbad, Saguaro and Joshua Tree. The safest winter route of the whole trip and also one of the best.",
-     "costs": "Los Angeles traffic at the end, and the Grapevine as the last obstacle.",
+     "road": "I-45 to Dallas, US-287 to Amarillo, then I-40 back",
+     "character": "Up through Dallas and the empty US-287 corner, then leg 1 in reverse. Everything you skipped going east is still there.",
+     "why": "Tucumcari's neon works better westbound, Palo Duro is on the way in instead of a backtrack, and the Basque table in Bakersfield is a better last meal than a first one.",
+     "costs": "The Panhandle and Flagstaff in early January are the same winter problem as leg 1, in reverse order.",
      "waypoints": [
       {
        "name": "Houston",
@@ -1144,107 +1144,240 @@
        ]
       },
       {
-       "name": "San Antonio",
+       "name": "Huntsville",
        "state": "TX",
        "ll": [
-        29.424,
-        -98.494
+        30.723,
+        -95.551
        ]
       },
       {
-       "name": "Fort Stockton",
+       "name": "Centerville",
        "state": "TX",
        "ll": [
-        30.894,
-        -102.879
+        31.259,
+        -95.978
        ]
       },
       {
-       "name": "Van Horn",
+       "name": "Corsicana",
        "state": "TX",
        "ll": [
-        31.041,
-        -104.83
-       ],
-       "note": "Turn-off point for Carlsbad Caverns and for Marfa. Decide before you get here."
+        32.095,
+        -96.469
+       ]
       },
       {
-       "name": "El Paso",
+       "name": "Dallas",
        "state": "TX",
        "ll": [
-        31.759,
-        -106.487
-       ],
-       "elev": 3740
+        32.777,
+        -96.797
+       ]
       },
       {
-       "name": "Las Cruces",
+       "name": "Fort Worth",
+       "state": "TX",
+       "ll": [
+        32.755,
+        -97.331
+       ]
+      },
+      {
+       "name": "Decatur",
+       "state": "TX",
+       "ll": [
+        33.234,
+        -97.586
+       ]
+      },
+      {
+       "name": "Wichita Falls",
+       "state": "TX",
+       "ll": [
+        33.914,
+        -98.493
+       ]
+      },
+      {
+       "name": "Vernon",
+       "state": "TX",
+       "ll": [
+        34.155,
+        -99.266
+       ]
+      },
+      {
+       "name": "Quanah",
+       "state": "TX",
+       "ll": [
+        34.298,
+        -99.74
+       ]
+      },
+      {
+       "name": "Childress",
+       "state": "TX",
+       "ll": [
+        34.426,
+        -100.204
+       ],
+       "risk": "ice",
+       "note": "US-287 across the Panhandle ices the same as I-40. It is the same weather with fewer plows."
+      },
+      {
+       "name": "Clarendon",
+       "state": "TX",
+       "ll": [
+        34.938,
+        -100.892
+       ]
+      },
+      {
+       "name": "Amarillo",
+       "state": "TX",
+       "ll": [
+        35.222,
+        -101.831
+       ],
+       "elev": 3605,
+       "risk": "ice",
+       "note": "Here to Little Rock is ice-storm country in late December. Chains do nothing on ice — the only move is to not drive that day."
+      },
+      {
+       "name": "Tucumcari",
        "state": "NM",
        "ll": [
-        32.312,
-        -106.779
-       ],
-       "note": "East on US-70 for White Sands, then back. Worth every minute."
+        35.172,
+        -103.725
+       ]
       },
       {
-       "name": "Deming",
+       "name": "Santa Rosa",
        "state": "NM",
        "ll": [
-        32.269,
-        -107.758
+        34.938,
+        -104.682
        ]
       },
       {
-       "name": "Tucson",
+       "name": "Albuquerque",
+       "state": "NM",
+       "ll": [
+        35.084,
+        -106.651
+       ],
+       "elev": 5312
+      },
+      {
+       "name": "Continental Divide",
+       "state": "NM",
+       "ll": [
+        35.44,
+        -108.35
+       ],
+       "elev": 7275,
+       "risk": "snow",
+       "note": "High point of the drive. Rain west of here ends up in the Pacific."
+      },
+      {
+       "name": "Gallup",
+       "state": "NM",
+       "ll": [
+        35.528,
+        -108.742
+       ]
+      },
+      {
+       "name": "Holbrook",
        "state": "AZ",
        "ll": [
-        32.222,
-        -110.971
+        34.902,
+        -110.159
        ]
       },
       {
-       "name": "Phoenix",
+       "name": "Winslow",
        "state": "AZ",
        "ll": [
-        33.448,
-        -112.074
+        35.024,
+        -110.697
        ]
       },
       {
-       "name": "Blythe",
-       "state": "CA",
+       "name": "Flagstaff",
+       "state": "AZ",
        "ll": [
-        33.61,
-        -114.596
+        35.198,
+        -111.651
        ],
-       "note": "Back in California, still 500 miles from home."
+       "elev": 6909,
+       "risk": "snow",
+       "note": "The most likely place on this whole trip to find the interstate closed. Check the forecast 48 hours out."
       },
       {
-       "name": "Indio",
-       "state": "CA",
+       "name": "Williams",
+       "state": "AZ",
        "ll": [
-        33.721,
-        -116.216
-       ]
-      },
-      {
-       "name": "Los Angeles",
-       "state": "CA",
-       "ll": [
-        34.05,
-        -118.24
-       ]
-      },
-      {
-       "name": "Tejon Pass",
-       "state": "CA",
-       "ll": [
-        34.807,
-        -118.879
+        35.249,
+        -112.191
        ],
-       "elev": 4144,
+       "elev": 6766,
+       "note": "Turn north here for the Grand Canyon."
+      },
+      {
+       "name": "Seligman",
+       "state": "AZ",
+       "ll": [
+        35.326,
+        -112.874
+       ]
+      },
+      {
+       "name": "Kingman",
+       "state": "AZ",
+       "ll": [
+        35.189,
+        -114.053
+       ],
+       "elev": 3333,
+       "note": "Below the snow line. Sleep here if Flagstaff is getting hit and go over in the morning."
+      },
+      {
+       "name": "Needles",
+       "state": "CA",
+       "ll": [
+        34.848,
+        -114.614
+       ]
+      },
+      {
+       "name": "Barstow",
+       "state": "CA",
+       "ll": [
+        34.899,
+        -117.023
+       ],
+       "note": "I-40 begins. One road for the next 2,400 miles."
+      },
+      {
+       "name": "Mojave",
+       "state": "CA",
+       "ll": [
+        35.053,
+        -118.174
+       ]
+      },
+      {
+       "name": "Tehachapi Pass",
+       "state": "CA",
+       "ll": [
+        35.132,
+        -118.449
+       ],
+       "elev": 3793,
        "risk": "chains",
-       "note": "The Grapevine. Last obstacle of the trip and it closes more often than people expect."
+       "note": "Chain control posts here. Your FWD Accord needs chains ON under R2 — the exemption is AWD only."
       },
       {
        "name": "Bakersfield",
@@ -1252,6 +1385,308 @@
        "ll": [
         35.373,
         -119.019
+       ]
+      },
+      {
+       "name": "Fresno",
+       "state": "CA",
+       "ll": [
+        36.746,
+        -119.772
+       ]
+      },
+      {
+       "name": "Modesto",
+       "state": "CA",
+       "ll": [
+        37.639,
+        -120.997
+       ]
+      }
+     ]
+    },
+    {
+     "id": "leg3-waco",
+     "name": "The Waco line",
+     "road": "TX-6 through College Station and Waco, then US-287 and I-40",
+     "character": "The other way from Houston to Dallas, nearly the same distance, through Waco instead of Huntsville.",
+     "why": "One reason: the mammoths. A nursery herd excavated where it fell, and you walk above the bones. It costs you the Sam Houston statue.",
+     "costs": "Two-lane Texas highway instead of interstate for the first stretch. Slower per mile, emptier per mile.",
+     "waypoints": [
+      {
+       "name": "Houston",
+       "state": "TX",
+       "ll": [
+        29.76,
+        -95.37
+       ]
+      },
+      {
+       "name": "Hempstead",
+       "state": "TX",
+       "ll": [
+        30.097,
+        -96.078
+       ]
+      },
+      {
+       "name": "College Station",
+       "state": "TX",
+       "ll": [
+        30.628,
+        -96.334
+       ]
+      },
+      {
+       "name": "Hearne",
+       "state": "TX",
+       "ll": [
+        30.879,
+        -96.593
+       ]
+      },
+      {
+       "name": "Waco",
+       "state": "TX",
+       "ll": [
+        31.549,
+        -97.147
+       ]
+      },
+      {
+       "name": "Hillsboro",
+       "state": "TX",
+       "ll": [
+        32.011,
+        -97.13
+       ]
+      },
+      {
+       "name": "Dallas",
+       "state": "TX",
+       "ll": [
+        32.777,
+        -96.797
+       ]
+      },
+      {
+       "name": "Fort Worth",
+       "state": "TX",
+       "ll": [
+        32.755,
+        -97.331
+       ]
+      },
+      {
+       "name": "Decatur",
+       "state": "TX",
+       "ll": [
+        33.234,
+        -97.586
+       ]
+      },
+      {
+       "name": "Wichita Falls",
+       "state": "TX",
+       "ll": [
+        33.914,
+        -98.493
+       ]
+      },
+      {
+       "name": "Vernon",
+       "state": "TX",
+       "ll": [
+        34.155,
+        -99.266
+       ]
+      },
+      {
+       "name": "Quanah",
+       "state": "TX",
+       "ll": [
+        34.298,
+        -99.74
+       ]
+      },
+      {
+       "name": "Childress",
+       "state": "TX",
+       "ll": [
+        34.426,
+        -100.204
+       ],
+       "risk": "ice",
+       "note": "US-287 across the Panhandle ices the same as I-40. It is the same weather with fewer plows."
+      },
+      {
+       "name": "Clarendon",
+       "state": "TX",
+       "ll": [
+        34.938,
+        -100.892
+       ]
+      },
+      {
+       "name": "Amarillo",
+       "state": "TX",
+       "ll": [
+        35.222,
+        -101.831
+       ],
+       "elev": 3605,
+       "risk": "ice",
+       "note": "Here to Little Rock is ice-storm country in late December. Chains do nothing on ice — the only move is to not drive that day."
+      },
+      {
+       "name": "Tucumcari",
+       "state": "NM",
+       "ll": [
+        35.172,
+        -103.725
+       ]
+      },
+      {
+       "name": "Santa Rosa",
+       "state": "NM",
+       "ll": [
+        34.938,
+        -104.682
+       ]
+      },
+      {
+       "name": "Albuquerque",
+       "state": "NM",
+       "ll": [
+        35.084,
+        -106.651
+       ],
+       "elev": 5312
+      },
+      {
+       "name": "Continental Divide",
+       "state": "NM",
+       "ll": [
+        35.44,
+        -108.35
+       ],
+       "elev": 7275,
+       "risk": "snow",
+       "note": "High point of the drive. Rain west of here ends up in the Pacific."
+      },
+      {
+       "name": "Gallup",
+       "state": "NM",
+       "ll": [
+        35.528,
+        -108.742
+       ]
+      },
+      {
+       "name": "Holbrook",
+       "state": "AZ",
+       "ll": [
+        34.902,
+        -110.159
+       ]
+      },
+      {
+       "name": "Winslow",
+       "state": "AZ",
+       "ll": [
+        35.024,
+        -110.697
+       ]
+      },
+      {
+       "name": "Flagstaff",
+       "state": "AZ",
+       "ll": [
+        35.198,
+        -111.651
+       ],
+       "elev": 6909,
+       "risk": "snow",
+       "note": "The most likely place on this whole trip to find the interstate closed. Check the forecast 48 hours out."
+      },
+      {
+       "name": "Williams",
+       "state": "AZ",
+       "ll": [
+        35.249,
+        -112.191
+       ],
+       "elev": 6766,
+       "note": "Turn north here for the Grand Canyon."
+      },
+      {
+       "name": "Seligman",
+       "state": "AZ",
+       "ll": [
+        35.326,
+        -112.874
+       ]
+      },
+      {
+       "name": "Kingman",
+       "state": "AZ",
+       "ll": [
+        35.189,
+        -114.053
+       ],
+       "elev": 3333,
+       "note": "Below the snow line. Sleep here if Flagstaff is getting hit and go over in the morning."
+      },
+      {
+       "name": "Needles",
+       "state": "CA",
+       "ll": [
+        34.848,
+        -114.614
+       ]
+      },
+      {
+       "name": "Barstow",
+       "state": "CA",
+       "ll": [
+        34.899,
+        -117.023
+       ],
+       "note": "I-40 begins. One road for the next 2,400 miles."
+      },
+      {
+       "name": "Mojave",
+       "state": "CA",
+       "ll": [
+        35.053,
+        -118.174
+       ]
+      },
+      {
+       "name": "Tehachapi Pass",
+       "state": "CA",
+       "ll": [
+        35.132,
+        -118.449
+       ],
+       "elev": 3793,
+       "risk": "chains",
+       "note": "Chain control posts here. Your FWD Accord needs chains ON under R2 — the exemption is AWD only."
+      },
+      {
+       "name": "Bakersfield",
+       "state": "CA",
+       "ll": [
+        35.373,
+        -119.019
+       ]
+      },
+      {
+       "name": "Fresno",
+       "state": "CA",
+       "ll": [
+        36.746,
+        -119.772
        ]
       },
       {
@@ -1266,11 +1701,11 @@
     },
     {
      "id": "leg3-vegas",
-     "name": "Up through Vegas",
-     "road": "I-10 · US-93 · I-15 · CA-58",
-     "character": "Same desert as far as Phoenix, then north to Hoover Dam and Las Vegas instead of west into LA.",
-     "why": "Almost identical mileage, no Los Angeles traffic, and it adds Hoover Dam and the Strip. If she's never seen Vegas, this is a cheap way to.",
-     "costs": "You give up Joshua Tree and Palm Springs, and you still finish over Tehachapi.",
+     "name": "The Vegas diversion",
+     "road": "The road home until Kingman, then US-93 north, I-15 south",
+     "character": "Cut north at Kingman for Hoover Dam and the Strip, come back down to Barstow past Seven Magic Mountains.",
+     "why": "Ada has never seen anything like the Strip, the dam is free to walk, and the painted boulders are directly on the road out.",
+     "costs": "Adds roughly 4 hours of driving over staying on I-40, and you give up Oatman's burros on the way through.",
      "waypoints": [
       {
        "name": "Houston",
@@ -1281,75 +1716,193 @@
        ]
       },
       {
-       "name": "San Antonio",
+       "name": "Huntsville",
        "state": "TX",
        "ll": [
-        29.424,
-        -98.494
+        30.723,
+        -95.551
        ]
       },
       {
-       "name": "Fort Stockton",
+       "name": "Centerville",
        "state": "TX",
        "ll": [
-        30.894,
-        -102.879
+        31.259,
+        -95.978
        ]
       },
       {
-       "name": "Van Horn",
+       "name": "Corsicana",
        "state": "TX",
        "ll": [
-        31.041,
-        -104.83
+        32.095,
+        -96.469
        ]
       },
       {
-       "name": "El Paso",
+       "name": "Dallas",
        "state": "TX",
        "ll": [
-        31.759,
-        -106.487
+        32.777,
+        -96.797
        ]
       },
       {
-       "name": "Las Cruces",
+       "name": "Fort Worth",
+       "state": "TX",
+       "ll": [
+        32.755,
+        -97.331
+       ]
+      },
+      {
+       "name": "Decatur",
+       "state": "TX",
+       "ll": [
+        33.234,
+        -97.586
+       ]
+      },
+      {
+       "name": "Wichita Falls",
+       "state": "TX",
+       "ll": [
+        33.914,
+        -98.493
+       ]
+      },
+      {
+       "name": "Vernon",
+       "state": "TX",
+       "ll": [
+        34.155,
+        -99.266
+       ]
+      },
+      {
+       "name": "Quanah",
+       "state": "TX",
+       "ll": [
+        34.298,
+        -99.74
+       ]
+      },
+      {
+       "name": "Childress",
+       "state": "TX",
+       "ll": [
+        34.426,
+        -100.204
+       ],
+       "risk": "ice",
+       "note": "US-287 across the Panhandle ices the same as I-40. It is the same weather with fewer plows."
+      },
+      {
+       "name": "Clarendon",
+       "state": "TX",
+       "ll": [
+        34.938,
+        -100.892
+       ]
+      },
+      {
+       "name": "Amarillo",
+       "state": "TX",
+       "ll": [
+        35.222,
+        -101.831
+       ],
+       "elev": 3605,
+       "risk": "ice",
+       "note": "Here to Little Rock is ice-storm country in late December. Chains do nothing on ice — the only move is to not drive that day."
+      },
+      {
+       "name": "Tucumcari",
        "state": "NM",
        "ll": [
-        32.312,
-        -106.779
+        35.172,
+        -103.725
        ]
       },
       {
-       "name": "Deming",
+       "name": "Santa Rosa",
        "state": "NM",
        "ll": [
-        32.269,
-        -107.758
+        34.938,
+        -104.682
        ]
       },
       {
-       "name": "Tucson",
-       "state": "AZ",
+       "name": "Albuquerque",
+       "state": "NM",
        "ll": [
-        32.222,
-        -110.971
+        35.084,
+        -106.651
+       ],
+       "elev": 5312
+      },
+      {
+       "name": "Continental Divide",
+       "state": "NM",
+       "ll": [
+        35.44,
+        -108.35
+       ],
+       "elev": 7275,
+       "risk": "snow",
+       "note": "High point of the drive. Rain west of here ends up in the Pacific."
+      },
+      {
+       "name": "Gallup",
+       "state": "NM",
+       "ll": [
+        35.528,
+        -108.742
        ]
       },
       {
-       "name": "Phoenix",
+       "name": "Holbrook",
        "state": "AZ",
        "ll": [
-        33.448,
-        -112.074
+        34.902,
+        -110.159
        ]
       },
       {
-       "name": "Wickenburg",
+       "name": "Winslow",
        "state": "AZ",
        "ll": [
-        33.968,
-        -112.729
+        35.024,
+        -110.697
+       ]
+      },
+      {
+       "name": "Flagstaff",
+       "state": "AZ",
+       "ll": [
+        35.198,
+        -111.651
+       ],
+       "elev": 6909,
+       "risk": "snow",
+       "note": "The most likely place on this whole trip to find the interstate closed. Check the forecast 48 hours out."
+      },
+      {
+       "name": "Williams",
+       "state": "AZ",
+       "ll": [
+        35.249,
+        -112.191
+       ],
+       "elev": 6766,
+       "note": "Turn north here for the Grand Canyon."
+      },
+      {
+       "name": "Seligman",
+       "state": "AZ",
+       "ll": [
+        35.326,
+        -112.874
        ]
       },
       {
@@ -1358,31 +1911,48 @@
        "ll": [
         35.189,
         -114.053
-       ]
+       ],
+       "elev": 3333,
+       "note": "Below the snow line. Sleep here if Flagstaff is getting hit and go over in the morning."
       },
       {
-       "name": "Hoover Dam",
+       "name": "Boulder City",
        "state": "NV",
        "ll": [
-        36.016,
-        -114.737
+        35.978,
+        -114.832
        ]
       },
       {
        "name": "Las Vegas",
        "state": "NV",
        "ll": [
-        36.171,
-        -115.139
-       ],
-       "elev": 2001
+        36.115,
+        -115.173
+       ]
+      },
+      {
+       "name": "Jean",
+       "state": "NV",
+       "ll": [
+        35.779,
+        -115.324
+       ]
+      },
+      {
+       "name": "Primm",
+       "state": "NV",
+       "ll": [
+        35.61,
+        -115.388
+       ]
       },
       {
        "name": "Baker",
        "state": "CA",
        "ll": [
-        35.264,
-        -116.077
+        35.262,
+        -116.074
        ]
       },
       {
@@ -1391,6 +1961,15 @@
        "ll": [
         34.899,
         -117.023
+       ],
+       "note": "I-40 begins. One road for the next 2,400 miles."
+      },
+      {
+       "name": "Mojave",
+       "state": "CA",
+       "ll": [
+        35.053,
+        -118.174
        ]
       },
       {
@@ -1401,7 +1980,8 @@
         -118.449
        ],
        "elev": 3793,
-       "risk": "chains"
+       "risk": "chains",
+       "note": "Chain control posts here. Your FWD Accord needs chains ON under R2 — the exemption is AWD only."
       },
       {
        "name": "Bakersfield",
@@ -1409,6 +1989,14 @@
        "ll": [
         35.373,
         -119.019
+       ]
+      },
+      {
+       "name": "Fresno",
+       "state": "CA",
+       "ll": [
+        36.746,
+        -119.772
        ]
       },
       {

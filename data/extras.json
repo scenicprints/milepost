@@ -57,7 +57,13 @@
   "fritanga-gueguense": "https://fritangaelgueguense.com",
   "pit-room": "https://thepitroombbq.com",
   "hmns": "https://www.hmns.org",
-  "galleria": "https://www.simon.com/mall/the-galleria"
+  "galleria": "https://www.simon.com/mall/the-galleria",
+  "sam-houston-statue": "https://www.huntsvilletexas.com/197/Sam-Houston-Statue-Visitor-Center",
+  "waco-mammoth": "https://www.nps.gov/waco",
+  "copper-breaks": "https://tpwd.texas.gov/state-parks/copper-breaks",
+  "seven-magic-mountains": "https://sevenmagicmountains.com",
+  "hoover-dam": "https://www.usbr.gov/lc/hooverdam",
+  "valley-of-fire": "https://parks.nv.gov/parks/valley-of-fire"
  },
  "normals": {
   "Barstow": [
@@ -255,6 +261,38 @@
   "South Houston": [
    65,
    47
+  ],
+  "Huntsville": [
+   61,
+   40
+  ],
+  "Waco": [
+   58,
+   37
+  ],
+  "Dallas": [
+   57,
+   38
+  ],
+  "Quanah": [
+   52,
+   27
+  ],
+  "Jean": [
+   56,
+   33
+  ],
+  "Boulder City": [
+   55,
+   34
+  ],
+  "Las Vegas": [
+   58,
+   38
+  ],
+  "Overton": [
+   57,
+   31
   ]
  },
  "bookings": {
@@ -281,6 +319,10 @@
   "bellingrath": {
    "lead": 7,
    "note": "Magic Christmas in Lights sells timed evening tickets. Buy online before the drive south from Mobile."
+  },
+  "hoover-dam": {
+   "lead": 7,
+   "note": "Only if you want the interior tour. The crest walk needs nothing."
   }
  }
 }

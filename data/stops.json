@@ -46,7 +46,10 @@
    "routes": [
     "leg1-i40",
     "leg1-low",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ],
    "kind": "food"
   },
@@ -71,7 +74,10 @@
    "routes": [
     "leg1-i40",
     "leg1-low",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ],
    "big": true,
    "kind": "food"
@@ -95,7 +101,10 @@
    "winter": null,
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ]
   },
   {
@@ -119,7 +128,10 @@
    "winter": null,
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ],
    "kind": "food"
   },
@@ -143,7 +155,10 @@
    "winter": "Open 9 to 5. Cold and very windy on the mesa in December.",
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ]
   },
   {
@@ -165,7 +180,10 @@
    "winter": null,
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ]
   },
   {
@@ -188,7 +206,10 @@
    "winter": "Winter hours are unreliable and they post closures on Facebook. Check before counting on lunch.",
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ],
    "kind": "food"
   },
@@ -213,7 +234,10 @@
    "winter": null,
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ],
    "kind": "food"
   },
@@ -237,7 +261,10 @@
    "winter": "Open all winter except Christmas Day, but off-season tour times vary. Call first.",
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ]
   },
   {
@@ -260,7 +287,9 @@
    "winter": "Come in from the Topock side. The Kingman approach over Sitgreaves Pass is 191 turns with no guardrails. Before 11am for parking, and bring cash.",
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco"
    ],
    "first": true
   },
@@ -283,7 +312,10 @@
    "winter": null,
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ]
   },
   {
@@ -306,7 +338,10 @@
    "winter": "Breakfast and lunch only, 7am to 3pm. It has to shape your morning.",
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ],
    "kind": "food"
   },
@@ -329,7 +364,10 @@
    "winter": "The drive-through loop stays open in snow, and the animals are livelier in the cold.",
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ]
   },
   {
@@ -352,7 +390,10 @@
    "winter": "The Island Trail stair descent closes for ice. After a storm you may only get the rim. Trails close an hour before the 5pm gate.",
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ]
   },
   {
@@ -375,7 +416,10 @@
    "winter": "The loop ices and closes after snow, and it is a long way in to be turned around. Skip it in bad weather.",
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ]
   },
   {
@@ -398,7 +442,10 @@
    "winter": "Open all winter and plowed. The entrance road can close during a storm, check conditions at (928) 638-7496 before committing to the turn.",
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ],
    "first": true,
    "big": true
@@ -423,7 +470,10 @@
    "winter": null,
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ]
   },
   {
@@ -445,7 +495,10 @@
    "winter": "Winter hours 8 to 5, and the rim is brutally windy. Bring the heavy coat in from the car.",
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ],
    "first": true,
    "big": true
@@ -470,7 +523,10 @@
    "winter": "Gates run 8 to 5 in winter, closed Christmas Day, and opening can be delayed after snow. Morning or nothing.",
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ],
    "first": true,
    "big": true
@@ -496,7 +552,10 @@
    "winter": "Sunday it closes at 2pm.",
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ],
    "kind": "food"
   },
@@ -520,7 +579,10 @@
    "winter": null,
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ]
   },
   {
@@ -544,7 +606,10 @@
    "winter": null,
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ],
    "kind": "food"
   },
@@ -568,7 +633,10 @@
    "winter": "An active community with strict rules, and the church is often closed. If it is, look from outside and move on.",
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ]
   },
   {
@@ -591,7 +659,10 @@
    "winter": "The full farolito display is Christmas Eve itself. Earlier in the week the plaza is still lit for the season.",
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ],
    "big": true
   },
@@ -615,7 +686,10 @@
    "winter": null,
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ]
   },
   {
@@ -637,7 +711,10 @@
    "winter": null,
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ]
   },
   {
@@ -660,7 +737,10 @@
    "winter": "The motel itself shuts for January and February. Mid-December the neon is still on.",
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ]
   },
   {
@@ -682,7 +762,10 @@
    "winter": "Winter hours are Tuesday to Saturday, afternoons only.",
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ]
   },
   {
@@ -705,7 +788,10 @@
    "winter": null,
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ],
    "first": true,
    "big": true,
@@ -731,7 +817,10 @@
    "winter": "Deep mud after rain or snowmelt. Wear the boots, buy the paint before you get there.",
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ],
    "first": true,
    "big": true
@@ -780,7 +869,10 @@
    "winter": "Closed Sunday and Monday. Closes 4pm Tuesday to Thursday, 6pm Friday and Saturday. Plan lunch, not dinner.",
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ],
    "big": true,
    "kind": "food"
@@ -806,7 +898,10 @@
    "winter": "Closed Sunday.",
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ],
    "kind": "food"
   },
@@ -830,7 +925,10 @@
    "winter": "Winter gates are 8 to 6 most nights, 8 to 8 Friday and Saturday. The descent is steep with tight switchbacks, do not take it iced. Day passes sell out, reserve online.",
    "routes": [
     "leg1-i40",
-    "leg1-south"
+    "leg1-south",
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
    ],
    "big": true
   },
@@ -2107,6 +2205,197 @@
    "routes": [
     "leg2-gulf",
     "leg2-inland"
+   ]
+  },
+  {
+   "id": "sam-houston-statue",
+   "name": "Sam Houston Statue",
+   "town": "Huntsville",
+   "state": "TX",
+   "ll": [
+    30.6672,
+    -95.5334
+   ],
+   "detour": 4,
+   "dwell": 30,
+   "cost": "Free",
+   "tags": [
+    "statue",
+    "roadside"
+   ],
+   "why": "A 67-foot Sam Houston standing in the pines beside the interstate, the tallest statue of an American hero anywhere. Visible from the road, much bigger up close, and the best legs stretch on this run, with a visitor center, restrooms and picnic tables.",
+   "winter": "The visitor center closes at 5pm. The statue itself is always there.",
+   "routes": [
+    "leg3-i40",
+    "leg3-vegas"
+   ]
+  },
+  {
+   "id": "waco-mammoth",
+   "name": "Waco Mammoth National Monument",
+   "town": "Waco",
+   "state": "TX",
+   "ll": [
+    31.6065,
+    -97.174
+   ],
+   "detour": 13,
+   "dwell": 60,
+   "cost": "Free in, $6 the dig tour",
+   "tags": [
+    "fossils",
+    "national-monument"
+   ],
+   "why": "A nursery herd of Columbian mammoths that died together in a flood about 65,000 years ago, excavated in place and roofed over. You walk above the bones where they lie. The only recorded nursery herd of its kind in the country.",
+   "winter": "Open 9 to 5, tours every half hour, closed New Year's Day. Check the day against the drive.",
+   "routes": [
+    "leg3-waco"
+   ],
+   "first": true
+  },
+  {
+   "id": "la-chavala",
+   "name": "Restaurante La Chavala Linda",
+   "town": "Dallas",
+   "state": "TX",
+   "ll": [
+    32.809,
+    -96.687
+   ],
+   "detour": 13,
+   "dwell": 75,
+   "cost": "$",
+   "tags": [
+    "food",
+    "nicaraguan",
+    "grocery"
+   ],
+   "why": "Nicaraguan on Buckner with an attached shop selling imported goods from home, so it is a meal and a grocery run in one stop. A regular says it takes them back to the land of lakes and volcanoes.",
+   "winter": "Closed Monday, and weekdays it opens mid-afternoon. Weekends it runs 10am to 10pm.",
+   "routes": [
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
+   ],
+   "big": true,
+   "kind": "food"
+  },
+  {
+   "id": "copper-breaks",
+   "name": "Copper Breaks State Park",
+   "town": "Quanah",
+   "state": "TX",
+   "ll": [
+    34.112,
+    -99.742
+   ],
+   "detour": 18,
+   "dwell": 90,
+   "cost": "$3 each",
+   "tags": [
+    "state-park",
+    "longhorns",
+    "dark-sky"
+   ],
+   "why": "Red mesa and canyon country, home to part of the official Texas State Longhorn Herd, and a certified International Dark Sky Park. Cheap, empty, and the longhorns are right by the entrance.",
+   "winter": "The dark-sky half only pays off after dark, and January nights out here are genuinely cold.",
+   "routes": [
+    "leg3-i40",
+    "leg3-waco",
+    "leg3-vegas"
+   ]
+  },
+  {
+   "id": "seven-magic-mountains",
+   "name": "Seven Magic Mountains",
+   "town": "Jean",
+   "state": "NV",
+   "ll": [
+    35.8391,
+    -115.2708
+   ],
+   "detour": 8,
+   "dwell": 30,
+   "cost": "Free",
+   "tags": [
+    "art",
+    "roadside"
+   ],
+   "why": "Seven towers of boulders painted in fluorescent colours, stacked thirty feet high in empty desert beside the interstate. A Swiss artist put them there in 2016 for two years and they never came down. Directly on the road between Vegas and Barstow.",
+   "winter": "No shade, no trash cans, and it is windy. Take your rubbish with you.",
+   "routes": [
+    "leg3-vegas"
+   ],
+   "big": true
+  },
+  {
+   "id": "hoover-dam",
+   "name": "Hoover Dam",
+   "town": "Boulder City",
+   "state": "NV",
+   "ll": [
+    36.0161,
+    -114.7377
+   ],
+   "detour": 20,
+   "dwell": 90,
+   "cost": "Crest free, tours cost",
+   "tags": [
+    "dam",
+    "engineering"
+   ],
+   "why": "726 feet of concrete wedged into Black Canyon, finished in 1936, still generating. Walking the crest and the memorial bridge is free, and the scale is genuinely hard to process.",
+   "winter": "Crest walk 5am to 9pm. Park free in the Arizona-side lots, the Nevada garage is $10. Interior tours are timed and ticketed.",
+   "routes": [
+    "leg3-vegas"
+   ],
+   "first": true,
+   "big": true
+  },
+  {
+   "id": "vegas-strip",
+   "name": "The Strip",
+   "town": "Las Vegas",
+   "state": "NV",
+   "ll": [
+    36.1147,
+    -115.1728
+   ],
+   "detour": 10,
+   "dwell": 180,
+   "cost": "Free to walk",
+   "tags": [
+    "spectacle",
+    "neon"
+   ],
+   "why": "The fountains at the Bellagio, the canals at the Venetian, the volcano, the conservatory, all free to walk through. Ada has never seen anything like it. Distances are much longer than they look.",
+   "winter": null,
+   "routes": [
+    "leg3-vegas"
+   ],
+   "first": true,
+   "big": true
+  },
+  {
+   "id": "valley-of-fire",
+   "name": "Valley of Fire State Park",
+   "town": "Overton",
+   "state": "NV",
+   "ll": [
+    36.4841,
+    -114.5311
+   ],
+   "detour": 60,
+   "dwell": 150,
+   "cost": "$15 the car",
+   "tags": [
+    "state-park",
+    "sandstone"
+   ],
+   "why": "Nevada's oldest state park. Red sandstone formations, petroglyphs and slot canyons in country that looks like Mars. An hour northeast of Vegas, which is the wrong direction, so it is a half-day decision.",
+   "winter": "The west entrance is closed Monday through Thursday for construction through 2026. Come in from the east on SR-169 and it is open every day, sunrise to sunset.",
+   "routes": [
+    "leg3-vegas"
    ]
   }
  ]
