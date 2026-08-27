@@ -120,7 +120,15 @@ for (const f of readdirSync(resolve(ROOT, 'data'))) {
     if (doc && doc.image === f) doc.image = uri;
 }
 
-const css = read('css/app.css');
+// The fonts are vendored now, so the bundle inlines them too rather than
+// linking Google. An artifact that reaches out for its typefaces is the same
+// bug as an app that does — it just fails on a plane instead of in the Mojave.
+const fontCss = read('css/fonts.css').replace(
+  /url\('\.\.\/fonts\/([\w.-]+)'\)/g,
+  (_, file) => "url('data:font/woff2;base64," +
+    readFileSync(resolve(ROOT, 'fonts', file)).toString('base64') + "')");
+
+const css = fontCss + '\n' + read('css/app.css');
 
 const preamble = `
 // --- artifact shims. See tools/bundle-artifact.mjs for what and why. --------
@@ -159,7 +167,6 @@ var __M = {};
 `;
 
 const html = `<title>Milepost</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 ${css}
 </style>

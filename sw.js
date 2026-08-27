@@ -13,11 +13,13 @@
 // preferring fresh. Data, icons and the vendored SDK stay cache-first — they
 // are large, they rarely change, and a stale copy of them is harmless.
 
-const CACHE = 'milepost-v31';
+const CACHE = 'milepost-v32';
 
 const SHELL = [
   'index.html', 'manifest.webmanifest',
-  'css/app.css',
+  'css/app.css', 'css/fonts.css',
+  'fonts/archivo-400.woff2', 'fonts/archivo-500.woff2',
+  'fonts/ibm-plex-mono-400.woff2', 'fonts/ibm-plex-mono-500.woff2',
   'js/app.js', 'js/ui.js', 'js/store.js', 'js/route.js', 'js/plan.js', 'js/map.js',
   'js/install.js', 'js/sync.js', 'js/firebase-config.js', 'js/version.js',
   'js/weather.js', 'js/geocode.js', 'js/darksky.js',
@@ -28,7 +30,7 @@ const SHELL = [
 ];
 
 // Big and stable — always serve from cache when we have it.
-const CACHE_FIRST = /\/(data|vendor|icons)\/|\.(png|json|webmanifest)$/;
+const CACHE_FIRST = /\/(data|vendor|icons|fonts)\/|\.(png|json|webmanifest|woff2)$/;
 
 const NET_TIMEOUT = 2500;
 
@@ -45,6 +47,21 @@ self.addEventListener('install', e => {
 
 self.addEventListener('message', e => {
   if (e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting();
+
+  // "Am I actually going to work with no signal?" is a real question before a
+  // trip through the Mojave, and until now nothing could answer it. Count what
+  // is genuinely in the cache against what the app needs.
+  if (e.data && e.data.type === 'CACHE_STATUS' && e.ports && e.ports[0]) {
+    const port = e.ports[0];
+    caches.open(CACHE)
+      .then(c => Promise.all(SHELL.map(u => c.match(u).then(Boolean))))
+      .then(hits => port.postMessage({
+        have: hits.filter(Boolean).length,
+        want: SHELL.length,
+        missing: SHELL.filter((_, i) => !hits[i]),
+      }))
+      .catch(() => port.postMessage({ have: 0, want: SHELL.length, missing: SHELL }));
+  }
 });
 
 self.addEventListener('activate', e => {

@@ -1,0 +1,18 @@
+The two typefaces in this folder are redistributed under the
+SIL Open Font License, Version 1.1, which permits bundling them
+with an application, including in a public repository.
+
+  Archivo          Omnibus-Type
+                   https://github.com/Omnibus-Type/Archivo
+  IBM Plex Mono    IBM
+                   https://github.com/IBM/plex
+
+Full licence text: https://openfontlicense.org
+
+Only the latin subsets are included, taken from the Google Fonts
+API by tools/vendor-fonts.mjs. Re-run that tool to refresh them.
+
+They are vendored rather than linked because Milepost has to work
+with no signal, and the service worker ignores cross-origin
+requests by design — so a linked font is a font you do not have
+in the desert.

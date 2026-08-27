@@ -346,6 +346,40 @@ export function placeSheet(id) {
 }
 
 // ============================================================== trip sheet
+/// Fills in the offline line after the Trip tab is on screen. Asking the
+/// service worker is async, and the tab must not wait on it.
+export async function hydrateOffline() {
+  const host = document.getElementById('offline-state');
+  if (!host) return;
+  const say = t => { const h = document.getElementById('offline-state'); if (h) h.textContent = t; };
+
+  // getRegistration(), not ready. `ready` NEVER SETTLES when no worker is
+  // registered — it does not reject, it just hangs — so awaiting it left this
+  // line reading "Checking…" forever on exactly the phones that needed the
+  // answer most.
+  const reg = navigator.serviceWorker
+    ? await navigator.serviceWorker.getRegistration().catch(() => null)
+    : null;
+  const worker = (reg && reg.active) || (navigator.serviceWorker && navigator.serviceWorker.controller);
+  if (!worker) {
+    say('Not saved for offline yet. Open the app once with signal and it stores itself.');
+    return;
+  }
+  const answer = await new Promise(res => {
+    const ch = new MessageChannel();
+    const done = setTimeout(() => res(null), 3000);
+    ch.port1.onmessage = e => { clearTimeout(done); res(e.data); };
+    worker.postMessage({ type: 'CACHE_STATUS' }, [ch.port2]);
+  });
+
+  if (!answer) return say('Could not check. Try again in a moment.');
+  if (answer.have >= answer.want)
+    return say('Ready. Every part of the app is on this phone — the map, all ' +
+      'the places, the roads and the type. It will work with no signal at all.');
+  say(`${answer.have} of ${answer.want} parts saved. Stay on signal a moment longer, ` +
+      `then check again.`);
+}
+
 export function renderTrip(upd = {}) {
   const st = { ...syncmod.state, ...upd };
   const dep = store.departure;
@@ -403,6 +437,10 @@ export function renderTrip(upd = {}) {
         <button data-update>${st.updateReady ? "Restart to update" : "Check for updates"}<span>${esc(VERSION)}</span></button>
       </div>
       ${st.updateNote ? `<div class="sbody" style="font-size:13px;color:var(--ink2)">${esc(st.updateNote)}</div>` : ""}
+
+      <div class="sdiv"></div>
+      <div class="slab">Offline</div>
+      <div class="sbody" style="font-size:13px;color:var(--ink2)" id="offline-state">Checking…</div>
 
       <div class="sdiv"></div>
       <div class="slab">Where are we</div>

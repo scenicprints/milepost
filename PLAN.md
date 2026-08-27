@@ -272,10 +272,6 @@ Killed by Kevin, do not revive: **Android Auto** (no, final) and **fuel and
 services planning** (gone).
 
 ### Known rough edges
-- **Google Fonts are not cached by the service worker** (it ignores cross-origin
-  so Firestore isn't corrupted). Offline, Archivo and Plex Mono fall back to
-  Helvetica and the system mono. Legible, slightly off-design. Vendoring the
-  two woff2 files would fix it.
 - December normals in `prototype/build.mjs` are **hand-assigned approximations**,
   not from a weather service. Right enough to pack by, not authoritative.
 - 42 official links are **best-effort and unverified**. The `nps.gov` ones follow
@@ -319,6 +315,47 @@ Android Auto is no.
 ---
 
 ## Session log
+
+**Session 26** — True offline (1.13.0). Kevin: *"Let's give it a true offline
+mode."*
+
+**The fonts are vendored.** They were the last thing the app could not cache:
+the service worker ignores cross-origin requests by design, so the Google Fonts
+stylesheet and its woff2 files were always fetched live, and in the Mojave the
+whole app fell back to Helvetica. `tools/vendor-fonts.mjs` pulls the four latin
+faces into `fonts/` (97 KB total) and writes `css/fonts.css`. Both families are
+SIL OFL 1.1, so redistributing them in a public repo is fine; `fonts/OFL.txt`
+records it. The artifact bundler inlines them as data URIs, so **the published
+bundle now has zero external asset requests** — only the outbound Search and
+Navigate links, which are meant to leave.
+
+**There is an answer to "will this work with no signal" now.** Trip has an
+Offline line. `sw.js` answers a `CACHE_STATUS` message with how many of its 34
+shell entries are really in the cache, and the line says either that everything
+is on the phone, or how many parts are still missing.
+
+**Two bugs found by building it, both mine, both worth remembering:**
+
+1. **`navigator.serviceWorker.ready` never settles when nothing is registered.**
+   It does not reject — it hangs. The Offline line sat on "Checking…" forever on
+   exactly the phones that had no cached copy, which is the case it exists to
+   report. **Use `getRegistration()`, which resolves promptly with undefined.**
+2. **I moved `CACHE` backwards**, v31 to v27, while bumping the version. Old
+   caches would not have been cleaned and the update button would have gone
+   wrong. It only ever goes up — check the current value before editing it.
+
+**Environment limit worth knowing: the browser pane refuses to register service
+workers at all** — `sw.js` fetches 200 and `register()` still fails with
+"unknown error occurred when fetching the script". So the worker cannot be
+tested by driving the app here. It was tested instead by running `sw.js` in a
+Node VM with stubbed globals and driving the `CACHE_STATUS` handler against a
+fake cache: full, two missing, empty — all three correct. A separate check
+cross-references `SHELL` against the repo in both directions, which matters
+because **one bad path makes `addAll` throw and then NOTHING caches**. 34
+entries, none missing, nothing in the repo left out.
+
+**Still not done, and it is not code:** nobody has driven with this. What's Next
+has only ever run on a simulated fix.
 
 **Session 25** — The light pollution map, third attempt, after Kevin called
 the first two useless. **Read this before touching the sky layer.**

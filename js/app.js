@@ -95,6 +95,7 @@ function draw() {
   }
 
   if (tab === 'map') mountMap();
+  if (tab === 'trip') ui.hydrateOffline();
 }
 
 // ============================================================ map
