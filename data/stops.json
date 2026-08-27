@@ -19,7 +19,9 @@
    "why": "One of the largest aquariums in the world, and one of about four on earth with whale sharks. The whale shark tank is genuinely overwhelming.",
    "winter": "Holiday week is its busiest of the year. Book a timed ticket two weeks out.",
    "routes": [
-    "leg1-south"
+    "leg1-south",
+    "leg2-gulf",
+    "leg2-inland"
    ],
    "big": true
   },
@@ -1615,6 +1617,497 @@
    "first": true,
    "big": true,
    "kind": "food"
+  },
+  {
+   "id": "falls-park",
+   "name": "Falls Park on the Reedy",
+   "town": "Greenville",
+   "state": "SC",
+   "ll": [
+    34.8449,
+    -82.4014
+   ],
+   "detour": 8,
+   "dwell": 60,
+   "cost": "Free",
+   "tags": [
+    "park",
+    "waterfall"
+   ],
+   "why": "A 60-foot waterfall in the middle of downtown, crossed by a curved suspension bridge built specifically to give you the view. The city tore out a highway bridge to uncover it. Twenty minutes if you are not lingering, and you will be lingering.",
+   "winter": null,
+   "routes": [
+    "leg2-gulf",
+    "leg2-inland"
+   ],
+   "big": true
+  },
+  {
+   "id": "downtown-greenville",
+   "name": "Downtown Greenville",
+   "town": "Greenville",
+   "state": "SC",
+   "ll": [
+    34.8484,
+    -82.4008
+   ],
+   "detour": 8,
+   "dwell": 120,
+   "cost": "Free to walk",
+   "tags": [
+    "downtown"
+   ],
+   "why": "Main Street is one of the best restored downtowns in the South. Trees, wide sidewalks, independent restaurants, and it connects straight to the falls. An easy place to lose an afternoon.",
+   "winter": null,
+   "routes": [
+    "leg2-gulf",
+    "leg2-inland"
+   ]
+  },
+  {
+   "id": "tanger-commerce",
+   "name": "Tanger Outlets",
+   "town": "Commerce",
+   "state": "GA",
+   "ll": [
+    34.168,
+    -83.458
+   ],
+   "detour": 5,
+   "dwell": 90,
+   "cost": "Free to walk",
+   "tags": [
+    "shopping"
+   ],
+   "why": "Big outlet mall on the Georgia side, right on the highway. Easy in and out, though you may have already done Concord Mills.",
+   "winter": null,
+   "routes": [
+    "leg2-gulf",
+    "leg2-inland"
+   ]
+  },
+  {
+   "id": "buford-highway",
+   "name": "Buford Highway",
+   "town": "Atlanta",
+   "state": "GA",
+   "ll": [
+    33.8534,
+    -84.3129
+   ],
+   "detour": 13,
+   "dwell": 120,
+   "cost": "$",
+   "tags": [
+    "food",
+    "corridor"
+   ],
+   "why": "A seven-mile strip of strip malls that is one of the great immigrant food corridors in the country. Mexican, Salvadoran, Peruvian, Korean, Vietnamese, Chinese, all in the same parking lots, and Plaza Fiesta is a Latino mall with a food court in the middle of it. Ada could spend the whole stop here and it costs almost nothing.",
+   "winter": null,
+   "routes": [
+    "leg2-gulf",
+    "leg2-inland"
+   ],
+   "big": true,
+   "kind": "food"
+  },
+  {
+   "id": "ponce-city-market",
+   "name": "Ponce City Market",
+   "town": "Atlanta",
+   "state": "GA",
+   "ll": [
+    33.7726,
+    -84.3664
+   ],
+   "detour": 15,
+   "dwell": 90,
+   "cost": "$$",
+   "tags": [
+    "food-hall",
+    "shops"
+   ],
+   "why": "A vast restored Sears warehouse turned food hall and shops, with a rooftop amusement area. Good food under one roof when you do not want to choose a restaurant. Parking is a fight.",
+   "winter": null,
+   "routes": [
+    "leg2-gulf",
+    "leg2-inland"
+   ],
+   "kind": "food"
+  },
+  {
+   "id": "eagles-restaurant",
+   "name": "Eagle's Restaurant",
+   "town": "Birmingham",
+   "state": "AL",
+   "ll": [
+    33.545,
+    -86.8296
+   ],
+   "detour": 6,
+   "dwell": 60,
+   "cost": "$",
+   "tags": [
+    "food",
+    "soul-food"
+   ],
+   "why": "Soul food since 1951, cafeteria line, oxtails and smothered pork chops, and portions that defeat people. Know what you want before you reach the front, the line moves fast and they do not wait on you.",
+   "winter": "Closed Monday and Saturday. Open 10:30 to 3:30, lunch only.",
+   "routes": [
+    "leg2-inland"
+   ],
+   "kind": "food"
+  },
+  {
+   "id": "birmingham-civil-rights",
+   "name": "Birmingham Civil Rights Institute",
+   "town": "Birmingham",
+   "state": "AL",
+   "ll": [
+    33.5163,
+    -86.8145
+   ],
+   "detour": 8,
+   "dwell": 120,
+   "cost": "$15 each",
+   "tags": [
+    "museum",
+    "history"
+   ],
+   "why": "Across the street from the 16th Street Baptist Church and Kelly Ingram Park, where fire hoses and dogs were turned on children in 1963. The museum and those two blocks together do something neither would alone.",
+   "winter": "Closed Sunday AND Monday, last entry 4pm. Time the Birmingham day around it.",
+   "routes": [
+    "leg2-inland"
+   ],
+   "big": true
+  },
+  {
+   "id": "saws-soul-kitchen",
+   "name": "SAW's Soul Kitchen",
+   "town": "Birmingham",
+   "state": "AL",
+   "ll": [
+    33.5217,
+    -86.7714
+   ],
+   "detour": 9,
+   "dwell": 75,
+   "cost": "$$",
+   "tags": [
+    "food",
+    "barbecue",
+    "soul-food"
+   ],
+   "why": "Barbecue and soul food together. Smoked chicken with white sauce, catfish, fried green tomatoes, live music some nights. Open seven days, small room, tight parking.",
+   "winter": null,
+   "routes": [
+    "leg2-inland"
+   ],
+   "kind": "food"
+  },
+  {
+   "id": "vicksburg",
+   "name": "Vicksburg National Military Park",
+   "town": "Vicksburg",
+   "state": "MS",
+   "ll": [
+    32.3466,
+    -90.8494
+   ],
+   "detour": 8,
+   "dwell": 90,
+   "cost": "$20 the car",
+   "tags": [
+    "battlefield",
+    "history"
+   ],
+   "why": "The 47-day siege that split the Confederacy. A 16-mile driving loop runs through the earthworks and monuments, and the USS Cairo, a Union gunboat raised from the river bottom, sits under a shelter halfway around. You barely leave the car.",
+   "winter": "Tour road 8:30 to 5, last car in at 4:40. The Cairo museum is open seven days.",
+   "routes": [
+    "leg2-inland"
+   ],
+   "first": true
+  },
+  {
+   "id": "caddo-lake",
+   "name": "Caddo Lake",
+   "town": "Uncertain",
+   "state": "TX",
+   "ll": [
+    32.7112,
+    -94.1213
+   ],
+   "detour": 23,
+   "dwell": 90,
+   "cost": "Free from shore, tours cost",
+   "tags": [
+    "lake",
+    "cypress"
+   ],
+   "why": "A flooded cypress forest hung with Spanish moss, and the only natural lake in Texas. Boat tours run through the channels between the trees. It looks like nowhere else on this trip.",
+   "winter": "Boat tours need booking and calm weather in winter. From shore it is still worth the look.",
+   "routes": [
+    "leg2-inland"
+   ],
+   "first": true
+  },
+  {
+   "id": "marshall-lights",
+   "name": "Marshall Wonderland of Lights",
+   "town": "Marshall",
+   "state": "TX",
+   "ll": [
+    32.5449,
+    -94.3672
+   ],
+   "detour": 10,
+   "dwell": 90,
+   "cost": "Free to walk",
+   "tags": [
+    "christmas",
+    "lights"
+   ],
+   "why": "One of the oldest and largest light festivals in the South, centered on the 1901 courthouse. A real town event rather than a ticketed attraction.",
+   "winter": "Evening only, and it usually ends around December 28 to 30. Check the dates against the drive before promising it.",
+   "routes": [
+    "leg2-inland"
+   ]
+  },
+  {
+   "id": "bellingrath",
+   "name": "Bellingrath Gardens",
+   "town": "Theodore",
+   "state": "AL",
+   "ll": [
+    30.4166,
+    -88.1108
+   ],
+   "detour": 20,
+   "dwell": 120,
+   "cost": "About $30 each after dark",
+   "tags": [
+    "gardens",
+    "christmas",
+    "lights"
+   ],
+   "why": "A 65-acre estate garden that runs Magic Christmas in Lights through the holidays, millions of lights across the grounds. One of the biggest displays in the South, and a real detour south of Mobile.",
+   "winter": "The lights run 5pm to 9pm and continue past New Year's Eve. Buy the timed ticket online first.",
+   "routes": [
+    "leg2-gulf"
+   ]
+  },
+  {
+   "id": "french-quarter",
+   "name": "The French Quarter",
+   "town": "New Orleans",
+   "state": "LA",
+   "ll": [
+    29.9575,
+    -90.063
+   ],
+   "detour": 10,
+   "dwell": 180,
+   "cost": "Free to walk",
+   "tags": [
+    "district",
+    "history"
+   ],
+   "why": "Iron balconies, courtyards, buskers, and streets laid out in the 1720s. Jackson Square, the cathedral, the river walk, Royal Street for antiques. There is nothing like it anywhere else in the country. Skip Bourbon Street, park once and walk.",
+   "winter": null,
+   "routes": [
+    "leg2-gulf"
+   ],
+   "first": true,
+   "big": true
+  },
+  {
+   "id": "la-state-capitol",
+   "name": "Louisiana State Capitol",
+   "town": "Baton Rouge",
+   "state": "LA",
+   "ll": [
+    30.4571,
+    -91.1874
+   ],
+   "detour": 8,
+   "dwell": 60,
+   "cost": "Free",
+   "tags": [
+    "capitol",
+    "art-deco"
+   ],
+   "why": "The tallest capitol in the country, 34 stories of art deco built by Huey Long, who was assassinated inside it in 1935. The bullet holes are still in the corridor, and the 27th-floor observation deck is free.",
+   "winter": "Closes at 4pm. An office building for most of its height, so aim for the deck and the corridor.",
+   "routes": [
+    "leg2-gulf"
+   ]
+  },
+  {
+   "id": "gator-country",
+   "name": "Gator Country",
+   "town": "Beaumont",
+   "state": "TX",
+   "ll": [
+    30.003,
+    -94.262
+   ],
+   "detour": 8,
+   "dwell": 90,
+   "cost": "$15 each",
+   "tags": [
+    "wildlife",
+    "alligators"
+   ],
+   "why": "An alligator rescue sanctuary with over 450 animals, including some of the largest in captivity. Guaranteed alligators regardless of the weather.",
+   "winter": "Open 10 to 5 daily through the holidays. Winter gators are slow and stacked together, which is its own show.",
+   "routes": [
+    "leg2-gulf"
+   ],
+   "first": true
+  },
+  {
+   "id": "fritanga-gueguense",
+   "name": "Fritanga El Güegüense",
+   "town": "Houston",
+   "state": "TX",
+   "ll": [
+    29.671,
+    -95.494
+   ],
+   "detour": 10,
+   "dwell": 45,
+   "cost": "$",
+   "tags": [
+    "food",
+    "nicaraguan"
+   ],
+   "why": "A Nicaraguan food truck on West Airport. Tacos nicas, carne asada, fried cheese, sweet plantain, tamarind drink, and a reviewer used to Central American prices startled by how much food eighteen dollars bought.",
+   "winter": "Closed Monday, opens 3pm on weekdays. It is a truck, call before driving across town.",
+   "routes": [
+    "leg2-gulf",
+    "leg2-inland"
+   ],
+   "kind": "food"
+  },
+  {
+   "id": "la-carreta",
+   "name": "Fritanga Nicaragüense La Carreta",
+   "town": "South Houston",
+   "state": "TX",
+   "ll": [
+    29.6667,
+    -95.2354
+   ],
+   "detour": 13,
+   "dwell": 75,
+   "cost": "$",
+   "tags": [
+    "food",
+    "nicaraguan"
+   ],
+   "why": "Home-style Nicaraguan, parrillada, quesillos, nacatamales, a Nica mariachi some nights. A woman from Miami brought her Nicaraguan mother here for her birthday, got teary, called it pure Nica, and said the long drive was worth doing again.",
+   "winter": "Thursday to Sunday only, and the small room fills fast. Go at an off hour.",
+   "routes": [
+    "leg2-gulf",
+    "leg2-inland"
+   ],
+   "big": true,
+   "kind": "food"
+  },
+  {
+   "id": "pit-room",
+   "name": "The Pit Room",
+   "town": "Houston",
+   "state": "TX",
+   "ll": [
+    29.7332,
+    -95.3905
+   ],
+   "detour": 8,
+   "dwell": 90,
+   "cost": "$$$",
+   "tags": [
+    "food",
+    "barbecue"
+   ],
+   "why": "Michelin-recommended Texas barbecue in Montrose. Brisket, venison sausage, elote, tortillas made in house, and an unusually good condiment bar. Open seven days, breakfast tacos from 7, barbecue from 11.",
+   "winter": null,
+   "routes": [
+    "leg2-gulf",
+    "leg2-inland"
+   ],
+   "kind": "food"
+  },
+  {
+   "id": "brisket-and-rice",
+   "name": "Brisket & Rice",
+   "town": "Houston",
+   "state": "TX",
+   "ll": [
+    29.652,
+    -95.645
+   ],
+   "detour": 13,
+   "dwell": 60,
+   "cost": "$$",
+   "tags": [
+    "food",
+    "barbecue",
+    "vietnamese"
+   ],
+   "why": "Michelin-recommended and a genuinely Houston invention, Texas barbecue over Vietnamese-style fried rice, out of the city's huge Vietnamese community. The barbecue fried rice exists nowhere else.",
+   "winter": "Closed Monday.",
+   "routes": [
+    "leg2-gulf",
+    "leg2-inland"
+   ],
+   "kind": "food"
+  },
+  {
+   "id": "hmns",
+   "name": "Houston Museum of Natural Science",
+   "town": "Houston",
+   "state": "TX",
+   "ll": [
+    29.7221,
+    -95.3896
+   ],
+   "detour": 8,
+   "dwell": 180,
+   "cost": "Base ticket, add-ons extra",
+   "tags": [
+    "museum",
+    "science"
+   ],
+   "why": "Paleontology hall, a walk-through butterfly rainforest, and a gem collection people fly in for. Weather-proof, and the dinosaur hall is exceptional. Every add-on is ticketed separately and it adds up.",
+   "winter": null,
+   "routes": [
+    "leg2-gulf",
+    "leg2-inland"
+   ]
+  },
+  {
+   "id": "galleria",
+   "name": "The Galleria",
+   "town": "Houston",
+   "state": "TX",
+   "ll": [
+    29.7397,
+    -95.4622
+   ],
+   "detour": 10,
+   "dwell": 180,
+   "cost": "Free to walk, the rink costs",
+   "tags": [
+    "shopping",
+    "ice-rink"
+   ],
+   "why": "One of the largest malls in the country, with a full-size ice rink in the middle of it. Ada can ice skate indoors in Texas in December.",
+   "winter": "Holiday-week crowds are the worst of the year. Mornings are survivable.",
+   "routes": [
+    "leg2-gulf",
+    "leg2-inland"
+   ]
   }
  ]
 }

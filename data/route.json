@@ -845,6 +845,22 @@
        ]
       },
       {
+       "name": "Gastonia",
+       "state": "NC",
+       "ll": [
+        35.262,
+        -81.187
+       ]
+      },
+      {
+       "name": "Spartanburg",
+       "state": "SC",
+       "ll": [
+        34.95,
+        -81.932
+       ]
+      },
+      {
        "name": "Greenville",
        "state": "SC",
        "ll": [
@@ -853,12 +869,23 @@
        ]
       },
       {
+       "name": "Commerce",
+       "state": "GA",
+       "ll": [
+        34.204,
+        -83.457
+       ]
+      },
+      {
        "name": "Atlanta",
        "state": "GA",
        "ll": [
         33.749,
         -84.388
-       ]
+       ],
+       "elev": 1050,
+       "risk": "ice",
+       "note": "Atlanta ices rarely but completely. If a storm is named, wait it out rather than creep through it."
       },
       {
        "name": "Montgomery",
@@ -901,6 +928,14 @@
        ]
       },
       {
+       "name": "Lafayette",
+       "state": "LA",
+       "ll": [
+        30.224,
+        -92.02
+       ]
+      },
+      {
        "name": "Lake Charles",
        "state": "LA",
        "ll": [
@@ -929,9 +964,9 @@
     {
      "id": "leg2-inland",
      "name": "The inland run",
-     "road": "I-85 · I-20 · I-45",
+     "road": "I-85 to Atlanta, I-20 to Marshall, then US-59 south",
      "character": "Straight across through Birmingham, Jackson and Dallas.",
-     "why": "Faster and simpler if you're worn out by then, or if the coast is weathered in. Picks up Birmingham's Civil Rights Institute and Dallas.",
+     "why": "Birmingham's civil rights blocks, Vicksburg, and the cypress trees at Caddo Lake, then straight down US-59 instead of the long way around through Dallas.",
      "costs": "Skips New Orleans and the Gulf entirely — which is most of what makes this leg worth doing.",
      "waypoints": [
       {
@@ -951,6 +986,22 @@
        ]
       },
       {
+       "name": "Gastonia",
+       "state": "NC",
+       "ll": [
+        35.262,
+        -81.187
+       ]
+      },
+      {
+       "name": "Spartanburg",
+       "state": "SC",
+       "ll": [
+        34.95,
+        -81.932
+       ]
+      },
+      {
        "name": "Greenville",
        "state": "SC",
        "ll": [
@@ -959,19 +1010,30 @@
        ]
       },
       {
+       "name": "Commerce",
+       "state": "GA",
+       "ll": [
+        34.204,
+        -83.457
+       ]
+      },
+      {
        "name": "Atlanta",
        "state": "GA",
        "ll": [
         33.749,
         -84.388
-       ]
+       ],
+       "elev": 1050,
+       "risk": "ice",
+       "note": "Atlanta ices rarely but completely. If a storm is named, wait it out rather than creep through it."
       },
       {
        "name": "Birmingham",
        "state": "AL",
        "ll": [
-        33.521,
-        -86.802
+        33.519,
+        -86.81
        ]
       },
       {
@@ -991,27 +1053,59 @@
        ]
       },
       {
+       "name": "Vicksburg",
+       "state": "MS",
+       "ll": [
+        32.353,
+        -90.878
+       ]
+      },
+      {
+       "name": "Monroe",
+       "state": "LA",
+       "ll": [
+        32.51,
+        -92.119
+       ]
+      },
+      {
        "name": "Shreveport",
        "state": "LA",
        "ll": [
-        32.525,
-        -93.75
+        32.515,
+        -93.747
        ]
       },
       {
-       "name": "Dallas",
+       "name": "Marshall",
        "state": "TX",
        "ll": [
-        32.777,
-        -96.797
+        32.545,
+        -94.367
        ]
       },
       {
-       "name": "Huntsville",
+       "name": "Nacogdoches",
        "state": "TX",
        "ll": [
-        30.724,
-        -95.551
+        31.603,
+        -94.655
+       ]
+      },
+      {
+       "name": "Lufkin",
+       "state": "TX",
+       "ll": [
+        31.338,
+        -94.729
+       ]
+      },
+      {
+       "name": "Cleveland",
+       "state": "TX",
+       "ll": [
+        30.341,
+        -95.085
        ]
       },
       {

@@ -320,6 +320,25 @@ Android Auto is no.
 
 ## Session log
 
+**Session 19** — The leg 2 pool landed, same contract as leg 1. 21 stops,
+Mooresville to Houston, all verified this session. What the research changed:
+Gator Country is $15 each, not the pool's $30. The Birmingham Civil Rights
+Institute is closed Sunday AND Monday, not just Monday. Eagle's is closed
+Monday and Saturday, open Sun/Tue-Fri 10:30-3:30. La Carreta runs Thursday
+to Sunday. El Güegüense is at 6403 W Airport, 3pm weekdays, closed Monday.
+Marshall's Wonderland of Lights historically ends Dec 28-30, flagged to check
+against the drive date. Bellingrath's lights run past New Year's with timed
+tickets. Route work: both leg 2 options now share the real I-85 start
+(Gastonia, Spartanburg, Greenville, Commerce), Atlanta carries an ice risk,
+and **the inland run goes down US-59** (Marshall > Nacogdoches > Lufkin >
+Houston) instead of the old placeholder's 200-mile Dallas dogleg — that is
+the road that serves Caddo Lake and Marshall, and it is the ~1,150 mile
+figure the pool quotes. The gulf run gained Lafayette for waypoint density
+(the leg was measuring ~4% light). Bookings added: Caddo boat tours,
+Bellingrath timed tickets. Georgia Aquarium now sits on both leg 2 bands and
+leg1-south. 88 stops in the app, all from Kevin's lists. 1.8.0. Leg 3's pool
+is the remaining gap.
+
 **Session 18, second pass** — Kevin's rule made explicit: **if it is not on
 his list, it is not in the app.** All 31 remaining old placeholder stops are
 gone, legs 2 and 3 included (French Quarter, Space Center, Carlsbad, Hoover

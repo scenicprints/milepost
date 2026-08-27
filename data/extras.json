@@ -42,7 +42,22 @@
   "discovery-place": "https://discoveryplace.org",
   "concord-mills": "https://www.simon.com/mall/concord-mills",
   "cook-out": "https://cookout.com",
-  "laguna-burger": "https://www.lagunaburger.com"
+  "laguna-burger": "https://www.lagunaburger.com",
+  "tanger-commerce": "https://www.tanger.com/commerce",
+  "buford-highway": "https://www.plazafiesta.net",
+  "ponce-city-market": "https://www.poncecitymarket.com",
+  "eagles-restaurant": "https://eaglesrestaurant.com",
+  "birmingham-civil-rights": "https://www.bcri.org",
+  "saws-soul-kitchen": "https://www.sawsbbq.com",
+  "vicksburg": "https://www.nps.gov/vick",
+  "caddo-lake": "https://tpwd.texas.gov/state-parks/caddo-lake",
+  "marshall-lights": "https://visitmarshalltexas.com",
+  "bellingrath": "https://bellingrath.org",
+  "gator-country": "https://www.gatorrescue.com",
+  "fritanga-gueguense": "https://fritangaelgueguense.com",
+  "pit-room": "https://thepitroombbq.com",
+  "hmns": "https://www.hmns.org",
+  "galleria": "https://www.simon.com/mall/the-galleria"
  },
  "normals": {
   "Barstow": [
@@ -192,6 +207,54 @@
   "Bakersfield": [
    57,
    39
+  ],
+  "Greenville": [
+   52,
+   32
+  ],
+  "Commerce": [
+   54,
+   31
+  ],
+  "Birmingham": [
+   56,
+   36
+  ],
+  "Vicksburg": [
+   58,
+   38
+  ],
+  "Uncertain": [
+   57,
+   36
+  ],
+  "Marshall": [
+   57,
+   36
+  ],
+  "Theodore": [
+   62,
+   42
+  ],
+  "New Orleans": [
+   64,
+   47
+  ],
+  "Baton Rouge": [
+   63,
+   42
+  ],
+  "Beaumont": [
+   63,
+   43
+  ],
+  "Houston": [
+   65,
+   47
+  ],
+  "South Houston": [
+   65,
+   47
   ]
  },
  "bookings": {
@@ -210,6 +273,14 @@
   "palo-duro": {
    "lead": 14,
    "note": "Day passes sell out in holiday week. Reserve entry online before you leave, camping needs longer."
+  },
+  "caddo-lake": {
+   "lead": 7,
+   "note": "Boat tours book out and cancel for weather. Reserve a few days ahead, with a shore walk as the fallback."
+  },
+  "bellingrath": {
+   "lead": 7,
+   "note": "Magic Christmas in Lights sells timed evening tickets. Buy online before the drive south from Mobile."
   }
  }
 }
