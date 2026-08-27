@@ -109,6 +109,17 @@ const DATA = {};
 for (const f of readdirSync(resolve(ROOT, 'data')))
   if (f.endsWith('.json')) DATA['data/' + f] = JSON.parse(read('data/' + f));
 
+// Images cannot come through the fetch shim: the heat map is an <image href>,
+// which the browser resolves itself and which would 404 inside a single-file
+// artifact. Inline it as a data URI and point the sidecar straight at it.
+// darksky.js takes an image that already looks like a URI as-is.
+for (const f of readdirSync(resolve(ROOT, 'data'))) {
+  if (!f.endsWith('.png')) continue;
+  const uri = 'data:image/png;base64,' + readFileSync(resolve(ROOT, 'data', f)).toString('base64');
+  for (const doc of Object.values(DATA))
+    if (doc && doc.image === f) doc.image = uri;
+}
+
 const css = read('css/app.css');
 
 const preamble = `

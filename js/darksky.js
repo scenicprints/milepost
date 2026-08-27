@@ -45,7 +45,11 @@ export function load(raw) {
     return null;
   }
   return {
-    image: 'data/' + String(raw.image).replace(/[^\w.-]/g, ''),
+    // A bare filename is served from data/; the artifact bundler swaps in a
+    // data: URI, which is passed through untouched.
+    image: /^data:|^https?:\/\//.test(String(raw.image))
+      ? String(raw.image)
+      : 'data/' + String(raw.image).replace(/[^\w.-]/g, ''),
     bounds: [la0, la1, lo0, lo1],
     stops: (raw.stops && typeof raw.stops === 'object') ? raw.stops : {},
     source: raw.source || null,
