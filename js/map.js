@@ -29,7 +29,7 @@ export function xy(ll) {
   ];
 }
 
-const poly = pts => pts.map((p, i) => (i ? "L" : "M") + xy(p).map(n => n.toFixed(1)).join(" ")).join(" ");
+const poly = pts => pts.map((p, i) => (i ? "L" : "M") + xy(p).map(n => n.toFixed(3)).join(" ")).join(" ");
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 /// Bounding box of a route and its stops, in stage units.
@@ -100,12 +100,38 @@ export function paint(usa, routes, active, opts = {}) {
 
   out.push('<path class="mroute act" d="' + poly(active.waypoints.map(w => w.ll)) + '" stroke-width="' + n(2.6) + '"/>');
 
+  // Stops that share a doorstep (Beale and Dyer's, Seligman and the Snow Cap)
+  // would land on the same pixel and read as one pin. Anything closer than a
+  // pin's width at this zoom is spread into a small ring around the shared
+  // point — in screen units, so the ring stays the same size at every depth
+  // and dissolves once real distance separates them.
+  const spot = new Map();                       // stop id -> drawn position
+  {
+    const near = 14 * u, clusters = [];
+    for (const st of active.stops) {
+      const q = xy(st.ll);
+      let home = null;
+      for (const c of clusters)
+        if (Math.hypot(q[0] - c.cx, q[1] - c.cy) < near) { home = c; break; }
+      if (home) { home.m.push([st, q]); }
+      else clusters.push({ cx: q[0], cy: q[1], m: [[st, q]] });
+    }
+    for (const c of clusters) {
+      if (c.m.length === 1) { spot.set(c.m[0][0].id, c.m[0][1]); continue; }
+      const rad = (c.m.length > 2 ? 9 : 6) * u;
+      c.m.forEach(([st], i) => {
+        const a = -Math.PI / 2 + (i * 2 * Math.PI) / c.m.length;
+        spot.set(st.id, [c.cx + rad * Math.cos(a), c.cy + rad * Math.sin(a)]);
+      });
+    }
+  }
+
   for (const st of active.stops) {
-    const q = xy(st.ll);
+    const q = spot.get(st.id);
     if (!vis(q)) continue;
     const on = chosen.has(st.id);
     out.push('<circle class="mpin' + (on ? " on" : "") + '" data-stop="' + st.id +
-      '" cx="' + q[0].toFixed(1) + '" cy="' + q[1].toFixed(1) +
+      '" cx="' + q[0].toFixed(3) + '" cy="' + q[1].toFixed(3) +
       '" r="' + n(on ? 6 : 4) + '" stroke-width="' + n(1.5) +
       '"><title>' + esc(st.name) + "</title></circle>");
   }
@@ -116,7 +142,7 @@ export function paint(usa, routes, active, opts = {}) {
     (b.big ? 1 : 0) - (a.big ? 1 : 0) ||
     (chosen.has(b.id) ? 1 : 0) - (chosen.has(a.id) ? 1 : 0));
   for (const st of order) {
-    const q = xy(st.ll);
+    const q = spot.get(st.id) || xy(st.ll);
     if (!vis(q)) continue;
     const bx = q[0] + 9 * u, by = q[1] + 3.5 * u;
     const bw = st.name.length * fs * 0.5, bh = fs * 1.3;
@@ -125,7 +151,7 @@ export function paint(usa, routes, active, opts = {}) {
       if (bx < b.x + b.w && bx + bw > b.x && by - bh < b.y && by > b.y - b.h) { clash = true; break; }
     if (clash) continue;
     placed.push({ x: bx, y: by, w: bw, h: bh });
-    const tail = ' text-anchor="start" x="' + bx.toFixed(1) + '" y="' + by.toFixed(1) +
+    const tail = ' text-anchor="start" x="' + bx.toFixed(3) + '" y="' + by.toFixed(3) +
       '" font-size="' + fs.toFixed(2) + '">' + esc(st.name) + "</text>";
     out.push('<text class="mhalo" stroke-width="' + n(3) + '"' + tail);
     // Been there: struck through, the same mark Route and Days use. Not a
@@ -134,12 +160,12 @@ export function paint(usa, routes, active, opts = {}) {
   }
 
   const hp = xy(routes[0].waypoints[0].ll), hs = 10 * u;
-  out.push('<rect class="mhome" x="' + (hp[0] - hs / 2).toFixed(1) + '" y="' + (hp[1] - hs / 2).toFixed(1) +
-    '" width="' + hs.toFixed(1) + '" height="' + hs.toFixed(1) + '"/>');
+  out.push('<rect class="mhome" x="' + (hp[0] - hs / 2).toFixed(3) + '" y="' + (hp[1] - hs / 2).toFixed(3) +
+    '" width="' + hs.toFixed(3) + '" height="' + hs.toFixed(3) + '"/>');
 
   if (pos) {
     const q = xy(pos);
-    out.push('<circle class="mpos" cx="' + q[0].toFixed(1) + '" cy="' + q[1].toFixed(1) +
+    out.push('<circle class="mpos" cx="' + q[0].toFixed(3) + '" cy="' + q[1].toFixed(3) +
       '" r="' + n(7) + '" stroke-width="' + n(2.5) + '"/>');
   }
 

@@ -294,8 +294,7 @@
    "winter": "Open in winter but check — it has closed for long repair stretches. Confirm before detouring.",
    "routes": [
     "leg3-i10",
-    "leg3-vegas",
-    "leg1-low"
+    "leg3-vegas"
    ]
   },
   {
@@ -343,8 +342,7 @@
    "winter": "Fully weather-proof — 56°F underground always. The bat flights are summer only, so winter costs you nothing but the drive. Entry reservations required.",
    "routes": [
     "leg3-i10",
-    "leg3-vegas",
-    "leg1-low"
+    "leg3-vegas"
    ]
   },
   {
@@ -369,8 +367,7 @@
    "winter": "Open in winter and the light is best then. It closes for a few hours at a time for missile range tests — check the park's closure page the morning of.",
    "routes": [
     "leg3-i10",
-    "leg3-vegas",
-    "leg1-low"
+    "leg3-vegas"
    ]
   },
   {
@@ -392,8 +389,7 @@
    "winter": "Best at dusk when both sides light up.",
    "routes": [
     "leg3-i10",
-    "leg3-vegas",
-    "leg1-low"
+    "leg3-vegas"
    ]
   },
   {
@@ -415,8 +411,7 @@
    "winter": "Mild and pleasant in winter.",
    "routes": [
     "leg3-i10",
-    "leg3-vegas",
-    "leg1-low"
+    "leg3-vegas"
    ]
   },
   {
@@ -439,8 +434,7 @@
    "winter": "Peak season — winter is the best time of year to be here.",
    "routes": [
     "leg3-i10",
-    "leg3-vegas",
-    "leg1-low"
+    "leg3-vegas"
    ]
   },
   {
@@ -462,8 +456,7 @@
    "winter": "Boneyard tours are weekdays only and need advance booking.",
    "routes": [
     "leg3-i10",
-    "leg3-vegas",
-    "leg1-low"
+    "leg3-vegas"
    ]
   },
   {
@@ -485,8 +478,7 @@
    "winter": "Las Noches de las Luminarias runs through early January and needs a timed ticket.",
    "routes": [
     "leg3-i10",
-    "leg3-vegas",
-    "leg1-low"
+    "leg3-vegas"
    ]
   },
   {
@@ -508,8 +500,7 @@
    "why": "The Cottonwood entrance is right on I-10, so this is a cheap detour on the last full day. Boulder piles and the trees themselves, which look invented.",
    "winter": "Winter is the good season. Nights drop below freezing.",
    "routes": [
-    "leg3-i10",
-    "leg1-low"
+    "leg3-i10"
    ]
   },
   {
@@ -531,8 +522,7 @@
    "why": "Rotating cable car from the desert floor to 8,500 feet in ten minutes — from palm trees to pine snow. If you skipped Sandia, take this one.",
    "winter": "There is usually snow at the top while it's 70°F at the bottom, which is the whole trick.",
    "routes": [
-    "leg3-i10",
-    "leg1-low"
+    "leg3-i10"
    ]
   },
   {
@@ -586,7 +576,6 @@
    "town": "Dallas",
    "state": "TX",
    "routes": [
-    "leg1-low",
     "leg2-inland"
    ],
    "ll": [
@@ -601,28 +590,6 @@
    ],
    "why": "The Texas School Book Depository, from the window itself. They preserved the corner exactly as it was found and the whole story is told from inside the room.",
    "winter": "Open through the holidays except Christmas Day. Timed tickets."
-  },
-  {
-   "id": "fort-worth-stockyards",
-   "name": "Fort Worth Stockyards",
-   "town": "Fort Worth",
-   "state": "TX",
-   "routes": [
-    "leg1-low"
-   ],
-   "ll": [
-    32.789,
-    -97.347
-   ],
-   "detour": 15,
-   "dwell": 120,
-   "cost": "Free",
-   "tags": [
-    "history",
-    "food"
-   ],
-   "why": "A longhorn cattle drive down a brick street twice a day, every day, plus the honky-tonks around it. Cornier than Nashville and somehow better for it.",
-   "winter": null
   },
   {
    "id": "birmingham-civil-rights",

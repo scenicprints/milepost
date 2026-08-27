@@ -102,10 +102,20 @@ let paintTimer = null;
 const stage = () => document.getElementById('mstage');
 const mapbox = () => document.getElementById('mapbox');
 
+// The SVG is repainted ("baked") for the transform it was last settled at, with
+// its viewBox set to exactly the visible box — so at rest it is vector-crisp at
+// any zoom depth. The CSS transform on the stage only ever carries the DELTA
+// between the live gesture and that baked state. Scaling the raster during the
+// gesture itself is what every map does; leaving it scaled at rest was the blur.
+let baked = null;                    // the tf the SVG is currently painted for
+
 function applyTf(t) {
   ui.setTf(t);
   const el = stage();
-  if (el) el.style.transform = `translate(${t.x.toFixed(2)}px, ${t.y.toFixed(2)}px) scale(${t.s.toFixed(5)})`;
+  if (!el) return;
+  const b = baked || { s: 1, x: 0, y: 0 };   // null = painted at full stage coords
+  const ds = t.s / b.s;
+  el.style.transform = `translate(${(t.x - ds * b.x).toFixed(2)}px, ${(t.y - ds * b.y).toFixed(2)}px) scale(${ds.toFixed(5)})`;
 }
 
 /// What part of the stage is on screen, in stage units.
@@ -119,7 +129,21 @@ function visible(t) {
 function repaint() {
   const t = ui.getTf();
   if (!t) return;
-  ui.paintMap(legIx, t.s, visible(t));
+  const v = visible(t);
+  ui.paintMap(legIx, t.s, v);
+  // Bake: the SVG now shows exactly the visible box at panel size, so the
+  // stage needs no transform until the next gesture moves off this state.
+  const svg = document.getElementById('msvg'), el = stage(), box = mapbox();
+  if (svg && el && box && v) {
+    const r = box.getBoundingClientRect();
+    svg.setAttribute('viewBox', `${v.x} ${v.y} ${v.w} ${v.h}`);
+    svg.setAttribute('width', r.width);
+    svg.setAttribute('height', r.height);
+    el.style.width = r.width + 'px';
+    el.style.height = r.height + 'px';
+    baked = { ...t };
+    el.style.transform = 'none';
+  }
 }
 
 function schedulePaint(ms = 140) {
@@ -136,6 +160,7 @@ function fitTf() {
 function mountMap() {
   const box = mapbox();
   if (!box) return;
+  baked = null;                      // fresh SVG, painted at full stage coords
   applyTf(ui.getTf() || fitTf());
   repaint();
   wireMap(box);

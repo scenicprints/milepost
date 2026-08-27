@@ -320,6 +320,21 @@ Android Auto is no.
 
 ## Session log
 
+**Session 18** — Kevin's fixes on the pool. (1) Leg 1 is now ONLY his list:
+the twelve old low-road stragglers (Joshua Tree through Sixth Floor) lost
+their leg 1 membership, they live on leg 2/3 where they belong, and Fort
+Worth Stockyards is gone outright. (2) **Map blur fixed.** The stage raster
+was CSS-scaled and left stretched at rest; now every settle repaint bakes the
+visible box into the SVG viewBox at panel size and resets the transform, so
+the map is vector-crisp at any depth. The CSS transform only carries the live
+gesture delta. `baked` in app.js is the state the SVG was last painted for;
+it resets on mount because the tab redraw replaces the SVG. Coordinate output
+went from one decimal to three, one stage unit is ~4.4 km so tenths jitter at
+depth. (3) **Every pin shows.** Stops sharing a doorstep (Beale and Dyer's
+are 11 metres apart, they can never separate by zoom) spread into a small
+ring in screen units, which dissolves when real distance takes over. Labels
+anchor to the spread position. 1.7.1.
+
 **Session 17** — The leg 1 master pool landed. Kevin handed over a 68-stop
 researched pool (Modesto to Mooresville) and answered the open questions:
 Mooresville, tight schedule, Android Auto and fuel planning both dead. What
