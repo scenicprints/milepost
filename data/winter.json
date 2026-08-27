@@ -22,6 +22,8 @@
   "",
   "  tz        hours from UTC in STANDARD time. Arizona keeps no DST and Monteagle",
   "            is Central, not Eastern — neither is guessable from longitude.",
+  "  ll        the waypoint coordinates, copied from route.json so the planner can",
+  "            find the risk point nearest a position without a name lookup.",
   "`plowedBy` is typical, not promised. In an active storm the road is being",
   "cleared continuously and the honest answer is that it is never finished —",
   "the time is when the last pass is normally far enough ahead of you."
@@ -39,7 +41,11 @@
    "risk": "Chain control rather than closure. R1 and R2 go up during a storm and come down within hours of it ending.",
    "car": "Under R2 a FWD car needs chains ON — the exemption is 4WD only and does not apply to you. This is the first climb of the whole trip, a couple of hours from home.",
    "watch": "https://roads.dot.ca.gov/",
-   "tz": -8
+   "tz": -8,
+   "ll": [
+    35.132,
+    -118.449
+   ]
   },
   {
    "id": "flagstaff",
@@ -53,7 +59,11 @@
    "risk": "The highest ground on the western half and the most likely place to find the interstate shut outright. Reopenings usually come mid-morning.",
    "car": "Fine behind the plows. The danger is being on it at 5am, or during the storm itself.",
    "watch": "https://az511.gov/",
-   "tz": -7
+   "tz": -7,
+   "ll": [
+    35.198,
+    -111.651
+   ]
   },
   {
    "id": "grand-canyon-village",
@@ -67,7 +77,11 @@
    "risk": "The entrance road can close during a storm. Snow on the rim makes the canyon better, not worse.",
    "car": "No problem once cleared. Give it an extra hour over the interstate.",
    "watch": "https://www.nps.gov/grca/planyourvisit/conditions.htm",
-   "tz": -7
+   "tz": -7,
+   "ll": [
+    36.058,
+    -112.14
+   ]
   },
   {
    "id": "desert-view",
@@ -81,7 +95,11 @@
    "risk": "The highest point on the whole trip and the first thing to shut. It may not reopen the same day at all.",
    "car": "The canyon road is a fair-weather choice. If it has snowed overnight, take the plain interstate through Williams and do the canyon another time.",
    "watch": "https://www.nps.gov/grca/planyourvisit/conditions.htm",
-   "tz": -7
+   "tz": -7,
+   "ll": [
+    36.043,
+    -111.826
+   ]
   },
   {
    "id": "continental-divide",
@@ -95,7 +113,11 @@
    "risk": "Exposed high ground. Blowing snow closes it more often than snowfall does, and drifting can undo a plowed road within the hour.",
    "car": "Crosswind on ice is the hazard here, not depth. Wind does not care that the plow has been through, so this one wants daylight most of all.",
    "watch": "https://nmroads.com/",
-   "tz": -7
+   "tz": -7,
+   "ll": [
+    35.44,
+    -108.35
+   ]
   },
   {
    "id": "amarillo",
@@ -109,7 +131,11 @@
    "risk": "ICE, not snow, and brine works before the ice rather than after it. There is no plow pass that fixes a glazed road, so `plowedBy` here really means 'once the sun has been on it'.",
    "car": "Nothing you can carry fixes ice. If the Panhandle is glazed, the plan is to stop early and lose the afternoon, not to drive it slowly.",
    "watch": "https://drivetexas.org/",
-   "tz": -6
+   "tz": -6,
+   "ll": [
+    35.222,
+    -101.831
+   ]
   },
   {
    "id": "childress",
@@ -123,7 +149,11 @@
    "risk": "Panhandle ice with less attention paid to it. This is the leg 3 road, so it is an early-January problem on the way home.",
    "car": "Treat exactly like Amarillo, and expect it to be worse for longer.",
    "watch": "https://drivetexas.org/",
-   "tz": -6
+   "tz": -6,
+   "ll": [
+    34.426,
+    -100.204
+   ]
   },
   {
    "id": "oklahoma-city",
@@ -137,7 +167,11 @@
    "risk": "Bridges and overpasses glaze first and stay bad long after the open pavement is fine. A cleared road here is not a cleared bridge.",
    "car": "The overpasses are the hazard. Slow before them, not on them.",
    "watch": "https://oktraffic.org/",
-   "tz": -6
+   "tz": -6,
+   "ll": [
+    35.468,
+    -97.516
+   ]
   },
   {
    "id": "monteagle",
@@ -151,7 +185,11 @@
    "risk": "The climb is the worst ice trap between Nashville and Atlanta. Trucks jackknife on the grade and shut the road behind them, which costs far more time than the ice would.",
    "car": "Your risk is other people's trucks. If it is iced, wait at the bottom rather than joining the queue on the hill.",
    "watch": "https://smartway.tn.gov/traffic",
-   "tz": -6
+   "tz": -6,
+   "ll": [
+    35.248,
+    -85.842
+   ]
   },
   {
    "id": "asheville",
@@ -165,7 +203,11 @@
    "risk": "I-40 climbs through the Smokies to reach here and does ice up. The Blue Ridge Parkway closes outright and stays closed all winter.",
    "car": "Shade is why this one is late. The southern line through Atlanta exists for exactly this day.",
    "watch": "https://drivenc.gov/",
-   "tz": -5
+   "tz": -5,
+   "ll": [
+    35.595,
+    -82.552
+   ]
   },
   {
    "id": "atlanta",
@@ -179,7 +221,11 @@
    "risk": "Atlanta ices rarely and completely. When it does the city stops, the interstates fill with abandoned cars, and no plowing schedule applies.",
    "car": "If a named winter storm is heading for Atlanta, be somewhere else. This is the one place on the trip where the answer is not a time of day.",
    "watch": "https://511ga.org/",
-   "tz": -5
+   "tz": -5,
+   "ll": [
+    33.749,
+    -84.388
+   ]
   }
  ]
 }

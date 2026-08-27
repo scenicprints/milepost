@@ -13,17 +13,18 @@
 // preferring fresh. Data, icons and the vendored SDK stay cache-first — they
 // are large, they rarely change, and a stale copy of them is harmless.
 
-const CACHE = 'milepost-v32';
+const CACHE = 'milepost-v33';
 
 const SHELL = [
-  'index.html', 'manifest.webmanifest',
-  'css/app.css', 'css/fonts.css',
+  'index.html', 'desk.html', 'manifest.webmanifest',
+  'css/app.css', 'css/fonts.css', 'css/desk.css',
   'fonts/archivo-400.woff2', 'fonts/archivo-500.woff2',
   'fonts/ibm-plex-mono-400.woff2', 'fonts/ibm-plex-mono-500.woff2',
   'js/app.js', 'js/ui.js', 'js/store.js', 'js/route.js', 'js/plan.js', 'js/map.js',
   'js/install.js', 'js/sync.js', 'js/firebase-config.js', 'js/version.js',
   'js/weather.js', 'js/geocode.js', 'js/darksky.js',
-  'data/route.json', 'data/stops.json', 'data/usa.json', 'data/extras.json', 'data/darksky.json', 'data/darksky.png',
+  'js/winter.js', 'js/itinerary.js', 'js/desk.js',
+  'data/route.json', 'data/stops.json', 'data/usa.json', 'data/extras.json', 'data/darksky.json', 'data/darksky.png', 'data/hours.json', 'data/winter.json',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png',
   'icons/apple-touch-icon.png', 'icons/favicon-32.png',
   'vendor/firebase-app.js', 'vendor/firebase-firestore.js',
