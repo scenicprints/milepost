@@ -46,7 +46,25 @@
   </section>
 
   <section class="pane plan">
-    <div class="paneHead"><h2>The day, hour by hour</h2><div id="warn"></div></div>
+    <div class="paneHead">
+      <h2>The day, hour by hour</h2>
+      <div id="warn"></div>
+    </div>
+    <!-- Saved plans. A plan belongs to a road, so this list changes when the
+         road above does: "the same stops on a different route" is not the same
+         list, because which stops exist depends on which way you go. -->
+    <div class="planbar">
+      <label>Plan <select id="plan"></select></label>
+      <span class="dirty" id="dirty"></span>
+      <span class="spacer"></span>
+      <button id="psave" title="Overwrite the plan now loaded">save</button>
+      <button id="pnew" title="Keep this one and start another under a new name">save as new</button>
+      <button id="prename">rename</button>
+      <button id="pdel">delete</button>
+      <span class="sep"></span>
+      <button id="pcopy" title="Markdown on the clipboard, ready to paste">copy</button>
+      <button id="pdown" title="Download it as a .md file">download</button>
+    </div>
     <div id="itin"></div>
   </section>
 </main>

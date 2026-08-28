@@ -36,7 +36,20 @@ const DEFAULTS = () => ({
   // everything added later showed up unticked and stayed that way. Ids in here
   // are never re-seeded, so a stop you deliberately untick stays unticked.
   seededIds: [],
+  departAt: '06:00',     // clock time you pull out, paired with `departure`
+  // Saved plans, keyed by id. A plan is a WHOLE itinerary — which stops, where
+  // you sleep, how long you linger, and when you leave — so two of them for the
+  // same road can genuinely disagree. See the plans section below.
+  plans: {},
+  activePlan: null,      // id of the plan currently loaded, if any
 });
+
+/// Ids that read as themselves in a JSON export. Not crypto, just unique
+/// enough that two plans made a second apart cannot collide.
+let seq = 0;
+const planId = name =>
+  'p-' + (name || 'plan').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 24)
+  + '-' + Date.now().toString(36) + (seq++).toString(36);
 
 class Store extends EventTarget {
   constructor() {
@@ -210,6 +223,128 @@ class Store extends EventTarget {
 
   get departure() { return this.s.departure; }
   setDeparture(d) { this.s.departure = d; this.save(); }
+
+  get departAt() { return this.s.departAt || '06:00'; }
+  setDepartAt(t) { this.s.departAt = t || '06:00'; this.save(); }
+
+  // ---- saved plans ----
+  //
+  // The live editing surface does not move. `chosen`, `sleeps` and `dwells`
+  // stay exactly where every other module already reads them, and a plan is a
+  // SNAPSHOT copied out of them and back in. That is the whole trick: nothing
+  // above the store had to learn about plans, and an unsaved plan is simply
+  // the working state, the way it has always been.
+  //
+  // A plan belongs to a route id, because "the same list on a different road"
+  // is not the same list — the stops that exist depend on the road.
+  get plans() { return this.s.plans || (this.s.plans = {}); }
+
+  /// Saved plans for one road, newest edit first.
+  listPlans(routeId) {
+    return Object.values(this.plans)
+      .filter(p => !routeId || p.routeId === routeId)
+      .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+  }
+
+  get activePlan() { return this.s.activePlan || null; }
+  getPlan(id) { return this.plans[id] || null; }
+
+  /// Everything that makes this itinerary this itinerary.
+  currentPlanBody(routeId) {
+    return {
+      routeId,
+      chosen: [...this.chosen],
+      sleeps: { ...this.sleeps },
+      dwells: { ...this.dwells },
+      departure: this.s.departure || null,
+      departAt: this.departAt,
+    };
+  }
+
+  /// Save the working state as a NEW plan and make it active.
+  savePlanAs(name, routeId) {
+    const id = planId(name);
+    this.plans[id] = {
+      id, name: String(name || 'Untitled').trim().slice(0, 60),
+      ...this.currentPlanBody(routeId),
+      createdAt: Date.now(), updatedAt: Date.now(),
+    };
+    this.s.activePlan = id;
+    this.save();
+    return id;
+  }
+
+  /// Write the working state over the plan already loaded.
+  updatePlan(id, routeId) {
+    const p = this.plans[id];
+    if (!p) return null;
+    Object.assign(p, this.currentPlanBody(routeId), { updatedAt: Date.now() });
+    this.save();
+    return id;
+  }
+
+  /// Copy a plan under a new name, so "the same but without Dollywood" starts
+  /// from what you already built instead of from nothing.
+  duplicatePlan(id, name) {
+    const p = this.plans[id];
+    if (!p) return null;
+    const nid = planId(name);
+    this.plans[nid] = {
+      ...JSON.parse(JSON.stringify(p)),
+      id: nid, name: String(name || p.name + ' copy').trim().slice(0, 60),
+      createdAt: Date.now(), updatedAt: Date.now(),
+    };
+    this.s.activePlan = nid;
+    this.save();
+    return nid;
+  }
+
+  /// Load a plan into the working state. This REPLACES what is on screen, so
+  /// the caller is responsible for having offered to save first.
+  loadPlan(id) {
+    const p = this.plans[id];
+    if (!p) return null;
+    this.chosen = new Set(p.chosen || []);
+    this.s.chosen = [...this.chosen];
+    this.s.sleeps = { ...(p.sleeps || {}) };
+    this.s.dwells = { ...(p.dwells || {}) };
+    this.s.departure = p.departure || null;
+    this.s.departAt = p.departAt || '06:00';
+    this.s.activePlan = id;
+    this.save();
+    return p;
+  }
+
+  renamePlan(id, name) {
+    const p = this.plans[id];
+    if (!p) return;
+    p.name = String(name || p.name).trim().slice(0, 60);
+    p.updatedAt = Date.now();
+    this.save();
+  }
+
+  deletePlan(id) {
+    delete this.plans[id];
+    if (this.s.activePlan === id) this.s.activePlan = null;
+    this.save();
+  }
+
+  /// True when the working state has drifted from the plan it was loaded from,
+  /// so the UI can say "unsaved" rather than quietly losing an edit.
+  planIsDirty(routeId) {
+    const p = this.activePlan && this.plans[this.activePlan];
+    if (!p) return this.chosen.size > 0;
+    const a = this.currentPlanBody(routeId);
+    // Key order is not meaning: {a:1,b:2} and {b:2,a:1} are the same plan, and
+    // comparing them raw reported every load as an unsaved edit.
+    const flat = o => Object.entries(o || {}).map(([k, v]) => k + '=' + v).sort().join(',');
+    const norm = o => [
+      [...(o.chosen || [])].sort().join(','),
+      flat(o.sleeps), flat(o.dwells),
+      o.departure || '', o.departAt || '06:00',
+    ].join('|');
+    return norm(a) !== norm(p);
+  }
 }
 
 export const store = new Store();

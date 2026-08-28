@@ -15,6 +15,7 @@
 import { store } from './store.js';
 import { buildRoute } from './route.js';
 import { build, hhmm } from './itinerary.js';
+import { toMarkdown, fileNameFor } from './export.js';
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c =>
@@ -51,8 +52,20 @@ async function boot() {
   $('leg').innerHTML = route.legs
     .map((l, i) => `<option value="${i}">${esc(l.name)}</option>`).join('');
 
+  // The departure lives in the store now, because a saved plan has to be able
+  // to carry a different one. It is still never committed to the repo.
+  if (store.departure) $('date').value = store.departure;
+  $('at').value = store.departAt;
+
   for (const el of ['leg', 'road', 'date', 'at'])
-    $(el).addEventListener('change', () => { if (el === 'leg') { legIx = +$('leg').value; fillRoads(); } draw(); });
+    $(el).addEventListener('change', () => {
+      if (el === 'leg') { legIx = +$('leg').value; fillRoads(); }
+      if (el === 'date') store.setDeparture($('date').value);
+      if (el === 'at') store.setDepartAt($('at').value);
+      draw();
+    });
+
+  wirePlans();
 
   for (const b of document.querySelectorAll('[data-kind]'))
     b.addEventListener('click', () => {
@@ -118,6 +131,7 @@ function fillRoads() {
 function current() {
   const leg = DATA.route.legs[legIx];
   const opt = leg.routes.find(r => r.id === $('road').value) || leg.routes[0];
+  currentLeg = leg; currentOpt = opt;
   const route = buildRoute(opt, DATA.stops.concat(store.custom), store.dwells);
   const it = build(
     route, store.chosen,
@@ -126,8 +140,49 @@ function current() {
   return { route, it };
 }
 
+// ============================================================ saved plans ===
+//
+// The store does the work; this only renders it. A plan belongs to a road, so
+// the list is filtered by the road selected above — see store.listPlans.
+let currentLeg = null, currentOpt = null;
+
+function drawPlanBar() {
+  const rid = currentOpt ? currentOpt.id : null;
+  const list = store.listPlans(rid);
+  const active = store.activePlan;
+  const known = list.some(p => p.id === active);
+
+  $('plan').innerHTML =
+    `<option value="">${list.length ? '— pick a saved plan —' : '— nothing saved for this road —'}</option>`
+    + list.map(p => `<option value="${esc(p.id)}"${p.id === active ? ' selected' : ''}>${esc(p.name)}</option>`).join('');
+
+  const dirty = store.planIsDirty(rid);
+  const el = $('dirty');
+  if (!known) el.textContent = dirty ? 'unsaved' : '';
+  else el.textContent = dirty ? 'edited — not saved' : 'saved';
+  el.className = 'dirty' + (known && !dirty ? ' saved' : '');
+
+  // Nothing to rename, delete or overwrite until a plan is actually loaded.
+  for (const id of ['prename', 'pdel']) $(id).disabled = !known;
+  $('psave').textContent = known ? 'save' : 'save plan';
+}
+
+/// The plan as text, for the clipboard or a file.
+function planMarkdown() {
+  const { route, it } = current();
+  const active = store.activePlan && store.getPlan(store.activePlan);
+  return toMarkdown(route, it, {
+    name: active ? active.name : 'Unsaved plan',
+    legName: currentLeg ? currentLeg.name : '',
+    routeName: currentOpt ? currentOpt.name : '',
+    departure: new Date($('date').value + 'T00:00:00Z'),
+    at: $('at').value || '06:00',
+  });
+}
+
 function draw() {
   const { route, it } = current();
+  drawPlanBar();
 
   // ---- totals -----------------------------------------------------------
   const days = it.dayCount;
@@ -213,6 +268,104 @@ function draw() {
     if (el) { el.focus(); if (el.select) el.select(); }
     refocus = null;
   }
+}
+
+/// Saved-plan buttons. Deliberately plain prompts rather than a modal: this is
+/// a tool for one table, and a dialog system would be more app than the job.
+function wirePlans() {
+  const rid = () => (currentOpt ? currentOpt.id : null);
+
+  $('plan').addEventListener('change', e => {
+    const id = e.target.value;
+    if (!id) { drawPlanBar(); return; }
+    // Loading REPLACES what is on screen, so say so while it can still be
+    // stopped. Nothing here is recoverable once the working state is gone.
+    if (store.planIsDirty(rid())
+        && !confirm('You have changes that are not saved to a plan. Load anyway and lose them?')) {
+      drawPlanBar();
+      return;
+    }
+    store.loadPlan(id);
+    if (store.departure) $('date').value = store.departure;
+    $('at').value = store.departAt;
+    draw();
+  });
+
+  $('psave').addEventListener('click', () => {
+    const active = store.activePlan && store.getPlan(store.activePlan);
+    if (active && active.routeId === rid()) { store.updatePlan(active.id, rid()); draw(); return; }
+    const name = prompt('Name this plan', suggestName());
+    if (name && name.trim()) { store.savePlanAs(name.trim(), rid()); draw(); }
+  });
+
+  $('pnew').addEventListener('click', () => {
+    const active = store.activePlan && store.getPlan(store.activePlan);
+    const name = prompt('Name for the new plan',
+      active ? active.name + ' v2' : suggestName());
+    if (!name || !name.trim()) return;
+    // From a loaded plan this duplicates it and then writes the CURRENT screen
+    // over the copy, so "save as new" keeps your edits and leaves the original
+    // as it was — which is the whole point of making a second one.
+    if (active) { const nid = store.duplicatePlan(active.id, name.trim()); store.updatePlan(nid, rid()); }
+    else store.savePlanAs(name.trim(), rid());
+    draw();
+  });
+
+  $('prename').addEventListener('click', () => {
+    const p = store.getPlan(store.activePlan);
+    if (!p) return;
+    const name = prompt('Rename this plan', p.name);
+    if (name && name.trim()) { store.renamePlan(p.id, name.trim()); draw(); }
+  });
+
+  $('pdel').addEventListener('click', () => {
+    const p = store.getPlan(store.activePlan);
+    if (!p) return;
+    if (confirm(`Delete "${p.name}"? The stops stay ticked — only the saved plan goes.`)) {
+      store.deletePlan(p.id);
+      draw();
+    }
+  });
+
+  $('pcopy').addEventListener('click', async () => {
+    const md = planMarkdown();
+    const btn = $('pcopy');
+    try {
+      await navigator.clipboard.writeText(md);
+      flash(btn, 'copied');
+    } catch (_) {
+      // Clipboard needs a secure context and a real gesture, and refuses often
+      // enough that failing silently would look like a broken button.
+      download(md);
+      flash(btn, 'downloaded instead');
+    }
+  });
+
+  $('pdown').addEventListener('click', () => { download(planMarkdown()); flash($('pdown'), 'saved'); });
+}
+
+function suggestName() {
+  const n = store.listPlans(currentOpt ? currentOpt.id : null).length;
+  return currentOpt ? `${currentOpt.name}${n ? ' ' + (n + 1) : ''}` : 'My plan';
+}
+
+function download(md) {
+  const active = store.activePlan && store.getPlan(store.activePlan);
+  const url = URL.createObjectURL(new Blob([md], { type: 'text/markdown;charset=utf-8' }));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileNameFor(active ? active.name : 'milepost-plan');
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+/// Say a thing happened. A button that does its job silently reads as broken.
+function flash(btn, msg) {
+  const was = btn.textContent;
+  btn.textContent = msg;
+  setTimeout(() => { btn.textContent = was; }, 1400);
 }
 
 /// A night. Same three columns as a stop row so the clock stays in one line

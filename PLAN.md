@@ -330,6 +330,57 @@ Android Auto is no.
 
 ## Session log
 
+**Session 29** — Saved plans, and the export. 1.17.0.
+
+Kevin: *"I want a way to create a spot list for a route, and then save it. And
+then make another one for the same route."* Then: *"And then be able to export
+them."* Asked what the export was for, he said: **"To give to AI to help with
+and to send."**
+
+**A plan is a snapshot, and the live editing surface did not move.** `chosen`,
+`sleeps` and `dwells` stay exactly where every module already reads them; a plan
+is copied out of them and back in. Nothing above the store had to learn what a
+plan is, and an unsaved plan is simply the working state, the way it always was.
+A plan belongs to a **route id**, because "the same list on a different road" is
+not the same list — which stops exist depends on which way you go.
+
+A plan captures the WHOLE itinerary — ticked stops, placed nights, dwell
+overrides, and the departure date and time — which is why `departure`/`departAt`
+moved into the store. They were living in the DOM inputs, so two plans could not
+have disagreed about when you leave. Still never committed to the repo.
+
+`planIsDirty` compares normalised strings, not raw `JSON.stringify`: key order
+is not meaning, and comparing objects directly reported every freshly-loaded
+plan as an unsaved edit.
+
+**The export is Markdown, and it carries the REASONS.** A row saying "Meteor
+Crater 08:19" is data; a row saying it shuts at 17:00, that you are there 90
+minutes, and that Flagstaff at 6,909 ft has to be crossed at midday is a thing
+something can help you with. So the file leads with the two facts a reader
+cannot infer and will otherwise get wrong — that **times are local to each stop
+across three zones**, and that **the 65 mph is computed per segment and is not a
+setting** — then the problems, then a table per day with the notes underneath.
+
+The notes go *underneath* because a markdown table has to be contiguous. The
+first version interleaved each stop's warnings between the rows, which split one
+table into a run of one-row tables that render as garbage. Verified by parsing
+the output back and counting broken tables, not by looking at it.
+
+Copy puts it on the clipboard (for pasting to an AI) and download writes a `.md`
+(for sending). Copy falls back to a download when the clipboard refuses, which
+it does often enough that failing silently would read as a broken button.
+
+**⚠ `tools/bundle-artifact.mjs` IS BROKEN AND WAS ALREADY BROKEN.** Its audit
+now reports four files missing from `MODULES`: `winter.js`, `itinerary.js` and
+`desk.js` (unlisted since sessions 26–27) and `export.js` (this session). The
+audit is doing its job — that guard exists because an unlisted module once
+produced a bundle that parsed fine and died at boot. **It needs a decision, not
+a patch:** `desk.js` calls `boot()` at the bottom and queries `#leg`, so simply
+adding it to `MODULES` would run the desktop planner against index.html's DOM
+inside the single-file artifact. Either the bundler learns about entry points,
+or the artifact drops the desktop view. Not guessed at here. The live site and
+GitHub Pages do not use the bundler and are unaffected.
+
 **Session 28** — Timezones, speed off the road, and how long you'll really be
 there. 1.16.0.
 

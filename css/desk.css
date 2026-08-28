@@ -96,6 +96,34 @@ main { flex: 1; display: grid; grid-template-columns: minmax(280px, 26%) 1fr; mi
 .what .nm i { font-style: normal; font-family: var(--mono); font-size: 8.5px;
   letter-spacing: .1em; text-transform: uppercase; color: var(--ink3); margin-left: 6px; }
 .what .sub { font-family: var(--mono); font-size: 10px; color: var(--ink2); margin-top: 3px; }
+/* Saved plans. One quiet strip under the pane head — it is scaffolding around
+   the itinerary, not part of it, so it stays visually below the heading and
+   above the road, and nothing in it competes with a stop row. */
+.planbar {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 16px; border-bottom: 1px solid var(--rule);
+  background: var(--paper2, var(--paper));
+  font-family: var(--mono); font-size: 10px; color: var(--ink3);
+}
+.planbar label { display: flex; align-items: center; gap: 5px;
+  text-transform: uppercase; letter-spacing: .09em; }
+.planbar select {
+  font: inherit; font-size: 11px; text-transform: none; letter-spacing: 0;
+  color: var(--ink); background: var(--paper); border: 1px solid var(--rule2);
+  padding: 3px 5px; max-width: 260px;
+}
+.planbar button {
+  font-family: var(--mono); font-size: 10px; letter-spacing: .06em;
+  color: var(--ink2); padding: 3px 6px; border: 1px solid transparent;
+}
+.planbar button:hover { color: var(--signal); border-color: var(--rule2); }
+.planbar button:disabled { color: var(--ink3); opacity: .4; cursor: default; }
+.planbar button:disabled:hover { color: var(--ink3); border-color: transparent; }
+.planbar .spacer { flex: 1; }
+.planbar .sep { width: 1px; height: 14px; background: var(--rule2); margin: 0 3px; }
+.planbar .dirty { color: var(--warn); letter-spacing: .06em; }
+.planbar .dirty.saved { color: var(--good); }
+
 /* How long you will really be there. Sits under the place rather than out in
    the right-hand column, because it is a fact about the visit and not about
    the clock — and because the seeded number is a guess you are correcting. */
