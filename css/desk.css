@@ -102,6 +102,50 @@ main { flex: 1; display: grid; grid-template-columns: minmax(280px, 26%) 1fr; mi
 .flag.warn { color: var(--warn); } .flag.warn::before { background: var(--warn); }
 .flag.unknown { color: var(--ink3); } .flag.unknown::before { background: var(--ink3); }
 
+/* ---------------------------------------------------------------- sleep */
+/* The night is a break in the page, not another place on it. Same three
+ * columns as a row so the clock reads as one line down the list, but hollow
+ * where a stop is solid: no rule above it, a dashed spine, ink2 throughout. */
+/* Always visible. The first version revealed this on row hover, which is a
+ * clever way of shipping a feature nobody can find: the only way to learn the
+ * planner could do nights at all was to already know. It sits under the stop
+ * name, quiet, but it is always on the page. */
+.gap { display: flex; align-items: center; padding: 2px 24px 2px 128px; }
+.gap button {
+  font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ink3); padding: 3px 0;
+  display: flex; align-items: baseline; gap: 6px;
+}
+.gap button::before { content: "+"; font-size: 13px; color: var(--signal); }
+.gap button:hover { color: var(--ink); }
+
+.sleepblk {
+  display: grid; grid-template-columns: 88px 1fr 150px; gap: 16px;
+  padding: 12px 24px; margin: 4px 0; align-items: start;
+  border-top: 1px dashed var(--rule2); border-bottom: 1px dashed var(--rule2);
+  background: color-mix(in srgb, var(--ink) 3%, transparent);
+}
+.sleepblk .when b { color: var(--ink2); }
+.sleepblk .nm { color: var(--ink2); }
+.sleepblk .nm i {
+  font-style: normal; font-family: var(--mono); font-size: 10px;
+  text-transform: none;      /* .what .nm i is the "eat" badge; 8h is not a badge */
+  letter-spacing: .06em; color: var(--ink); margin-left: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.setter { display: flex; align-items: center; justify-content: flex-end; gap: 3px; }
+.setter input {
+  font: inherit; font-size: 12px; font-family: var(--mono); color: var(--ink);
+  background: var(--paper); border: 1px solid var(--rule2);
+  padding: 3px 4px; width: 42px; text-align: right;
+}
+.setter span { font-family: var(--mono); font-size: 10px; color: var(--ink3); margin-right: 5px; }
+.setter button {
+  font-size: 15px; line-height: 1; color: var(--ink3); padding: 2px 5px; margin-left: 3px;
+}
+.setter button:hover { color: var(--bad); }
+
 .hrs { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
 .hrs .oc { font-size: 12px; }
 .hrs .oc.closed { color: var(--bad); text-transform: uppercase; letter-spacing: .1em; font-size: 10px; }

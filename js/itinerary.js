@@ -18,12 +18,20 @@
 // driving backwards. What you choose is which stops are IN, and how long you
 // linger; geography does the rest.
 //
-// THE DAY MODEL. A driving day does not start when you wake up. It starts when
-// the road ahead is clear behind the plows and light enough to see — that is
-// js/winter.js, and in late December the daylight is the binding constraint
-// almost everywhere, giving about eight and a quarter usable hours. When the
-// clock runs past the day's end the itinerary breaks to a new day and resumes
-// at the next morning's window rather than at some invented hour.
+// THE DAY MODEL. **A day ends where you put a sleep, and nowhere else.** An
+// earlier version broke the day by itself whenever the clock ran past dusk and
+// resumed at the next morning's crossing window. That was tidy and it was
+// wrong: it invented a bedtime nobody chose, in a town nobody picked, and the
+// schedule it printed was not the trip. Now the clock runs straight through
+// until it reaches a sleep placed after a stop, so if you drive to 02:00 it
+// says 02:00 and flags the dark rather than quietly hiding it in a day break.
+//
+// A sleep is a DURATION, not a place. It hangs off the stop it follows, and it
+// is the one thing here that moves the calendar. Everything js/winter.js knows
+// about plows and first light is still computed and still shown, but as advice
+// on either side of your night rather than as a rule that overrides it: wake
+// before the road opens and you are told so, in the terms that made you care
+// about it in the first place.
 //
 // TIME IS KEPT IN MINUTES from the trip's first midnight, one integer per
 // event. Dates and clock faces are formatting concerns, applied at the edge.
@@ -90,28 +98,35 @@ const drive = (fromMile, toMile, mph) => Math.max(0, (toMile - fromMile)) / mph 
  * @param route   a built route (from buildRoute) — stops carry `mile`
  * @param chosen  Set of stop ids that are in the plan
  * @param start   { date: Date (UTC midnight of day one), at: 'HH:MM' }
- * @param pace    { mph, hoursPerDay }
- * @param data    { HOURS, WINTER }  the two side tables
+ * @param pace    { mph }
+ * @param data    { HOURS, WINTER, sleeps }  the two side tables, plus the
+ *                nights: minutes asleep keyed by the stop you sleep AFTER.
+ *                Unlike the tables, sleeps are the user's own — store.sleeps.
  *
  * @returns { rows, days, totalMin, endsAt, warnings }
- *   rows      one per stop, in road order, with arrive/depart/hours/verdict
- *   days      day boundaries, each with its own crossing window
+ *   rows      one per stop, in road order, with arrive/depart/hours/verdict,
+ *             and `sleep` set on the stop a night was placed after
+ *   days      the stretches between sleeps, each with its own crossing window
  *   totalMin  door to door, including nights
  */
 export function build(route, chosen, start, pace, data) {
   const { HOURS, WINTER } = data;
+  const sleeps = data.sleeps || {};
   const mph = pace.mph || 62;
-  const dayHours = pace.hoursPerDay || 8;
 
   const stops = route.stops
     .filter(s => chosen.has(s.id) && s.kind !== 'lodging')
     .sort((a, b) => a.mile - b.mile);
 
-  // Where the day can begin and must end, for a given day index and position.
-  // Uses the nearest winter risk point ahead if there is one, else plain
-  // daylight at the current spot.
-  const dayFor = (dayIx, ll) => {
-    const date = new Date(start.date.valueOf() + dayIx * 86400000);
+  // The sun, and the crossing window, at a position on whatever calendar day
+  // the absolute clock has reached.
+  //
+  // The date comes from the CLOCK and not from a day counter. That matters in
+  // both directions now that nights are placed by hand: a two hour nap must
+  // not advance the calendar, and an eight hour night that starts at 22:00
+  // must.
+  const dayFor = (clock, ll) => {
+    const date = new Date(start.date.valueOf() + Math.floor(clock / MIN_PER_DAY) * 86400000);
     const risk = nearestRisk(WINTER, ll);
     const sun = winter.daylight(date, ll[0], ll[1]);
     const tz = (risk && risk.tz) || guessTz(ll[1]);
@@ -127,48 +142,36 @@ export function build(route, chosen, start, pace, data) {
     };
   };
 
-  let dayIx = 0;
-  let day = dayFor(0, route.waypoints[0].ll);
-  // Day one is special: you leave when you say you leave, not when the window
-  // opens. Kevin's plan is to go the night before, and the app should let him.
-  let clock = dayIx * MIN_PER_DAY + toMin(start.at);
+  let clock = toMin(start.at);
   let mile = 0;
-  const rows = [], days = [{ ...day, ix: 0, from: route.waypoints[0].name }];
-  const warnings = [];
+  let dayIx = 0;
+  let sleepMin = 0;
+
+  const first = dayFor(clock, route.waypoints[0].ll);
+  const days = [{ ...first, ix: 0, from: route.waypoints[0].name, startedAt: clock, startAt: hhmm(clock) }];
+  const rows = [], warnings = [];
 
   for (const s of stops) {
     // Everything is whole minutes. Floating point down a 6,000-mile chain
     // produced arrival times like "09:33.413", which is not a clock face.
     const legMin = Math.round(drive(mile, s.mile, mph) + s.detour);
-    let arrive = clock + legMin;
-
-    // Past the end of the driving day? Stop where the day ran out, sleep, and
-    // finish the remaining drive after the next morning's window opens.
-    //
-    // The first version tested `arrive % 1440 > day.shut`, which silently
-    // accepted anything that rolled past midnight — a 02:23 arrival looks like
-    // a small number of minutes and passes the test. Compare absolute minutes
-    // against the absolute end of the day instead.
-    let guard = 0;
-    while (arrive > dayIx * MIN_PER_DAY + day.shut && guard++ < 30) {
-      const leftover = arrive - (dayIx * MIN_PER_DAY + day.shut);
-      dayIx += 1;
-      day = dayFor(dayIx, s.ll);
-      days.push({ ...day, ix: dayIx, from: s.town });
-      arrive = dayIx * MIN_PER_DAY + day.open + leftover;
-    }
-
-    const h = hoursFor(HOURS, s.id, day.date);
-    const sun = { rise: day.rise, set: day.set };
-    const best = bestWindow(h, sun);
-    const at = arrive % MIN_PER_DAY;
+    const arrive = clock + legMin;
     const depart = arrive + s.dwell;
+
+    // The sun where the stop actually IS, on the day the clock has reached.
+    // Reading it off the day's starting position instead put "after dark" at
+    // the Grand Canyon and in Houston at the same minute, which is the exact
+    // thing bestWindow exists to avoid.
+    const here = dayFor(arrive, s.ll);
+    const h = hoursFor(HOURS, s.id, here.date);
+    const best = bestWindow(h, { rise: here.rise, set: here.set });
+    const at = arrive % MIN_PER_DAY;
 
     const flags = [];
     if (!h) flags.push({ level: 'unknown', text: 'Hours not checked for this one.' });
     else if (h.shut) flags.push({
       level: 'bad',
-      text: h.shutToday ? 'Closed on this date.' : 'Closed on ' + weekday(day.date) + 's.',
+      text: h.shutToday ? 'Closed on this date.' : 'Closed on ' + weekday(here.date) + 's.',
     });
     else {
       if (h.open != null && at < h.open)
@@ -181,19 +184,62 @@ export function build(route, chosen, start, pace, data) {
         flags.push({ level: 'warn', text: `Best between ${hhmm(best.from)} and ${hhmm(best.to)}. ${h.why}` });
     }
 
-    rows.push({
+    // Nothing breaks the day now except a sleep you placed, so the clock will
+    // happily run to 02:00 and say so. It should say more than the number.
+    if (at > here.set || at < here.rise)
+      flags.push({
+        level: 'warn',
+        text: `You would be driving in the dark. Sun goes down at ${hhmm(here.set)} and is not up again until ${hhmm(here.rise)}.`,
+      });
+
+    const row = {
       stop: s, dayIx, mile: s.mile,
-      driveMin: Math.round(legMin), arrive, depart,
+      driveMin: legMin, arrive, depart,
       arriveAt: hhmm(arrive), departAt: hhmm(depart),
       dwell: s.dwell, cost: stopCost(s).total,
       hours: h, best,
       bestAt: best ? hhmm(best.from) + '-' + hhmm(best.to) : null,
       flags,
       ok: !flags.some(f => f.level === 'bad'),
-    });
+      sleep: null,
+    };
+    rows.push(row);
 
     clock = depart + s.detour;      // back out to the road
     mile = s.mile;
+
+    // ---- the night, if one was placed after this stop --------------------
+    const nap = Math.round(Number(sleeps[s.id]) || 0);
+    if (nap > 0) {
+      const wake = clock + nap;
+      const next = dayFor(wake, s.ll);
+      const wakeAt = wake % MIN_PER_DAY;
+      const sflags = [];
+
+      // Waking up and the road being worth driving are two different times,
+      // and this whole app exists because of the gap between them.
+      if (wakeAt < next.open && wakeAt > next.open - 12 * 60)
+        sflags.push({
+          level: 'warn',
+          text: next.why === 'plows'
+            ? `Back on the road at ${hhmm(wake)}, but ${next.riskName} is not normally clear behind the plows until ${hhmm(next.open)}.`
+            : `Back on the road at ${hhmm(wake)}, ${mins(next.open - wakeAt)} before there is light enough for it. First light is ${hhmm(next.rise)}.`,
+        });
+      if (nap < 5 * 60)
+        sflags.push({ level: 'warn', text: `${mins(nap)} is a nap, not a night.` });
+
+      row.sleep = {
+        minutes: nap,
+        downAt: hhmm(clock), wakeAt: hhmm(wake),
+        at: s.town ? `${s.town}${s.state ? ', ' + s.state : ''}` : s.name,
+        dayIx, flags: sflags,
+      };
+
+      sleepMin += nap;
+      dayIx += 1;
+      days.push({ ...next, ix: dayIx, from: s.town || s.name, startedAt: wake, startAt: hhmm(wake) });
+      clock = wake;
+    }
   }
 
   // The run home from the last stop to the end of the route.
@@ -208,16 +254,25 @@ export function build(route, chosen, start, pace, data) {
     rows, days,
     totalMin: Math.round(endsAt - toMin(start.at)),
     endsAt, endsAtLabel: hhmm(endsAt),
-    dayCount: dayIx + 1,
+    dayCount: days.length,
     warnings,
     driveMin: Math.round(drive(0, route.miles, mph)),
     stopMin: rows.reduce((a, r) => a + r.cost, 0),
+    sleepMin,
   };
 }
 
+
 const WD = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const weekday = d => WD[d.getUTCDay()];
-const mins = m => { m = Math.round(m); return m >= 60 ? `${Math.floor(m / 60)}h ${m % 60}m` : `${m} min`; };
+// "2h 0m is a nap, not a night" and "1h 0m before it opens" both read like a
+// machine talking. A round hour is just an hour.
+const mins = m => {
+  m = Math.round(m);
+  if (m < 60) return `${m} min`;
+  const h = Math.floor(m / 60);
+  return m % 60 ? `${h}h ${m % 60}m` : `${h}h`;
+};
 
 /// Rough standard-time offset from longitude, for places with no winter entry.
 /// Only used where nothing better exists; winter.json carries real values for

@@ -1,8 +1,12 @@
 // The desktop planner.
 //
 // Answers, in order: which stops are in, when do I reach each one, is it open
-// when I get there, when should I really be there, and how long is the whole
-// thing. See desk.html for why this is a second view rather than a wider phone.
+// when I get there, when should I really be there, where do I sleep and for how
+// long, and how long is the whole thing. See desk.html for why this is a second
+// view rather than a wider phone.
+//
+// SLEEP IS PLACED, NEVER GUESSED. Every stop has a "+ sleep" under it and a
+// night is a duration you set in hours and minutes. Nothing else ends a day.
 //
 // Everything below is presentation. The arithmetic lives in js/itinerary.js and
 // js/winter.js, and the plan itself lives in js/store.js, which is shared with
@@ -19,6 +23,16 @@ const esc = s => String(s ?? '').replace(/[&<>"]/g, c =>
 let DATA = null, legIx = 0, kind = 'all';
 
 const WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+// Spelled out because the trip leaves in late December and comes home in
+// January. The first version hardcoded "Dec" and would have printed day 19 of
+// the trip as 6 Dec.
+const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+// The input the caret should go back into after a redraw. Editing a night
+// changes every time after it, so the list has to be rebuilt on each keystroke
+// and the field you are typing in is destroyed underneath you. Each input
+// carries a stable data-k, and draw() puts the focus back on it.
+let refocus = null;
 const dur = m => {
   m = Math.round(m);
   const h = Math.floor(m / 60);
@@ -48,10 +62,29 @@ async function boot() {
     });
 
   document.addEventListener('click', e => {
+    const add = e.target.closest('[data-addsleep]');
+    if (add) { refocus = 'sh-' + add.dataset.addsleep; return store.setSleep(add.dataset.addsleep, 8 * 60); }
+
+    const drop = e.target.closest('[data-dropsleep]');
+    if (drop) return store.clearSleep(drop.dataset.dropsleep);
+
     const t = e.target.closest('[data-toggle]');
     if (!t) return;
     store.toggle(t.dataset.toggle);
-    draw();
+  });
+
+  // 'change', not 'input': a number stepper fires on every click and the redraw
+  // would fight the caret the whole way up from 0 to 8.
+  document.addEventListener('change', e => {
+    const f = e.target.closest('[data-sleep]');
+    if (!f) return;
+    const id = f.dataset.sleep;
+    const val = k => {
+      const el = document.querySelector(`[data-sleep="${CSS.escape(id)}"][data-p="${k}"]`);
+      return Math.max(0, Number(el && el.value) || 0);
+    };
+    refocus = f.dataset.k;
+    store.setSleep(id, Math.min(val('h'), 47) * 60 + Math.min(val('m'), 59));
   });
 
   store.addEventListener('change', draw);
@@ -75,8 +108,8 @@ function current() {
   const it = build(
     route, store.chosen,
     { date: new Date($('date').value + 'T00:00:00Z'), at: $('at').value || '06:00' },
-    { mph: +$('mph').value || 62, hoursPerDay: 8 },
-    { HOURS: DATA.HOURS, WINTER: DATA.WINTER });
+    { mph: +$('mph').value || 62 },
+    { HOURS: DATA.HOURS, WINTER: DATA.WINTER, sleeps: store.sleeps });
   return { route, it };
 }
 
@@ -90,6 +123,7 @@ function draw() {
     <div><b>${it.rows.length}</b><span>stops</span></div>
     <div><b>${dur(it.driveMin)}</b><span>driving</span></div>
     <div><b>${dur(it.stopMin)}</b><span>stopped</span></div>
+    <div><b>${it.sleepMin ? dur(it.sleepMin) : '—'}</b><span>asleep</span></div>
     <div class="big"><b>${days}</b><span>${days === 1 ? 'day' : 'days'}</span></div>`;
 
   // ---- the pool: everything on this road, in or out ----------------------
@@ -110,7 +144,7 @@ function draw() {
     ? `<span class="pill bad">${bad} ${bad === 1 ? 'problem' : 'problems'}</span>`
     : `<span class="pill ok">every stop works</span>`;
 
-  // ---- the itinerary, grouped by day ------------------------------------
+  // ---- the itinerary, one running clock broken only where you sleep -----
   let html = '', lastDay = -1;
   if (!it.rows.length) html = `<p class="empty">Nothing chosen yet. Pick stops on the left and the clock fills in.</p>`;
 
@@ -120,10 +154,9 @@ function draw() {
       const d = it.days.find(x => x.ix === r.dayIx) || it.days[0];
       const date = d.date;
       html += `<div class="day">
-        <h3>Day ${r.dayIx + 1} <span>${WD[date.getUTCDay()]} ${date.getUTCDate()} Dec</span></h3>
-        <div class="window">Road opens <b>${hhmm(d.open)}</b> ${d.why === 'plows'
-          ? `— ${esc(d.riskName)} is normally clear behind the plows by then`
-          : `— first light is ${hhmm(d.rise)}`}, dark at <b>${hhmm(d.set)}</b></div>
+        <h3>Day ${r.dayIx + 1} <span>${WD[date.getUTCDay()]} ${date.getUTCDate()} ${MON[date.getUTCMonth()]}</span></h3>
+        <div class="window">Rolling at <b>${esc(d.startAt)}</b> · first light ${hhmm(d.rise)}, dark at <b>${hhmm(d.set)}</b>${
+          d.why === 'plows' ? ` · ${esc(d.riskName)} is normally clear behind the plows by ${hhmm(d.open)}` : ''}</div>
       </div>`;
     }
 
@@ -143,8 +176,43 @@ function draw() {
         ${r.bestAt ? `<div class="best">best ${r.bestAt}</div>` : ''}
       </div>
     </div>`;
+
+    html += r.sleep ? sleepBlock(r) : `<div class="gap">
+      <button data-addsleep="${esc(r.stop.id)}">sleep here</button>
+    </div>`;
   }
+
   $('itin').innerHTML = html;
+
+  // Put the caret back where it was before the list was rebuilt under it.
+  if (refocus) {
+    const el = document.querySelector(`[data-k="${CSS.escape(refocus)}"]`);
+    if (el) { el.focus(); if (el.select) el.select(); }
+    refocus = null;
+  }
+}
+
+/// A night. Same three columns as a stop row so the clock stays in one line
+/// down the page, but it reads as a break rather than as another place.
+function sleepBlock(r) {
+  const sl = r.sleep;
+  const id = esc(r.stop.id);
+  const h = Math.floor(sl.minutes / 60), m = sl.minutes % 60;
+  return `<div class="sleepblk">
+    <div class="when"><b>${sl.downAt}</b><span>up ${sl.wakeAt}</span></div>
+    <div class="what">
+      <div class="nm">Sleep <i>${dur(sl.minutes)}</i></div>
+      <div class="sub">${esc(sl.at)}</div>
+      ${sl.flags.map(f => `<div class="flag ${f.level}">${esc(f.text)}</div>`).join('')}
+    </div>
+    <div class="hrs setter">
+      <input type="number" min="0" max="47" step="1" value="${h}"
+             data-sleep="${id}" data-p="h" data-k="sh-${id}" aria-label="hours asleep"><span>h</span>
+      <input type="number" min="0" max="59" step="5" value="${m}"
+             data-sleep="${id}" data-p="m" data-k="sm-${id}" aria-label="minutes asleep"><span>m</span>
+      <button data-dropsleep="${id}" title="Remove this night">×</button>
+    </div>
+  </div>`;
 }
 
 boot();

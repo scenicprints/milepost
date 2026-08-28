@@ -20,6 +20,11 @@ const DEFAULTS = () => ({
   custom: [],            // your own places, same shape as data/stops.json entries
   pace: { ...DEFAULT_PACE },
   departure: null,       // yyyy-mm-dd, set by the user, never committed
+  // Nights, as MINUTES ASLEEP keyed by the stop you sleep AFTER. Not a place
+  // and not a hotel: the planner used to break the day by itself whenever the
+  // clock ran past dusk, which invented a bedtime nobody chose. Now the day
+  // ends where there is a sleep in here and nowhere else.
+  sleeps: {},
   // Which stop ids the seeder has already had its say about. NOT a boolean:
   // the stop list grows as each leg's pool arrives, and a one-time flag meant
   // everything added later showed up unticked and stayed that way. Ids in here
@@ -137,6 +142,7 @@ class Store extends EventTarget {
     this.chosen.delete(id);
     delete this.s.seen[id];
     delete this.s.notes[id];
+    delete this.sleeps[id];
     this.save();
   }
 
@@ -150,6 +156,25 @@ class Store extends EventTarget {
     else this.s.booked[id] = new Date().toISOString().slice(0, 10);
     this.save();
   }
+
+  // ---- sleep ----
+  //
+  // A sleep hangs off the stop it follows, so it travels with the plan when
+  // the road is swapped and it cannot drift to a different point on the map.
+  // The value is minutes; deleting the key is how a night is removed, so a
+  // zero-length sleep can never sit in the plan pretending to be a night.
+  get sleeps() { return this.s.sleeps || (this.s.sleeps = {}); }
+
+  sleepAfter(id) { return this.sleeps[id] ?? null; }
+
+  setSleep(id, minutes) {
+    const m = Math.round(Number(minutes) || 0);
+    if (m > 0) this.sleeps[id] = m;
+    else delete this.sleeps[id];
+    this.save();
+  }
+
+  clearSleep(id) { delete this.sleeps[id]; this.save(); }
 
   // ---- pace ----
   get pace() { return this.s.pace; }

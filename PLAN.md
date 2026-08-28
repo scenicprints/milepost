@@ -316,6 +316,64 @@ Android Auto is no.
 
 ## Session log
 
+**Session 27** — Sleep is placed by hand, and the planner stopped inventing
+days. 1.15.0.
+
+Kevin, on the desktop planner: *"I dont need a lodging section. I just need to
+add sleep and set a custom time to put wherever I want."*
+
+**The old day model was wrong and it was wrong quietly.** `itinerary.js` broke
+the day by itself the moment the clock ran past dusk, then resumed at the next
+morning's crossing window. It looked tidy and it printed a schedule that was
+not the trip: a bedtime nobody chose, in a town nobody picked. Worse, it hid
+the thing you actually want to see — drive to 02:00 and it silently folded that
+into a day break instead of saying so.
+
+**Now: a day ends where you put a sleep, and nowhere else.** Every stop in the
+itinerary has a `+ sleep here` under it, revealed on hover. A night is a
+DURATION in hours and minutes, not a place and not a hotel. The clock runs
+straight through everything else.
+
+- **`store.sleeps`** — minutes asleep keyed by the stop you sleep AFTER. It
+  hangs off the stop so it travels with the plan when the road is swapped and
+  cannot drift to a different point on the map. Deleting the key is how a night
+  is removed, so a zero-length sleep can never sit in the plan pretending to be
+  one. It rides the existing `snapshot()`, so it syncs to the phone for free.
+- **The calendar now comes from the CLOCK, not from a day counter.** This was
+  the subtle one. `dayFor()` used to take a day index, so any day break advanced
+  the date by exactly one. With nights placed by hand that breaks in both
+  directions: a two hour nap must not move the calendar, and an eight hour night
+  starting at 22:00 must. Deriving the date from `floor(clock / 1440)` handles
+  both. Verified against a scratch plan: a two hour nap holds the date, a nine
+  hour night rolls it one.
+- **Winter did not go away, it changed from a rule into advice.** Wake before
+  the road is worth driving and the night says so in the terms that made you
+  care: *"Back on the road at 05:04, but Grand Canyon Village is not normally
+  clear behind the plows until 09:00."* And under five hours gets *"2h is a nap,
+  not a night."*
+- **Night driving is flagged instead of hidden.** Any stop reached after dusk or
+  before first light now says so, with both times.
+
+**Fixed while in there, all three found by building it:**
+
+1. **`bestWindow` was reading the sun off the day's STARTING position**, so
+   "after dark" at the Grand Canyon and in Houston resolved to the same minute —
+   the exact error the function's own comment warns about. It now takes the sun
+   at the stop, on the day the clock has reached.
+2. **Every store mutation redrew twice** (the `change` listener plus an explicit
+   `draw()`). Harmless for years; the moment a number input had to survive a
+   redraw it ate the caret on the second pass. The explicit calls are gone.
+3. **`pace.hoursPerDay` was dead** — assigned in `build()` and never read, while
+   `desk.js` dutifully passed `8`. A day-length budget does not exist in this
+   model at all now. Removed.
+
+**Still open, not touched this session:** the departure input in `desk.html`
+carries a hardcoded date as its `value`. That is a travel date sitting in a
+public repo, against the rule in CLAUDE.md, and it should read `store.departure`
+the way the phone does. Left alone because it is a behaviour change Kevin has
+not called. (Do not paste the date into this file when fixing it.)
+
+
 **Session 26** — The desktop planner, and the two data layers under it.
 **Read this before touching planning.**
 
