@@ -316,65 +316,6 @@ Android Auto is no.
 
 ## Session log
 
-**Session 26** — The desktop planner, and the two data layers under it.
-**Read this before touching planning.**
-
-Kevin's spec, verbatim: *"I want to place the order of places and it calculates
-how long it will take to get there and how long I am expected to be there. And
-there is an overall trip time, and then each spot says when I should arrive to
-it. And it gives me information of opening time, closing time, and optimal time
-to be there."*
-
-**`desk.html` + `js/desk.js` + `css/desk.css` — a SECOND VIEW, not a second
-app.** index.html is for the road: one hand, moving car, no signal. desk.html
-is for the table: deciding which of ~100 stops are in and when you reach each.
-It imports `store.js`, so it reads and writes the SAME plan as the phone and
-syncs through the same Firestore document. **That shared store is the contract
-between the two views** — change its shape carelessly and they stop agreeing.
-The engine (route, plan, store, map, darksky, winter, itinerary) has zero DOM
-references; all the phone-shaped assumptions live in ui.js and app.js.
-
-**`data/winter.json` + `js/winter.js` — crossing windows.** Kevin corrected the
-framing and he was right: *"It is best to assume it will snow there. The whole
-point is that I drive during the day after snowplows and not before."* So this
-does NOT model storm duration. It models TIME OF DAY: `plowedBy` is when each
-risk point is normally clear behind the plows, and the window is the later of
-that and first light, closing at dusk. **Sunrise is computed, not stored** —
-the departure date is not settled and the route crosses four timezones, one of
-which keeps no DST (Arizona) and one of which is Central despite being in
-Tennessee (Monteagle). Validated against first principles: day length matches
-theory to under a minute at five points. A first attempt folded the longitude
-term in twice and was seven hours out in a way that still looked like a time.
-
-**Finding: daylight binds, not the plows.** Out west the roads are clear by
-07:00-08:00 but the sun is not up enough until 07:43-08:16, giving about
-**8¼ usable hours a day**. That, not the mileage, is what makes the schedule
-tight. Amarillo is the exception where plowing binds (10:00) because TxDOT
-brines rather than plows and ice needs sun on it.
-
-**`data/hours.json` — opening hours, closing hours, and `best`.** The stops
-carried closures as prose in their `winter` text, which a person can read and a
-planner cannot. This is the same facts as data. **A stop MISSING from this file
-is UNCHECKED, not "always open"** — the planner says so rather than inventing
-hours. Roughly half the list is checked; the rest were never verified and must
-not be guessed. `best` is a word (dark/golden/morning/early/lunch/evening) that
-`bestWindow()` turns into a clock using the date and place, because "after
-dark" is 17:16 at the Grand Canyon in December and another hour in Houston.
-
-**`js/itinerary.js` — the clock.** Give it a route, chosen ids, a departure and
-a pace; it walks the road and returns arrival and departure times, the hours
-for that weekday, and what is wrong. **Order is NOT hand-arranged**: stops sit
-on a road with one direction, so the order is `mile` along the route. What you
-choose is which stops are in and how long you linger. Two bugs fixed while
-building it, both worth not repeating: floating point down a 6,000-mile chain
-produced arrival times like `09:33.413`, and the day-break test compared
-`arrive % 1440 > shut`, which silently accepted anything rolling past midnight
-because a 02:23 arrival is a small number.
-
-It immediately found seven real conflicts in the current plan, including
-arriving at Puebla Sunrise at 15:15 when it shuts at 15:00, and at Saborcito
-Nica 2h 42m before it opens. 1.14.0.
-
 **Session 26** — True offline (1.13.0). Kevin: *"Let's give it a true offline
 mode."*
 
