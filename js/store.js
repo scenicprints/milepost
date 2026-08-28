@@ -25,6 +25,12 @@ const DEFAULTS = () => ({
   // clock ran past dusk, which invented a bedtime nobody chose. Now the day
   // ends where there is a sleep in here and nowhere else.
   sleeps: {},
+  // How long you will REALLY be somewhere, as minutes keyed by stop id. The
+  // number in stops.json is a researched guess and it is often wrong for you —
+  // two and a half hours at the Grand Canyon is somebody's average, not your
+  // morning. An entry here wins over the seed. Zero is a legitimate answer
+  // (drive past and look), so absence and zero are different things.
+  dwells: {},
   // Which stop ids the seeder has already had its say about. NOT a boolean:
   // the stop list grows as each leg's pool arrives, and a one-time flag meant
   // everything added later showed up unticked and stayed that way. Ids in here
@@ -176,7 +182,29 @@ class Store extends EventTarget {
 
   clearSleep(id) { delete this.sleeps[id]; this.save(); }
 
+  // ---- dwell ----
+  //
+  // Same shape as sleeps and for the same reason: keyed by stop id so it
+  // survives a route swap. Unlike a sleep, ZERO IS MEANINGFUL — it says you
+  // will drive past and look — so removing an override is `clearDwell`, never
+  // setting it to nothing.
+  get dwells() { return this.s.dwells || (this.s.dwells = {}); }
+
+  dwellFor(id) { return this.dwells[id] ?? null; }
+
+  setDwell(id, minutes) {
+    const m = Math.max(0, Math.round(Number(minutes) || 0));
+    this.dwells[id] = m;
+    this.save();
+  }
+
+  clearDwell(id) { delete this.dwells[id]; this.save(); }
+
   // ---- pace ----
+  //
+  // KEPT ONLY FOR OLD SAVED PLANS. Speed is no longer a setting: it comes off
+  // the road, per segment, from the posted limit on each stretch — see
+  // route.js. One mph for 5,900 miles was wrong everywhere at once.
   get pace() { return this.s.pace; }
   setPace(p) { this.s.pace = { ...this.s.pace, ...p }; this.save(); }
 

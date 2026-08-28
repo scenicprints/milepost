@@ -5,7 +5,7 @@
 // trips, and the leg selector at the top drives all of it.
 
 import { store } from './store.js';
-import { buildRoute, stopCost, fmtHours, project } from './route.js';
+import { buildRoute, stopCost, fmtHours, project, driveMinutes } from './route.js';
 import { buildDays, planTotals, suggestStops } from './plan.js';
 import * as mapview from './map.js';
 import * as syncmod from './sync.js';
@@ -39,12 +39,16 @@ function stopData() {
 
 let builtFor = '';
 export function routeById(id) {
-  const stamp = store.custom.map(c => c.id + c.ll.join()).join('|');
+  // The stamp has to cover everything buildRoute reads, or an edit lands in
+  // the store and the cache serves the old answer. Dwell overrides are read
+  // in there now, so they belong in here too.
+  const stamp = store.custom.map(c => c.id + c.ll.join()).join('|')
+    + '#' + Object.entries(store.dwells).map(([k, v]) => k + ':' + v).sort().join(',');
   if (stamp !== builtFor) { built.clear(); builtFor = stamp; }
   if (built.has(id)) return built.get(id);
   for (const leg of DATA.route.legs)
     for (const r of leg.routes)
-      if (r.id === id) { const b = buildRoute(r, stopData()); built.set(id, b); return b; }
+      if (r.id === id) { const b = buildRoute(r, stopData(), store.dwells); built.set(id, b); return b; }
   return null;
 }
 
@@ -781,7 +785,7 @@ export function renderNext() {
     h += `<div class="nblock"><div class="slab">Tonight</div>
       <div class="nrow big">
         <span class="t">${esc(day.overnight.name)}${day.overnight.state ? ', ' + esc(day.overnight.state) : ''}</span>
-        <span class="d">${Math.round(toNight).toLocaleString()} mi · ${fmtHours(toNight / store.pace.mph * 60)}</span>
+        <span class="d">${Math.round(toNight).toLocaleString()} mi · ${fmtHours(driveMinutes(here.mile, day ? day.endMile : here.mile, rt))}</span>
       </div>
       ${bed
         ? `<button class="nrow" data-stop="${bed.id}"><span class="t">${esc(bed.name)}</span>

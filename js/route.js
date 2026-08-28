@@ -76,12 +76,119 @@ export function pointAtMile(mile, waypoints, cum) {
   return waypoints[waypoints.length - 1].ll;
 }
 
+// ===================================================== pace, per segment ====
+//
+// There is no single mph for this trip and there never was. I-40 across Arizona
+// is posted 75; the crawl through Atlanta is not, and CA-99 out of Modesto sits
+// between them. One number for 5,900 miles was wrong everywhere except by
+// accident, so the speed now comes off the road itself: `limit` on each
+// waypoint is the posted limit on the segment leading INTO it.
+//
+// REALISM is what separates the sign from the average. You do not hold the
+// posted limit for a whole day: there is traffic you cannot pass, grades you
+// lose on climbing, and the fuel and bathroom stops that are nobody's `dwell`
+// because they are not places you chose to go.
+//
+// A metro is charged differently, as MINUTES rather than mph, because that is
+// how a city actually costs you — Houston does not make the 400 miles either
+// side of it slower, it takes twenty minutes out of your day as you cross it.
+const REALISM = 0.94;
+const METRO_MIN = 12;
+
+/// One entry per waypoint pair: the span it covers, and what it costs.
+export function segments(route) {
+  const cum = route.cum || measure(route.waypoints).cum;
+  const segs = [];
+  for (let i = 1; i < route.waypoints.length; i++) {
+    const w = route.waypoints[i];
+    const limit = w.limit || 70;
+    segs.push({
+      from: cum[i - 1], to: cum[i], name: w.name, road: w.road || null,
+      limit, mph: limit * REALISM, penalty: w.urban ? METRO_MIN : 0, tz: w.tz,
+    });
+  }
+  return segs;
+}
+
+/// Minutes of driving between two road-miles, integrated across whatever
+/// segments that span crosses. This is why choosing a custom handful of stops
+/// still costs the right time: the road between two of them is priced by the
+/// road, not by which stops happen to be ticked.
+export function driveMinutes(fromMile, toMile, route) {
+  if (!(toMile > fromMile)) return 0;
+  const segs = route.segs || segments(route);
+  let min = 0;
+  for (const s of segs) {
+    const a = Math.max(fromMile, s.from), b = Math.min(toMile, s.to);
+    if (b <= a) continue;
+    min += ((b - a) / s.mph) * 60;
+    // The metro toll is paid on arrival, so only when the span actually
+    // reaches the far end of the segment that enters it.
+    if (s.penalty && toMile >= s.to) min += s.penalty;
+  }
+  return min;
+}
+
+/// The inverse: how far you get from `fromMile` in `minutes`. Needed because
+/// the day-splitter asks "how much road is left in today", which with one mph
+/// was a multiplication and with real segments is a walk down the road.
+export function mileAfter(fromMile, minutes, route) {
+  const segs = route.segs || segments(route);
+  let left = minutes, mile = fromMile;
+  for (const s of segs) {
+    if (s.to <= fromMile) continue;
+    const a = Math.max(fromMile, s.from);
+    const cost = ((s.to - a) / s.mph) * 60 + (s.penalty || 0);
+    // Ran out mid-segment: you never arrive, so no metro toll is charged.
+    if (cost >= left) return Math.min(s.to, a + (left / 60) * s.mph);
+    left -= cost;
+    mile = s.to;
+  }
+  return mile;
+}
+
+/// What the whole route averages, door to door, once all of that is counted.
+/// Shown in the planner so the number is inspectable rather than believed.
+export function averageMph(route) {
+  const min = driveMinutes(0, route.miles ?? measure(route.waypoints).total, route);
+  return min > 0 ? ((route.miles ?? measure(route.waypoints).total) / min) * 60 : 0;
+}
+
+// ========================================================== timezones =======
+//
+// December, so no DST anywhere on this trip and standard time is the whole
+// story. Arizona keeps no DST in any case. Tennessee is split down the
+// Cumberland Plateau, which is why it cannot be a plain state lookup.
+const TZ_STATE = {
+  CA: -8, NV: -8, AZ: -7, NM: -7, UT: -7, CO: -7,
+  TX: -6, OK: -6, AR: -6, LA: -6, MS: -6, AL: -6, MO: -6,
+  GA: -5, SC: -5, NC: -5, FL: -5, VA: -5,
+};
+
+/// The standard-time offset for a place, from its state and, where the state
+/// straddles a boundary, its longitude.
+export function tzFor(state, lon) {
+  if (state === 'TN') return lon != null && lon < -85.5 ? -6 : -5;
+  return TZ_STATE[state] ?? -8;
+}
+
+/// The offset at a road-mile, for the ends of the route where there is no stop
+/// to ask. Uses the waypoint the mile has reached.
+export function tzAtMile(mile, route) {
+  const w = route.waypoints;
+  const cum = route.cum || measure(w).cum;
+  for (let i = 0; i < w.length; i++)
+    if (mile <= cum[i]) return w[i].tz ?? tzFor(w[i].state, w[i].ll[1]);
+  const last = w[w.length - 1];
+  return last.tz ?? tzFor(last.state, last.ll[1]);
+}
+
 /// Decorate a route with measurements and its stops, in road order.
 /// A stop more than MAX_OFF miles from the pavement is dropped — that
 /// means the route was swapped and this stop no longer belongs.
 const MAX_OFF = 140;
 
-export function buildRoute(route, allStops) {
+export function buildRoute(route, allStops, dwells) {
   const { cum, total } = measure(route.waypoints);
   const towns = route.waypoints.map((w, i) => ({ ...w, mile: cum[i] }));
 
@@ -95,12 +202,24 @@ export function buildRoute(route, allStops) {
       // stop id either way, so crossing it off crosses it off everywhere.
       const detour = (s.detourBy && s.detourBy[route.id] != null)
         ? s.detourBy[route.id] : s.detour;
-      return { ...s, detour, mile: p.mile, offRoute: p.off };
+      // `dwells` is the user's own override of how long they will really be
+      // somewhere. The seeded number is a research guess; this is the answer.
+      // Zero is a legitimate answer, so only undefined falls back to the seed.
+      const over = dwells && dwells[s.id];
+      const dwell = Number.isFinite(over) ? over : s.dwell;
+      return {
+        ...s, detour, dwell, seedDwell: s.dwell,
+        dwellSet: Number.isFinite(over) && over !== s.dwell,
+        mile: p.mile, offRoute: p.off, tz: tzFor(s.state, s.ll[1]),
+      };
     })
     .filter(s => s.offRoute < MAX_OFF)
     .sort((a, b) => a.mile - b.mile);
 
-  return { ...route, cum, miles: total, towns, stops };
+  const built = { ...route, cum, miles: total, towns, stops };
+  built.segs = segments(built);
+  built.avgMph = averageMph(built);
+  return built;
 }
 
 /// What a stop actually costs you: out, back, and time on the ground.

@@ -4,14 +4,16 @@
 // The day ends where you sleep, so every break gets snapped to a real town
 // on the route rather than a mile marker in the dark.
 
-import { stopCost } from './route.js';
+import { stopCost, driveMinutes, mileAfter } from './route.js';
 
 const SNAP_MILES = 75;   // how far we'll shift a day's end to reach a town
 const MIN_ADVANCE = 20;  // a day has to actually go somewhere
 const MAX_DAYS = 40;     // runaway guard
 
 export const DEFAULT_PACE = {
-  mph: 62,               // interstate average once gas and food are counted
+  // Speed is NOT a setting any more. It comes off the road, per segment, from
+  // the posted limit on each stretch — see route.js. One number for 5,900
+  // miles was wrong everywhere at once. `hoursPerDay` is still yours.
   hoursPerDay: 8,        // driving PLUS time spent at stops
 };
 
@@ -66,7 +68,7 @@ export function buildDays(route, chosenIds, pace = DEFAULT_PACE) {
       : stayPut ? Math.max(atMile, startMile)
       : Math.max(atMile, startMile + MIN_ADVANCE);
     // Recompute driving from the final span so the numbers stay honest.
-    day.driveMins = Math.max(0, (endMile - startMile) / pace.mph * 60);
+    day.driveMins = driveMinutes(startMile, endMile, route);
     day.endMile = endMile;
     day.miles = endMile - startMile;
     day.from = townAt(startMile, route.towns);
@@ -92,13 +94,13 @@ export function buildDays(route, chosenIds, pace = DEFAULT_PACE) {
     const left = budget - spent;
     const next = pending[0];
     const targetMile = next ? next.mile : route.miles;
-    const driveTo = Math.max(0, (targetMile - cur) / pace.mph * 60);
+    const driveTo = driveMinutes(cur, targetMile, route);
     const cost = next ? stopCost(next).total : 0;
     const canReach = driveTo <= left;
 
     if (!next) {
       if (driveTo <= left) { closeDay(route.miles, true); break; }
-      const reach = cur + (left / 60) * pace.mph;
+      const reach = mileAfter(cur, left, route);
       cur = closeDay(Math.min(reach, route.miles));
       if (cur >= route.miles - 1) { break; }
       continue;
@@ -120,7 +122,7 @@ export function buildDays(route, chosenIds, pace = DEFAULT_PACE) {
       // Reachable, but no day left to do it. Sleep nearby, do it tomorrow.
       cur = closeDay(targetMile);
     } else {
-      const reach = cur + (left / 60) * pace.mph;
+      const reach = mileAfter(cur, left, route);
       cur = closeDay(Math.min(reach, route.miles));
     }
 

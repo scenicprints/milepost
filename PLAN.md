@@ -140,6 +140,20 @@ Calibrated against Modesto–Raleigh (~2,750 real, 2,771 computed) and
 Houston–Modesto (~1,900 real, 1,898 computed). Leg 2 runs ~4% light; it has
 fewer waypoints. Add waypoints there if it starts to matter.
 
+Each waypoint also carries, as of session 28:
+
+| Field | What |
+|---|---|
+| `tz` | Standard-time offset. December, so no DST anywhere on this trip. |
+| `limit` | Posted speed limit on the segment leading INTO this waypoint. The first waypoint of a route has none — there is no incoming segment. |
+| `road` | Which road that segment is, for reading the data back. |
+| `urban` | The road crosses a metro here. Charged as a flat `METRO_MIN` penalty, not as a lower mph. |
+
+**There is no mph setting any more, and do not add one back.** Speed is computed
+per segment from `limit`; `driveMinutes()` integrates it across a span and
+`mileAfter()` inverts it. The planner displays the resulting average so the
+number stays inspectable rather than believed.
+
 **`data/stops.json`** — 68 stops. Each names the `routes` it sits on, so
 swapping a route swaps its stops. `detour` is minutes **one way** off the
 highway; the app doubles it and adds `dwell`.
@@ -315,6 +329,76 @@ Android Auto is no.
 ---
 
 ## Session log
+
+**Session 28** — Timezones, speed off the road, and how long you'll really be
+there. 1.16.0.
+
+Kevin, on the planner: *"One thing I dont like about that planner is I set the
+mph. But that varies so much."* Then: *"is this all taking timezones into
+account?"* It was not, and that was the worse of the two.
+
+**THE TIMEZONE BUG — the clock never left California.** `winter.js` localised
+the *sun* correctly, and `hours.json` is local by definition. But `itinerary.js`
+ran one counter of minutes from the trip's first midnight and never shifted it,
+so every arrival was in DEPARTURE-local time for all 2,643 miles — and was then
+compared directly against a sunset and an opening time that were local to
+wherever you actually were.
+
+Proved by running the real `build()` in Node rather than reasoning about it.
+Discovery Place, Charlotte: `arriveAt "13:09"`, hours 09:00–16:00, `ok: true`,
+zero flags. Charlotte is EST, three hours from Modesto. You arrive at 16:09 and
+it shut at 16:00. **The error was 0 in California, +1 in AZ/NM, +2 in TX/OK/TN,
++3 in NC — and always optimistic, so it promised open doors that were locked.**
+
+The fix keeps two clocks and says so in the code: `clock` stays the absolute
+monotonic axis, because durations only mean something in one frame; everything
+you *read* goes through `localOf(abs, tz)`. Every clock face, every hours
+comparison, every sunrise, and the date the weekday is read off — that last one
+matters, or "closed Sundays" fires on the wrong day near midnight.
+
+`guessTz = round(lon/15)` was wrong at 5 of 15 checkpoints (Kingman, Amarillo,
+OKC, Knoxville, Asheville) and was only saved by `nearestRisk` borrowing a real
+`tz` from `winter.json` — which meant **a stop's timezone was being inferred
+from how near it was to a snow hazard.** Now every waypoint carries a real `tz`
+and `route.js` owns `tzFor(state, lon)`. Tennessee is split on the Cumberland
+Plateau at −85.5, which is why it cannot be a plain state lookup: Nashville is
+Central and Knoxville is Eastern. Verified in the running app — the hour jumps
+land at CA→AZ, NM→TX and *inside* Tennessee, and correctly do NOT land at
+AZ→NM (Arizona keeps no DST) or AR→TN (Memphis is Central).
+
+**SPEED NOW COMES OFF THE ROAD.** One mph for 5,900 miles was wrong everywhere
+at once. Each waypoint carries `limit`, the posted limit on the segment leading
+into it, plus `urban` where the road crosses a metro. `driveMinutes(a, b,
+route)` integrates across whatever segments a span crosses — which is what makes
+a custom handful of stops still cost the right time, since the road is priced by
+the road and not by which stops are ticked. `mileAfter()` is the inverse, for
+the day-splitter, and it round-trips exactly.
+
+Two constants, both documented at the definition: `REALISM = 0.94` separates the
+sign from the average (traffic you can't pass, grades, and the fuel stops that
+are nobody's `dwell`), and `METRO_MIN = 12` charges a city in MINUTES rather
+than mph, because Houston doesn't make the 400 miles either side slower — it
+takes twenty minutes out of your day as you cross it. Whole-route average comes
+out at **64.9 mph**, and the planner now *shows* that number instead of asking
+for it. The mph box is gone. `plan.js` and `ui.js` were converted too, or the
+phone would have kept answering 62 while the desktop said 65.
+
+**DWELL IS EDITABLE.** Kevin: *"will I really be at the Grand Canyon, South Rim
+for 2 hours and 30 minutes?"* The seeded number is a research guess. `dwells` in
+the store mirrors `sleeps` — minutes keyed by stop id, so it survives a route
+swap — with one difference that matters: **zero is a legitimate answer** (drive
+past and look), so absence and zero are different and removing an override is
+`clearDwell`, never setting it to nothing. `buildRoute` applies it, which means
+`stopCost` and every consumer get it for free. The row shows the control under
+the place, and a `reset` link back to the researched figure once you've changed
+it. The `ui.js` route cache stamp had to grow to cover dwells, or an edit would
+land in the store and the cache would keep serving the old answer.
+
+Note for whoever is next: `data/route.json` now carries `tz`, `limit`, `road`
+and `urban` on waypoints. They were generated by rule, not researched one by
+one — the tz values are exact, the limits are posted rural limits per road per
+state, and the one blend is Amarillo→OKC at 72 because that single segment
+spans the 75/70 state line with no waypoint to break it at.
 
 **Session 27** — Sleep is placed by hand, and the planner stopped inventing
 days. 1.15.0.

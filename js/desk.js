@@ -51,7 +51,7 @@ async function boot() {
   $('leg').innerHTML = route.legs
     .map((l, i) => `<option value="${i}">${esc(l.name)}</option>`).join('');
 
-  for (const el of ['leg', 'road', 'date', 'at', 'mph'])
+  for (const el of ['leg', 'road', 'date', 'at'])
     $(el).addEventListener('change', () => { if (el === 'leg') { legIx = +$('leg').value; fillRoads(); } draw(); });
 
   for (const b of document.querySelectorAll('[data-kind]'))
@@ -68,6 +68,9 @@ async function boot() {
     const drop = e.target.closest('[data-dropsleep]');
     if (drop) return store.clearSleep(drop.dataset.dropsleep);
 
+    const dd = e.target.closest('[data-dropdwell]');
+    if (dd) return store.clearDwell(dd.dataset.dropdwell);
+
     const t = e.target.closest('[data-toggle]');
     if (!t) return;
     store.toggle(t.dataset.toggle);
@@ -76,15 +79,26 @@ async function boot() {
   // 'change', not 'input': a number stepper fires on every click and the redraw
   // would fight the caret the whole way up from 0 to 8.
   document.addEventListener('change', e => {
-    const f = e.target.closest('[data-sleep]');
-    if (!f) return;
-    const id = f.dataset.sleep;
-    const val = k => {
-      const el = document.querySelector(`[data-sleep="${CSS.escape(id)}"][data-p="${k}"]`);
+    const pair = (attr, id, k) => {
+      const el = document.querySelector(`[data-${attr}="${CSS.escape(id)}"][data-p="${k}"]`);
       return Math.max(0, Number(el && el.value) || 0);
     };
-    refocus = f.dataset.k;
-    store.setSleep(id, Math.min(val('h'), 47) * 60 + Math.min(val('m'), 59));
+
+    const f = e.target.closest('[data-sleep]');
+    if (f) {
+      const id = f.dataset.sleep;
+      refocus = f.dataset.k;
+      return store.setSleep(id, Math.min(pair('sleep', id, 'h'), 47) * 60
+                              + Math.min(pair('sleep', id, 'm'), 59));
+    }
+
+    const d = e.target.closest('[data-dwell]');
+    if (d) {
+      const id = d.dataset.dwell;
+      refocus = d.dataset.k;
+      return store.setDwell(id, Math.min(pair('dwell', id, 'h'), 47) * 60
+                              + Math.min(pair('dwell', id, 'm'), 59));
+    }
   });
 
   store.addEventListener('change', draw);
@@ -104,11 +118,10 @@ function fillRoads() {
 function current() {
   const leg = DATA.route.legs[legIx];
   const opt = leg.routes.find(r => r.id === $('road').value) || leg.routes[0];
-  const route = buildRoute(opt, DATA.stops.concat(store.custom));
+  const route = buildRoute(opt, DATA.stops.concat(store.custom), store.dwells);
   const it = build(
     route, store.chosen,
     { date: new Date($('date').value + 'T00:00:00Z'), at: $('at').value || '06:00' },
-    { mph: +$('mph').value || 62 },
     { HOURS: DATA.HOURS, WINTER: DATA.WINTER, sleeps: store.sleeps });
   return { route, it };
 }
@@ -122,6 +135,7 @@ function draw() {
     <div><b>${Math.round(route.miles).toLocaleString()}</b><span>miles</span></div>
     <div><b>${it.rows.length}</b><span>stops</span></div>
     <div><b>${dur(it.driveMin)}</b><span>driving</span></div>
+    <div><b>${Math.round(it.avgMph)}</b><span>avg mph</span></div>
     <div><b>${dur(it.stopMin)}</b><span>stopped</span></div>
     <div><b>${it.sleepMin ? dur(it.sleepMin) : '—'}</b><span>asleep</span></div>
     <div class="big"><b>${days}</b><span>${days === 1 ? 'day' : 'days'}</span></div>`;
@@ -161,12 +175,21 @@ function draw() {
     }
 
     const h = r.hours;
+    const sid = esc(r.stop.id);
+    const dh = Math.floor(r.dwell / 60), dm = r.dwell % 60;
     html += `<div class="row${r.ok ? '' : ' bad'}">
       <div class="when"><b>${r.arriveAt}</b><span>leave ${r.departAt}</span></div>
       <div class="what">
         <div class="nm">${esc(r.stop.name)}${r.stop.kind === 'food' ? '<i>eat</i>' : ''}</div>
         <div class="sub">${esc(r.stop.town)}, ${esc(r.stop.state)}
-          · ${dur(r.driveMin)} to get here · ${dur(r.dwell)} there</div>
+          · ${dur(r.driveMin)} to get here</div>
+        <div class="stay">how long
+          <input type="number" min="0" max="47" step="1" value="${dh}"
+                 data-dwell="${sid}" data-p="h" data-k="dh-${sid}" aria-label="hours here"><span>h</span>
+          <input type="number" min="0" max="59" step="5" value="${dm}"
+                 data-dwell="${sid}" data-p="m" data-k="dm-${sid}" aria-label="minutes here"><span>m</span>
+          ${r.dwellSet ? `<button data-dropdwell="${sid}" title="Back to the researched ${dur(r.seedDwell)}">reset</button>` : ''}
+        </div>
         ${r.flags.map(f => `<div class="flag ${f.level}">${esc(f.text)}</div>`).join('')}
       </div>
       <div class="hrs">

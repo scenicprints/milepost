@@ -36,7 +36,7 @@
 // TIME IS KEPT IN MINUTES from the trip's first midnight, one integer per
 // event. Dates and clock faces are formatting concerns, applied at the edge.
 
-import { stopCost } from './route.js';
+import { stopCost, driveMinutes, tzAtMile } from './route.js';
 import * as winter from './winter.js';
 
 const MIN_PER_DAY = 1440;
@@ -89,8 +89,9 @@ export function bestWindow(h, sun) {
   }
 }
 
-/// Minutes of driving between two points on the road, at the plan's pace.
-const drive = (fromMile, toMile, mph) => Math.max(0, (toMile - fromMile)) / mph * 60;
+/// Minutes of driving between two points on the road. The pace is the road's
+/// own — posted limits per segment — so there is nothing to pass in.
+const drive = (fromMile, toMile, route) => driveMinutes(fromMile, toMile, route);
 
 /**
  * Build the itinerary.
@@ -98,7 +99,6 @@ const drive = (fromMile, toMile, mph) => Math.max(0, (toMile - fromMile)) / mph 
  * @param route   a built route (from buildRoute) — stops carry `mile`
  * @param chosen  Set of stop ids that are in the plan
  * @param start   { date: Date (UTC midnight of day one), at: 'HH:MM' }
- * @param pace    { mph }
  * @param data    { HOURS, WINTER, sleeps }  the two side tables, plus the
  *                nights: minutes asleep keyed by the stop you sleep AFTER.
  *                Unlike the tables, sleeps are the user's own — store.sleeps.
@@ -109,14 +109,28 @@ const drive = (fromMile, toMile, mph) => Math.max(0, (toMile - fromMile)) / mph 
  *   days      the stretches between sleeps, each with its own crossing window
  *   totalMin  door to door, including nights
  */
-export function build(route, chosen, start, pace, data) {
+export function build(route, chosen, start, data) {
   const { HOURS, WINTER } = data;
   const sleeps = data.sleeps || {};
-  const mph = pace.mph || 62;
 
   const stops = route.stops
     .filter(s => chosen.has(s.id) && s.kind !== 'lodging')
     .sort((a, b) => a.mile - b.mile);
+
+  // ---- the two clocks --------------------------------------------------
+  //
+  // `clock` is the ABSOLUTE axis: minutes since the trip's first midnight,
+  // measured in the timezone you left from. It only ever goes forward, which
+  // is what makes durations — a leg, a dwell, a night — mean anything.
+  //
+  // Nothing you READ is in that frame. Every clock face, every comparison
+  // against opening hours, and every sunrise is LOCAL to where you are
+  // standing, and the road crosses three boundaries between here and
+  // Mooresville. Before this existed the two were compared directly, which
+  // quietly claimed you reached Charlotte at 13:09 when it is 16:09 there and
+  // the museum has shut.
+  const tzStart = tzAtMile(0, route);
+  const localOf = (abs, tz) => abs + ((tz ?? tzStart) - tzStart) * 60;
 
   // The sun, and the crossing window, at a position on whatever calendar day
   // the absolute clock has reached.
@@ -125,18 +139,23 @@ export function build(route, chosen, start, pace, data) {
   // both directions now that nights are placed by hand: a two hour nap must
   // not advance the calendar, and an eight hour night that starts at 22:00
   // must.
-  const dayFor = (clock, ll) => {
-    const date = new Date(start.date.valueOf() + Math.floor(clock / MIN_PER_DAY) * 86400000);
+  // `tzHint` is the timezone of the thing you are standing at — a stop carries
+  // its own, computed from its state. Only fall back to the winter table or to
+  // longitude when there is nothing better, and never let longitude decide
+  // alone: round(lon/15) puts Amarillo and Asheville in the wrong hour.
+  const dayFor = (clock, ll, tzHint) => {
     const risk = nearestRisk(WINTER, ll);
+    const tz = tzHint ?? (risk && risk.tz) ?? guessTz(ll[1]);
+    const local = localOf(clock, tz);
+    const date = new Date(start.date.valueOf() + Math.floor(local / MIN_PER_DAY) * 86400000);
     const sun = winter.daylight(date, ll[0], ll[1]);
-    const tz = (risk && risk.tz) || guessTz(ll[1]);
     const wrap = m => ((m + tz * 60) % MIN_PER_DAY + MIN_PER_DAY) % MIN_PER_DAY;
     const rise = sun ? wrap(sun.rise) : 7 * 60;
     const set = sun ? wrap(sun.set) : 17 * 60;
     const plowed = risk && risk.plowedBy ? toMin(risk.plowedBy) : 0;
     const open = Math.max(rise + 45, plowed);
     return {
-      date, rise, set, open, shut: set - 45, risk,
+      date, tz, local, rise, set, open, shut: set - 45, risk,
       why: plowed > rise + 45 ? 'plows' : 'light',
       riskName: risk ? risk.name : null,
     };
@@ -147,14 +166,14 @@ export function build(route, chosen, start, pace, data) {
   let dayIx = 0;
   let sleepMin = 0;
 
-  const first = dayFor(clock, route.waypoints[0].ll);
+  const first = dayFor(clock, route.waypoints[0].ll, tzStart);
   const days = [{ ...first, ix: 0, from: route.waypoints[0].name, startedAt: clock, startAt: hhmm(clock) }];
   const rows = [], warnings = [];
 
   for (const s of stops) {
     // Everything is whole minutes. Floating point down a 6,000-mile chain
     // produced arrival times like "09:33.413", which is not a clock face.
-    const legMin = Math.round(drive(mile, s.mile, mph) + s.detour);
+    const legMin = Math.round(drive(mile, s.mile, route) + s.detour);
     const arrive = clock + legMin;
     const depart = arrive + s.dwell;
 
@@ -162,10 +181,14 @@ export function build(route, chosen, start, pace, data) {
     // Reading it off the day's starting position instead put "after dark" at
     // the Grand Canyon and in Houston at the same minute, which is the exact
     // thing bestWindow exists to avoid.
-    const here = dayFor(arrive, s.ll);
+    const here = dayFor(arrive, s.ll, s.tz);
     const h = hoursFor(HOURS, s.id, here.date);
     const best = bestWindow(h, { rise: here.rise, set: here.set });
-    const at = arrive % MIN_PER_DAY;
+    // Local at the stop. Everything below compares against this, never the
+    // absolute clock — that was the three-hour lie at the Carolina end.
+    const arriveLocal = here.local;
+    const departLocal = arriveLocal + s.dwell;
+    const at = ((arriveLocal % MIN_PER_DAY) + MIN_PER_DAY) % MIN_PER_DAY;
 
     const flags = [];
     if (!h) flags.push({ level: 'unknown', text: 'Hours not checked for this one.' });
@@ -178,7 +201,7 @@ export function build(route, chosen, start, pace, data) {
         flags.push({ level: 'bad', text: `You would arrive at ${hhmm(at)}, ${mins(h.open - at)} before it opens at ${h.openAt}.` });
       if (h.close != null && at > h.close)
         flags.push({ level: 'bad', text: `You would arrive at ${hhmm(at)}, after it shuts at ${h.closeAt}.` });
-      else if (h.close != null && depart % MIN_PER_DAY > h.close)
+      else if (h.close != null && departLocal % MIN_PER_DAY > h.close)
         flags.push({ level: 'warn', text: `You would still be there at closing (${h.closeAt}).` });
       if (best && (at < best.from || at > best.to))
         flags.push({ level: 'warn', text: `Best between ${hhmm(best.from)} and ${hhmm(best.to)}. ${h.why}` });
@@ -195,8 +218,10 @@ export function build(route, chosen, start, pace, data) {
     const row = {
       stop: s, dayIx, mile: s.mile,
       driveMin: legMin, arrive, depart,
-      arriveAt: hhmm(arrive), departAt: hhmm(depart),
-      dwell: s.dwell, cost: stopCost(s).total,
+      arriveAt: hhmm(arriveLocal), departAt: hhmm(departLocal),
+      tz: here.tz, tzShift: here.tz - tzStart,
+      dwell: s.dwell, seedDwell: s.seedDwell, dwellSet: !!s.dwellSet,
+      cost: stopCost(s).total,
       hours: h, best,
       bestAt: best ? hhmm(best.from) + '-' + hhmm(best.to) : null,
       flags,
@@ -212,8 +237,12 @@ export function build(route, chosen, start, pace, data) {
     const nap = Math.round(Number(sleeps[s.id]) || 0);
     if (nap > 0) {
       const wake = clock + nap;
-      const next = dayFor(wake, s.ll);
-      const wakeAt = wake % MIN_PER_DAY;
+      const next = dayFor(wake, s.ll, s.tz);
+      // You sleep where you stopped, so the night is read on that stop's
+      // clock at both ends — down and up in the same local hours.
+      const downLocal = localOf(clock, s.tz);
+      const wakeLocal = next.local;
+      const wakeAt = ((wakeLocal % MIN_PER_DAY) + MIN_PER_DAY) % MIN_PER_DAY;
       const sflags = [];
 
       // Waking up and the road being worth driving are two different times,
@@ -222,41 +251,48 @@ export function build(route, chosen, start, pace, data) {
         sflags.push({
           level: 'warn',
           text: next.why === 'plows'
-            ? `Back on the road at ${hhmm(wake)}, but ${next.riskName} is not normally clear behind the plows until ${hhmm(next.open)}.`
-            : `Back on the road at ${hhmm(wake)}, ${mins(next.open - wakeAt)} before there is light enough for it. First light is ${hhmm(next.rise)}.`,
+            ? `Back on the road at ${hhmm(wakeLocal)}, but ${next.riskName} is not normally clear behind the plows until ${hhmm(next.open)}.`
+            : `Back on the road at ${hhmm(wakeLocal)}, ${mins(next.open - wakeAt)} before there is light enough for it. First light is ${hhmm(next.rise)}.`,
         });
       if (nap < 5 * 60)
         sflags.push({ level: 'warn', text: `${mins(nap)} is a nap, not a night.` });
 
       row.sleep = {
         minutes: nap,
-        downAt: hhmm(clock), wakeAt: hhmm(wake),
+        downAt: hhmm(downLocal), wakeAt: hhmm(wakeLocal),
         at: s.town ? `${s.town}${s.state ? ', ' + s.state : ''}` : s.name,
         dayIx, flags: sflags,
       };
 
       sleepMin += nap;
       dayIx += 1;
-      days.push({ ...next, ix: dayIx, from: s.town || s.name, startedAt: wake, startAt: hhmm(wake) });
+      days.push({ ...next, ix: dayIx, from: s.town || s.name, startedAt: wake, startAt: hhmm(wakeLocal) });
       clock = wake;
     }
   }
 
   // The run home from the last stop to the end of the route.
-  const tail = Math.round(drive(mile, route.miles, mph));
+  const tail = Math.round(drive(mile, route.miles, route));
   const endsAt = clock + tail;
+  // The far end is three hours ahead of the near end, and arriving "at 19:40"
+  // means the clock on the wall in Mooresville, not the one you left behind.
+  const tzEnd = tzAtMile(route.miles, route);
+  const endsLocal = localOf(endsAt, tzEnd);
 
   for (const d of days)
     if (d.risk && d.shut - d.open < 6 * 60)
       warnings.push(`Day ${d.ix + 1} is a short one: ${d.riskName} only opens up between ${hhmm(d.open)} and ${hhmm(d.shut)}.`);
 
+  const driveMin = Math.round(drive(0, route.miles, route));
   return {
     rows, days,
     totalMin: Math.round(endsAt - toMin(start.at)),
-    endsAt, endsAtLabel: hhmm(endsAt),
+    endsAt, endsAtLabel: hhmm(endsLocal),
+    tzStart, tzEnd, tzShift: tzEnd - tzStart,
     dayCount: days.length,
     warnings,
-    driveMin: Math.round(drive(0, route.miles, mph)),
+    driveMin,
+    avgMph: driveMin > 0 ? (route.miles / driveMin) * 60 : 0,
     stopMin: rows.reduce((a, r) => a + r.cost, 0),
     sleepMin,
   };
