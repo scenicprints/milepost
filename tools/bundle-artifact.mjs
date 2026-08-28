@@ -20,7 +20,7 @@
 // concatenated, so module scope is preserved and nothing collides. Exports are
 // getters, so namespace imports (`import * as syncmod`) still see live values.
 
-import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -31,30 +31,74 @@ const read = p => readFileSync(resolve(ROOT, p), 'utf8');
 // milepost ~752 of leg 1.
 const POSITION = { lat: 35.025, lon: -110.56, accuracy: 12 };
 
-// Dependency order. No cycles; each module only needs the ones above it.
+// THE APP HAS TWO ENTRY POINTS, and only one of them is bundled.
+//
+// index.html is the phone app, and its graph is MODULES below, in dependency
+// order — no cycles, each module only needs the ones above it. That is what
+// this artifact is: the shell markup at the bottom of this file is index.html's
+// markup, so index.html's graph is the only one that can run against it.
+//
+// desk.html is the desktop planner. Its modules are listed separately and are
+// DELIBERATELY NOT BUNDLED: desk.js calls boot() at the bottom and immediately
+// queries #leg, #road, #date, so dropping it into this artifact would run the
+// planner against a DOM that has none of its elements and throw at load.
+//
+// They are still listed, because "I added a module and forgot the list" is the
+// exact mistake the audit exists to catch, and an unlisted file must never be
+// able to pass silently just because it happens to belong to the other view.
 const MODULES = [
   'version.js', 'route.js', 'plan.js', 'store.js', 'map.js',
   'firebase-config.js', 'sync.js', 'weather.js', 'geocode.js', 'install.js',
   'darksky.js', 'ui.js', 'app.js',
 ];
 
+const DESK_ONLY = ['winter.js', 'itinerary.js', 'export.js', 'desk.js'];
+
+const importsOf = file =>
+  [...readFileSync(resolve(ROOT, 'js', file), 'utf8')
+    .matchAll(/^import\s+[\s\S]+?\s+from\s+'\.\/([\w.-]+)';/gm)].map(m => m[1]);
+
 /// A module missing from MODULES produced a bundle that PARSED FINE and then
 /// died at boot — its registry entry was simply never created, so the importer
 /// got `undefined`. Adding a file to js/ and forgetting this list is the easy
 /// mistake, and it is invisible until the page runs. So check, don't trust.
 function auditGraph() {
-  const listed = new Set(MODULES);
+  const bundled = new Set(MODULES);
+  const desk = new Set(DESK_ONLY);
   const problems = [];
+
+  // 0. Everything listed has to EXIST before anything can be read, or the
+  //    reads below die with a raw ENOENT instead of saying what is wrong.
+  const missing = [...MODULES, ...DESK_ONLY].filter(f => !existsSync(resolve(ROOT, 'js', f)));
+  if (missing.length)
+    throw new Error('bundle-artifact: listed but not on disk:\n  '
+      + missing.map(f => 'js/' + f).join('\n  '));
+
+  // 1. The bundled graph is complete and correctly ordered.
   MODULES.forEach((file, i) => {
-    const src = readFileSync(resolve(ROOT, 'js', file), 'utf8');
-    const deps = [...src.matchAll(/^import\s+[\s\S]+?\s+from\s+'\.\/([\w.-]+)';/gm)].map(m => m[1]);
-    for (const d of deps) {
-      if (!listed.has(d)) problems.push(file + " imports ./" + d + ", which is not in MODULES");
-      else if (MODULES.indexOf(d) > i) problems.push(file + " imports ./" + d + ", which is listed AFTER it");
+    for (const d of importsOf(file)) {
+      if (desk.has(d))
+        // This is the dangerous one. It means a desk-only module has been
+        // pulled into the phone app, so the artifact would be missing a
+        // dependency it genuinely needs — exactly the boot death above.
+        problems.push(file + ' imports ./' + d + ', which is desk-only. Either it belongs in MODULES now, or the import is a mistake.');
+      else if (!bundled.has(d)) problems.push(file + ' imports ./' + d + ', which is not in MODULES');
+      else if (MODULES.indexOf(d) > i) problems.push(file + ' imports ./' + d + ', which is listed AFTER it');
     }
   });
+
+  // 2. The desk graph is internally accounted for, so a file it needs cannot
+  //    quietly go missing just because this bundle does not build it.
+  for (const file of DESK_ONLY)
+    for (const d of importsOf(file))
+      if (!bundled.has(d) && !desk.has(d))
+        problems.push(file + ' imports ./' + d + ', which is in neither list');
+
+  // 3. Nothing on disk is unaccounted for, in either direction.
   for (const f of readdirSync(resolve(ROOT, 'js')))
-    if (f.endsWith('.js') && !listed.has(f)) problems.push("js/" + f + " exists but is not in MODULES");
+    if (f.endsWith('.js') && !bundled.has(f) && !desk.has(f))
+      problems.push('js/' + f + ' exists but is in neither MODULES nor DESK_ONLY');
+
   if (problems.length)
     throw new Error('bundle-artifact: the module graph is wrong, the bundle would die at boot:\n  ' +
       problems.join('\n  '));
@@ -166,7 +210,13 @@ try {
 var __M = {};
 `;
 
-const html = `<title>Milepost</title>
+// The charset is NOT optional here. This file is opened from disk as often as
+// over http, and with no declaration the browser guesses — which rendered every
+// "·" in the app as "Â·". The deployed app declares it in index.html; a
+// single-file artifact has to carry its own.
+const html = `<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Milepost</title>
 <style>
 ${css}
 </style>

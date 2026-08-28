@@ -370,16 +370,36 @@ Copy puts it on the clipboard (for pasting to an AI) and download writes a `.md`
 (for sending). Copy falls back to a download when the clipboard refuses, which
 it does often enough that failing silently would read as a broken button.
 
-**⚠ `tools/bundle-artifact.mjs` IS BROKEN AND WAS ALREADY BROKEN.** Its audit
-now reports four files missing from `MODULES`: `winter.js`, `itinerary.js` and
-`desk.js` (unlisted since sessions 26–27) and `export.js` (this session). The
-audit is doing its job — that guard exists because an unlisted module once
-produced a bundle that parsed fine and died at boot. **It needs a decision, not
-a patch:** `desk.js` calls `boot()` at the bottom and queries `#leg`, so simply
-adding it to `MODULES` would run the desktop planner against index.html's DOM
-inside the single-file artifact. Either the bundler learns about entry points,
-or the artifact drops the desktop view. Not guessed at here. The live site and
-GitHub Pages do not use the bundler and are unaffected.
+**`tools/bundle-artifact.mjs` NOW KNOWS THE APP HAS TWO ENTRY POINTS.** Its
+audit had been failing since session 26 — `winter.js`, `itinerary.js`, `desk.js`
+and now `export.js` were all "missing from MODULES". They were not missing.
+They are the **desk.html graph**, and the artifact's shell markup is
+*index.html's* markup, so desk.js — which calls `boot()` and immediately queries
+`#leg` — would have thrown at load if it were bundled.
+
+The fix is `DESK_ONLY` beside `MODULES`, and an audit that checks four things
+instead of one:
+
+1. the bundled graph is complete and ordered (as before);
+2. **no bundled module imports a desk-only one** — that is the dangerous case,
+   because it means the desk graph has leaked into the phone app and the bundle
+   really would die at boot;
+3. every desk-only module's own imports resolve to one list or the other, so a
+   file it needs cannot vanish just because this bundle does not build it;
+4. nothing on disk is unaccounted for, **and nothing listed is missing from
+   disk** — checked first, or the reads in 1–3 die with a raw ENOENT instead of
+   saying what is wrong.
+
+Verified by deliberately breaking it four ways and confirming each produced a
+clear message, then that it built clean again. Do not "fix" a future audit
+failure by adding the file to `MODULES` without checking which entry point it
+belongs to.
+
+**The artifact was also silently mojibaking every `·` into `Â·`.** The generated
+HTML had no `<meta charset>`, and this file gets opened from disk as often as
+over http, where there are no headers to guess from. index.html always declared
+it; the artifact never did. Added, along with the viewport meta, and confirmed
+zero mojibake across all five tabs with the app actually running.
 
 **Session 28** — Timezones, speed off the road, and how long you'll really be
 there. 1.16.0.
