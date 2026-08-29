@@ -14,9 +14,16 @@
 // HOW THE ORDER IS DECIDED. Not by hand. The stops sit on a road, and a road
 // has one direction, so the order is the order they occur along it — `mile`,
 // which buildRoute already computed by projecting each stop onto the route
-// polyline. Dragging stops into a different sequence would only describe
-// driving backwards. What you choose is which stops are IN, and how long you
-// linger; geography does the rest.
+// polyline. What you choose is which stops are IN, and how long you linger;
+// geography does the rest.
+//
+// WITH ONE EXCEPTION, and it is a real one rather than a hand-ordering escape
+// hatch. When the bed is further along the road than a stop is, road order
+// puts the stop before the night and you actually sleep first and drive back
+// to it. `afters` says so per stop; see the block in build(). It is still not
+// hand ordering, because you cannot use it to shuffle two stops on the same
+// day — it only ever moves a stop across a night, and it charges you the road
+// twice for doing it.
 //
 // THE DAY MODEL. **A day ends where you put a sleep, and nowhere else.** An
 // earlier version broke the day by itself whenever the clock ran past dusk and
@@ -42,6 +49,11 @@ import * as winter from './winter.js';
 const MIN_PER_DAY = 1440;
 /// A night at a bed, when you have not said otherwise.
 const DEFAULT_NIGHT = 8 * 60;
+/// How far back down the road a `next morning` stop may sit from the bed it
+/// waits for. Deliberately the same 45 miles as the bed reach in ui.js: both
+/// answer "is this near enough to be the same night", and two numbers for one
+/// question is how the planner ends up disagreeing with itself.
+const BACK_REACH = 45;
 const hhmm = m => {
   const t = ((m % MIN_PER_DAY) + MIN_PER_DAY) % MIN_PER_DAY;
   return String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0');
@@ -121,9 +133,42 @@ export function build(route, chosen, start, data) {
   // night to a neighbouring stop, because a night began life as a duration with
   // no position; a bed has a position, and two successive rules for picking the
   // neighbour were both wrong before that was noticed.
-  const stops = route.stops
+  const sorted = route.stops
     .filter(s => chosen.has(s.id))
     .sort((a, b) => a.mile - b.mile);
+
+  // ---- stops you double back to ----------------------------------------
+  //
+  // Road order is right for almost everything, and wrong for the case where
+  // the bed is FURTHER ALONG than the stop is. Cadillac Ranch sits sixteen
+  // miles west of the Amarillo welcome center, so sorting by mile put it
+  // before the night and the planner had you there at eleven at night. What
+  // actually happens is you sleep, then drive back west to it in the morning,
+  // then come forward again.
+  //
+  // An id in `afters` says so. The stop is HELD until the next bed and then
+  // released, which puts it on the new day, with the road between charged
+  // twice in the walk below because you drive it out and you drive it back.
+  //
+  // Held only if the next bed is WITHIN REACH. That bound is the whole
+  // difference between a fix and a new bug: without it, pinning a stop with
+  // no night nearby held it to whatever bed came next, and a stop 346 miles
+  // before that bed produced a 346-mile "double back". Which is the same
+  // mistake, in the same shape, as the bed anchoring in session 33 — so it
+  // takes the same number, and "near" means one thing in this app.
+  const afters = data.afters || {};
+  const stops = [];
+  const held = [];
+  const orphans = [];
+  sorted.forEach((s, i) => {
+    if (afters[s.id] && s.kind !== 'lodging') {
+      const bed = sorted.slice(i + 1).find(x => x.kind === 'lodging');
+      if (bed && bed.mile - s.mile <= BACK_REACH) { held.push(s); return; }
+      orphans.push({ stop: s, bed });
+    }
+    stops.push(s);
+    if (s.kind === 'lodging' && held.length) { stops.push(...held); held.length = 0; }
+  });
 
   // ---- the two clocks --------------------------------------------------
   //
@@ -178,15 +223,33 @@ export function build(route, chosen, start, data) {
   // "stopped" is how the planner ended up saying you spend two hours parked at
   // a place whose whole point is that you do not park.
   let movingMin = 0, stoppedMin = 0, throughMin = 0;
+  // Road covered twice because you doubled back to something. Kept apart from
+  // the route's own mileage so "2,771 mi" stays the length of the road and
+  // this stays the extra you chose to drive.
+  let backMiles = 0;
 
   const first = dayFor(clock, route.waypoints[0].ll, tzStart);
   const days = [{ ...first, ix: 0, from: route.waypoints[0].name, startedAt: clock, startAt: hhmm(clock) }];
   const rows = [], warnings = [];
 
+  // A pin with no night after it cannot mean anything, so it was ignored
+  // rather than quietly shunting the stop to the end of the trip.
+  for (const { stop: s, bed } of orphans)
+    warnings.push(bed
+      ? `${s.name} is set for the next morning, but the nearest night after it is ${Math.round(bed.mile - s.mile)} mi on at ${bed.name}. That is not doubling back, that is a second trip, so it stays in road order.`
+      : `${s.name} is set for the next morning, but you have placed no night after it, so it stays in road order.`);
+
   for (const s of stops) {
     // Everything is whole minutes. Floating point down a 6,000-mile chain
     // produced arrival times like "09:33.413", which is not a clock face.
-    const legMin = Math.round(drive(mile, s.mile, route) + (s.kind === 'lodging' ? 0 : s.detour));
+    // Behind you on the road. `driveMinutes` returns 0 for a backwards span,
+    // so without this a stop you double back to arrived instantly and free.
+    // You drive the road to get to it and you drive it again to get back, so
+    // it costs `backMin` twice, exactly the way a detour costs its minutes
+    // twice. The second half is charged on departure, below.
+    const backMin = s.mile < mile ? Math.round(drive(s.mile, mile, route)) : 0;
+    const legMin = Math.round(drive(mile, s.mile, route)) + backMin
+      + (s.kind === 'lodging' ? 0 : s.detour);
     movingMin += legMin;
     const arrive = clock + legMin;
     const depart = arrive + s.dwell;
@@ -275,6 +338,9 @@ export function build(route, chosen, start, data) {
 
     const row = {
       kind: 'stop', stop: s, dayIx, mile: s.mile,
+      // A stop you slept past and came back to. `back` is the one-way road
+      // between the bed and it, so the round trip is twice this.
+      back: backMin ? { min: backMin, miles: Math.round(mile - s.mile) } : null,
       driveMin: legMin, arrive, depart,
       arriveAt: hhmm(arriveLocal), departAt: hhmm(departLocal),
       tz: here.tz, tzShift: here.tz - tzStart,
@@ -296,11 +362,17 @@ export function build(route, chosen, start, data) {
     // Geometry, separately: a stop you come out the far end of has no drive
     // back to the road, because rejoining it is the end of the traverse.
     if (!s.through) movingMin += s.detour;
-    clock = depart + (s.through ? 0 : s.detour);
+    // The return half of a double-back, and the road it re-covers.
+    movingMin += backMin;
+    backMiles += backMin ? mile - s.mile : 0;
+    clock = depart + (s.through ? 0 : s.detour) + backMin;
     // You come out the far end of a through stop, so the road between the two
     // ends is road you have already covered. Resuming at s.mile would drive it
     // a second time and charge the traverse on top of it.
-    mile = s.throughTo != null ? s.throughTo : s.mile;
+    //
+    // A double-back leaves you where you started, not at the stop, because
+    // coming back is the second half of it.
+    if (!backMin) mile = s.throughTo != null ? s.throughTo : s.mile;
 
     // ---- a night with no bed: sleep where you stopped ---------------------
     // Just a duration, hung off this stop because there is no place naming a
@@ -373,6 +445,9 @@ export function build(route, chosen, start, data) {
     avgMph: driveMin > 0 ? (route.miles / driveMin) * 60 : 0,
     stopMin: Math.round(stoppedMin),
     throughMin: Math.round(throughMin),
+    // Extra road driven because you doubled back to something. Not part of
+    // route.miles, which is the length of the road and should stay that.
+    backMiles: Math.round(backMiles),
     stopCount: rows.filter(r => r.kind !== 'bed').length,
     bedCount: rows.filter(r => r.kind === 'bed').length,
     sleepMin,

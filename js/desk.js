@@ -193,6 +193,11 @@ async function boot() {
       const cur = current().route.stops.find(x => x.id === id);
       return store.setThrough(id, !(cur && cur.throughTime));
     }
+    const aft = e.target.closest('[data-after]');
+    if (aft) {
+      const id = aft.dataset.after;
+      return store.setAfter(id, !store.isAfter(id));
+    }
 
     const add = e.target.closest('[data-addsleep]');
     if (add) { refocus = 'sh-' + add.dataset.addsleep; return store.setSleep(add.dataset.addsleep, 8 * 60); }
@@ -255,7 +260,7 @@ function current() {
   const it = build(
     route, store.chosen,
     { date: new Date($('date').value + 'T00:00:00Z'), at: $('at').value || '06:00' },
-    { HOURS: DATA.HOURS, WINTER: DATA.WINTER, sleeps: store.sleeps });
+    { HOURS: DATA.HOURS, WINTER: DATA.WINTER, sleeps: store.sleeps, afters: store.afters });
   return { route, it };
 }
 
@@ -306,7 +311,8 @@ function draw() {
   // ---- totals -----------------------------------------------------------
   const days = it.dayCount;
   $('totals').innerHTML = `
-    <div><b>${Math.round(route.miles).toLocaleString()}</b><span>miles</span></div>
+    <div><b>${Math.round(route.miles + (it.backMiles || 0)).toLocaleString()}</b><span>miles${
+      it.backMiles ? ` <i>incl ${it.backMiles} doubling back</i>` : ''}</span></div>
     <div><b>${it.stopCount}</b><span>stops</span></div>
     <div><b>${dur(it.driveMin)}</b><span>driving</span></div>
     <div><b>${Math.round(it.avgMph)}</b><span>avg mph</span></div>
@@ -337,7 +343,10 @@ function draw() {
   // Beds get their own list because the pool above filters lodging out, but
   // they behave like any other stop: click to put them in the plan. Where the
   // night falls is decided by the bed's own mile, not by anything you pick.
-  const beds = store.custom.filter(c => c.kind === 'lodging');
+  // EVERY bed on this road, not only your own. Five ship in stops.json for
+  // leg 1 and they reach the pool by the same path a custom one does; reading
+  // store.custom alone made them invisible and therefore unclickable.
+  const beds = route.stops.filter(s => s.kind === 'lodging');
   if (beds.length) {
     const onRoute = new Set(route.stops.map(s => s.id));
     $('pool').innerHTML += `<div class="poolBeds">
@@ -399,7 +408,8 @@ function draw() {
       <div class="what">
         <div class="nm">${esc(r.stop.name)}${r.stop.kind === 'food' ? '<i>eat</i>' : ''}${r.stop.throughTime ? '<i>drive through</i>' : ''}</div>
         <div class="sub">${place(r.stop) ? esc(place(r.stop)) + ' · ' : ''}${dur(r.driveMin)} to get here${
-          r.stop.throughTo != null ? ` &middot; replaces ${Math.round(r.stop.throughTo - r.stop.mile)} mi of road` : ''}</div>
+          r.stop.throughTo != null ? ` &middot; replaces ${Math.round(r.stop.throughTo - r.stop.mile)} mi of road` : ''}${
+          r.back ? ` &middot; <b>${r.back.miles} mi back down the road, and the same again to return</b>` : ''}</div>
         <div class="stay">${r.stop.throughTime ? 'driving through' : 'how long'}
           <input type="number" min="0" max="47" step="1" value="${dh}"
                  data-dwell="${sid}" data-p="h" data-k="dh-${sid}" aria-label="hours here"><span>h</span>
@@ -408,6 +418,10 @@ function draw() {
           ${r.dwellSet ? `<button data-dropdwell="${sid}" title="Back to the researched ${dur(r.seedDwell)}">reset</button>` : ''}
           <button class="thru${r.stop.throughTime ? ' on' : ''}" data-through="${sid}"
             title="${r.stop.throughTime ? 'Counted as driving through' : 'Counted as time stopped'}">through</button>
+          <button class="thru${store.isAfter(sid) ? ' on' : ''}" data-after="${sid}"
+            title="${store.isAfter(sid)
+              ? 'Held until after the night, and the road back is charged both ways'
+              : 'Do this on the way past, in road order'}">next morning</button>
         </div>
         ${r.flags.map(f => `<div class="flag ${f.level}">${esc(f.text)}</div>`).join('')}
       </div>

@@ -37,6 +37,10 @@ const DEFAULTS = () => ({
   // are never re-seeded, so a stop you deliberately untick stays unticked.
   seededIds: [],
   departAt: '06:00',     // clock time you pull out, paired with `departure`
+  // Stops held until after the night, because the bed is further down the
+  // road than they are and you double back to them in the morning. See the
+  // `afters` section below.
+  afters: {},
   // Saved plans, keyed by id. A plan is a WHOLE itinerary — which stops, where
   // you sleep, how long you linger, and when you leave — so two of them for the
   // same road can genuinely disagree. See the plans section below.
@@ -256,6 +260,31 @@ class Store extends EventTarget {
   setThrough(id, on) { this.throughs[id] = !!on; this.save(); }
   clearThrough(id) { delete this.throughs[id]; this.save(); }
 
+  // ---- next morning ----------------------------------------------------
+  //
+  // Some stops you do on the way past. Some you sleep first and DOUBLE BACK
+  // to, because the bed is further along the road than the stop is.
+  //
+  // Cadillac Ranch is the case that forced this. It is sixteen miles west of
+  // the Amarillo welcome center, so road order puts it before the night and
+  // the planner had you there at eleven at night in the dark. What actually
+  // happens is you sleep, and in the morning you drive back west to it and
+  // then come forward again.
+  //
+  // An id in here means: hold this stop until after the next night, and
+  // charge the road twice, because you drive it out and you drive it back.
+  // Absent means the ordinary thing, which is road order.
+  get afters() { return this.s.afters || (this.s.afters = {}); }
+
+  isAfter(id) { return !!this.afters[id]; }
+
+  setAfter(id, on) {
+    if (on) this.afters[id] = true; else delete this.afters[id];
+    this.save();
+  }
+
+  clearAfter(id) { delete this.afters[id]; this.save(); }
+
   // ---- pace ----
   //
   // KEPT ONLY FOR OLD SAVED PLANS. Speed is no longer a setting: it comes off
@@ -299,6 +328,11 @@ class Store extends EventTarget {
       chosen: [...this.chosen],
       sleeps: { ...this.sleeps },
       dwells: { ...this.dwells },
+      // `throughs` and `afters` are part of the itinerary in exactly the way
+      // dwells are. They were missing here until now, so every saved plan
+      // silently dropped the through-time toggles it was saved with.
+      throughs: { ...this.throughs },
+      afters: { ...this.afters },
       departure: this.s.departure || null,
       departAt: this.departAt,
     };
@@ -351,6 +385,8 @@ class Store extends EventTarget {
     this.s.chosen = [...this.chosen];
     this.s.sleeps = { ...(p.sleeps || {}) };
     this.s.dwells = { ...(p.dwells || {}) };
+    this.s.throughs = { ...(p.throughs || {}) };
+    this.s.afters = { ...(p.afters || {}) };
     this.s.departure = p.departure || null;
     this.s.departAt = p.departAt || '06:00';
     this.s.activePlan = id;

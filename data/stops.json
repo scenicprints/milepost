@@ -2499,6 +2499,126 @@
       "routes": [
         "leg3-vegas"
       ]
+    },
+    {
+      "id": "bed-barstow",
+      "name": "Barstow truck stops",
+      "town": "Barstow",
+      "state": "CA",
+      "ll": [
+        34.89802,
+        -116.97664
+      ],
+      "why": "The lots at the I-40 and CA-58 junction, about 2,100 ft. California allows 8 hours in any 24 and you cannot leave and come back to restart it. Desert Oasis Rest Area at I-40 MP 28 is 25 miles on if you have another 22 minutes in you; Ludlow Flying J is an hour on and certain to be open.",
+      "winter": "Low desert, no snow here. The night before it is Tehachapi Pass at 3,793 ft in the dark, which is the crossing to check before you leave.",
+      "detour": 0,
+      "dwell": 0,
+      "cost": "Free",
+      "tags": [
+        "bed"
+      ],
+      "kind": "lodging",
+      "routes": [
+        "leg1-i40",
+        "leg1-south",
+        "leg1-canyon"
+      ]
+    },
+    {
+      "id": "bed-meteor-crater",
+      "name": "Meteor Crater Rest Area, I-40 MP 236",
+      "town": "Winslow",
+      "state": "AZ",
+      "ll": [
+        35.08564,
+        -111.03497
+      ],
+      "why": "Renovated, truck parking nearly doubled, and no time limit. ADOT says outright you may sleep in your vehicle at its rest areas. Winslow TA and Loves are 15 miles east if it is full. The crater gate is two miles away and opens at 08:00.",
+      "winter": "About 5,200 ft, the only night on leg 1 above 5,000. Pavement, and low enough to be a cold night rather than a snow trap. Do not idle to stay warm with snow near the exhaust.",
+      "detour": 0,
+      "dwell": 0,
+      "cost": "Free",
+      "tags": [
+        "bed"
+      ],
+      "kind": "lodging",
+      "routes": [
+        "leg1-i40",
+        "leg1-south",
+        "leg1-canyon"
+      ]
+    },
+    {
+      "id": "bed-amarillo",
+      "name": "Amarillo Welcome Center, I-40 MP 76",
+      "town": "Amarillo",
+      "state": "TX",
+      "ll": [
+        35.22769,
+        -101.73114
+      ],
+      "why": "Texas allows 24 hours and has no rule against overnight parking at its rest areas. Alanreed Rest Area at MP 129 is the fallback, 85 miles east. Cadillac Ranch is 16 miles WEST of here, so it is a next-morning stop rather than one you catch on the way in.",
+      "winter": "3,605 ft in the ice belt. TxDOT brines rather than plows, so the road is not normally right until 10:00. Sleep here, but do not leave early.",
+      "detour": 0,
+      "dwell": 0,
+      "cost": "Free",
+      "tags": [
+        "bed"
+      ],
+      "kind": "lodging",
+      "routes": [
+        "leg1-i40",
+        "leg1-south",
+        "leg1-canyon"
+      ]
+    },
+    {
+      "id": "bed-little-rock",
+      "name": "Petro Stopping Center, North Little Rock",
+      "town": "North Little Rock",
+      "state": "AR",
+      "ll": [
+        34.74987,
+        -92.26747
+      ],
+      "why": "Large, 24 hour, full services, and Arkansas posts no limit. Forrest City Rest Area at MP 235 is the fallback and it is the last legal free night before Tennessee.",
+      "winter": "About 300 ft. No elevation to think about, which after four nights of it is the point.",
+      "detour": 0,
+      "dwell": 0,
+      "cost": "Free",
+      "tags": [
+        "bed"
+      ],
+      "kind": "lodging",
+      "routes": [
+        "leg1-i40",
+        "leg1-south",
+        "leg1-canyon"
+      ]
+    },
+    {
+      "id": "bed-knoxville",
+      "name": "Knoxville truck stop",
+      "town": "Knoxville",
+      "state": "TN",
+      "ll": [
+        35.93621,
+        -83.82829
+      ],
+      "why": "It has to be private ground. Any chain lot, casino lot or motel. Never a rest area and never a pull-off.",
+      "winter": "Tennessee makes sleeping, or preparing to sleep, on public property between 22:00 and 07:00 a Class E felony, and TDOT caps rest area stays at two hours. The statute reaches public ground only, so truck stops are untouched by it.",
+      "detour": 0,
+      "dwell": 0,
+      "cost": "Free",
+      "tags": [
+        "bed"
+      ],
+      "kind": "lodging",
+      "routes": [
+        "leg1-i40",
+        "leg1-south",
+        "leg1-canyon"
+      ]
     }
   ]
 }

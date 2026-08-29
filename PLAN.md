@@ -17,6 +17,11 @@ agent, or a new Claude account, can continue without losing the thread.
 
 ## State
 
+**Leg 1 has a planned route, and the planner can express it (session 42).** The
+canyon road, Modesto to Mooresville over five nights in the car, 20 stops and 5
+beds that ship as data. `afters` lets a stop be held until after the night and
+charges the road both ways, which is what Cadillac Ranch needed.
+
 **The leg 1 master pool is IN (session 17).** 66 researched stops across three
 route options, sights and eateries separated, time-cost colour coding on the
 Route tab. Kevin is testing.
@@ -329,6 +334,78 @@ Android Auto is no.
 ---
 
 ## Session log
+
+**Session 42** — Some stops you sleep past and come back to. 1.22.0.
+
+Kevin, planning leg 1 on the canyon road: *"When I say the order you placed it, it
+needs to know about back tracks. like when you sleep and then turn around to
+cadillac ranch"*.
+
+**Road order was right for everything except the case where the bed is further
+along the road than the stop is.** Cadillac Ranch is sixteen miles west of the
+Amarillo welcome center, so sorting by mile put it before the night and the
+planner had him there at 22:38 in the dark, with its own data noting the best
+window closed at 17:59. What actually happens is you sleep, drive back west in
+the morning, and come forward again.
+
+`store.afters` is the pin, one id per stop, and it sits beside `sleeps`,
+`dwells` and `throughs` because it is the same kind of thing: yours to set, and
+part of what makes an itinerary that itinerary. `build()` HOLDS a pinned stop
+until the next bed and releases it there, so it lands on the new day.
+
+**The road is charged twice, and that is the whole cost model.** `driveMinutes`
+returns 0 for a backwards span, so before this a stop behind you arrived
+instantly and free. Now `backMin` is the one-way road between the bed and the
+stop, paid on the way out and again on the way back, exactly the way a detour
+pays its minutes twice. The walk resumes at the BED's mile, not the stop's,
+because coming back is the second half of it. Cadillac Ranch costs 52 minutes
+and 16 miles of doubling back.
+
+**`BACK_REACH = 45` miles, and the bound is not decoration.** The first cut held
+a pinned stop until whatever bed came next with no distance limit. Testing it on
+Braum's, 346 miles before the Little Rock bed, produced a 346-mile "double back"
+across two states — the same mistake in the same shape as the bed anchoring in
+session 33, so it takes the same 45 miles session 33 settled on. One number, one
+meaning of "near". Out of reach now refuses the pin, names the distance and the
+bed, and leaves the stop in road order.
+
+**Two things came with it:**
+
+- **`currentPlanBody()` never captured `throughs`.** Every plan saved since
+  session 41 silently dropped its through-time toggles on load. Fixed, along
+  with `afters`, in both capture and `loadPlan`.
+- **The beds list read `store.custom` only**, so a bed shipped in `stops.json`
+  was filtered out of the pool by `kind === 'lodging'` and never reached the
+  beds list either. It now lists every lodging stop on the road, wherever it
+  came from.
+
+**Five beds ship as data**, leg 1 only, on all three of its roads: Barstow,
+Meteor Crater Rest Area MP 236, Amarillo Welcome Center MP 76, Petro North
+Little Rock, and a Knoxville truck stop. They carry the state's overnight rule
+and the elevation in `why` and `winter`. This is a deliberate exception to the
+session-18 rule that only Kevin's list ships — he asked for this route to work
+in the app, and a bed that only exists in one browser's localStorage does not
+sync, does not survive a reinstall, and cannot be handed to Ada.
+
+**The header now says 2,787 miles, not 2,771**, with `incl 16 doubling back`,
+because `route.miles` is the length of the road and should stay that. `backMiles`
+is returned separately for the same reason.
+
+Verified against the real plan in the browser, not only in node: all five beds in
+the walk, the nights the lengths they were set to, and Cadillac Ranch at 08:39 on
+day 3 reading *"16 mi back down the road, and the same again to return"*.
+
+**The cache gotcha bit again and it is worth repeating.** `data/` is CACHE-FIRST,
+so the new `stops.json` was invisible until the new worker took over: the page
+fetched 96 stops and no beds while the file on disk had 101. Bumping `sw.js` is
+not optional when `data/` changes, and after a bump the browser still has to
+accept the update before it sees any of it.
+
+**Still open:** `plan.js` / `buildDays`, which the phone's Days tab uses, filters
+lodging out and knows nothing about `afters`. Days and the desktop itinerary
+therefore disagree about this route. The desktop planner and the export are the
+authoritative view; Days is the coarse one. Worth converting if Days is going to
+be used on the road.
 
 **Session 41** — Through time is the user's call, per stop. 1.21.0.
 
