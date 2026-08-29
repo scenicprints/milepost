@@ -173,6 +173,11 @@ export function build(route, chosen, start, data) {
   let mile = 0;
   let dayIx = 0;
   let sleepMin = 0;
+  // Wheels turning vs actually stopped. A detour is driving. A drive-through
+  // park is driving for every minute of it, and filing its traverse under
+  // "stopped" is how the planner ended up saying you spend two hours parked at
+  // a place whose whole point is that you do not park.
+  let movingMin = 0, stoppedMin = 0;
 
   const first = dayFor(clock, route.waypoints[0].ll, tzStart);
   const days = [{ ...first, ix: 0, from: route.waypoints[0].name, startedAt: clock, startAt: hhmm(clock) }];
@@ -182,6 +187,7 @@ export function build(route, chosen, start, data) {
     // Everything is whole minutes. Floating point down a 6,000-mile chain
     // produced arrival times like "09:33.413", which is not a clock face.
     const legMin = Math.round(drive(mile, s.mile, route) + (s.kind === 'lodging' ? 0 : s.detour));
+    movingMin += legMin;
     const arrive = clock + legMin;
     const depart = arrive + s.dwell;
 
@@ -284,6 +290,9 @@ export function build(route, chosen, start, data) {
 
     // A through stop comes out the far end, so there is no second detour to
     // pay: rejoining the interstate is the last part of the traverse.
+    // The traverse of a through stop is driving; a dwell anywhere else is not.
+    if (s.through) movingMin += s.dwell; else stoppedMin += s.dwell;
+    if (!s.through) movingMin += s.detour;   // and the drive back out to the road
     clock = depart + (s.through ? 0 : s.detour);
     // You come out the far end of a through stop, so the road between the two
     // ends is road you have already covered. Resuming at s.mile would drive it
@@ -334,6 +343,7 @@ export function build(route, chosen, start, data) {
 
   // The run home from the last stop to the end of the route.
   const tail = Math.round(drive(mile, route.miles, route));
+  movingMin += tail;
   const endsAt = clock + tail;
   // The far end is three hours ahead of the near end, and arriving "at 19:40"
   // means the clock on the wall in Mooresville, not the one you left behind.
@@ -352,9 +362,13 @@ export function build(route, chosen, start, data) {
     tzStart, tzEnd, tzShift: tzEnd - tzStart,
     dayCount: days.length,
     warnings,
-    driveMin,
+    // driveMin is now the driving THIS PLAN does, detours and traverses
+    // included, not the bare route at speed. avgMph stays keyed to the route
+    // distance, so it still reads as a road speed rather than a trip average.
+    driveMin: Math.round(movingMin),
+    routeDriveMin: driveMin,
     avgMph: driveMin > 0 ? (route.miles / driveMin) * 60 : 0,
-    stopMin: rows.reduce((a, r) => a + r.cost, 0),
+    stopMin: Math.round(stoppedMin),
     stopCount: rows.filter(r => r.kind !== 'bed').length,
     bedCount: rows.filter(r => r.kind === 'bed').length,
     sleepMin,

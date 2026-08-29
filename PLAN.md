@@ -330,6 +330,25 @@ Android Auto is no.
 
 ## Session log
 
+**Session 40** — Driving is not stopped. 1.20.2.
+
+*"Why does it still say drive through 2 hours"* — and looking at the totals
+rather than the row, there was a real error behind it. The planner called
+Petrified Forest a drive-through and then **counted its two hours as STOPPED
+time**, with DRIVING excluding them. Every detour was miscounted the same way:
+`driveMin` was the bare route at speed, and `stopMin` was every stop cost,
+detours included.
+
+You are moving for every minute of a drive-through and for every minute of a
+detour. Now: **DRIVING is wheels turning** — route, detours out and back, and
+through-traverses — and **STOPPED is the dwell at a stop you actually get out
+at.** On a four-stop test plan that moved 40h44 driving / 7h46 stopped to
+**43h46 driving / 4h20 stopped**, and the 4h20 is exactly the three real dwells.
+
+`routeDriveMin` keeps the old bare-route figure, and `avgMph` stays keyed to it
+so it still reads as a road speed rather than a trip average.
+
+
 **Session 39** — A through stop replaces road, it does not sit beside it. 1.20.1.
 
 Kevin, looking at the fix from session 38: *"petrified forest still adds 2 hours
