@@ -20,7 +20,7 @@
 // the phone app and synced. This file must not invent state of its own.
 
 import { store } from './store.js';
-import { buildRoute } from './route.js';
+import { buildRoute, project } from './route.js';
 import { build, hhmm } from './itinerary.js';
 import { toMarkdown, fileNameFor } from './export.js';
 import * as geo from './geocode.js';
@@ -51,6 +51,9 @@ let draft = null;
 /// "Kingman, AZ", or just one of them, or nothing at all. A place added by
 /// pasting coordinates has no town, and "` , `" is not a location.
 const place = s => [s.town, s.state].filter(Boolean).join(', ');
+/// What to show under a name. A place added by pasting coordinates has no town,
+/// and a blank there reads as missing data rather than as "you typed numbers".
+const where = s => place(s) || (s.ll ? `${s.ll[0].toFixed(3)}, ${s.ll[1].toFixed(3)}` : '');
 
 const dur = m => {
   m = Math.round(m);
@@ -138,6 +141,16 @@ async function boot() {
       if (!draft.name.trim() || !draft.ll) {
         const el = $(draft.name.trim() ? 'ed-lat' : 'ed-name');
         if (el) { el.style.borderColor = 'var(--signal)'; el.focus(); }
+        return;
+      }
+      // Show the correction rather than making it silently. Saving straight
+      // through would close the editor and you would never learn the number
+      // was wrong, which is how a bad coordinate gets typed twice.
+      const bad = checkLL(draft.ll);
+      if (bad) {
+        if (bad.fixed) draft.ll = bad.fixed;
+        draft.note = bad.text + (bad.fixed ? ' Save again to keep it.' : '');
+        drawEditor();
         return;
       }
       const bed = draft.kind === 'lodging';
@@ -311,11 +324,20 @@ function draw() {
       <div class="poolLab">Your beds <i>click to sleep there</i></div>
       ${beds.map(b => {
         const here = onRoute.has(b.id);
+        // A bed that is off the road is either genuinely on another route or
+        // has bad coordinates, and those want very different reactions. Say
+        // how far, because 7,000 miles is a typo and 200 is a route swap.
+        let why = 'not on this road';
+        if (!here && b.ll) {
+          const off = Math.round(project(b.ll, route.waypoints, route.cum).off);
+          why = off > 1000 ? `${off.toLocaleString()} mi off — check the coordinates`
+                           : `${off} mi off this road`;
+        }
         return `<div class="poolrow mine bed${inPlan.has(b.id) ? ' on' : ''}">
           <button class="pick" data-toggle="${esc(b.id)}" ${here ? '' : 'disabled'}>
             <span class="tick"></span>
             <span class="nm">${esc(b.name)}</span>
-            <span class="tw">${here ? esc(place(b)) : 'not on this road'}</span>
+            <span class="tw">${here ? esc(where(b)) : why}</span>
           </button>
           <button class="edit" data-edit="${esc(b.id)}">edit</button>
         </div>`;
@@ -497,6 +519,21 @@ function gripe(msg) {
   setTimeout(draw, 4000);
 }
 
+/// Coordinates that cannot be on this trip.
+///
+/// Every road in this app is in the lower 48, so a POSITIVE longitude is not a
+/// place you could drive to, it is a missing minus sign — and a stop 7,000
+/// miles out is simply dropped by buildRoute's MAX_OFF, which then reports the
+/// bed as "not on this road" and tells you nothing about why.
+function checkLL(ll) {
+  const [lat, lon] = ll;
+  const inBox = (a, o) => a >= 24 && a <= 50 && o >= -125 && o <= -66;
+  if (inBox(lat, lon)) return null;
+  if (lon > 0 && inBox(lat, -lon))
+    return { fixed: [lat, -lon], text: `Longitude was ${lon}, which is in Asia. Corrected to ${-lon}.` };
+  return { fixed: null, text: `${lat}, ${lon} is not in the lower 48. Check both numbers.` };
+}
+
 /// A night. Same three columns as a stop row so the clock stays in one line
 /// down the page, but it reads as a break rather than as another place.
 function sleepBlock(r) {
@@ -526,7 +563,7 @@ function openEditor(patch) {
   draft = {
     id: null, name: '', town: '', state: '', ll: null, query: '',
     kind: 'stop', dwell: 60, detour: 5, why: '',
-    results: null, busy: false, failed: false,
+    results: null, busy: false, failed: false, note: '',
     ...patch,
   };
   drawEditor();
@@ -580,6 +617,7 @@ function drawEditor() {
       <span class="edHint">or paste coordinates below</span>
     </div>
     ${d.failed ? `<div class="edErr">Could not reach the lookup. Put the latitude and longitude in by hand.</div>` : ''}
+    ${d.note ? `<div class="edErr">${esc(d.note)}</div>` : ''}
     ${Array.isArray(d.results) && !d.results.length ? `<div class="edHint">Nothing found. Try a town and state.</div>` : ''}
     ${Array.isArray(d.results) && d.results.length ? `<div class="edPicks">${d.results.map((r, i) =>
         `<button data-ed-pick="${i}">${esc(r.label)}<i>${esc(r.state)}</i></button>`).join('')}</div>` : ''}

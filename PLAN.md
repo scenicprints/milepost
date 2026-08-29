@@ -330,6 +330,32 @@ Android Auto is no.
 
 ## Session log
 
+**Session 37** — A missing minus sign should not read as "not on this road". 1.19.1.
+
+Kevin could not add a bed and the planner said **"not on this road"**. The bed was
+a rest area on I-40. The coordinates were `35, 111`: longitude positive, so the
+place was in Mongolia, 6,504 miles off the route, and `buildRoute`'s `MAX_OFF`
+dropped it. Every road in this app is in the lower 48, so a positive longitude is
+never a place, it is always a missing minus sign.
+
+Two failures, both mine, and the editor's is the worse one:
+
+- **It accepted the coordinates without a word.** `checkLL()` now bounds them to
+  the lower 48 (lat 24–50, lon −125 to −66). A positive longitude that would be
+  valid negated is reported and corrected in the field, and **the save does not
+  go through on that click** — you see `"Longitude was 111, which is in Asia.
+  Corrected to -111. Save again to keep it."` and press save again. Correcting
+  silently would close the editor and teach nothing, which is how the same bad
+  number gets typed twice.
+- **"Not on this road" explained nothing.** It now says how far: `"6,504 mi off —
+  check the coordinates"` past a thousand miles, `"200 mi off this road"` below
+  it. Those are different problems — a typo and a route swap — and they were
+  wearing the same label.
+
+Also: a place entered by coordinates has no town, and the blank under its name
+read as missing data. It shows the numbers instead.
+
+
 **Session 36** — `turnoffBy`: a far-off stop sits at its junction. 1.19.0.
 
 Kevin: *"Is grand canyon really before Bearizona?"* No, and it was a modelling
