@@ -285,7 +285,10 @@ export function build(route, chosen, start, data) {
     // A through stop comes out the far end, so there is no second detour to
     // pay: rejoining the interstate is the last part of the traverse.
     clock = depart + (s.through ? 0 : s.detour);
-    mile = s.mile;
+    // You come out the far end of a through stop, so the road between the two
+    // ends is road you have already covered. Resuming at s.mile would drive it
+    // a second time and charge the traverse on top of it.
+    mile = s.throughTo != null ? s.throughTo : s.mile;
 
     // ---- a night with no bed: sleep where you stopped ---------------------
     // Just a duration, hung off this stop because there is no place naming a

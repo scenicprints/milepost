@@ -330,6 +330,39 @@ Android Auto is no.
 
 ## Session log
 
+**Session 39** — A through stop replaces road, it does not sit beside it. 1.20.1.
+
+Kevin, looking at the fix from session 38: *"petrified forest still adds 2 hours
+and 10 minutes."* He was right and 38 only half-fixed it. Charging one detour
+instead of two was correct and beside the point. **The traverse was still being
+added on top of interstate miles that it replaces.**
+
+Checked rather than assumed. The north entrance is I-40 exit 311, **25 miles east
+of Holbrook**; the south entrance is on US-180, **20 miles east of Holbrook**; the
+park road between them is **28 miles**. Eastbound you leave I-40 at Holbrook, run
+US-180 to the south gate, drive north through the park and rejoin at exit 311. The
+26 miles of I-40 between Holbrook and 311 are **road you do not drive**.
+
+The app drove them anyway and then charged the park on top.
+
+**A through stop now occupies a SPAN of road, not a point.** `throughVia` names
+the far end of the traverse per route; entry is the lower mile and exit the
+higher, so the same entry works eastbound and westbound without a second field.
+`build()` resumes at `throughTo` instead of at the stop's own mile, so the road
+between the two ends is covered once.
+
+Petrified Forest now enters at mile 778 and rejoins at 804. Measured against a
+plan with and without it: **it costs 117 minutes, not 140.**
+
+The stop list shows that net rather than the gross, because "what does this add"
+is the question the column answers, and the row says `replaces 26 mi of road`.
+
+**Sunset Crater was reverted to an ordinary out-and-back.** Session 38 called it a
+through stop and that was wrong: the Wupatki loop runs off US-89 and returns you
+to Flagstaff, so it never replaces any of YOUR road. The test for `through` is not
+"does it have a road through it" but **"does its road replace part of the route".**
+
+
 **Session 38** — Some places you drive through. 1.20.0.
 
 Kevin: *"Petrified forest says I would be there for two hours, but technically

@@ -214,7 +214,7 @@ export function buildRoute(route, allStops, dwells) {
       return {
         ...s, detour, dwell, seedDwell: s.dwell,
         dwellSet: Number.isFinite(over) && over !== s.dwell,
-        mile: p.mile, offRoute: p.off, tz: tzFor(s.state, s.ll[1]), turnoff: null,
+        mile: p.mile, offRoute: p.off, tz: tzFor(s.state, s.ll[1]), turnoff: null, throughTo: null,
       };
     })
     .filter(s => s.offRoute < MAX_OFF);
@@ -239,6 +239,22 @@ export function buildRoute(route, allStops, dwells) {
   // alone would leave the canyon ahead by a mile and fix nothing.
   const stops = projected
     .map(s => {
+      // A THROUGH stop occupies a SPAN of the road, not a point. Petrified
+      // Forest runs between Holbrook and exit 311: you leave the interstate at
+      // one end and rejoin at the other, so the traverse REPLACES the road
+      // between them instead of being added on top of it. `throughVia` names
+      // the far end; which end you enter falls out of the route's own mileage,
+      // so the same entry works east and west.
+      const via = s.through && s.throughVia && s.throughVia[route.id];
+      if (via) {
+        const w = towns.find(t => t.name === via);
+        if (!w) {
+          console.warn(`throughVia: ${route.id} has no waypoint named "${via}" for ${s.name}`);
+          return s;
+        }
+        return { ...s, mile: Math.min(w.mile, s.mile), throughTo: Math.max(w.mile, s.mile) };
+      }
+
       const turn = s.turnoffBy && s.turnoffBy[route.id];
       if (!turn) return s;
       const w = towns.find(t => t.name === turn);

@@ -432,7 +432,7 @@
         -111.5436
       ],
       "detour": 23,
-      "dwell": 173,
+      "dwell": 150,
       "cost": "$25 the car, covers both",
       "tags": [
         "volcano",
@@ -452,8 +452,7 @@
       "detourBy": {
         "leg1-canyon": 6,
         "leg3-canyon": 6
-      },
-      "through": true
+      }
     },
     {
       "id": "grand-canyon",
@@ -562,8 +561,8 @@
         35.065,
         -109.781
       ],
-      "detour": 10,
-      "dwell": 130,
+      "detour": 20,
+      "dwell": 120,
       "cost": "$25 the car",
       "tags": [
         "national-park",
@@ -582,7 +581,16 @@
       ],
       "first": true,
       "big": true,
-      "through": true
+      "through": true,
+      "throughVia": {
+        "leg1-i40": "Holbrook",
+        "leg1-south": "Holbrook",
+        "leg3-i40": "Holbrook",
+        "leg3-waco": "Holbrook",
+        "leg3-vegas": "Holbrook",
+        "leg1-canyon": "Holbrook",
+        "leg3-canyon": "Holbrook"
+      }
     },
     {
       "id": "earls-gallup",

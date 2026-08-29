@@ -55,6 +55,18 @@ const place = s => [s.town, s.state].filter(Boolean).join(', ');
 /// and a blank there reads as missing data rather than as "you typed numbers".
 const where = s => place(s) || (s.ll ? `${s.ll[0].toFixed(3)}, ${s.ll[1].toFixed(3)}` : '');
 
+/// What a stop ADDS to the trip, which is not the same as what it costs.
+///
+/// A through stop replaces the road between its two ends, so the driving you no
+/// longer do comes off the bill. Petrified Forest costs 140 minutes and adds
+/// about 117, because 26 miles of I-40 go away with it.
+const netCost = (s, route) => {
+  const gross = stopCost(s).total;
+  if (s.throughTo == null) return gross;
+  const saved = (s.throughTo - s.mile) / (route.avgMph || 62) * 60;
+  return Math.max(0, gross - saved);
+};
+
 const dur = m => {
   m = Math.round(m);
   const h = Math.floor(m / 60);
@@ -307,7 +319,7 @@ function draw() {
           <span class="tick"></span>
           <span class="nm">${esc(s.name)}${s.kind === 'food' ? '<i>eat</i>' : ''}${s.through ? '<i>drive through</i>' : ''}${s.mine ? '<i class="own">yours</i>' : ''}</span>
           <span class="tw">${esc(place(s))}</span>
-          <span class="ct">${dur(stopCost(s).total)}</span>
+          <span class="ct">${dur(netCost(s, route))}</span>
         </button>
         ${s.mine ? `<button class="edit" data-edit="${esc(s.id)}" title="Edit this place">edit</button>` : ''}
       </div>`).join('');
@@ -378,7 +390,8 @@ function draw() {
       <div class="when"><b>${r.arriveAt}</b><span>leave ${r.departAt}</span></div>
       <div class="what">
         <div class="nm">${esc(r.stop.name)}${r.stop.kind === 'food' ? '<i>eat</i>' : ''}${r.stop.through ? '<i>drive through</i>' : ''}</div>
-        <div class="sub">${place(r.stop) ? esc(place(r.stop)) + ' · ' : ''}${dur(r.driveMin)} to get here</div>
+        <div class="sub">${place(r.stop) ? esc(place(r.stop)) + ' · ' : ''}${dur(r.driveMin)} to get here${
+          r.stop.throughTo != null ? ` &middot; replaces ${Math.round(r.stop.throughTo - r.stop.mile)} mi of road` : ''}</div>
         <div class="stay">${r.stop.through ? 'driving through' : 'how long'}
           <input type="number" min="0" max="47" step="1" value="${dh}"
                  data-dwell="${sid}" data-p="h" data-k="dh-${sid}" aria-label="hours here"><span>h</span>
