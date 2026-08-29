@@ -187,6 +187,13 @@ async function boot() {
       return;
     }
 
+    const th = e.target.closest('[data-through]');
+    if (th) {
+      const id = th.dataset.through;
+      const cur = current().route.stops.find(x => x.id === id);
+      return store.setThrough(id, !(cur && cur.throughTime));
+    }
+
     const add = e.target.closest('[data-addsleep]');
     if (add) { refocus = 'sh-' + add.dataset.addsleep; return store.setSleep(add.dataset.addsleep, 8 * 60); }
 
@@ -244,7 +251,7 @@ function current() {
   const leg = DATA.route.legs[legIx];
   const opt = leg.routes.find(r => r.id === $('road').value) || leg.routes[0];
   currentLeg = leg; currentOpt = opt;
-  const route = buildRoute(opt, DATA.stops.concat(store.custom), store.dwells);
+  const route = buildRoute(opt, DATA.stops.concat(store.custom), store.dwells, store.throughs);
   const it = build(
     route, store.chosen,
     { date: new Date($('date').value + 'T00:00:00Z'), at: $('at').value || '06:00' },
@@ -304,6 +311,7 @@ function draw() {
     <div><b>${dur(it.driveMin)}</b><span>driving</span></div>
     <div><b>${Math.round(it.avgMph)}</b><span>avg mph</span></div>
     <div><b>${dur(it.stopMin)}</b><span>stopped</span></div>
+    ${it.throughMin ? `<div><b>${dur(it.throughMin)}</b><span>through</span></div>` : ''}
     <div><b>${it.sleepMin ? dur(it.sleepMin) : '—'}</b><span>asleep</span></div>
     <div class="big"><b>${days}</b><span>${days === 1 ? 'day' : 'days'}</span></div>`;
 
@@ -317,7 +325,7 @@ function draw() {
     .map(s => `<div class="poolrow${inPlan.has(s.id) ? ' on' : ''}${s.mine ? ' mine' : ''}">
         <button class="pick" data-toggle="${esc(s.id)}">
           <span class="tick"></span>
-          <span class="nm">${esc(s.name)}${s.kind === 'food' ? '<i>eat</i>' : ''}${s.through ? '<i>drive through</i>' : ''}${s.mine ? '<i class="own">yours</i>' : ''}</span>
+          <span class="nm">${esc(s.name)}${s.kind === 'food' ? '<i>eat</i>' : ''}${s.throughTime ? '<i>drive through</i>' : ''}${s.mine ? '<i class="own">yours</i>' : ''}</span>
           <span class="tw">${esc(place(s))}</span>
           <span class="ct">${dur(netCost(s, route))}</span>
         </button>
@@ -389,15 +397,17 @@ function draw() {
     html += `<div class="row${r.ok ? '' : ' bad'}">
       <div class="when"><b>${r.arriveAt}</b><span>leave ${r.departAt}</span></div>
       <div class="what">
-        <div class="nm">${esc(r.stop.name)}${r.stop.kind === 'food' ? '<i>eat</i>' : ''}${r.stop.through ? '<i>drive through</i>' : ''}</div>
+        <div class="nm">${esc(r.stop.name)}${r.stop.kind === 'food' ? '<i>eat</i>' : ''}${r.stop.throughTime ? '<i>drive through</i>' : ''}</div>
         <div class="sub">${place(r.stop) ? esc(place(r.stop)) + ' · ' : ''}${dur(r.driveMin)} to get here${
           r.stop.throughTo != null ? ` &middot; replaces ${Math.round(r.stop.throughTo - r.stop.mile)} mi of road` : ''}</div>
-        <div class="stay">${r.stop.through ? 'driving through' : 'how long'}
+        <div class="stay">${r.stop.throughTime ? 'driving through' : 'how long'}
           <input type="number" min="0" max="47" step="1" value="${dh}"
                  data-dwell="${sid}" data-p="h" data-k="dh-${sid}" aria-label="hours here"><span>h</span>
           <input type="number" min="0" max="59" step="5" value="${dm}"
                  data-dwell="${sid}" data-p="m" data-k="dm-${sid}" aria-label="minutes here"><span>m</span>
           ${r.dwellSet ? `<button data-dropdwell="${sid}" title="Back to the researched ${dur(r.seedDwell)}">reset</button>` : ''}
+          <button class="thru${r.stop.throughTime ? ' on' : ''}" data-through="${sid}"
+            title="${r.stop.throughTime ? 'Counted as driving through' : 'Counted as time stopped'}">through</button>
         </div>
         ${r.flags.map(f => `<div class="flag ${f.level}">${esc(f.text)}</div>`).join('')}
       </div>

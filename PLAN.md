@@ -330,6 +330,39 @@ Android Auto is no.
 
 ## Session log
 
+**Session 41** — Through time is the user's call, per stop. 1.21.0.
+
+Kevin: *"just let me manually set it as through time or not, and when it is set
+as through it doesnt affect my drive time"*, and then immediately the case that
+proves it: *"Wouldn't I set the same thing for Grand Canyon... Maybe you get out
+of the car but only for ten minutes."*
+
+**Two things had been tangled under one word `through`, and they are now
+separate:**
+
+- **`through` is geometry.** This stop spans road and replaces it, so the detour
+  is paid once and `build()` resumes at `throughTo`. Data's call. Petrified
+  Forest only.
+- **`throughTime` is accounting.** Is this time driving or standing about? The
+  **user's** call, on any stop, via a toggle beside the how-long boxes, stored in
+  `store.throughs`.
+
+**Through time is now its own total**, so it inflates neither DRIVING nor
+STOPPED. That is what Kevin asked for literally: marking a stop as through does
+not affect the drive figure.
+
+**The default differs per road, because the same place is a different thing on
+each.** `throughTimeBy` seeds it: the Grand Canyon is through on `leg1-canyon`
+and `leg3-canyon`, where the rim IS the road and you step out at viewpoints, and
+is not on `leg1-i40`, where it is a 56-mile detour you park at the end of.
+Verified by switching roads: the toggle comes up ON on the canyon road and off on
+I-40, with no stored override in either case. An explicit toggle beats the seed
+on every road.
+
+A first cut keyed the toggle to the stop alone and would have carried the canyon
+road's answer onto I-40. Kevin's question caught it before it shipped.
+
+
 **Session 40** — Driving is not stopped. 1.20.2.
 
 *"Why does it still say drive through 2 hours"* — and looking at the totals

@@ -192,7 +192,7 @@ const MAX_OFF = 140;
 /// deciding what you do before you turn off.
 const TURN_TOWN = 5;
 
-export function buildRoute(route, allStops, dwells) {
+export function buildRoute(route, allStops, dwells, throughs) {
   const { cum, total } = measure(route.waypoints);
   const towns = route.waypoints.map((w, i) => ({ ...w, mile: cum[i] }));
 
@@ -211,8 +211,23 @@ export function buildRoute(route, allStops, dwells) {
       // Zero is a legitimate answer, so only undefined falls back to the seed.
       const over = dwells && dwells[s.id];
       const dwell = Number.isFinite(over) ? over : s.dwell;
+      // TWO different flags that were briefly one:
+      //   `through`     — geometry. This stop spans road and replaces it.
+      //                   Data's call, and only Petrified Forest has it.
+      //   `throughTime` — accounting. Is this time driving or standing about?
+      //                   The user's call, on any stop, defaulting to the above.
+      // The DEFAULT can differ by road, because the same place is a different
+      // thing on each. The Grand Canyon on the canyon route is the rim road you
+      // drive along, stepping out at viewpoints; on I-40 it is a 56-mile detour
+      // you park at the end of. `throughTimeBy` carries that per route, and the
+      // user's own toggle beats it either way.
+      const seedThrough = !!s.through ||
+        !!(s.throughTimeBy && s.throughTimeBy[route.id]);
+      const tOver = throughs && throughs[s.id];
+      const throughTime = tOver === undefined ? seedThrough : !!tOver;
       return {
-        ...s, detour, dwell, seedDwell: s.dwell,
+        ...s, detour, dwell, seedDwell: s.dwell, throughTime,
+        throughSet: tOver !== undefined && tOver !== seedThrough,
         dwellSet: Number.isFinite(over) && over !== s.dwell,
         mile: p.mile, offRoute: p.off, tz: tzFor(s.state, s.ll[1]), turnoff: null, throughTo: null,
       };

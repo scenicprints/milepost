@@ -177,7 +177,7 @@ export function build(route, chosen, start, data) {
   // park is driving for every minute of it, and filing its traverse under
   // "stopped" is how the planner ended up saying you spend two hours parked at
   // a place whose whole point is that you do not park.
-  let movingMin = 0, stoppedMin = 0;
+  let movingMin = 0, stoppedMin = 0, throughMin = 0;
 
   const first = dayFor(clock, route.waypoints[0].ll, tzStart);
   const days = [{ ...first, ix: 0, from: route.waypoints[0].name, startedAt: clock, startAt: hhmm(clock) }];
@@ -290,9 +290,12 @@ export function build(route, chosen, start, data) {
 
     // A through stop comes out the far end, so there is no second detour to
     // pay: rejoining the interstate is the last part of the traverse.
-    // The traverse of a through stop is driving; a dwell anywhere else is not.
-    if (s.through) movingMin += s.dwell; else stoppedMin += s.dwell;
-    if (!s.through) movingMin += s.detour;   // and the drive back out to the road
+    // Time driving through somewhere is its own thing: it is not standing
+    // about, and it is not road transit either, so it inflates neither total.
+    if (s.throughTime) throughMin += s.dwell; else stoppedMin += s.dwell;
+    // Geometry, separately: a stop you come out the far end of has no drive
+    // back to the road, because rejoining it is the end of the traverse.
+    if (!s.through) movingMin += s.detour;
     clock = depart + (s.through ? 0 : s.detour);
     // You come out the far end of a through stop, so the road between the two
     // ends is road you have already covered. Resuming at s.mile would drive it
@@ -369,6 +372,7 @@ export function build(route, chosen, start, data) {
     routeDriveMin: driveMin,
     avgMph: driveMin > 0 ? (route.miles / driveMin) * 60 : 0,
     stopMin: Math.round(stoppedMin),
+    throughMin: Math.round(throughMin),
     stopCount: rows.filter(r => r.kind !== 'bed').length,
     bedCount: rows.filter(r => r.kind === 'bed').length,
     sleepMin,

@@ -297,3 +297,13 @@ main { flex: 1; display: grid; grid-template-columns: minmax(280px, 26%) 1fr; mi
   padding: 4px 12px;
 }
 .updbar button:hover { background: rgba(255,255,255,.16); }
+
+/* The through-time toggle, beside the how-long boxes. State is the fill, not a
+ * second colour: on means the time is driving, off means you are stood there. */
+.stay .thru {
+  font-family: var(--mono); font-size: 9px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ink3);
+  border: 1px solid var(--rule2); padding: 2px 7px; margin-left: 8px;
+}
+.stay .thru:hover { color: var(--ink); border-color: var(--ink3); }
+.stay .thru.on { background: var(--ink2); border-color: var(--ink2); color: var(--paper); }

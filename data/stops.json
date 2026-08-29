@@ -493,6 +493,10 @@
         "leg3-i40": "Williams",
         "leg3-waco": "Williams",
         "leg3-vegas": "Williams"
+      },
+      "throughTimeBy": {
+        "leg1-canyon": true,
+        "leg3-canyon": true
       }
     },
     {

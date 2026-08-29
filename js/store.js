@@ -240,6 +240,22 @@ class Store extends EventTarget {
 
   clearDwell(id) { delete this.dwells[id]; this.save(); }
 
+  // ---- through time --------------------------------------------------
+  //
+  // Whether the time at a stop is DRIVING THROUGH or actually stopping. Yours
+  // to set per stop, because only you know whether you are getting out.
+  // Absent means "use whatever the stop data says", so the seeded answer stays
+  // the default and an explicit choice sticks even if that default changes.
+  get throughs() { return this.s.throughs || (this.s.throughs = {}); }
+
+  isThrough(id, seed) {
+    const v = this.throughs[id];
+    return v === undefined ? !!seed : !!v;
+  }
+
+  setThrough(id, on) { this.throughs[id] = !!on; this.save(); }
+  clearThrough(id) { delete this.throughs[id]; this.save(); }
+
   // ---- pace ----
   //
   // KEPT ONLY FOR OLD SAVED PLANS. Speed is no longer a setting: it comes off
