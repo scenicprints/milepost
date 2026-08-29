@@ -41,10 +41,6 @@ const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct
 // changes every time after it, so the list has to be rebuilt on each keystroke
 // and the field you are typing in is destroyed underneath you. Each input
 // carries a stable data-k, and draw() puts the focus back on it.
-// How far off a stop a bed can sit and still be that night. The same 45 miles
-// the phone's lodgingFor() uses, so both views agree about what "near" means.
-const BED_REACH = 45;
-
 let refocus = null;
 
 // The editor's own state. It is deliberately NOT part of draw(): the itinerary
@@ -166,37 +162,6 @@ async function boot() {
       return;
     }
 
-    // A bed IS the night. Clicking one finds the last stop you reach before it
-    // and puts the night there, so you never have to work out which stop it
-    // hangs off. Clicking again takes the night away.
-    const bedBtn = e.target.closest('[data-bed]');
-    if (bedBtn) {
-      const bedId = bedBtn.dataset.bed;
-      const already = store.sleepFor(bedId);
-      if (already) return store.clearSleep(already);
-      const { route, it } = current();
-      const b = route.stops.find(x => x.id === bedId);
-      if (!b) return;
-      // The nearest stop, BUT WITHIN REACH. "Nearest" on its own was the first
-      // fix and it was worse than the bug it replaced: with nothing chosen near
-      // Barstow, a bed there anchored to Seligman 267 miles up the road and the
-      // itinerary read Seligman, sleep in Barstow, back to Seligman.
-      //
-      // BED_REACH is the same 45 miles the phone's lodgingFor() has always used
-      // to match a night to a bed, so the two views agree about what "near" is.
-      if (!it.rows.length) return gripe('Pick a stop first, then a bed to sleep at.');
-      let anchor = null, gap = BED_REACH;
-      for (const r of it.rows) {
-        const d = Math.abs(r.mile - b.mile);
-        if (d < gap) { gap = d; anchor = r; }
-      }
-      if (!anchor) return gripe(
-        `Nothing in the plan within ${BED_REACH} miles of ${b.name}. Add a stop near ${place(b) || 'it'} first.`);
-      store.setSleep(anchor.stop.id, store.sleepAfter(anchor.stop.id) || 8 * 60);
-      store.setSleepPlace(anchor.stop.id, bedId);
-      return;
-    }
-
     const add = e.target.closest('[data-addsleep]');
     if (add) { refocus = 'sh-' + add.dataset.addsleep; return store.setSleep(add.dataset.addsleep, 8 * 60); }
 
@@ -218,9 +183,6 @@ async function boot() {
       const el = document.querySelector(`[data-${attr}="${CSS.escape(id)}"][data-p="${k}"]`);
       return Math.max(0, Number(el && el.value) || 0);
     };
-
-    const at = e.target.closest('[data-sleepat]');
-    if (at) return store.setSleepPlace(at.dataset.sleepat, at.value || null);
 
     const f = e.target.closest('[data-sleep]');
     if (f) {
@@ -313,7 +275,7 @@ function draw() {
   const days = it.dayCount;
   $('totals').innerHTML = `
     <div><b>${Math.round(route.miles).toLocaleString()}</b><span>miles</span></div>
-    <div><b>${it.rows.length}</b><span>stops</span></div>
+    <div><b>${it.stopCount}</b><span>stops</span></div>
     <div><b>${dur(it.driveMin)}</b><span>driving</span></div>
     <div><b>${Math.round(it.avgMph)}</b><span>avg mph</span></div>
     <div><b>${dur(it.stopMin)}</b><span>stopped</span></div>
@@ -339,6 +301,9 @@ function draw() {
 
   // Your own beds never reach the pool, since it filters lodging out, so they
   // get their own short list under it or they would be unreachable to edit.
+  // Beds get their own list because the pool above filters lodging out, but
+  // they behave like any other stop: click to put them in the plan. Where the
+  // night falls is decided by the bed's own mile, not by anything you pick.
   const beds = store.custom.filter(c => c.kind === 'lodging');
   if (beds.length) {
     const onRoute = new Set(route.stops.map(s => s.id));
@@ -346,8 +311,8 @@ function draw() {
       <div class="poolLab">Your beds <i>click to sleep there</i></div>
       ${beds.map(b => {
         const here = onRoute.has(b.id);
-        return `<div class="poolrow mine bed${store.sleepFor(b.id) ? ' on' : ''}">
-          <button class="pick" data-bed="${esc(b.id)}" ${here ? '' : 'disabled'}>
+        return `<div class="poolrow mine bed${inPlan.has(b.id) ? ' on' : ''}">
+          <button class="pick" data-toggle="${esc(b.id)}" ${here ? '' : 'disabled'}>
             <span class="tick"></span>
             <span class="nm">${esc(b.name)}</span>
             <span class="tw">${here ? esc(place(b)) : 'not on this road'}</span>
@@ -378,6 +343,11 @@ function draw() {
           d.why === 'plows' ? ` · ${esc(d.riskName)} is normally clear behind the plows by ${hhmm(d.open)}` : ''}</div>
       </div>`;
     }
+
+    // A bed row is the night itself, so it renders as the sleep block and
+    // nothing else. There is no arrival-versus-opening-hours question at a
+    // truck stop you are asleep in.
+    if (r.kind === 'bed') { html += sleepBlock(r); continue; }
 
     const h = r.hours;
     const sid = esc(r.stop.id);
@@ -517,22 +487,6 @@ function flash(btn, msg) {
   setTimeout(() => { btn.textContent = was; }, 1400);
 }
 
-/// The beds this night could be moved to: on the current road, and not already
-/// spoken for by a different night.
-function bedPicker(r) {
-  const beds = store.custom.filter(c => c.kind === 'lodging');
-  const cur = r.sleep.placeId || '';
-  const free = beds.filter(b => {
-    const used = store.sleepFor(b.id);
-    return !used || used === r.stop.id;
-  });
-  if (!free.length) return '';
-  return ` <select class="atPick" data-sleepat="${esc(r.stop.id)}" aria-label="where you sleep">
-      <option value=""${cur ? '' : ' selected'}>no place set</option>
-      ${free.map(b => `<option value="${esc(b.id)}"${cur === b.id ? ' selected' : ''}>${esc(b.name)}</option>`).join('')}
-    </select>`;
-}
-
 /// A one-line complaint above the itinerary, for the cases where doing nothing
 /// silently would read as the click not having registered. Distinct from
 /// flash(), which relabels a button.
@@ -552,8 +506,8 @@ function sleepBlock(r) {
   return `<div class="sleepblk">
     <div class="when"><b>${sl.downAt}</b><span>up ${sl.wakeAt}</span></div>
     <div class="what">
-      <div class="nm">Sleep <i>${dur(sl.minutes)}</i>${sl.placeId ? ` at ${esc(sl.at)}` : ''}</div>
-      <div class="sub">${esc(sl.placeId ? (sl.where || '') : sl.at)}${bedPicker(r)}</div>
+      <div class="nm">Sleep <i>${dur(sl.minutes)}</i>${r.kind === 'bed' ? ` at ${esc(sl.at)}` : ''}</div>
+      <div class="sub">${esc(sl.where || sl.at)}${r.kind === 'bed' && r.driveMin ? ` &middot; ${dur(r.driveMin)} to get here` : ''}</div>
       ${sl.flags.map(f => `<div class="flag ${f.level}">${esc(f.text)}</div>`).join('')}
     </div>
     <div class="hrs setter">

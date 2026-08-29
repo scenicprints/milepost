@@ -40,9 +40,8 @@ import { stopCost, driveMinutes, tzAtMile } from './route.js';
 import * as winter from './winter.js';
 
 const MIN_PER_DAY = 1440;
-/// How far off a stop a bed can sit and still be that night, in road miles.
-/// Matches ui.js's lodgingFor(), so the phone and the planner agree.
-const BED_REACH = 45;
+/// A night at a bed, when you have not said otherwise.
+const DEFAULT_NIGHT = 8 * 60;
 const hhmm = m => {
   const t = ((m % MIN_PER_DAY) + MIN_PER_DAY) % MIN_PER_DAY;
   return String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0');
@@ -116,8 +115,14 @@ export function build(route, chosen, start, data) {
   const { HOURS, WINTER } = data;
   const sleeps = data.sleeps || {};
 
+  // Beds are IN the walk, not hung off it. A bed is projected onto the road by
+  // buildRoute exactly like every other stop, so it has a mile of its own and
+  // slots into road order on its own merits. An earlier version anchored a
+  // night to a neighbouring stop, because a night began life as a duration with
+  // no position; a bed has a position, and two successive rules for picking the
+  // neighbour were both wrong before that was noticed.
   const stops = route.stops
-    .filter(s => chosen.has(s.id) && s.kind !== 'lodging')
+    .filter(s => chosen.has(s.id))
     .sort((a, b) => a.mile - b.mile);
 
   // ---- the two clocks --------------------------------------------------
@@ -176,7 +181,7 @@ export function build(route, chosen, start, data) {
   for (const s of stops) {
     // Everything is whole minutes. Floating point down a 6,000-mile chain
     // produced arrival times like "09:33.413", which is not a clock face.
-    const legMin = Math.round(drive(mile, s.mile, route) + s.detour);
+    const legMin = Math.round(drive(mile, s.mile, route) + (s.kind === 'lodging' ? 0 : s.detour));
     const arrive = clock + legMin;
     const depart = arrive + s.dwell;
 
@@ -192,6 +197,50 @@ export function build(route, chosen, start, data) {
     const arriveLocal = here.local;
     const departLocal = arriveLocal + s.dwell;
     const at = ((arriveLocal % MIN_PER_DAY) + MIN_PER_DAY) % MIN_PER_DAY;
+
+    // ---- a bed: you arrive, you sleep, the day ends here ------------------
+    if (s.kind === 'lodging') {
+      const nap = Math.round(Number(sleeps[s.id]) || DEFAULT_NIGHT);
+      const wake = arrive + nap;
+      const next = dayFor(wake, s.ll, s.tz);
+      const downLocal = arriveLocal;
+      const wakeLocal = next.local;
+      const wakeAt = ((wakeLocal % MIN_PER_DAY) + MIN_PER_DAY) % MIN_PER_DAY;
+      const sflags = [];
+
+      if (wakeAt < next.open && wakeAt > next.open - 12 * 60)
+        sflags.push({
+          level: 'warn',
+          text: next.why === 'plows'
+            ? `Back on the road at ${hhmm(wakeLocal)}, but ${next.riskName} is not normally clear behind the plows until ${hhmm(next.open)}.`
+            : `Back on the road at ${hhmm(wakeLocal)}, ${mins(next.open - wakeAt)} before there is light enough for it. First light is ${hhmm(next.rise)}.`,
+        });
+      if (nap < 5 * 60)
+        sflags.push({ level: 'warn', text: `${mins(nap)} is a nap, not a night.` });
+
+      rows.push({
+        kind: 'bed', stop: s, dayIx, mile: s.mile,
+        driveMin: legMin, arrive, depart: wake,
+        arriveAt: hhmm(downLocal), departAt: hhmm(wakeLocal),
+        tz: here.tz, tzShift: here.tz - tzStart,
+        dwell: 0, cost: 0, hours: null, best: null, bestAt: null,
+        flags: [], ok: true,
+        sleep: {
+          minutes: nap,
+          downAt: hhmm(downLocal), wakeAt: hhmm(wakeLocal),
+          at: s.name,
+          where: [s.town, s.state].filter(Boolean).join(', '),
+          dayIx, flags: sflags,
+        },
+      });
+
+      sleepMin += nap;
+      dayIx += 1;
+      days.push({ ...next, ix: dayIx, from: s.name, startedAt: wake, startAt: hhmm(wakeLocal) });
+      clock = wake;
+      mile = s.mile;
+      continue;
+    }
 
     const flags = [];
     if (!h) flags.push({ level: 'unknown', text: 'Hours not checked for this one.' });
@@ -219,7 +268,7 @@ export function build(route, chosen, start, data) {
       });
 
     const row = {
-      stop: s, dayIx, mile: s.mile,
+      kind: 'stop', stop: s, dayIx, mile: s.mile,
       driveMin: legMin, arrive, depart,
       arriveAt: hhmm(arriveLocal), departAt: hhmm(departLocal),
       tz: here.tz, tzShift: here.tz - tzStart,
@@ -236,22 +285,11 @@ export function build(route, chosen, start, data) {
     clock = depart + s.detour;      // back out to the road
     mile = s.mile;
 
-    // ---- the night, if one was placed after this stop --------------------
-    // A night is either a plain number of minutes or { m, at }, where `at`
-    // names a lodging stop. store.js is the only other place that knows this.
-    const entry = sleeps[s.id];
-    const nap = Math.round((typeof entry === 'number' ? entry : entry && entry.m) || 0);
-    const atId = entry && typeof entry === 'object' ? entry.at : null;
-    let bed = atId ? route.stops.find(x => x.id === atId) : null;
-    // A bed has to be within reach of the stop the night hangs off, or the
-    // itinerary starts telling you to drive back the way you came. This heals
-    // plans already saved with a bad anchor as well as preventing new ones:
-    // the night stays, the place is dropped, and you are told why.
-    let bedTooFar = null;
-    if (bed && Math.abs(bed.mile - s.mile) > BED_REACH) {
-      bedTooFar = { name: bed.name, miles: Math.round(Math.abs(bed.mile - s.mile)) };
-      bed = null;
-    }
+    // ---- a night with no bed: sleep where you stopped ---------------------
+    // Just a duration, hung off this stop because there is no place naming a
+    // position of its own. A night AT a bed is handled above, at the bed's
+    // own mile, and needs none of this.
+    const nap = Math.round(Number(sleeps[s.id]) || 0);
     if (nap > 0) {
       const wake = clock + nap;
       const next = dayFor(wake, s.ll, s.tz);
@@ -273,18 +311,12 @@ export function build(route, chosen, start, data) {
         });
       if (nap < 5 * 60)
         sflags.push({ level: 'warn', text: `${mins(nap)} is a nap, not a night.` });
-      if (bedTooFar)
-        sflags.push({ level: 'bad', text:
-          `${bedTooFar.name} is ${bedTooFar.miles} miles from here, so this is not a night there. Put it against a stop nearer to it.` });
 
-      // Where the night is spent: the bed if one was named, otherwise just the
-      // town you happened to stop in.
       row.sleep = {
         minutes: nap,
         downAt: hhmm(downLocal), wakeAt: hhmm(wakeLocal),
-        at: bed ? bed.name : (s.town ? `${s.town}${s.state ? ', ' + s.state : ''}` : s.name),
-        placeId: bed ? bed.id : null,
-        where: bed ? [bed.town, bed.state].filter(Boolean).join(', ') : null,
+        at: s.town ? `${s.town}${s.state ? ', ' + s.state : ''}` : s.name,
+        where: null,
         dayIx, flags: sflags,
       };
 
@@ -318,6 +350,8 @@ export function build(route, chosen, start, data) {
     driveMin,
     avgMph: driveMin > 0 ? (route.miles / driveMin) * 60 : 0,
     stopMin: rows.reduce((a, r) => a + r.cost, 0),
+    stopCount: rows.filter(r => r.kind !== 'bed').length,
+    bedCount: rows.filter(r => r.kind === 'bed').length,
     sleepMin,
   };
 }

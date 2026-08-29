@@ -330,6 +330,45 @@ Android Auto is no.
 
 ## Session log
 
+**Session 34** — A bed finds its own spot in the route. 1.18.0.
+**This replaces the anchoring in sessions 32 and 33. Do not bring it back.**
+
+Kevin, after the second bad anchor: *"Why? why not just find it's spot in the
+route? Is the program too dumb?"* He was right and the answer was no, it was
+badly modelled.
+
+**A night began life in session 27 as a duration with no position of its own**,
+so it borrowed one from a neighbouring stop. That was correct for "sleep here
+for nine hours". When beds arrived in session 32 the borrowed-position model was
+kept, and it should not have been: **`buildRoute` already projects a bed onto the
+road exactly like every other stop, so it has a mile.** Two successive rules for
+choosing the neighbour were both wrong — "last stop strictly before" placed
+nothing, "nearest stop" placed a Barstow bed against Seligman 265 miles away —
+before the model itself was questioned.
+
+**A chosen bed is now simply in the walk, in road order.** `build()` no longer
+filters lodging out; it filters on `chosen` alone and sorts by mile. When the
+walk reaches a bed you arrive, you sleep, the day ends, and the next day starts
+there. The bed's own mile decides everything.
+
+What that deleted, which is the real measure of it: the anchor search, the
+45-mile `BED_REACH`, the "nothing within 45 miles" refusal, the too-far
+detach-and-warn guard in `build()`, the place-picker select on each night, and
+the `{ m, at }` night shape. `store.sleeps[id]` is a plain number again, keyed by
+whatever the night sits at — a bed, or an ordinary stop when you are just
+sleeping where you stopped.
+
+**Beds toggle like any other stop now**, which is what Kevin asked for two
+sessions ago: click it and it is in the trip. They keep their own list under the
+pool only because the pool filters lodging out.
+
+**Old plans migrate on load.** `#migrateNights()` turns each `{ m, at }` into a
+plain night at the bed and adds the bed to `chosen`. Verified against Kevin's
+actual broken plan: Barstow at mile 340 now falls before Seligman at 607 instead
+of after it, and a bed 500 miles from any chosen stop — impossible under the old
+rule — places without complaint.
+
+
 **Session 33** — A bed 265 miles away is not where you sleep. 1.17.5.
 
 Kevin, with a screenshot: *"Why would it have me go to Seligman, then to
