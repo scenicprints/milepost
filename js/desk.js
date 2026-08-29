@@ -20,7 +20,7 @@
 // the phone app and synced. This file must not invent state of its own.
 
 import { store } from './store.js';
-import { buildRoute, project } from './route.js';
+import { buildRoute, project, stopCost } from './route.js';
 import { build, hhmm } from './itinerary.js';
 import { toMarkdown, fileNameFor } from './export.js';
 import * as geo from './geocode.js';
@@ -305,9 +305,9 @@ function draw() {
     .map(s => `<div class="poolrow${inPlan.has(s.id) ? ' on' : ''}${s.mine ? ' mine' : ''}">
         <button class="pick" data-toggle="${esc(s.id)}">
           <span class="tick"></span>
-          <span class="nm">${esc(s.name)}${s.kind === 'food' ? '<i>eat</i>' : ''}${s.mine ? '<i class="own">yours</i>' : ''}</span>
+          <span class="nm">${esc(s.name)}${s.kind === 'food' ? '<i>eat</i>' : ''}${s.through ? '<i>drive through</i>' : ''}${s.mine ? '<i class="own">yours</i>' : ''}</span>
           <span class="tw">${esc(place(s))}</span>
-          <span class="ct">${dur(s.detour * 2 + s.dwell)}</span>
+          <span class="ct">${dur(stopCost(s).total)}</span>
         </button>
         ${s.mine ? `<button class="edit" data-edit="${esc(s.id)}" title="Edit this place">edit</button>` : ''}
       </div>`).join('');
@@ -377,9 +377,9 @@ function draw() {
     html += `<div class="row${r.ok ? '' : ' bad'}">
       <div class="when"><b>${r.arriveAt}</b><span>leave ${r.departAt}</span></div>
       <div class="what">
-        <div class="nm">${esc(r.stop.name)}${r.stop.kind === 'food' ? '<i>eat</i>' : ''}</div>
+        <div class="nm">${esc(r.stop.name)}${r.stop.kind === 'food' ? '<i>eat</i>' : ''}${r.stop.through ? '<i>drive through</i>' : ''}</div>
         <div class="sub">${place(r.stop) ? esc(place(r.stop)) + ' · ' : ''}${dur(r.driveMin)} to get here</div>
-        <div class="stay">how long
+        <div class="stay">${r.stop.through ? 'driving through' : 'how long'}
           <input type="number" min="0" max="47" step="1" value="${dh}"
                  data-dwell="${sid}" data-p="h" data-k="dh-${sid}" aria-label="hours here"><span>h</span>
           <input type="number" min="0" max="59" step="5" value="${dm}"

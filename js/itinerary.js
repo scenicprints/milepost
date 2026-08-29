@@ -282,7 +282,9 @@ export function build(route, chosen, start, data) {
     };
     rows.push(row);
 
-    clock = depart + s.detour;      // back out to the road
+    // A through stop comes out the far end, so there is no second detour to
+    // pay: rejoining the interstate is the last part of the traverse.
+    clock = depart + (s.through ? 0 : s.detour);
     mile = s.mile;
 
     // ---- a night with no bed: sleep where you stopped ---------------------

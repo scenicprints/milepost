@@ -260,8 +260,17 @@ export function buildRoute(route, allStops, dwells) {
 }
 
 /// What a stop actually costs you: out, back, and time on the ground.
+/// What a stop actually costs you: getting off the road, time on the ground,
+/// and getting back on.
+///
+/// A THROUGH stop is a different shape and the doubled detour is wrong for it.
+/// Petrified Forest is a 28-mile park road: you leave I-40 at one exit, drive
+/// the length of it, and rejoin the interstate somewhere else. You never make
+/// the return trip, so the detour is paid once and the exit is part of the
+/// traverse. Its own note in stops.json has always said so — "a national park
+/// you drive through rather than into" — the arithmetic just did not listen.
 export function stopCost(stop) {
-  const driving = (stop.detour || 0) * 2;
+  const driving = (stop.detour || 0) * (stop.through ? 1 : 2);
   return { driving, dwell: stop.dwell || 60, total: driving + (stop.dwell || 60) };
 }
 

@@ -432,7 +432,7 @@
         -111.5436
       ],
       "detour": 23,
-      "dwell": 150,
+      "dwell": 173,
       "cost": "$25 the car, covers both",
       "tags": [
         "volcano",
@@ -452,7 +452,8 @@
       "detourBy": {
         "leg1-canyon": 6,
         "leg3-canyon": 6
-      }
+      },
+      "through": true
     },
     {
       "id": "grand-canyon",
@@ -562,7 +563,7 @@
         -109.781
       ],
       "detour": 10,
-      "dwell": 120,
+      "dwell": 130,
       "cost": "$25 the car",
       "tags": [
         "national-park",
@@ -580,7 +581,8 @@
         "leg3-canyon"
       ],
       "first": true,
-      "big": true
+      "big": true,
+      "through": true
     },
     {
       "id": "earls-gallup",

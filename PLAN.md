@@ -330,6 +330,42 @@ Android Auto is no.
 
 ## Session log
 
+**Session 38** — Some places you drive through. 1.20.0.
+
+Kevin: *"Petrified forest says I would be there for two hours, but technically
+it's something you drive through."* Right, and the stop's own note has said so
+since it was written: *"a national park you drive through rather than into."*
+The prose knew; the arithmetic did not.
+
+**The app had exactly one shape for a stop: detour out, stand around, detour
+back.** Petrified Forest is a 28-mile park road — you leave I-40 at one exit,
+drive its length, and rejoin the interstate somewhere else. You never make the
+return trip, so charging the detour twice is charging for a drive nobody takes.
+
+`through: true` on a stop now means:
+
+- `stopCost()` charges the detour **once**, not twice.
+- `build()` adds no second detour after the dwell, because rejoining the road is
+  the last part of the traverse.
+- The dwell is the traverse, and it is labelled **"driving through"** rather than
+  "how long", with a `drive through` badge beside the name in both the pool and
+  the itinerary.
+
+**Total time was deliberately left unchanged.** The second detour was folded into
+the traverse, so Petrified Forest is still 140 minutes and Sunset Crater still
+196. Only the shape and the wording changed. The numbers themselves are Kevin's
+to revise, and the per-stop "how long" box does that without touching data.
+
+Applied to **Petrified Forest** and **Sunset Crater & Wupatki**, which is the
+Wupatki loop road off US-89 and the same shape. Palo Duro is genuinely
+out-and-back — you drive to the floor and come back — so it keeps the doubled
+detour. Valley of Fire on `leg3-vegas` is probably a third case, unchecked.
+
+Also fixed in passing: the pool column computed `detour * 2 + dwell` by hand
+instead of calling `stopCost()`, so it disagreed with the itinerary by one
+detour the moment the two formulas diverged. It calls `stopCost()` now.
+
+
 **Session 37** — A missing minus sign should not read as "not on this road". 1.19.1.
 
 Kevin could not add a bed and the planner said **"not on this road"**. The bed was
