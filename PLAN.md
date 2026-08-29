@@ -330,6 +330,28 @@ Android Auto is no.
 
 ## Session log
 
+**Session 33** — A bed 265 miles away is not where you sleep. 1.17.5.
+
+Kevin, with a screenshot: *"Why would it have me go to Seligman, then to
+Barstow, then back to Seligman?"* Because session 32's anchor rule was "the
+nearest stop" **with no distance limit**. He had nothing chosen near Barstow, so
+the nearest stop to a bed at mile 340 was Seligman at 607, and the itinerary
+read Seligman, sleep in Barstow, back to Seligman for the Snow Cap at 02:28.
+
+That is the second wrong rule in a row for the same line of code. "Last stop
+strictly before the bed" refused to place anything; "nearest stop" placed it 265
+miles backwards. **The rule is nearest WITHIN 45 MILES**, which is the same
+`BED_REACH` the phone's `lodgingFor()` has always used, so the two views finally
+agree on what "near" means. Nothing within reach now refuses with the reason and
+names the town to add a stop near.
+
+**The guard is in `build()` as well as in the click**, because the click only
+stops new mistakes and Kevin already had a bad anchor saved. A night whose bed is
+further than `BED_REACH` from its stop keeps the night, drops the place, and says
+`"Flying J Travel Plaza is 265 miles from here, so this is not a night there."`
+So existing plans heal themselves on load rather than needing to be re-entered.
+
+
 **Session 32** — A bed is the night. 1.17.4.
 
 Kevin added a Flying J as a place to sleep, and then: *"I have no way of

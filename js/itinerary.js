@@ -40,6 +40,9 @@ import { stopCost, driveMinutes, tzAtMile } from './route.js';
 import * as winter from './winter.js';
 
 const MIN_PER_DAY = 1440;
+/// How far off a stop a bed can sit and still be that night, in road miles.
+/// Matches ui.js's lodgingFor(), so the phone and the planner agree.
+const BED_REACH = 45;
 const hhmm = m => {
   const t = ((m % MIN_PER_DAY) + MIN_PER_DAY) % MIN_PER_DAY;
   return String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0');
@@ -239,7 +242,16 @@ export function build(route, chosen, start, data) {
     const entry = sleeps[s.id];
     const nap = Math.round((typeof entry === 'number' ? entry : entry && entry.m) || 0);
     const atId = entry && typeof entry === 'object' ? entry.at : null;
-    const bed = atId ? route.stops.find(x => x.id === atId) : null;
+    let bed = atId ? route.stops.find(x => x.id === atId) : null;
+    // A bed has to be within reach of the stop the night hangs off, or the
+    // itinerary starts telling you to drive back the way you came. This heals
+    // plans already saved with a bad anchor as well as preventing new ones:
+    // the night stays, the place is dropped, and you are told why.
+    let bedTooFar = null;
+    if (bed && Math.abs(bed.mile - s.mile) > BED_REACH) {
+      bedTooFar = { name: bed.name, miles: Math.round(Math.abs(bed.mile - s.mile)) };
+      bed = null;
+    }
     if (nap > 0) {
       const wake = clock + nap;
       const next = dayFor(wake, s.ll, s.tz);
@@ -261,6 +273,9 @@ export function build(route, chosen, start, data) {
         });
       if (nap < 5 * 60)
         sflags.push({ level: 'warn', text: `${mins(nap)} is a nap, not a night.` });
+      if (bedTooFar)
+        sflags.push({ level: 'bad', text:
+          `${bedTooFar.name} is ${bedTooFar.miles} miles from here, so this is not a night there. Put it against a stop nearer to it.` });
 
       // Where the night is spent: the bed if one was named, otherwise just the
       // town you happened to stop in.

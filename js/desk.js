@@ -41,6 +41,10 @@ const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct
 // changes every time after it, so the list has to be rebuilt on each keystroke
 // and the field you are typing in is destroyed underneath you. Each input
 // carries a stable data-k, and draw() puts the focus back on it.
+// How far off a stop a bed can sit and still be that night. The same 45 miles
+// the phone's lodgingFor() uses, so both views agree about what "near" means.
+const BED_REACH = 45;
+
 let refocus = null;
 
 // The editor's own state. It is deliberately NOT part of draw(): the itinerary
@@ -173,14 +177,21 @@ async function boot() {
       const { route, it } = current();
       const b = route.stops.find(x => x.id === bedId);
       if (!b) return;
-      // The NEAREST stop, not the last one strictly before it. A bed a few
-      // miles short of a stop is the normal case — the Flying J at Barstow
-      // sits twelve miles before Calico — and nobody sleeps first and sees the
-      // ghost town after. You do the stop, then double back to the bed.
-      // Ties go to the stop you reach first.
+      // The nearest stop, BUT WITHIN REACH. "Nearest" on its own was the first
+      // fix and it was worse than the bug it replaced: with nothing chosen near
+      // Barstow, a bed there anchored to Seligman 267 miles up the road and the
+      // itinerary read Seligman, sleep in Barstow, back to Seligman.
+      //
+      // BED_REACH is the same 45 miles the phone's lodgingFor() has always used
+      // to match a night to a bed, so the two views agree about what "near" is.
       if (!it.rows.length) return gripe('Pick a stop first, then a bed to sleep at.');
-      const anchor = it.rows.reduce((best, r) =>
-        Math.abs(r.mile - b.mile) < Math.abs(best.mile - b.mile) ? r : best, it.rows[0]);
+      let anchor = null, gap = BED_REACH;
+      for (const r of it.rows) {
+        const d = Math.abs(r.mile - b.mile);
+        if (d < gap) { gap = d; anchor = r; }
+      }
+      if (!anchor) return gripe(
+        `Nothing in the plan within ${BED_REACH} miles of ${b.name}. Add a stop near ${place(b) || 'it'} first.`);
       store.setSleep(anchor.stop.id, store.sleepAfter(anchor.stop.id) || 8 * 60);
       store.setSleepPlace(anchor.stop.id, bedId);
       return;
