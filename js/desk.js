@@ -614,4 +614,53 @@ function drawEditor() {
   </div>`;
 }
 
+/// Notice a new version and offer it, rather than sitting on a stale one.
+///
+/// skipWaiting() stays off by deliberate decision — a worker taking over by
+/// itself once swapped the code under a running session — so this ASKS. What it
+/// fixes is that the planner previously had no way to ask at all: the update
+/// control lives in the phone app's Trip tab and nothing here links to it, so a
+/// stale stylesheet could outlive several deploys.
+async function watchForUpdate() {
+  if (!('serviceWorker' in navigator)) return;
+  let reg;
+  try {
+    reg = await navigator.serviceWorker.getRegistration();
+    // desk.html never registered one of its own. The app registers at scope
+    // '/', which covers this page, but if you have only ever opened the
+    // planner there is nothing registered at all.
+    if (!reg) reg = await navigator.serviceWorker.register('sw.js');
+  } catch (_) { return; }
+  if (!reg) return;
+
+  const offer = () => {
+    if (!reg.waiting) return;
+    $('upd').innerHTML = `<div class="updbar">
+      <span>A newer Milepost is ready.</span>
+      <button data-reload>Reload to use it</button>
+    </div>`;
+  };
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('[data-reload]')) return;
+    if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+    else location.reload();
+  });
+
+  navigator.serviceWorker.addEventListener('controllerchange', () => location.reload());
+
+  if (reg.waiting) offer();
+  reg.addEventListener('updatefound', () => {
+    const w = reg.installing;
+    if (!w) return;
+    w.addEventListener('statechange', () => {
+      if (w.state === 'installed' && navigator.serviceWorker.controller) offer();
+    });
+  });
+
+  // Actually go and look, every time the planner is opened.
+  reg.update().catch(() => {});
+}
+
 boot();
+watchForUpdate();

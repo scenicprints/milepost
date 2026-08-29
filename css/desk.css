@@ -284,3 +284,16 @@ main { flex: 1; display: grid; grid-template-columns: minmax(280px, 26%) 1fr; mi
 .empty { padding: 40px 24px; color: var(--ink2); font-size: 13px; }
 
 @media (max-width: 900px) { main { grid-template-columns: 1fr; } .pane.list { display: none; } }
+
+/* ------------------------------------------------------------ update bar */
+.updbar {
+  display: flex; align-items: center; gap: 14px;
+  padding: 9px 20px; background: var(--signal); color: #fff;
+  font-size: 13px;
+}
+.updbar button {
+  font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
+  text-transform: uppercase; color: #fff; border: 1px solid rgba(255,255,255,.6);
+  padding: 4px 12px;
+}
+.updbar button:hover { background: rgba(255,255,255,.16); }

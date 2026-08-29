@@ -330,6 +330,30 @@ Android Auto is no.
 
 ## Session log
 
+**Session 35** — The planner could not notice a new version. 1.18.1.
+
+Third time Kevin was shown a screenshot of code that no longer exists — this
+time the "nothing in the plan within 45 miles" refusal, deleted in 1.18.0. The
+deployed site was correct every time. **`desk.html` never touched the service
+worker at all.** It has no registration of its own, it is merely covered by the
+scope of the one `index.html` registers, and the update control lives in the
+phone app's Trip tab which the planner does not link to. So the planner had no
+way to notice a new version, and a stale bundle could outlive several deploys.
+
+`watchForUpdate()` in `desk.js` now registers the worker if nothing is
+registered, calls `reg.update()` on every open, and shows a bar when one is
+waiting. `skipWaiting` remains off by the older decision, so it **asks** rather
+than swapping code under you; what changed is that the planner can ask at all.
+
+Verified the whole loop against a simulated deploy: bump the cache name, the bar
+appears, clicking it posts SKIP_WAITING, `controllerchange` reloads, the old
+cache is dropped and the plan survives.
+
+**A browser holding a pre-1.18.1 worker still needs one manual clear**, because
+the code that does the asking is itself the code it cannot see. After that it is
+self-correcting.
+
+
 **Session 34** — A bed finds its own spot in the route. 1.18.0.
 **This replaces the anchoring in sessions 32 and 33. Do not bring it back.**
 

@@ -31,6 +31,12 @@
   <div class="totals" id="totals"></div>
 </header>
 
+<!-- The planner had no way to notice a new version. index.html registers the
+     worker and the update button lives in the phone app's Trip tab, which this
+     page does not link to, so a stale desk.css could sit here indefinitely
+     while the deployed site had moved on. -->
+<div id="upd"></div>
+
 <main>
   <section class="pane list">
     <div class="paneHead">
