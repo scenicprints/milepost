@@ -330,6 +330,38 @@ Android Auto is no.
 
 ## Session log
 
+**Session 31** — The cache could hand you new JS with old CSS. 1.17.3.
+
+Kevin sent a screenshot of the new "Add a place" form rendering as raw HTML,
+labels inline, no segmented control, nothing styled. The code was correct and
+the deployed site was correct: loading it fresh, `.ed` computed `display:flex`
+and `.f` computed `column`. What he had was **the new `desk.js` paired with the
+previous deploy's `desk.css`**, which contains none of `.ed`, `.f` or `.seg`, so
+the new markup fell back to browser defaults while the rest of the page looked
+fine.
+
+**The cause was `networkFirst`'s 2,500 ms timeout, and every asset ran that race
+on its own.** On a slow but working connection `desk.js` could come fresh off
+the network while `desk.css` timed out and came from the previous version's
+cache. That is the worst split available: the new code runs and emits markup
+nothing styles, so the page looks broken rather than looking old.
+
+**Code now gets a 15 second timeout, data keeps 2,500 ms.** Not an infinite wait
+for code, which was the first attempt and was wrong: hanging forever is exactly
+the wrong failure on a weak or captive-portal connection, which is where this app
+has to work. Fifteen seconds makes two code assets straddling the boundary
+vanishingly unlikely while keeping the graceful fall back to cache.
+
+**`skipWaiting` was deliberately left alone.** The obvious reach is to have the
+new worker claim immediately, but `sw.js` says in a comment that auto-takeover
+used to swap code under a running session, which is why updates are a button in
+Trip instead. That decision stands; it was never the cause here.
+
+Note for anyone hitting the stale form once more: the fix ships in the worker,
+so a browser still holding the old one needs one manual clear. Unregister the
+worker and drop the caches from the console, or use the update button in Trip.
+
+
 **Session 30** — Your own places, on the desktop planner. 1.17.2.
 
 Kevin: *"In milepost, I have no way of adding custom stops to the planner on

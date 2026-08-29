@@ -13,7 +13,7 @@
 // preferring fresh. Data, icons and the vendored SDK stay cache-first — they
 // are large, they rarely change, and a stale copy of them is harmless.
 
-const CACHE = 'milepost-v39';
+const CACHE = 'milepost-v40';
 
 const SHELL = [
   'index.html', 'desk.html', 'manifest.webmanifest',
@@ -34,6 +34,24 @@ const SHELL = [
 const CACHE_FIRST = /\/(data|vendor|icons|fonts)\/|\.(png|json|webmanifest|woff2)$/;
 
 const NET_TIMEOUT = 2500;
+
+// Code is all-or-nothing. Everything below is served network-first with a
+// timeout that falls back to the cache, and every asset runs that race on its
+// own — so a slow but working connection could hand you a FRESH desk.js and a
+// STALE desk.css from the previous deploy at the same time. That is the worst
+// possible split: the new code runs and produces markup that nothing styles,
+// and the page looks broken rather than looking old.
+//
+// So code gets a much longer leash. Not an infinite one: waiting forever would
+// hang the app dead on a weak or captive-portal connection, which is exactly
+// where it has to work. Fifteen seconds is long enough that two code assets
+// straddling it is vanishingly unlikely, and the failure is still a graceful
+// fall back to the cache rather than a spinner.
+//
+// Data and images keep the short timeout: a stale JSON is a stale fact, not a
+// broken page, and that is a fair trade for speed in the Mojave.
+const CODE = /\.(html|js|css)$|\/$/;
+const CODE_TIMEOUT = 15000;
 
 self.addEventListener('install', e => {
   e.waitUntil(
@@ -81,9 +99,9 @@ function fromNetwork(req, timeout) {
   });
 }
 
-async function networkFirst(req) {
+async function networkFirst(req, timeout) {
   try {
-    const res = await fromNetwork(req, NET_TIMEOUT);
+    const res = await fromNetwork(req, timeout || NET_TIMEOUT);
     if (res && res.ok) {
       const copy = res.clone();
       caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {});
@@ -121,5 +139,10 @@ self.addEventListener('fetch', e => {
   // its responses would corrupt that.
   if (url.origin !== location.origin) return;
 
-  e.respondWith(CACHE_FIRST.test(url.pathname) ? cacheFirst(req) : networkFirst(req));
+  if (CACHE_FIRST.test(url.pathname)) return e.respondWith(cacheFirst(req));
+
+  // No timeout for code, so a slow network cannot mix versions. A navigation
+  // counts as code: it is the document the rest of the shell hangs off.
+  const isCode = req.mode === 'navigate' || CODE.test(url.pathname);
+  e.respondWith(networkFirst(req, isCode ? CODE_TIMEOUT : NET_TIMEOUT));
 });
