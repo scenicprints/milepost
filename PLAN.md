@@ -330,6 +330,44 @@ Android Auto is no.
 
 ## Session log
 
+**Session 32** — A bed is the night. 1.17.4.
+
+Kevin added a Flying J as a place to sleep, and then: *"I have no way of
+actually clicking on it and adding it to the trip and then adjusting how long I
+will be there."* He was right, and the gap was mine. Beds went into
+`store.custom` with `kind: 'lodging'`, the pool filtered lodging out, and
+`build()` filtered it out again, so a bed sat in the "Your beds" list doing
+nothing at all. Meanwhile the planner's night was a bare duration with no place
+attached. The two concepts never met.
+
+**A night can now name where it is spent.** `store.sleeps[stopId]` is EITHER a
+plain number of minutes, which is every night written before this, OR
+`{ m, at }` where `at` is a lodging stop id. Both shapes are read in `store.js`
+and in `build()` and nowhere else, so nothing above them has to know. Verified
+that a legacy number-shaped night still loads and can be upgraded in place by
+naming a place.
+
+**Clicking a bed places the night.** You do not have to work out which stop it
+hangs off; the bed's own mile does that. The first rule I wrote was "the last
+stop strictly before the bed", and it was wrong on the very first real case: the
+Flying J at Barstow projects to about mile 340 and Calico is at 352, so there
+was no stop before it and the click silently refused. Nobody sleeps first and
+sees the ghost town after. **The anchor is the NEAREST stop**, and you double
+back to the bed.
+
+Clicking the bed again removes the night. A select on the night moves it to a
+different bed or detaches it, in which case the night survives as a plain
+duration. Deleting a bed leaves any night it held as a duration rather than a
+pointer to nothing.
+
+**A bed not on the current road is shown but disabled**, labelled "not on this
+road", rather than being hidden — a bed vanishing when you swap the route reads
+as data loss.
+
+Note: `flash()` was already taken by session 29 for relabelling a button, so the
+one-line complaint above the itinerary is `gripe()`.
+
+
 **Session 31** — The cache could hand you new JS with old CSS. 1.17.3.
 
 Kevin sent a screenshot of the new "Add a place" form rendering as raw HTML,

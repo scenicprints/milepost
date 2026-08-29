@@ -86,6 +86,17 @@ main { flex: 1; display: grid; grid-template-columns: minmax(280px, 26%) 1fr; mi
 .poolLab { font-family: var(--mono); font-size: 9.5px; letter-spacing: .12em;
   text-transform: uppercase; color: var(--ink3); padding: 4px 18px 4px; }
 .poolrow.bed .pick { color: var(--ink2); }
+.poolrow.bed.on .pick { color: var(--ink); }
+.poolrow .pick:disabled { cursor: default; }
+.poolrow .pick:disabled .nm, .poolrow .pick:disabled .tw { color: var(--ink3); }
+.poolLab i { font-style: normal; text-transform: none; letter-spacing: 0;
+  color: var(--ink3); margin-left: 8px; }
+.atPick {
+  font: inherit; font-family: var(--mono); font-size: 10px; color: var(--ink2);
+  background: var(--paper); border: 1px solid var(--rule2); padding: 1px 3px;
+  margin-left: 8px; max-width: 190px;
+}
+.atPick:hover { color: var(--ink); border-color: var(--signal); }
 .poolrow .nm i { font-style: normal; font-family: var(--mono); font-size: 8.5px;
   letter-spacing: .1em; text-transform: uppercase; color: var(--ink3); margin-left: 6px; }
 .poolrow .tw, .poolrow .ct { font-family: var(--mono); font-size: 10px; color: var(--ink3);

@@ -234,7 +234,12 @@ export function build(route, chosen, start, data) {
     mile = s.mile;
 
     // ---- the night, if one was placed after this stop --------------------
-    const nap = Math.round(Number(sleeps[s.id]) || 0);
+    // A night is either a plain number of minutes or { m, at }, where `at`
+    // names a lodging stop. store.js is the only other place that knows this.
+    const entry = sleeps[s.id];
+    const nap = Math.round((typeof entry === 'number' ? entry : entry && entry.m) || 0);
+    const atId = entry && typeof entry === 'object' ? entry.at : null;
+    const bed = atId ? route.stops.find(x => x.id === atId) : null;
     if (nap > 0) {
       const wake = clock + nap;
       const next = dayFor(wake, s.ll, s.tz);
@@ -257,10 +262,14 @@ export function build(route, chosen, start, data) {
       if (nap < 5 * 60)
         sflags.push({ level: 'warn', text: `${mins(nap)} is a nap, not a night.` });
 
+      // Where the night is spent: the bed if one was named, otherwise just the
+      // town you happened to stop in.
       row.sleep = {
         minutes: nap,
         downAt: hhmm(downLocal), wakeAt: hhmm(wakeLocal),
-        at: s.town ? `${s.town}${s.state ? ', ' + s.state : ''}` : s.name,
+        at: bed ? bed.name : (s.town ? `${s.town}${s.state ? ', ' + s.state : ''}` : s.name),
+        placeId: bed ? bed.id : null,
+        where: bed ? [bed.town, bed.state].filter(Boolean).join(', ') : null,
         dayIx, flags: sflags,
       };
 

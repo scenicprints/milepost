@@ -162,6 +162,30 @@ async function boot() {
       return;
     }
 
+    // A bed IS the night. Clicking one finds the last stop you reach before it
+    // and puts the night there, so you never have to work out which stop it
+    // hangs off. Clicking again takes the night away.
+    const bedBtn = e.target.closest('[data-bed]');
+    if (bedBtn) {
+      const bedId = bedBtn.dataset.bed;
+      const already = store.sleepFor(bedId);
+      if (already) return store.clearSleep(already);
+      const { route, it } = current();
+      const b = route.stops.find(x => x.id === bedId);
+      if (!b) return;
+      // The NEAREST stop, not the last one strictly before it. A bed a few
+      // miles short of a stop is the normal case — the Flying J at Barstow
+      // sits twelve miles before Calico — and nobody sleeps first and sees the
+      // ghost town after. You do the stop, then double back to the bed.
+      // Ties go to the stop you reach first.
+      if (!it.rows.length) return gripe('Pick a stop first, then a bed to sleep at.');
+      const anchor = it.rows.reduce((best, r) =>
+        Math.abs(r.mile - b.mile) < Math.abs(best.mile - b.mile) ? r : best, it.rows[0]);
+      store.setSleep(anchor.stop.id, store.sleepAfter(anchor.stop.id) || 8 * 60);
+      store.setSleepPlace(anchor.stop.id, bedId);
+      return;
+    }
+
     const add = e.target.closest('[data-addsleep]');
     if (add) { refocus = 'sh-' + add.dataset.addsleep; return store.setSleep(add.dataset.addsleep, 8 * 60); }
 
@@ -183,6 +207,9 @@ async function boot() {
       const el = document.querySelector(`[data-${attr}="${CSS.escape(id)}"][data-p="${k}"]`);
       return Math.max(0, Number(el && el.value) || 0);
     };
+
+    const at = e.target.closest('[data-sleepat]');
+    if (at) return store.setSleepPlace(at.dataset.sleepat, at.value || null);
 
     const f = e.target.closest('[data-sleep]');
     if (f) {
@@ -302,13 +329,22 @@ function draw() {
   // Your own beds never reach the pool, since it filters lodging out, so they
   // get their own short list under it or they would be unreachable to edit.
   const beds = store.custom.filter(c => c.kind === 'lodging');
-  if (beds.length) $('pool').innerHTML += `<div class="poolBeds">
-    <div class="poolLab">Your beds</div>
-    ${beds.map(b => `<div class="poolrow mine bed">
-      <span class="pick"><span class="nm">${esc(b.name)}</span>
-        <span class="tw">${esc(place(b))}</span></span>
-      <button class="edit" data-edit="${esc(b.id)}">edit</button>
-    </div>`).join('')}</div>`;
+  if (beds.length) {
+    const onRoute = new Set(route.stops.map(s => s.id));
+    $('pool').innerHTML += `<div class="poolBeds">
+      <div class="poolLab">Your beds <i>click to sleep there</i></div>
+      ${beds.map(b => {
+        const here = onRoute.has(b.id);
+        return `<div class="poolrow mine bed${store.sleepFor(b.id) ? ' on' : ''}">
+          <button class="pick" data-bed="${esc(b.id)}" ${here ? '' : 'disabled'}>
+            <span class="tick"></span>
+            <span class="nm">${esc(b.name)}</span>
+            <span class="tw">${here ? esc(place(b)) : 'not on this road'}</span>
+          </button>
+          <button class="edit" data-edit="${esc(b.id)}">edit</button>
+        </div>`;
+      }).join('')}</div>`;
+  }
 
   // ---- warnings ---------------------------------------------------------
   const bad = it.rows.filter(r => !r.ok).length;
@@ -470,6 +506,32 @@ function flash(btn, msg) {
   setTimeout(() => { btn.textContent = was; }, 1400);
 }
 
+/// The beds this night could be moved to: on the current road, and not already
+/// spoken for by a different night.
+function bedPicker(r) {
+  const beds = store.custom.filter(c => c.kind === 'lodging');
+  const cur = r.sleep.placeId || '';
+  const free = beds.filter(b => {
+    const used = store.sleepFor(b.id);
+    return !used || used === r.stop.id;
+  });
+  if (!free.length) return '';
+  return ` <select class="atPick" data-sleepat="${esc(r.stop.id)}" aria-label="where you sleep">
+      <option value=""${cur ? '' : ' selected'}>no place set</option>
+      ${free.map(b => `<option value="${esc(b.id)}"${cur === b.id ? ' selected' : ''}>${esc(b.name)}</option>`).join('')}
+    </select>`;
+}
+
+/// A one-line complaint above the itinerary, for the cases where doing nothing
+/// silently would read as the click not having registered. Distinct from
+/// flash(), which relabels a button.
+function gripe(msg) {
+  const w = $('warn');
+  if (!w) return;
+  w.innerHTML = `<span class="pill bad">${esc(msg)}</span>`;
+  setTimeout(draw, 4000);
+}
+
 /// A night. Same three columns as a stop row so the clock stays in one line
 /// down the page, but it reads as a break rather than as another place.
 function sleepBlock(r) {
@@ -479,8 +541,8 @@ function sleepBlock(r) {
   return `<div class="sleepblk">
     <div class="when"><b>${sl.downAt}</b><span>up ${sl.wakeAt}</span></div>
     <div class="what">
-      <div class="nm">Sleep <i>${dur(sl.minutes)}</i></div>
-      <div class="sub">${esc(sl.at)}</div>
+      <div class="nm">Sleep <i>${dur(sl.minutes)}</i>${sl.placeId ? ` at ${esc(sl.at)}` : ''}</div>
+      <div class="sub">${esc(sl.placeId ? (sl.where || '') : sl.at)}${bedPicker(r)}</div>
       ${sl.flags.map(f => `<div class="flag ${f.level}">${esc(f.text)}</div>`).join('')}
     </div>
     <div class="hrs setter">

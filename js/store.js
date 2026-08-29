@@ -165,6 +165,10 @@ class Store extends EventTarget {
     delete this.s.seen[id];
     delete this.s.notes[id];
     delete this.sleeps[id];
+    // If this was where a night was spent, the night survives as a plain
+    // duration rather than pointing at a place that no longer exists.
+    const at = this.sleepFor(id);
+    if (at) this.setSleepPlace(at, null);
     this.save();
   }
 
@@ -185,14 +189,45 @@ class Store extends EventTarget {
   // the road is swapped and it cannot drift to a different point on the map.
   // The value is minutes; deleting the key is how a night is removed, so a
   // zero-length sleep can never sit in the plan pretending to be a night.
+  //
+  // A night was originally just a number of minutes. It can now also name the
+  // place you spend it, so the entry is EITHER a plain number (every night
+  // written before this) OR `{ m, at }`. Both shapes are read here and nowhere
+  // else, so the rest of the app never has to know which it is looking at.
   get sleeps() { return this.s.sleeps || (this.s.sleeps = {}); }
 
-  sleepAfter(id) { return this.sleeps[id] ?? null; }
+  sleepAfter(id) {
+    const v = this.sleeps[id];
+    if (v == null) return null;
+    return typeof v === 'number' ? v : (v.m ?? null);
+  }
+
+  /// The id of the lodging stop this night is spent at, or null for a night
+  /// that is just a duration.
+  sleepPlace(id) {
+    const v = this.sleeps[id];
+    return v && typeof v === 'object' ? (v.at || null) : null;
+  }
+
+  /// Which stop a bed is currently the night for, if any.
+  sleepFor(bedId) {
+    return Object.keys(this.sleeps).find(k => this.sleepPlace(k) === bedId) || null;
+  }
 
   setSleep(id, minutes) {
     const m = Math.round(Number(minutes) || 0);
-    if (m > 0) this.sleeps[id] = m;
-    else delete this.sleeps[id];
+    if (m <= 0) delete this.sleeps[id];
+    else {
+      const at = this.sleepPlace(id);          // changing the length keeps the place
+      this.sleeps[id] = at ? { m, at } : m;
+    }
+    this.save();
+  }
+
+  setSleepPlace(id, bedId) {
+    const m = this.sleepAfter(id);
+    if (m == null) return;
+    this.sleeps[id] = bedId ? { m, at: bedId } : m;
     this.save();
   }
 
