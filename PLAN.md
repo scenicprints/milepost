@@ -330,6 +330,42 @@ Android Auto is no.
 
 ## Session log
 
+**Session 36** — `turnoffBy`: a far-off stop sits at its junction. 1.19.0.
+
+Kevin: *"Is grand canyon really before Bearizona?"* No, and it was a modelling
+flaw, not a rounding one. `project()` puts every stop at the nearest point on the
+road polyline. The South Rim is **56 miles** north of I-40 and its perpendicular
+lands six miles west of Williams, so it sorted at mile 645 against Bearizona at
+651 — ahead of a place that is IN Williams, on a measurement with 56 miles of
+arm. You do not drive to the nearest point on the map. You leave the interstate
+at a junction.
+
+**`turnoffBy` names the waypoint a detour departs from, per route**, exactly as
+`detourBy` already gives a per-route cost. The canyon turns off at Williams on
+`leg1-i40`, `leg1-south`, `leg3-i40`, `leg3-waco` and `leg3-vegas`, and has no
+entry for `leg1-canyon` or `leg3-canyon` because there the rim IS the road.
+
+**It lands just past whatever is on the road at that junction, not at the
+waypoint.** Williams the waypoint is mile 650 and Bearizona projects to 651, so
+snapping to the waypoint would have left the canyon ahead by a mile and fixed
+nothing. A 56-mile out-and-back returns you to the same point, so the order
+against things in the town is free and doing the town first is the only sane
+reading. Stops sharing a mile now sort by `offRoute`, so what is on the road
+comes before what is off it.
+
+**A data change needs a cache bump.** This cost twenty minutes: the fix tested
+correct in node and did nothing in the browser, because `data/` is CACHE-FIRST in
+`sw.js`, so `stops.json` kept serving the old copy until a new `CACHE` name
+primed it. Editing anything under `data/` means bumping `sw.js` as well as
+`version.js`, and the symptom is a change that works everywhere except the app.
+
+**Still projected, not yet given a turnoff, and probably fine:** Sunset Crater at
+13 miles off; the Charlotte cluster (Discovery Place, Midwood Smokehouse,
+Saborcito Nica) and Lexington Barbecue, all 24 to 35 miles off and clamped to the
+end of the route where the ordering hardly matters; and Valley of Fire on
+`leg3-vegas` at 39 miles off, which is the one worth a look.
+
+
 **Session 35** — The planner could not notice a new version. 1.18.1.
 
 Third time Kevin was shown a screenshot of code that no longer exists — this

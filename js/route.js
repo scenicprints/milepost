@@ -188,11 +188,15 @@ export function tzAtMile(mile, route) {
 /// means the route was swapped and this stop no longer belongs.
 const MAX_OFF = 140;
 
+/// A stop within this many miles of a junction counts as being AT it, for
+/// deciding what you do before you turn off.
+const TURN_TOWN = 5;
+
 export function buildRoute(route, allStops, dwells) {
   const { cum, total } = measure(route.waypoints);
   const towns = route.waypoints.map((w, i) => ({ ...w, mile: cum[i] }));
 
-  const stops = allStops
+  const projected = allStops
     .filter(s => s.routes.includes(route.id))
     .map(s => {
       const p = project(s.ll, route.waypoints, cum);
@@ -210,11 +214,44 @@ export function buildRoute(route, allStops, dwells) {
       return {
         ...s, detour, dwell, seedDwell: s.dwell,
         dwellSet: Number.isFinite(over) && over !== s.dwell,
-        mile: p.mile, offRoute: p.off, tz: tzFor(s.state, s.ll[1]),
+        mile: p.mile, offRoute: p.off, tz: tzFor(s.state, s.ll[1]), turnoff: null,
       };
     })
-    .filter(s => s.offRoute < MAX_OFF)
-    .sort((a, b) => a.mile - b.mile);
+    .filter(s => s.offRoute < MAX_OFF);
+
+  // `turnoffBy` fixes where a far-off stop SITS IN THE ORDER.
+  //
+  // project() puts every stop at the nearest point on the road, which is wrong
+  // for anything a long way off it. The South Rim is 56 miles north of I-40 and
+  // its perpendicular happens to land six miles west of Williams, so it sorted
+  // ahead of Bearizona, which is IN Williams. You do not drive to the nearest
+  // point on the map; you leave the interstate at a junction.
+  //
+  // So a stop can name the waypoint its detour departs from, per route, exactly
+  // as detourBy is per route: the canyon turns off at Williams on I-40 and does
+  // not turn off at all on the canyon road, where the rim is the road.
+  //
+  // It lands just PAST whatever is on the road at that junction. A 56-mile
+  // out-and-back returns you to the same point, so the order against things in
+  // the town is free, and doing the town first is the only sane reading. This
+  // also has to be past them rather than at the waypoint: Williams the waypoint
+  // is mile 650 and Bearizona projects to 651, so snapping to the waypoint
+  // alone would leave the canyon ahead by a mile and fix nothing.
+  const stops = projected
+    .map(s => {
+      const turn = s.turnoffBy && s.turnoffBy[route.id];
+      if (!turn) return s;
+      const w = towns.find(t => t.name === turn);
+      if (!w) {
+        console.warn(`turnoffBy: ${route.id} has no waypoint named "${turn}" for ${s.name}`);
+        return s;
+      }
+      const atJunction = projected.filter(x =>
+        x.offRoute < TURN_TOWN && Math.abs(x.mile - w.mile) <= TURN_TOWN);
+      return { ...s, mile: atJunction.reduce((m, x) => Math.max(m, x.mile), w.mile) + 0.1, turnoff: turn };
+    })
+    // Same point on the road: what is ON the road comes before what is off it.
+    .sort((a, b) => a.mile - b.mile || a.offRoute - b.offRoute);
 
   const built = { ...route, cum, miles: total, towns, stops };
   built.segs = segments(built);
