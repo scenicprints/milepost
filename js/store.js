@@ -138,7 +138,10 @@ class Store extends EventTarget {
       state: c.state || '',
       ll: c.ll,
       detour: Number(c.detour) || 0,
-      dwell: Number(c.dwell) || 60,
+      // NOT `|| 60`. Zero is a real answer — it is what a bed costs, and the
+      // desktop editor lets you type it — and zero is falsy, so `|| 60` quietly
+      // turned every deliberate 0 into an hour.
+      dwell: Number.isFinite(Number(c.dwell)) ? Number(c.dwell) : 60,
       why: c.why || '',
       kind: c.kind === 'lodging' ? 'lodging' : 'stop',
       routes: c.routes || [],

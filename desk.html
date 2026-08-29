@@ -39,9 +39,12 @@
         <button data-kind="all" class="on">All</button>
         <button data-kind="sight">Sights</button>
         <button data-kind="food">Eateries</button>
-        <span class="hint">click to add or drop</span>
+        <button class="add" data-add>+ Add a place</button>
       </div>
     </div>
+    <!-- The editor renders on its own, OUTSIDE draw(). A form that is rebuilt
+         on every keystroke is a form you cannot type in. -->
+    <div id="editor"></div>
     <div id="pool"></div>
   </section>
 

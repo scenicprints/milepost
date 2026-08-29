@@ -8,6 +8,13 @@
 // SLEEP IS PLACED, NEVER GUESSED. Every stop has a "+ sleep" under it and a
 // night is a duration you set in hours and minutes. Nothing else ends a day.
 //
+// YOUR OWN PLACES. The editor writes through store.addCustom, the same call the
+// phone uses, so a place added here is the same object the phone reads and it
+// syncs. Two rules come with that and neither is optional: a custom stop must
+// carry REAL ROUTE IDS or buildRoute filters it straight back out and it simply
+// never appears, and lodging costs no detour and no dwell because it ends a day
+// rather than interrupting one.
+//
 // Everything below is presentation. The arithmetic lives in js/itinerary.js and
 // js/winter.js, and the plan itself lives in js/store.js, which is shared with
 // the phone app and synced. This file must not invent state of its own.
@@ -16,6 +23,7 @@ import { store } from './store.js';
 import { buildRoute } from './route.js';
 import { build, hhmm } from './itinerary.js';
 import { toMarkdown, fileNameFor } from './export.js';
+import * as geo from './geocode.js';
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c =>
@@ -34,6 +42,16 @@ const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct
 // and the field you are typing in is destroyed underneath you. Each input
 // carries a stable data-k, and draw() puts the focus back on it.
 let refocus = null;
+
+// The editor's own state. It is deliberately NOT part of draw(): the itinerary
+// rebuilds on every toggle and keystroke, and a text field inside that would be
+// destroyed under the caret. drawEditor() is called only when the form itself
+// changes, and the field values are read off the DOM at save.
+let draft = null;
+/// "Kingman, AZ", or just one of them, or nothing at all. A place added by
+/// pasting coordinates has no town, and "` , `" is not a location.
+const place = s => [s.town, s.state].filter(Boolean).join(', ');
+
 const dur = m => {
   m = Math.round(m);
   const h = Math.floor(m / 60);
@@ -75,6 +93,75 @@ async function boot() {
     });
 
   document.addEventListener('click', e => {
+    // ---- the editor ------------------------------------------------------
+    if (e.target.closest('[data-add]')) { openEditor({}); return; }
+    if (e.target.closest('[data-ed-close]')) { closeEditor(); return; }
+
+    const edit = e.target.closest('[data-edit]');
+    if (edit) {
+      const c = store.custom.find(x => x.id === edit.dataset.edit);
+      if (c) openEditor({ ...c, query: [c.town, c.state].filter(Boolean).join(', ') });
+      return;
+    }
+
+    const kind = e.target.closest('[data-ed-kind]');
+    if (kind) { readDraft(); draft.kind = kind.dataset.edKind; drawEditor(); return; }
+
+    if (e.target.closest('[data-ed-find]')) {
+      readDraft();
+      const q = draft.query;
+      draft.busy = true; draft.failed = false; draft.results = null;
+      drawEditor();
+      geo.search(q).then(r => {
+        if (!draft) return;                    // closed while it was in flight
+        draft.busy = false;
+        if (r === null) draft.failed = true; else draft.results = r;
+        drawEditor();
+      });
+      return;
+    }
+
+    const pick = e.target.closest('[data-ed-pick]');
+    if (pick) {
+      readDraft();
+      const r = draft.results && draft.results[Number(pick.dataset.edPick)];
+      if (r) Object.assign(draft, {
+        ll: r.ll, town: r.town, state: r.state, results: null,
+        name: draft.name.trim() || r.label.split(',')[0],
+      });
+      drawEditor();
+      return;
+    }
+
+    if (e.target.closest('[data-ed-save]')) {
+      readDraft();
+      if (!draft.name.trim() || !draft.ll) {
+        const el = $(draft.name.trim() ? 'ed-lat' : 'ed-name');
+        if (el) { el.style.borderColor = 'var(--signal)'; el.focus(); }
+        return;
+      }
+      const bed = draft.kind === 'lodging';
+      const payload = {
+        name: draft.name.trim(), town: draft.town, state: draft.state, ll: draft.ll,
+        // A bed ends the day, so it never competes for the day's hours.
+        dwell: bed ? 0 : draft.dwell, detour: bed ? 0 : draft.detour,
+        why: draft.why, kind: draft.kind,
+        // REAL route ids, every road on this leg. Without these buildRoute
+        // filters the stop out and it never appears anywhere.
+        routes: DATA.route.legs[legIx].routes.map(r => r.id),
+      };
+      if (draft.id) store.updateCustom(draft.id, payload);
+      else store.addCustom(payload);
+      closeEditor();
+      return;                                  // store.save() redraws
+    }
+
+    if (e.target.closest('[data-ed-delete]')) {
+      if (draft && draft.id) store.removeCustom(draft.id);
+      closeEditor();
+      return;
+    }
+
     const add = e.target.closest('[data-addsleep]');
     if (add) { refocus = 'sh-' + add.dataset.addsleep; return store.setSleep(add.dataset.addsleep, 8 * 60); }
 
@@ -197,15 +284,31 @@ function draw() {
 
   // ---- the pool: everything on this road, in or out ----------------------
   const inPlan = new Set(it.rows.map(r => r.stop.id));
+  // A row is a div holding two buttons: a button inside a button is invalid
+  // HTML and the edit control has to be independently clickable.
   $('pool').innerHTML = route.stops
     .filter(s => s.kind !== 'lodging')
     .filter(s => kind === 'all' || (kind === 'food') === (s.kind === 'food'))
-    .map(s => `<button class="poolrow${inPlan.has(s.id) ? ' on' : ''}" data-toggle="${esc(s.id)}">
-        <span class="tick"></span>
-        <span class="nm">${esc(s.name)}${s.kind === 'food' ? '<i>eat</i>' : ''}</span>
-        <span class="tw">${esc(s.town)}, ${esc(s.state)}</span>
-        <span class="ct">${dur(s.detour * 2 + s.dwell)}</span>
-      </button>`).join('');
+    .map(s => `<div class="poolrow${inPlan.has(s.id) ? ' on' : ''}${s.mine ? ' mine' : ''}">
+        <button class="pick" data-toggle="${esc(s.id)}">
+          <span class="tick"></span>
+          <span class="nm">${esc(s.name)}${s.kind === 'food' ? '<i>eat</i>' : ''}${s.mine ? '<i class="own">yours</i>' : ''}</span>
+          <span class="tw">${esc(place(s))}</span>
+          <span class="ct">${dur(s.detour * 2 + s.dwell)}</span>
+        </button>
+        ${s.mine ? `<button class="edit" data-edit="${esc(s.id)}" title="Edit this place">edit</button>` : ''}
+      </div>`).join('');
+
+  // Your own beds never reach the pool, since it filters lodging out, so they
+  // get their own short list under it or they would be unreachable to edit.
+  const beds = store.custom.filter(c => c.kind === 'lodging');
+  if (beds.length) $('pool').innerHTML += `<div class="poolBeds">
+    <div class="poolLab">Your beds</div>
+    ${beds.map(b => `<div class="poolrow mine bed">
+      <span class="pick"><span class="nm">${esc(b.name)}</span>
+        <span class="tw">${esc(place(b))}</span></span>
+      <button class="edit" data-edit="${esc(b.id)}">edit</button>
+    </div>`).join('')}</div>`;
 
   // ---- warnings ---------------------------------------------------------
   const bad = it.rows.filter(r => !r.ok).length;
@@ -236,8 +339,7 @@ function draw() {
       <div class="when"><b>${r.arriveAt}</b><span>leave ${r.departAt}</span></div>
       <div class="what">
         <div class="nm">${esc(r.stop.name)}${r.stop.kind === 'food' ? '<i>eat</i>' : ''}</div>
-        <div class="sub">${esc(r.stop.town)}, ${esc(r.stop.state)}
-          · ${dur(r.driveMin)} to get here</div>
+        <div class="sub">${place(r.stop) ? esc(place(r.stop)) + ' · ' : ''}${dur(r.driveMin)} to get here</div>
         <div class="stay">how long
           <input type="number" min="0" max="47" step="1" value="${dh}"
                  data-dwell="${sid}" data-p="h" data-k="dh-${sid}" aria-label="hours here"><span>h</span>
@@ -387,6 +489,100 @@ function sleepBlock(r) {
       <input type="number" min="0" max="59" step="5" value="${m}"
              data-sleep="${id}" data-p="m" data-k="sm-${id}" aria-label="minutes asleep"><span>m</span>
       <button data-dropsleep="${id}" title="Remove this night">×</button>
+    </div>
+  </div>`;
+}
+
+/// Open the editor. `patch` seeds it, so editing an existing place and adding
+/// a new one are the same screen.
+function openEditor(patch) {
+  draft = {
+    id: null, name: '', town: '', state: '', ll: null, query: '',
+    kind: 'stop', dwell: 60, detour: 5, why: '',
+    results: null, busy: false, failed: false,
+    ...patch,
+  };
+  drawEditor();
+  const el = $('ed-name');
+  if (el) el.focus();
+}
+
+function closeEditor() { draft = null; drawEditor(); }
+
+/// Read the typed fields back into the draft. Called before anything that
+/// re-renders the form, or what you typed is lost.
+function readDraft() {
+  if (!draft) return;
+  const v = id => { const el = $(id); return el ? el.value : ''; };
+  draft.name = v('ed-name');
+  draft.query = v('ed-find');
+  draft.why = v('ed-why');
+  draft.dwell = Math.max(0, Number(v('ed-dwell')) || 0);
+  draft.detour = Math.max(0, Number(v('ed-detour')) || 0);
+  const lat = parseFloat(v('ed-lat')), lon = parseFloat(v('ed-lon'));
+  if (Number.isFinite(lat) && Number.isFinite(lon)) draft.ll = [lat, lon];
+}
+
+function drawEditor() {
+  const box = $('editor');
+  if (!draft) { box.innerHTML = ''; return; }
+  const d = draft;
+  const bed = d.kind === 'lodging';
+  const leg = DATA.route.legs[legIx];
+
+  box.innerHTML = `<div class="ed">
+    <div class="edHead">
+      <b>${d.id ? 'Editing your place' : 'Add a place'}</b>
+      <button data-ed-close>Close</button>
+    </div>
+
+    <div class="seg">
+      <button data-ed-kind="stop" aria-pressed="${!bed}">A place to stop</button>
+      <button data-ed-kind="lodging" aria-pressed="${bed}">Where you sleep</button>
+    </div>
+
+    <label class="f"><span>Name</span>
+      <input id="ed-name" value="${esc(d.name)}"
+        placeholder="${bed ? 'Blake Ranch Rd BLM' : "Ada's mom"}"></label>
+
+    <label class="f"><span>Find it</span>
+      <input id="ed-find" value="${esc(d.query)}" placeholder="Address, or a town and state">
+    </label>
+    <div class="edActs">
+      <button data-ed-find ${d.busy ? 'disabled' : ''}>${d.busy ? 'Looking…' : 'Search'}</button>
+      <span class="edHint">or paste coordinates below</span>
+    </div>
+    ${d.failed ? `<div class="edErr">Could not reach the lookup. Put the latitude and longitude in by hand.</div>` : ''}
+    ${Array.isArray(d.results) && !d.results.length ? `<div class="edHint">Nothing found. Try a town and state.</div>` : ''}
+    ${Array.isArray(d.results) && d.results.length ? `<div class="edPicks">${d.results.map((r, i) =>
+        `<button data-ed-pick="${i}">${esc(r.label)}<i>${esc(r.state)}</i></button>`).join('')}</div>` : ''}
+
+    <div class="two">
+      <label class="f"><span>Latitude</span>
+        <input id="ed-lat" inputmode="decimal" value="${d.ll ? d.ll[0] : ''}" placeholder="35.189"></label>
+      <label class="f"><span>Longitude</span>
+        <input id="ed-lon" inputmode="decimal" value="${d.ll ? d.ll[1] : ''}" placeholder="-114.053"></label>
+    </div>
+    ${d.ll ? `<div class="edHint">${esc(d.town || 'located')}${d.state ? ', ' + esc(d.state) : ''}</div>` : ''}
+
+    <div class="two">
+      <label class="f"><span>Minutes off the road, each way</span>
+        <input id="ed-detour" type="number" min="0" max="600" value="${bed ? 0 : d.detour}" ${bed ? 'disabled' : ''}></label>
+      <label class="f"><span>Minutes there</span>
+        <input id="ed-dwell" type="number" min="0" max="1440" step="15" value="${bed ? 0 : d.dwell}" ${bed ? 'disabled' : ''}></label>
+    </div>
+    ${bed ? `<div class="edHint">A bed ends a day rather than interrupting one, so it costs no detour and no dwell.</div>` : ''}
+
+    <label class="f"><span>Note</span>
+      <textarea id="ed-why" rows="2"
+        placeholder="${bed ? 'Confirmation number, check-in time' : 'Why it is worth stopping'}">${esc(d.why)}</textarea></label>
+
+    <div class="edHint">Goes on <b>${esc(leg.name)}</b>, all ${leg.routes.length} of its roads, so swapping the road keeps it.</div>
+
+    <div class="edSave">
+      <button class="prim" data-ed-save>${d.id ? 'Save' : 'Add it'}</button>
+      ${d.id ? `<button data-ed-delete>Delete</button>` : ''}
+      <span class="edHint">Needs a name and a location.</span>
     </div>
   </div>`;
 }

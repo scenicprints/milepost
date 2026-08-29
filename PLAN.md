@@ -330,6 +330,59 @@ Android Auto is no.
 
 ## Session log
 
+**Session 30** — Your own places, on the desktop planner. 1.17.2.
+
+Kevin: *"In milepost, I have no way of adding custom stops to the planner on
+desktop."* True. `desk.js` read `store.custom` and rendered it, but there was no
+way to create one there, so the only route in was the phone.
+
+**The editor writes through `store.addCustom`, the same call the phone uses**, so
+a place added at the table is the same object in the car and it syncs. Two rules
+came with that, both load-bearing:
+
+- **A custom stop must carry real route ids.** `buildRoute` filters on
+  `s.routes.includes(route.id)`, so a stop with an empty or wrong `routes` array
+  is silently filtered straight back out and simply never appears anywhere. The
+  desktop puts it on every road of the currently selected leg, matching the
+  phone's `legRouteIds`.
+- **Lodging costs no detour and no dwell**, because it ends a day rather than
+  interrupting one. Those two inputs disable when you pick "where you sleep".
+
+Coordinates can be typed directly as well as searched, which the phone does not
+offer. That is deliberate: at a table you are usually copying a latitude and
+longitude out of something else, and Nominatim cannot find a numbered BLM
+dispersed site at all.
+
+**Three bugs, all found by building it:**
+
+1. **`store.addCustom` did `Number(c.dwell) || 60`.** Zero is falsy, so every
+   deliberate zero-minute dwell silently became an hour. It never showed up
+   before because the phone only ever offered 30/60/120/240 and a bed took a
+   separate path. Now that you can type a number, it bit immediately. Fixed to a
+   finite check.
+2. **The save button computed `disabled` at render time.** The form is
+   deliberately rendered OUTSIDE `draw()` so that rebuilding the itinerary on
+   every keystroke cannot destroy the field under the caret, which also means
+   typing never re-renders the form. So the button read a draft that had not
+   caught up and stayed dead however much you filled in. It now validates on
+   click and marks the offending field, the way the phone does.
+3. **Empty town and state rendered as a bare comma.** A place added by pasting
+   coordinates has no town, and `", · 3h 26m to get here"` is not a location. A
+   `place()` helper joins whatever exists and drops the separator otherwise.
+
+**The pool row is now a div holding two buttons.** A button inside a button is
+invalid HTML, and the edit control has to be clickable independently of the
+toggle. Beds get their own short list under the pool, because the pool filters
+lodging out and they would otherwise be unreachable to edit.
+
+**This landed as a rebase onto sessions 28 and 29**, which had been pushed in the
+meantime and touched the same files. Two things to know about the resolution.
+The itinerary row's "how long" inputs are session 29's editable dwell, not mine;
+my change to that same line was only the empty-town fix and it rides on top.
+And **session 29 did not carry the `dwell: Number(c.dwell) || 60` fix**, because
+it was written before this branch existed, so that bug came back on the remote
+and is fixed again here. If it reappears a third time, that is why.
+
 **Session 29** — Saved plans, and the export. 1.17.0.
 
 Kevin: *"I want a way to create a spot list for a route, and then save it. And

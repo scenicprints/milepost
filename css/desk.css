@@ -61,22 +61,89 @@ main { flex: 1; display: grid; grid-template-columns: minmax(280px, 26%) 1fr; mi
   text-transform: uppercase; color: var(--ink3); }
 .filters button.on { color: var(--ink); border-bottom: 1px solid var(--ink); }
 .filters .hint { font-family: var(--mono); font-size: 9.5px; color: var(--ink3); }
+.filters .add { color: var(--signal); border-bottom: 1px solid transparent; }
+.filters .add:hover { border-bottom-color: var(--signal); }
 #pool, #itin { overflow-y: auto; padding: 8px 0 40px; }
 
 /* ------------------------------------------------------------------ pool */
-.poolrow { display: flex; align-items: baseline; gap: 10px; width: 100%;
-  padding: 7px 18px; border-bottom: 1px solid transparent; }
+.poolrow { display: flex; align-items: center; width: 100%; }
 .poolrow:hover { background: rgba(128,128,128,.07); }
+.poolrow .pick { display: flex; align-items: baseline; gap: 10px; flex: 1;
+  padding: 7px 18px; min-width: 0; }
+.poolrow.mine .pick { padding-right: 4px; }
+.poolrow .edit {
+  font-family: var(--mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ink3); padding: 6px 16px 6px 8px; flex: none;
+}
+.poolrow .edit:hover { color: var(--signal); }
 .poolrow .tick { width: 9px; height: 9px; border-radius: 50%; flex: none;
   border: 1.5px solid var(--rule2); align-self: center; }
 .poolrow.on .tick { background: var(--signal); border-color: var(--signal); }
-.poolrow .nm { font-size: 13px; flex: 1; }
+.poolrow .nm { font-size: 13px; flex: 1; min-width: 0; }
 .poolrow:not(.on) .nm { color: var(--ink2); }
+.poolrow .nm i.own { color: var(--signal); }
+.poolBeds { border-top: 1px solid var(--rule); margin-top: 10px; padding-top: 6px; }
+.poolLab { font-family: var(--mono); font-size: 9.5px; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--ink3); padding: 4px 18px 4px; }
+.poolrow.bed .pick { color: var(--ink2); }
 .poolrow .nm i { font-style: normal; font-family: var(--mono); font-size: 8.5px;
   letter-spacing: .1em; text-transform: uppercase; color: var(--ink3); margin-left: 6px; }
 .poolrow .tw, .poolrow .ct { font-family: var(--mono); font-size: 10px; color: var(--ink3);
   font-variant-numeric: tabular-nums; }
 .poolrow .ct { min-width: 44px; text-align: right; }
+
+/* ---------------------------------------------------------------- editor */
+/* Rendered outside draw(), so nothing here is rebuilt while you type. */
+.ed { border-bottom: 1px solid var(--rule); padding: 14px 18px 18px;
+  background: color-mix(in srgb, var(--ink) 3%, transparent); display: flex;
+  flex-direction: column; gap: 10px; }
+.edHead { display: flex; align-items: baseline; }
+.edHead b { font-size: 13px; font-weight: 500; flex: 1; }
+.edHead button { font-family: var(--mono); font-size: 9.5px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ink3); }
+.edHead button:hover { color: var(--ink); }
+
+.seg { display: flex; border: 1px solid var(--rule2); }
+.seg button { flex: 1; text-align: center; font-size: 11.5px; padding: 6px 4px;
+  color: var(--ink2); }
+.seg button[aria-pressed="true"] { background: var(--signal); color: #fff; }
+
+.f { display: flex; flex-direction: column; gap: 4px; }
+.f > span { font-family: var(--mono); font-size: 9.5px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ink2); }
+.f input, .f textarea {
+  font: inherit; font-size: 13px; font-family: var(--sans); color: var(--ink);
+  background: var(--paper); border: 1px solid var(--rule2); padding: 6px 7px; width: 100%;
+  resize: vertical;
+}
+.f input:disabled { color: var(--ink3); background: transparent; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.edActs { display: flex; align-items: center; gap: 12px; }
+.edActs button { font-family: var(--mono); font-size: 10px; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--ink); border: 1px solid var(--rule2);
+  padding: 5px 12px; }
+.edActs button:hover:not(:disabled) { border-color: var(--signal); color: var(--signal); }
+.edActs button:disabled { color: var(--ink3); }
+.edHint { font-family: var(--mono); font-size: 10px; color: var(--ink3); line-height: 1.5; }
+.edHint b { color: var(--ink2); font-weight: 400; }
+.edErr { font-size: 11.5px; color: var(--bad); }
+
+.edPicks { display: flex; flex-direction: column; border: 1px solid var(--rule2); }
+.edPicks button { padding: 7px 9px; font-size: 12px; display: flex; gap: 8px;
+  border-bottom: 1px solid var(--rule); }
+.edPicks button:last-child { border-bottom: 0; }
+.edPicks button:hover { background: rgba(128,128,128,.09); }
+.edPicks i { font-style: normal; font-family: var(--mono); font-size: 9.5px;
+  color: var(--ink3); margin-left: auto; }
+
+.edSave { display: flex; align-items: center; gap: 12px; margin-top: 2px; }
+.edSave button { font-family: var(--mono); font-size: 10px; letter-spacing: .09em;
+  text-transform: uppercase; border: 1px solid var(--rule2); padding: 6px 14px; }
+.edSave .prim { background: var(--signal); border-color: var(--signal); color: #fff; }
+.edSave .prim:disabled { background: transparent; color: var(--ink3);
+  border-color: var(--rule2); }
+.edSave [data-ed-delete]:hover { color: var(--bad); border-color: var(--bad); }
 
 /* -------------------------------------------------------------- itinerary */
 .day { padding: 22px 24px 8px; }
