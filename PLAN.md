@@ -17,6 +17,9 @@ agent, or a new Claude account, can continue without losing the thread.
 
 ## State
 
+**The phone shows your real days (session 48).** Days, Next and the leg header
+run the same builder as the planner, so the nights are the ones you placed.
+
 **All three legs now have a plan route (session 47).** `leg3-plan`, "The long way
 home", takes the Vegas diversion. Fourteen beds ship as data across the trip.
 
@@ -345,6 +348,45 @@ Android Auto is no.
 ---
 
 ## Session log
+
+**Session 48** — The phone stops guessing. 1.27.0.
+
+The outstanding job from sessions 44 to 47, and the one that changed what you
+actually see. **Days, Next and the leg header ran on `plan.js`'s `buildDays`**,
+which throws every bed away and splits the road by an hours-per-day setting. So
+the Days tab named overnights in towns nobody sleeps in — Needles, Grand Canyon
+Village, Continental Divide — while the five real beds went unmarked, and the
+header's day count moved when you touched a pace slider.
+
+**All three now run `itinerary.build`**, the same walk the desktop planner uses,
+which knows about placed nights, dwell overrides, through time and doubling back.
+Leg 1 went from **nine invented days to six real ones**, ending at Barstow, the
+Meteor Crater rest area, Amarillo, North Little Rock, Knoxville and Mooresville.
+
+**Done as an adapter, not three rewrites.** `realDays()` in `ui.js` reshapes
+build()'s output into the day objects the three screens already render, so the
+change is one function. Per-day mileage and minutes are summed **from the rows**
+rather than asked of build(), because the rows already carry `driveMin` and
+`dwell`, and a second source for one number is a second thing to keep in step.
+Cached on a key of route plus every input, since three screens ask for it.
+
+**`plannedDate` got better for free.** It used to count days across legs and add
+that many to the departure, which silently assumed each leg starts the morning
+the last one ended. Days carry their own real date now.
+
+**The phone had to learn two new data files.** `build()` needs the opening hours
+and the plow windows, and `app.js` fetched neither. Both were already in `sw.js`'s
+precache list, so this costs nothing offline.
+
+**The bundler's audit earned its keep.** Moving `itinerary.js` into the phone's
+graph failed the build immediately with *"ui.js imports ./itinerary.js, which is
+desk-only"*. `winter.js` and `itinerary.js` moved from `DESK_ONLY` into `MODULES`,
+**before ui.js**, because the bundle wraps modules in order and a dependency
+listed after its importer is undefined at boot. That is exactly the failure
+session 22b built this check for, caught in one run rather than in the browser.
+
+**`buildDays` is now unused by the app.** It still exports for `suggestStops`'s
+neighbours; deleting it is a separate job and not urgent.
 
 **Session 47** — Leg 3, and the trip is whole. 1.26.0.
 

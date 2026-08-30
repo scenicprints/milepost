@@ -6,7 +6,8 @@
 
 import { store } from './store.js';
 import { buildRoute, stopCost, fmtHours, fmtMiles, project, driveMinutes } from './route.js';
-import { buildDays, planTotals, suggestStops } from './plan.js';
+import { suggestStops } from './plan.js';
+import { build } from './itinerary.js';
 import * as mapview from './map.js';
 import * as syncmod from './sync.js';
 import { VERSION } from './version.js';
@@ -68,16 +69,96 @@ function legChoice(l) {
 }
 export const selected = () => DATA.route.legs.map(legChoice);
 export const legRoute = i => legChoice(DATA.route.legs[i]);
+
+// ============================================================ the real days
+//
+// Days, Next and the leg header used to come from `buildDays`, which throws the
+// beds away and splits the road by a pace setting. That is a guess, and it
+// showed: the Days tab named overnights in towns nobody sleeps in, and the
+// header's day count moved when you changed hours-per-day.
+//
+// They now run `itinerary.build`, the same walk the desktop planner uses, which
+// knows about placed nights, dwell overrides, through time and doubling back.
+// This adapter reshapes its output into the day objects the three screens
+// already render, so the change is one function rather than three rewrites.
+//
+// Per-day mileage and minutes are summed from the ROWS rather than asked of
+// build(), because the rows already carry `driveMin` and `dwell` and a second
+// source for the same number is a second thing to keep in step.
+const startOf = () => ({
+  date: store.departure ? new Date(store.departure + 'T00:00:00Z')
+                        : new Date(new Date().toISOString().slice(0, 10) + 'T00:00:00Z'),
+  at: store.departAt || '06:00',
+});
+
+let dayCache = { key: null, val: null };
+
+export function realDays(route) {
+  const key = [route.id, [...store.chosen].sort().join(','), JSON.stringify(store.sleeps),
+               JSON.stringify(store.dwells), JSON.stringify(store.afters),
+               store.departure, store.departAt].join('|');
+  if (dayCache.key === key) return dayCache.val;
+
+  const it = build(route, store.chosen, startOf(), {
+    HOURS: DATA.hours, WINTER: DATA.winter,
+    sleeps: store.sleeps, afters: store.afters,
+  });
+
+  const out = [];
+  let startMile = 0;
+  it.days.forEach((d, i) => {
+    const rows = it.rows.filter(r => r.dayIx === i);
+    const endMile = rows.length ? rows[rows.length - 1].mile : (i ? out[i - 1].endMile : 0);
+    const bedRow = rows.find(r => r.kind === 'bed') || rows.find(r => r.sleep);
+    const last = i === it.days.length - 1;
+    const term = route.waypoints[route.waypoints.length - 1];
+    out.push({
+      date: d.date,                       // the real calendar day, not a counter
+      from: { name: d.from },
+      overnight: bedRow
+        ? { name: bedRow.stop.name, mile: bedRow.mile }
+        : { name: last ? term.name : (rows.length ? rows[rows.length - 1].stop.name : d.from),
+            mile: last ? route.miles : endMile },
+      startMile, endMile: last ? route.miles : endMile,
+      miles: (last ? route.miles : endMile) - startMile,
+      driveMins: rows.reduce((a, r) => a + (r.driveMin || 0), 0),
+      stopMins: rows.reduce((a, r) => a + (r.dwell || 0), 0),
+      stops: rows.filter(r => r.kind !== 'bed').map(r => r.stop),
+      firsts: rows.filter(r => r.stop && r.stop.first).length,
+      risks: d.risk ? [d.risk] : [],
+      sameTown: false,
+      rows,
+    });
+    startMile = last ? route.miles : endMile;
+  });
+  out.warnings = it.warnings;
+  out.it = it;
+  dayCache = { key, val: out };
+  return out;
+}
+
+/// Totals for the header, straight off the same walk.
+export function realTotals(route) {
+  const d = realDays(route);
+  return {
+    days: d.length,
+    miles: route.miles,
+    driveMins: d.it.driveMin,
+    stopMins: d.it.stopMin,
+    stops: d.it.stopCount,
+    firsts: d.reduce((a, x) => a + x.firsts, 0),
+  };
+}
 export const allStops = () => selected().flatMap(r => r.stops);
 export { suggestStops };
 
 // ============================================================== head
 export function renderHead(legIx, tab) {
   const rt = legRoute(legIx);
-  const t = planTotals(buildDays(rt, store.chosen, store.pace));
+  const t = realTotals(rt);
   let wm = 0, wd = 0, ws = 0;
   for (const r of selected()) {
-    const x = planTotals(buildDays(r, store.chosen, store.pace));
+    const x = realTotals(r);
     wm += x.miles; wd += x.days; ws += x.stops;
   }
 
@@ -136,7 +217,8 @@ export function renderRoute(legIx) {
       <i style="background:var(--t3)"></i>3h+</span>
   </div><div class="line">`;
 
-  const nights = buildDays(rt, store.chosen, store.pace).slice(0, -1)
+  // The nights you actually placed, not a pace guess.
+  const nights = realDays(rt).slice(0, -1)
     .map(d => ({ m: d.overnight.mile, n: d.overnight.name }));
   let ni = 0;
   const night = () => {
@@ -291,12 +373,12 @@ export function paintMap(legIx, scale, view) {
 // ============================================================== days
 export function renderDays(legIx) {
   const rt = legRoute(legIx);
-  const D = buildDays(rt, store.chosen, store.pace);
+  const D = realDays(rt);
   let h = '<div class="days">';
-  if (D.truncated)
-    h += `<div class="err">This plan didn't finish building. Something in the route or pace is off.</div>`;
-  if (D.unplaced && D.unplaced.length)
-    h += `<div class="err">Couldn't schedule: ${D.unplaced.map(s => esc(s.name)).join(", ")}. Give the day more hours, or drop them.</div>`;
+  if (!D.length)
+    h += `<div class="err">Nothing chosen on this road yet. Tick some stops on the Route tab.</div>`;
+  for (const w of (D.warnings || []))
+    h += `<div class="err">${esc(w)}</div>`;
 
   D.forEach((d, i) => {
     h += `<div class="day">
@@ -602,19 +684,13 @@ export async function hydrateWeather(id) {
 
 /// Which calendar day this stop falls on, given a departure date.
 export function plannedDate(id) {
-  const dep = store.departure;
-  if (!dep) return null;
-  let n = 0;
-  for (const r of selected()) {
-    for (const d of buildDays(r, store.chosen, store.pace)) {
-      if (d.stops.some(s => s.id === id)) {
-        const x = new Date(dep + "T00:00:00");
-        x.setDate(x.getDate() + n);
-        return x.toISOString().slice(0, 10);
-      }
-      n++;
-    }
-  }
+  if (!store.departure) return null;
+  // The day carries its own date now. The old version counted days across legs
+  // and added that many to the departure, which silently assumed every leg
+  // starts the morning the previous one ends.
+  for (const r of selected())
+    for (const d of realDays(r))
+      if (d.stops.some(s => s.id === id)) return d.date.toISOString().slice(0, 10);
   return null;
 }
 
@@ -766,7 +842,7 @@ function fallbackSpot() {
 export function renderNext() {
   const here = whereNow();
   const rt = here.route;
-  const days = buildDays(rt, store.chosen, store.pace);
+  const days = realDays(rt);
   const day = days.find(d => here.mile >= d.startMile - 1 && here.mile <= d.endMile + 1) || days[0];
 
   const ahead = rt.stops

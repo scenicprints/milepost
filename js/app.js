@@ -26,15 +26,22 @@ const $tabs = document.getElementById('tabs');
 const $sheet = document.getElementById('sheet');
 
 async function boot() {
-  const [route, stops, usa, extras, darksky] = await Promise.all([
+  // hours and winter are new here. The phone used to plan its days from a
+  // pace setting, which is why Days invented overnights in towns nobody sleeps
+  // in; it now runs the same builder the desktop planner does, and that builder
+  // needs the opening hours and the plow windows. Both were already in the
+  // service worker's precache list, so this costs nothing offline.
+  const [route, stops, usa, extras, hours, winter, darksky] = await Promise.all([
     fetch('data/route.json').then(r => r.json()).then(resolveRoads),
     fetch('data/stops.json').then(r => r.json()),
     fetch('data/usa.json').then(r => r.json()),
     fetch('data/extras.json').then(r => r.json()),
+    fetch('data/hours.json').then(r => r.json()),
+    fetch('data/winter.json').then(r => r.json()),
     // Optional: the app works without it, and the Sky button simply never shows.
     fetch('data/darksky.json').then(r => r.json()).catch(() => null),
   ]);
-  ui.init({ route, stops: stops.stops, usa, darksky,
+  ui.init({ route, stops: stops.stops, usa, darksky, hours, winter,
     sites: extras.sites, normals: extras.normals, bookings: extras.bookings || {} });
 
   // Seed any stop the seeder has never considered. Runs on every boot, but

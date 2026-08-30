@@ -46,13 +46,18 @@ const POSITION = { lat: 35.025, lon: -110.56, accuracy: 12 };
 // They are still listed, because "I added a module and forgot the list" is the
 // exact mistake the audit exists to catch, and an unlisted file must never be
 // able to pass silently just because it happens to belong to the other view.
+// winter.js and itinerary.js moved OUT of DESK_ONLY when the phone's Days,
+// Next and leg header stopped guessing from a pace setting and started running
+// the same walk the planner does. They must sit before ui.js: the bundle wraps
+// each module in order, so a dependency listed after its importer is undefined
+// at boot. The audit below catches both mistakes.
 const MODULES = [
   'version.js', 'route.js', 'plan.js', 'store.js', 'map.js',
   'firebase-config.js', 'sync.js', 'weather.js', 'geocode.js', 'install.js',
-  'darksky.js', 'ui.js', 'app.js',
+  'darksky.js', 'winter.js', 'itinerary.js', 'ui.js', 'app.js',
 ];
 
-const DESK_ONLY = ['winter.js', 'itinerary.js', 'export.js', 'desk.js'];
+const DESK_ONLY = ['export.js', 'desk.js'];
 
 const importsOf = file =>
   [...readFileSync(resolve(ROOT, 'js', file), 'utf8')
