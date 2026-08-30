@@ -2043,7 +2043,10 @@
       "routes": [
         "leg2-inland"
       ],
-      "first": true
+      "first": true,
+      "throughTimeBy": {
+        "leg2-inland": true
+      }
     },
     {
       "id": "caddo-lake",
