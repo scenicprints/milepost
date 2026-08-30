@@ -383,6 +383,14 @@ miles further on, which puts the capitol behind you in the dark either way.
 14:00 on the 30th with the whole of New Year's Eve free. After leg 1's 46 hours
 in four and a half days this leg can afford to breathe, and it should.
 
+**The cache bump nearly did not happen, for a new reason.** My bump was a `sed`
+looking for the PREVIOUS cache name, and session 42 had already moved it, so the
+edit matched nothing and reported nothing. Leg 2's data shipped on an unchanged
+cache name, which is the one mistake that makes a data change invisible to every
+browser that already has the app. Caught in the diff, fixed in the next commit.
+**Never bump by matching the old value; read the file, increment what is there,
+and assert it changed.**
+
 **Numbering note for whoever reads this next:** there are two Session 42 entries
 in this log, one for `afters` and one for the leg 2 audit, written by different
 sessions that did not know about each other. Neither is wrong; the numbers are.
