@@ -3318,6 +3318,15 @@
        "limit": 70
       }
      ]
+    },
+    {
+      "id": "leg3-plan",
+      "name": "The long way home",
+      "sameRoadAs": "leg3-vegas",
+      "road": "The Vegas diversion, and only the stops this trip makes",
+      "character": "Not a different road. The Vegas diversion exactly, carrying the eighteen stops and six beds the run home actually makes.",
+      "why": "Everything the drive out was too rushed to take. Palo Duro, the Blue Hole, Old Town Albuquerque after dark, the volcano and the pueblo ruins above Flagstaff, and then Hoover Dam and the Strip, which are three of Ada's firsts for the price of Oatman. Five days, home on the sixth.",
+      "costs": "Sixty-one miles and about an hour over staying on I-40, and it gives up Oatman's burros. Swap to The road home to get them back."
     }
    ]
   }

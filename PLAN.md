@@ -17,6 +17,9 @@ agent, or a new Claude account, can continue without losing the thread.
 
 ## State
 
+**All three legs now have a plan route (session 47).** `leg3-plan`, "The long way
+home", takes the Vegas diversion. Fourteen beds ship as data across the trip.
+
 **Leg 2 has a plan route too (session 45).** `leg2-plan`, "Christmas to New
 Year", borrows the Gulf road and carries eight stops and three beds. Five leg 2
 beds ship as data.
@@ -342,6 +345,55 @@ Android Auto is no.
 ---
 
 ## Session log
+
+**Session 47** — Leg 3, and the trip is whole. 1.26.0.
+
+Kevin: *"Get the best possible route with seeing the best thing possible. We just
+have to be home by the 10th. But I still want to make it a short trip."*
+
+**The Vegas road wins, and the arithmetic is not close.** `leg3-vegas` costs 61
+miles and about an hour over staying on I-40, and buys **Hoover Dam, the Strip and
+Seven Magic Mountains**, three of Ada's firsts, for the price of Oatman's burros.
+Three for one, for an hour.
+
+**What decided the length: the Strip is worth a night, and that is the fifth day.**
+Four days is achievable on I-40. It is not achievable with Vegas, because arriving
+and leaving the same day wastes the one thing you came for. So five days, Saturday
+the 2nd to Wednesday the 6th, home four days inside his deadline.
+
+**Sunset Crater is what shaped the middle.** It shuts at 17:00 and sits 280 miles
+from Laguna, so it failed the clock in four successive drafts — arriving 16:15,
+then 16:00, then past close twice more. It only works as the FIRST thing in a
+morning, which means sleeping east of it, which is why Sunday runs long to Gallup
+rather than stopping at Acomita. One closing time set the shape of three days.
+
+**Two findings from the doc that changed the plan:**
+
+- **Flagstaff bans sleeping in a vehicle on public property inside city limits**,
+  a newer ordinance covers parking lots, and the nearest rest area, MP 182, is
+  permanently closed. Westbound you reach it at 6,909 ft with a December average
+  low of 26°F. **Do not plan a night in Flagstaff.** The plan sleeps at Blake
+  Ranch, 3,300 ft.
+- **Nevada's 18 hours is a fortnightly budget, not a nightly allowance.** Spend it
+  at Primm and there is none left for the state. The plan sleeps at South Point,
+  a casino lot rather than a rest area, so the budget stays untouched.
+
+**Four new beds**, all off his list: `bed-quanah` on US-287, which is 350 miles
+with four rest areas on it; `bed-gallup`; `bed-blake-ranch`, which both leg 1 and
+leg 3 call the pick of the western half; and `bed-southpoint`, because off-Strip
+is the answer and the Strip garages are not. **Three existing beds were extended
+rather than duplicated** — Amarillo, Meteor Crater and Barstow already sit on
+roads leg 3 drives, so they gained leg 3 route ids instead of twins.
+
+**`leg3-plan`, "The long way home"**, borrows `leg3-vegas` and carries eighteen
+stops and four beds. Amarillo and Meteor Crater are deliberately NOT on it: they
+are already chosen from leg 1, so including them would have placed two phantom
+nights the plan does not take.
+
+**Everything on this leg is a stop the drive out was too rushed for**: Palo Duro,
+the Blue Hole, the Auto Museum, Old Town Albuquerque after dark, Walnut Canyon,
+the volcano and the pueblo ruins, Calico, and the Basque table at Bakersfield,
+which the route data has always said is a better last meal than a first one.
 
 **Session 46** — Leg 2 leaves on the Saturday afternoon. 1.25.0.
 
