@@ -6,6 +6,7 @@ import * as mapview from './map.js';
 import { maybeShow } from './install.js';
 import * as syncmod from './sync.js';
 import { VERSION } from './version.js';
+import { resolveRoads } from './route.js';
 
 const TABS = [
   { id: 'next',  label: 'Next',  render: () => ui.renderNext() },
@@ -26,7 +27,7 @@ const $sheet = document.getElementById('sheet');
 
 async function boot() {
   const [route, stops, usa, extras, darksky] = await Promise.all([
-    fetch('data/route.json').then(r => r.json()),
+    fetch('data/route.json').then(r => r.json()).then(resolveRoads),
     fetch('data/stops.json').then(r => r.json()),
     fetch('data/usa.json').then(r => r.json()),
     fetch('data/extras.json').then(r => r.json()),

@@ -239,13 +239,28 @@ export function renderMap(legIx) {
 const seenSet = () => new Set(allStops().filter(s => store.isSeen(s.id)).map(s => s.id));
 
 /// Paint the map for the scale it is currently shown at.
+/// Two routes are the same road when either borrows the other, or both borrow
+/// the same one. Session 21 predicted the map breaking once a leg had more
+/// than two routes, because every alternative is drawn with the same dashed
+/// line and you cannot tell which is which. This does not fix that; it stops
+/// leg 1 making it worse by drawing a road twice.
+const sameRoad = (a, b) =>
+  a.sameRoadAs === b.id || b.sameRoadAs === a.id ||
+  !!(a.sameRoadAs && a.sameRoadAs === b.sameRoadAs);
+
 export function paintMap(legIx, scale, view) {
   const svg = document.getElementById("msvg");
   if (!svg) return;
   const leg = DATA.route.legs[legIx], cur = legRoute(legIx);
   svg.innerHTML = mapview.paint(DATA.usa, selected(), cur, {
     chosen: store.chosen, seen: seenSet(), pos: position, scale, view,
-    alts: leg.routes.filter(o => o.id !== cur.id).map(o => routeById(o.id)),
+    // Not every other route is "the road not taken". `leg1-plan` runs the
+    // canyon road exactly, so drawing one as the alternative to the other puts
+    // an identical dashed line under a solid one and calls it a choice. Skip
+    // any route sharing the road you are already on.
+    alts: leg.routes
+      .filter(o => o.id !== cur.id && !sameRoad(o, cur))
+      .map(o => routeById(o.id)),
     sky: skyOn() ? SKY : null,
   });
 }

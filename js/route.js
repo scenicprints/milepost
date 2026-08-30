@@ -192,8 +192,45 @@ const MAX_OFF = 140;
 /// deciding what you do before you turn off.
 const TURN_TOWN = 5;
 
+/// Routes that share a road. A route may carry `sameRoadAs: '<other id>'`
+/// instead of its own `waypoints`, and it then IS that road: same geometry,
+/// same mileage, same per-road stop costs. Only the name, the case for taking
+/// it, and which stops claim it are its own.
+///
+/// This exists because leg 1 needed a fourth option that runs the canyon road
+/// exactly. Copying thirty-four waypoints to say "the same road" would have
+/// been two sources of truth for one piece of tarmac, and the copies drift the
+/// first time either is touched. Call this once after loading route.json.
+export function resolveRoads(data) {
+  for (const leg of data.legs) {
+    const byId = Object.fromEntries(leg.routes.map(r => [r.id, r]));
+    for (const r of leg.routes) {
+      if (r.waypoints || !r.sameRoadAs) continue;
+      const base = byId[r.sameRoadAs];
+      if (!base || !base.waypoints)
+        throw new Error(`${r.id} borrows ${r.sameRoadAs}, which has no waypoints on this leg`);
+      // The SAME array, not a copy. Sharing it is the point.
+      r.waypoints = base.waypoints;
+    }
+  }
+  return data;
+}
+
 export function buildRoute(route, allStops, dwells, throughs) {
   const { cum, total } = measure(route.waypoints);
+
+  // A route that BORROWS another's road answers to both ids. Every per-road
+  // lookup on a stop — detourBy, turnoffBy, throughVia, throughTimeBy — is
+  // keyed by route id, and they describe the ROAD, not the name on the picker.
+  // Without this the Grand Canyon costs three minutes on `leg1-canyon` and an
+  // hour on a route running the identical tarmac, which is not a difference of
+  // opinion, it is just wrong.
+  const byRoad = (map, fallback) => {
+    if (!map) return fallback;
+    if (map[route.id] != null) return map[route.id];
+    if (route.sameRoadAs && map[route.sameRoadAs] != null) return map[route.sameRoadAs];
+    return fallback;
+  };
   const towns = route.waypoints.map((w, i) => ({ ...w, mile: cum[i] }));
 
   const projected = allStops
@@ -204,8 +241,7 @@ export function buildRoute(route, allStops, dwells, throughs) {
       // Grand Canyon is an hour off the interstate from Williams, but on the
       // canyon road the rim IS the road, so the same stop costs minutes. One
       // stop id either way, so crossing it off crosses it off everywhere.
-      const detour = (s.detourBy && s.detourBy[route.id] != null)
-        ? s.detourBy[route.id] : s.detour;
+      const detour = byRoad(s.detourBy, s.detour);
       // `dwells` is the user's own override of how long they will really be
       // somewhere. The seeded number is a research guess; this is the answer.
       // Zero is a legitimate answer, so only undefined falls back to the seed.
@@ -222,7 +258,7 @@ export function buildRoute(route, allStops, dwells, throughs) {
       // you park at the end of. `throughTimeBy` carries that per route, and the
       // user's own toggle beats it either way.
       const seedThrough = !!s.through ||
-        !!(s.throughTimeBy && s.throughTimeBy[route.id]);
+        !!byRoad(s.throughTimeBy, false);
       const tOver = throughs && throughs[s.id];
       const throughTime = tOver === undefined ? seedThrough : !!tOver;
       return {
@@ -260,7 +296,7 @@ export function buildRoute(route, allStops, dwells, throughs) {
       // between them instead of being added on top of it. `throughVia` names
       // the far end; which end you enter falls out of the route's own mileage,
       // so the same entry works east and west.
-      const via = s.through && s.throughVia && s.throughVia[route.id];
+      const via = s.through && byRoad(s.throughVia, null);
       if (via) {
         const w = towns.find(t => t.name === via);
         if (!w) {
@@ -270,7 +306,7 @@ export function buildRoute(route, allStops, dwells, throughs) {
         return { ...s, mile: Math.min(w.mile, s.mile), throughTo: Math.max(w.mile, s.mile) };
       }
 
-      const turn = s.turnoffBy && s.turnoffBy[route.id];
+      const turn = byRoad(s.turnoffBy, null);
       if (!turn) return s;
       const w = towns.find(t => t.name === turn);
       if (!w) {

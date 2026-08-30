@@ -17,6 +17,10 @@ agent, or a new Claude account, can continue without losing the thread.
 
 ## State
 
+**Leg 1's plan is a route you can pick (session 43).** `leg1-plan`, "Five nights
+to Mooresville", borrows the canyon road and carries only the 25 stops and beds
+in the trip.
+
 **Leg 1 has a planned route, and the planner can express it (session 42).** The
 canyon road, Modesto to Mooresville over five nights in the car, 20 stops and 5
 beds that ship as data. `afters` lets a stop be held until after the night and
@@ -334,6 +338,48 @@ Android Auto is no.
 ---
 
 ## Session log
+
+**Session 43** — Leg 1 has a fourth road, and it borrows the third one. 1.23.0.
+
+Kevin: *"This should be like another possible route to choose from the leg"*, after
+I had twice built something adjacent to that instead of it.
+
+**`leg1-plan`, "Five nights to Mooresville", is now the fourth option on leg 1.**
+It is the canyon road exactly — same tarmac, same 2,771 miles — carrying only the
+twenty stops and five beds the trip actually makes. Pick it and the map draws the
+trip rather than the menu.
+
+**It does not copy the road, it borrows it.** A route may carry `sameRoadAs`
+instead of `waypoints`, and `resolveRoads()` points it at the same array — not a
+clone, the same one. Copying thirty-four waypoints to say "the same road" is two
+sources of truth for one piece of tarmac, and PLAN.md already has a section on
+what that did to `prototype/`. Call `resolveRoads` once after loading
+`route.json`; both `app.js` and `desk.js` do.
+
+**Per-road stop data resolves through the borrow, and this was the trap.** Every
+`detourBy`, `turnoffBy`, `throughVia` and `throughTimeBy` is keyed by route id,
+and they all describe the ROAD. Without inheritance the Grand Canyon cost three
+minutes on `leg1-canyon` and a full hour on a route running the identical
+tarmac. `byRoad()` in `buildRoute` tries the route's own id, then its
+`sameRoadAs`. Verified: `leg1-plan` reports the canyon's 3-minute detour and its
+through-time seed, and the same 2,771 miles, while `leg1-i40` still reports 60.
+
+**Session 21's map warning came due, and this is the half of it that got fixed.**
+It predicted the map breaking once a leg had more than two routes, because every
+alternative is drawn with the same dashed line. Leg 1 now has four. What is fixed
+is only that **a route sharing the road you are on is no longer drawn as the road
+not taken** — an identical dashed line under a solid one, presented as a choice.
+Leg 1 shows two genuine alternatives with the plan selected, verified in the
+browser. **The rest of session 21 still stands: three alternatives are still three
+identical dashes.** Its own prescription is to draw one at a time, whichever is
+open in the drawer, and that is still not built.
+
+**What this is not.** It is not a plan. Which stops are ticked, the five night
+lengths, the four dwell overrides and the Cadillac Ranch `afters` pin all still
+live in `store`, per device, and nothing in the repo can seed them. A route can
+only say which stops EXIST on it. Seeding a starter plan from `data/` is the
+obvious follow-on, and it is the only way this reaches the phone as one tap
+rather than as twenty-five.
 
 **Session 42** — Some stops you sleep past and come back to. 1.22.0.
 

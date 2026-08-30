@@ -20,7 +20,7 @@
 // the phone app and synced. This file must not invent state of its own.
 
 import { store } from './store.js';
-import { buildRoute, project, stopCost } from './route.js';
+import { buildRoute, project, stopCost, resolveRoads } from './route.js';
 import { build, hhmm } from './itinerary.js';
 import { toMarkdown, fileNameFor } from './export.js';
 import * as geo from './geocode.js';
@@ -75,7 +75,7 @@ const dur = m => {
 
 async function boot() {
   const [route, stops, hours, winter] = await Promise.all([
-    fetch('data/route.json').then(r => r.json()),
+    fetch('data/route.json').then(r => r.json()).then(resolveRoads),
     fetch('data/stops.json').then(r => r.json()),
     fetch('data/hours.json').then(r => r.json()),
     fetch('data/winter.json').then(r => r.json()),

@@ -193,7 +193,8 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon"
+        "leg3-canyon",
+        "leg1-plan"
       ]
     },
     {
@@ -221,7 +222,8 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon"
+        "leg3-canyon",
+        "leg1-plan"
       ],
       "kind": "food"
     },
@@ -335,7 +337,8 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon"
+        "leg3-canyon",
+        "leg1-plan"
       ]
     },
     {
@@ -391,7 +394,8 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon"
+        "leg3-canyon",
+        "leg1-plan"
       ]
     },
     {
@@ -479,7 +483,8 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon"
+        "leg3-canyon",
+        "leg1-plan"
       ],
       "first": true,
       "big": true,
@@ -524,7 +529,8 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon"
+        "leg3-canyon",
+        "leg1-plan"
       ]
     },
     {
@@ -551,7 +557,8 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon"
+        "leg3-canyon",
+        "leg1-plan"
       ],
       "first": true,
       "big": true
@@ -581,7 +588,8 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon"
+        "leg3-canyon",
+        "leg1-plan"
       ],
       "first": true,
       "big": true,
@@ -651,7 +659,8 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon"
+        "leg3-canyon",
+        "leg1-plan"
       ]
     },
     {
@@ -680,7 +689,8 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon"
+        "leg3-canyon",
+        "leg1-plan"
       ],
       "kind": "food"
     },
@@ -821,7 +831,8 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon"
+        "leg3-canyon",
+        "leg1-plan"
       ]
     },
     {
@@ -876,7 +887,8 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon"
+        "leg3-canyon",
+        "leg1-plan"
       ],
       "first": true,
       "big": true,
@@ -907,7 +919,8 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon"
+        "leg3-canyon",
+        "leg1-plan"
       ],
       "first": true,
       "big": true
@@ -933,7 +946,8 @@
       "routes": [
         "leg1-i40",
         "leg1-south",
-        "leg1-canyon"
+        "leg1-canyon",
+        "leg1-plan"
       ]
     },
     {
@@ -1047,7 +1061,8 @@
       "routes": [
         "leg1-i40",
         "leg1-south",
-        "leg1-canyon"
+        "leg1-canyon",
+        "leg1-plan"
       ],
       "first": true,
       "big": true,
@@ -1148,7 +1163,8 @@
       "routes": [
         "leg1-i40",
         "leg1-south",
-        "leg1-canyon"
+        "leg1-canyon",
+        "leg1-plan"
       ]
     },
     {
@@ -1222,7 +1238,8 @@
       "routes": [
         "leg1-i40",
         "leg1-south",
-        "leg1-canyon"
+        "leg1-canyon",
+        "leg1-plan"
       ],
       "first": true,
       "big": true
@@ -1248,7 +1265,8 @@
       "routes": [
         "leg1-i40",
         "leg1-south",
-        "leg1-canyon"
+        "leg1-canyon",
+        "leg1-plan"
       ],
       "big": true
     },
@@ -1273,7 +1291,8 @@
       "routes": [
         "leg1-i40",
         "leg1-south",
-        "leg1-canyon"
+        "leg1-canyon",
+        "leg1-plan"
       ],
       "big": true,
       "kind": "food"
@@ -1399,7 +1418,8 @@
       "routes": [
         "leg1-i40",
         "leg1-south",
-        "leg1-canyon"
+        "leg1-canyon",
+        "leg1-plan"
       ]
     },
     {
@@ -2521,7 +2541,8 @@
       "routes": [
         "leg1-i40",
         "leg1-south",
-        "leg1-canyon"
+        "leg1-canyon",
+        "leg1-plan"
       ]
     },
     {
@@ -2545,7 +2566,8 @@
       "routes": [
         "leg1-i40",
         "leg1-south",
-        "leg1-canyon"
+        "leg1-canyon",
+        "leg1-plan"
       ]
     },
     {
@@ -2569,7 +2591,8 @@
       "routes": [
         "leg1-i40",
         "leg1-south",
-        "leg1-canyon"
+        "leg1-canyon",
+        "leg1-plan"
       ]
     },
     {
@@ -2593,7 +2616,8 @@
       "routes": [
         "leg1-i40",
         "leg1-south",
-        "leg1-canyon"
+        "leg1-canyon",
+        "leg1-plan"
       ]
     },
     {
@@ -2617,7 +2641,8 @@
       "routes": [
         "leg1-i40",
         "leg1-south",
-        "leg1-canyon"
+        "leg1-canyon",
+        "leg1-plan"
       ]
     }
   ]
