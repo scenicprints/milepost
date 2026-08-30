@@ -21,7 +21,8 @@
       "routes": [
         "leg1-south",
         "leg2-gulf",
-        "leg2-inland"
+        "leg2-inland",
+        "leg2-plan"
       ],
       "big": true
     },
@@ -1855,7 +1856,8 @@
       "winter": null,
       "routes": [
         "leg2-gulf",
-        "leg2-inland"
+        "leg2-inland",
+        "leg2-plan"
       ],
       "big": true
     },
@@ -1878,7 +1880,8 @@
       "winter": null,
       "routes": [
         "leg2-gulf",
-        "leg2-inland"
+        "leg2-inland",
+        "leg2-plan"
       ]
     },
     {
@@ -1900,7 +1903,8 @@
       "winter": null,
       "routes": [
         "leg2-gulf",
-        "leg2-inland"
+        "leg2-inland",
+        "leg2-plan"
       ]
     },
     {
@@ -1923,7 +1927,8 @@
       "winter": null,
       "routes": [
         "leg2-gulf",
-        "leg2-inland"
+        "leg2-inland",
+        "leg2-plan"
       ],
       "big": true,
       "kind": "food"
@@ -2113,7 +2118,8 @@
       "why": "A 65-acre estate garden that runs Magic Christmas in Lights through the holidays, millions of lights across the grounds. One of the biggest displays in the South, and a real detour south of Mobile.",
       "winter": "The lights run 5pm to 9pm and continue past New Year's Eve. Buy the timed ticket online first.",
       "routes": [
-        "leg2-gulf"
+        "leg2-gulf",
+        "leg2-plan"
       ]
     },
     {
@@ -2135,7 +2141,8 @@
       "why": "Iron balconies, courtyards, buskers, and streets laid out in the 1720s. Jackson Square, the cathedral, the river walk, Royal Street for antiques. There is nothing like it anywhere else in the country. Skip Bourbon Street, park once and walk.",
       "winter": null,
       "routes": [
-        "leg2-gulf"
+        "leg2-gulf",
+        "leg2-plan"
       ],
       "first": true,
       "big": true
@@ -2181,7 +2188,8 @@
       "why": "An alligator rescue sanctuary with over 450 animals, including some of the largest in captivity. Guaranteed alligators regardless of the weather.",
       "winter": "Open 10 to 5 daily through the holidays. Winter gators are slow and stacked together, which is its own show.",
       "routes": [
-        "leg2-gulf"
+        "leg2-gulf",
+        "leg2-plan"
       ],
       "first": true
     },
@@ -2647,6 +2655,120 @@
         "leg1-canyon",
         "leg1-plan"
       ]
+    },
+    {
+      "id": "bed-atlanta",
+      "name": "Atlanta truck stops, north ring",
+      "town": "Atlanta",
+      "state": "GA",
+      "ll": [
+        33.74869,
+        -84.38843
+      ],
+      "routes": [
+        "leg2-gulf",
+        "leg2-inland",
+        "leg2-plan"
+      ],
+      "why": "Georgia has exactly two rest areas on the whole of I-85 and one of them, the Lavonia welcome center, posts against overnight parking. Private lots carry this stretch: the chains at Commerce, Suwanee and the north Atlanta ring.",
+      "winter": "No elevation and no cold to speak of. It is a city, so take the lit chain lot rather than a side street.",
+      "detour": 0,
+      "dwell": 0,
+      "cost": "Free",
+      "tags": [
+        "bed"
+      ],
+      "kind": "lodging"
+    },
+    {
+      "id": "bed-biloxi",
+      "name": "Hard Rock Biloxi",
+      "town": "Biloxi",
+      "state": "MS",
+      "ll": [
+        30.42245,
+        -88.91497
+      ],
+      "routes": [
+        "leg2-gulf",
+        "leg2-plan"
+      ],
+      "why": "The gravel RV lot behind the parking decks off Highway 90. Overnight parking allowed, level, dry, lit all night, security on site. The best bed on either trip. Beau Rivage is reported hotel-guests-only, so use this one or ring ahead.",
+      "winter": "Sea level. Damp rather than cold, so crack a window for condensation and not for heat. Mississippi posts an eight hour limit and mentions towing, which is the only clock on this leg worth watching.",
+      "detour": 0,
+      "dwell": 0,
+      "cost": "Free",
+      "tags": [
+        "bed"
+      ],
+      "kind": "lodging"
+    },
+    {
+      "id": "bed-breaux-bridge",
+      "name": "Breaux Bridge Welcome Center",
+      "town": "Breaux Bridge",
+      "state": "LA",
+      "ll": [
+        30.27939,
+        -91.81674
+      ],
+      "routes": [
+        "leg2-gulf",
+        "leg2-plan"
+      ],
+      "why": "I-10 exit 121, east of Lafayette, and one of only three facilities on the entire Louisiana stretch of I-10. No posted maximum stay.",
+      "winter": "Louisiana staffs its rest areas around the clock, usually with sheriff's deputies. Expect a welfare check. That is a feature.",
+      "detour": 0,
+      "dwell": 0,
+      "cost": "Free",
+      "tags": [
+        "bed"
+      ],
+      "kind": "lodging"
+    },
+    {
+      "id": "bed-vicksburg",
+      "name": "Vicksburg Welcome Center",
+      "town": "Vicksburg",
+      "state": "MS",
+      "ll": [
+        32.315,
+        -90.878
+      ],
+      "routes": [
+        "leg2-inland"
+      ],
+      "why": "I-20 exit 1a, right at the Mississippi River bridge, and it lands exactly on the Vicksburg battlefield stop. The park is a 16 mile loop that opens at 08:30 with the last car in at 16:40, so sleep here and drive it at opening.",
+      "winter": "Mississippi's eight hour rule applies and it mentions towing.",
+      "detour": 0,
+      "dwell": 0,
+      "cost": "Free",
+      "tags": [
+        "bed"
+      ],
+      "kind": "lodging"
+    },
+    {
+      "id": "bed-shreveport",
+      "name": "Shreveport casino lots",
+      "town": "Bossier City",
+      "state": "LA",
+      "ll": [
+        32.515,
+        -93.735
+      ],
+      "routes": [
+        "leg2-inland"
+      ],
+      "why": "The Louisiana Boardwalk side. The second cluster of tolerant lots on this leg, and it sits exactly where the rest areas give out. Security on site.",
+      "winter": "No time limit in Louisiana. Forty miles short of Marshall.",
+      "detour": 0,
+      "dwell": 0,
+      "cost": "Free",
+      "tags": [
+        "bed"
+      ],
+      "kind": "lodging"
     }
   ]
 }

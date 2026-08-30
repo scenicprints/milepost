@@ -17,6 +17,10 @@ agent, or a new Claude account, can continue without losing the thread.
 
 ## State
 
+**Leg 2 has a plan route too (session 45).** `leg2-plan`, "Christmas to New
+Year", borrows the Gulf road and carries eight stops and three beds. Five leg 2
+beds ship as data.
+
 **Leg 1's plan is a route you can pick (session 43).** `leg1-plan`, "Five nights
 to Mooresville", borrows the canyon road and carries only the 25 stops and beds
 in the trip.
@@ -338,6 +342,50 @@ Android Auto is no.
 ---
 
 ## Session log
+
+**Session 45** — Leg 2 gets beds and a route of its own. 1.24.0.
+
+Kevin handed over `Where you can sleep, leg 2` and said do leg 2, then get it
+into the app. Same treatment leg 1 got in sessions 42 to 44.
+
+**The doc's own finding, and it inverts leg 1.** Leg 1's problem was a state that
+could arrest you. **Leg 2's problem is that there is nowhere to stop.** I-10
+across Alabama, Mississippi and Louisiana has nine facilities in about 500 miles,
+several westbound-only or reported closed, and Georgia has exactly two on the
+whole of I-85 — one of which posts against overnight parking. So on this leg the
+rest areas are the bonus and **truck stops and casinos are the backbone**, which
+is the reverse of leg 1.
+
+**Five beds ship as data**, all off his list. `bed-atlanta` (both roads, because
+Georgia's rest areas will not carry it), `bed-biloxi` at the Hard Rock, whose
+gravel RV lot the doc calls the best bed on either trip, `bed-breaux-bridge`,
+`bed-vicksburg` — which lands exactly on the battlefield stop, so you sleep there
+and drive the loop at opening — and `bed-shreveport` on the casino side. Gulf and
+inland get three each.
+
+**`leg2-plan`, "Christmas to New Year"**, borrows `leg2-gulf` by `sameRoadAs` and
+carries the eight stops and three beds the run actually makes.
+
+**The Gulf road wins on these dates, and it is the calendar that decides it.**
+Christmas Day 2026 is a Friday, so a run on the 27th to the 30th puts the inland
+road's best stops behind closed doors: the Birmingham Civil Rights Institute
+shuts Sunday AND Monday, and Marshall's Wonderland of Lights is Thursday to
+Sunday only (session 42's fix) and historically ends around the 28th to the 30th
+anyway. The Gulf road has none of that, plus New Orleans.
+
+**Two things the plan gives up, and both are geometry rather than taste.** The
+Louisiana State Capitol shuts at 16:00 and sits 82 miles PAST New Orleans, so it
+is the French Quarter evening or the capitol, never both. And there is no bed on
+his list at Baton Rouge, so the night after New Orleans is Breaux Bridge, 125
+miles further on, which puts the capitol behind you in the dark either way.
+
+**Shape:** four unhurried days, 20.7 hours of driving, into Houston at about
+14:00 on the 30th with the whole of New Year's Eve free. After leg 1's 46 hours
+in four and a half days this leg can afford to breathe, and it should.
+
+**Numbering note for whoever reads this next:** there are two Session 42 entries
+in this log, one for `afters` and one for the leg 2 audit, written by different
+sessions that did not know about each other. Neither is wrong; the numbers are.
 
 **Session 42** — Leg 2 audited. 1.23.2.
 

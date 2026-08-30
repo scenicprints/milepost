@@ -1664,6 +1664,15 @@
        "limit": 75
       }
      ]
+    },
+    {
+      "id": "leg2-plan",
+      "name": "Christmas to New Year",
+      "sameRoadAs": "leg2-gulf",
+      "road": "The Gulf Coast, and only the stops this trip makes",
+      "character": "Not a different road. The Gulf Coast exactly, carrying the eight stops and three beds the run to Houston actually makes.",
+      "why": "Four unhurried days between your mom's and New Year's Eve. Atlanta on the way out, the Bellingrath lights after dark, a night on the Biloxi coast, and a whole afternoon and evening in the French Quarter. It lands in Houston mid-afternoon on the 30th with the 31st completely free.",
+      "costs": "Nothing, because it is the same road as the Gulf Coast. What it gives up is the inland run, and with it Birmingham and Vicksburg and Caddo Lake. Swap back to see everything left out."
     }
    ]
   },
