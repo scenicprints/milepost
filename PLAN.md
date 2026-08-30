@@ -390,6 +390,30 @@ stops and four beds. Amarillo and Meteor Crater are deliberately NOT on it: they
 are already chosen from leg 1, so including them would have placed two phantom
 nights the plan does not take.
 
+**THE WINTER PASS, which I did not run before shipping the plan and should
+have.** Kevin asked *"Did you account for snow?"* and the honest answer was: for
+the beds yes, for the crossings no. Run properly, the Vegas road passes five of
+`winter.json`'s risk points and **three are fine** — Continental Divide 7,275 ft
+at 15:35, Flagstaff 6,909 ft at 10:29, Tehachapi 3,793 ft at 12:05, all in full
+daylight and hours behind the plows.
+
+**Two were not, and both were on the Sunday.** With a 07:15 start out of Quanah
+you crossed **Childress at 07:40, eight minutes before sunrise**, and Amarillo at
+09:22. That whole 150-mile stretch of US-287 is the panhandle ice belt, TxDOT
+**brines rather than plows** it, and brine needs sun on it. Leaving at first light
+is not enough there; the road wants the sun to have been on it.
+
+**Sunday now starts at 08:15**, which puts Childress at 08:40 in daylight and
+Amarillo at 10:22, past the window. Childress is still 80 minutes inside its
+guideline, so the standing rule is: **if there was any moisture overnight, do not
+leave Quanah before 10:00.** That costs the Blue Hole and the Auto Museum, which
+is the right price. The later start also pushes the Auto Museum to 16:45 against a
+17:00 close, so it is marginal even on a dry morning.
+
+**The lesson worth keeping: altitude picked the beds, and I mistook that for
+having done the winter work.** Choosing Blake Ranch over Flagstaff is a snow
+decision, and it is not the same as checking what time you cross the high ground.
+
 **Everything on this leg is a stop the drive out was too rushed for**: Palo Duro,
 the Blue Hole, the Auto Museum, Old Town Albuquerque after dark, Walnut Canyon,
 the volcano and the pueblo ruins, Calico, and the Basque table at Bakersfield,
