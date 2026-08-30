@@ -413,3 +413,16 @@ input, textarea { font: inherit; color: inherit; }
 .nnote { font-size: 12px; color: var(--ink2); line-height: 1.55; padding: 6px 0 10px; }
 .bar { height: 2px; background: var(--rule); margin-top: 14px; }
 .bar i { display: block; height: 2px; background: var(--signal); }
+
+/* The end of the line. Not a stop: it is where the leg goes, so it carries no
+   mark you can toggle and no cost. The dot is hollow and sits on the same
+   vertical as every station above it. */
+.dest { display: flex; align-items: center; gap: 16px; padding: 18px 0 4px; }
+.dest .mark {
+  width: 11px; height: 11px; border-radius: 50%; flex: none;
+  border: 1px solid var(--ink); background: var(--paper);
+  box-shadow: 0 0 0 3px var(--paper), 0 0 0 4px var(--ink);
+}
+.dest .nm { font-size: 17px; letter-spacing: -.015em; }
+.dest .sub { font-size: 11.5px; font-family: var(--mono); color: var(--ink2);
+             margin-top: 3px; font-variant-numeric: tabular-nums; }

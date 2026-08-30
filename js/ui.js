@@ -5,7 +5,7 @@
 // trips, and the leg selector at the top drives all of it.
 
 import { store } from './store.js';
-import { buildRoute, stopCost, fmtHours, project, driveMinutes } from './route.js';
+import { buildRoute, stopCost, fmtHours, fmtMiles, project, driveMinutes } from './route.js';
 import { buildDays, planTotals, suggestStops } from './plan.js';
 import * as mapview from './map.js';
 import * as syncmod from './sync.js';
@@ -163,6 +163,29 @@ export function renderRoute(legIx) {
       <div class="cost">${fmtHours(c.total)}</div></div>`;
   }
   while (ni < nights.length) { h += night(); ni++; }
+
+  // THE TERMINUS. The diagram drew stops and nothing else, so every road just
+  // ended on its last ticked stop. On the other leg 1 roads that happens to be
+  // the Charlotte cluster at the destination's own mile, which hid it; on a
+  // road that stops short it read as though the trip ended at a truck stop in
+  // Knoxville with 201 miles unaccounted for.
+  //
+  // Not a stop and not togglable: it is where the leg goes. The distance is
+  // from the last stop shown, because "how much further" is the question the
+  // last line of a route should answer.
+  const last = rt.waypoints[rt.waypoints.length - 1];
+  // Measured from the last thing ON the diagram, and a bed is on it — it shows
+  // as the night row rather than as a station, but you can see it. Excluding
+  // lodging here measured Mooresville from Nashville and called it 381 miles
+  // when the last place you actually stand is Knoxville, 201 short.
+  const from = rt.stops.length ? rt.stops[rt.stops.length - 1].mile : 0;
+  h += `<div class="dest">
+    <span class="mark"></span>
+    <div class="body">
+      <div class="nm">${esc(last.name)}</div>
+      <div class="sub">${fmtMiles(Math.max(0, rt.miles - from))} on</div>
+    </div></div>`;
+
   return h + "</div>";
 }
 

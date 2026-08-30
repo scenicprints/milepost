@@ -339,6 +339,36 @@ Android Auto is no.
 
 ## Session log
 
+**Session 44** — The route diagram had no end station. 1.23.1.
+
+Kevin, on the new `leg1-plan`: *"it shows Knoxville Truck stop as my last stop"*
+and then *"It just needs moorseville as the final destination"*.
+
+`renderRoute` drew stops and nothing else, so every road ended on its last ticked
+stop. **The other three leg 1 roads only hid it by luck**: they all carry the
+Charlotte and Mooresville cluster at mile 2,771, so their last station happens to
+sit at the destination. `leg1-plan` does not, because those are day trips from
+where he is staying rather than stops on the drive, so the list ended at a
+Knoxville truck stop with 201 miles unaccounted for.
+
+There is now a terminus row after the last station: the leg's final waypoint,
+hollow-ringed rather than filled, with no mark to toggle and no cost, because it
+is not a stop, it is where the leg goes.
+
+**The distance is measured from the last thing ON the diagram, beds included.**
+The first cut filtered lodging out of that calculation, which measured Mooresville
+from Nashville and announced 381 miles when the last place you actually stand is
+Knoxville, 201 short. A bed shows as the night row rather than as a station, but
+it is on the diagram and it is where you are.
+
+**Still open, and now visible on three screens rather than one.** `buildDays` in
+`plan.js` invents the night rows on this tab from `pace.hoursPerDay`, so leg 1's
+plan shows NIGHT — NASHVILLE and NIGHT — STATESVILLE, neither of which is a place
+Kevin sleeps, while the five real beds go unmarked. The same guess drives the
+header's day count, which reads 8 or 10 depending on the pace against a plan that
+is 5 nights. Route, Days and Next all read from it. Converting them onto
+`itinerary.js` is the outstanding job.
+
 **Session 43** — Leg 1 has a fourth road, and it borrows the third one. 1.23.0.
 
 Kevin: *"This should be like another possible route to choose from the leg"*, after
