@@ -339,6 +339,51 @@ Android Auto is no.
 
 ## Session log
 
+**Session 42** — Leg 2 audited. 1.23.2.
+
+The same three questions asked of every stop on both leg 2 roads: is the shape
+wrong, is a far-off stop misplaced, is its time driving or standing about.
+
+**No `turnoffBy` cases.** Nothing on leg 2 is more than 18 miles off the road,
+and the near-misses (Bellingrath 17, Caddo Lake 12, the Houston cluster clamped
+to the terminus) have nothing close enough to sort wrongly against. The Grand
+Canyon problem needs a big off-route distance AND a neighbour to jump; leg 2 has
+neither.
+
+**No `through` geometry cases.** Nothing here has a road that replaces part of
+the route.
+
+**One through-TIME case: Vicksburg National Military Park.** Checked: a 16-mile
+tour road in two connected loops, about an hour of driving alone and two hours
+with the fifteen stops. Its own `why` has said *"a 16-mile loop road"* all along
+— the second time now that the prose knew and the arithmetic did not. **Not** a
+geometry through: both loops return you to the visitor centre, so no route road
+is replaced. `throughTimeBy` on `leg2-inland`.
+
+**An hours bug found on the way.** Marshall's Wonderland of Lights was recorded
+as open every evening. It runs **Thursday to Sunday only**, so a Monday arrival
+read as fine. Now `closed: [1,2,3]`; verified Monday reports *"Closed on
+Mondays"* and fails, Thursday passes. The `why` says to confirm this year's
+nights, since the source is a listing for a previous December and only the
+weekend shape is structural.
+
+**Hours coverage on leg 2 is complete**, all 22 stops, unlike leg 1 where about
+half are still unverified.
+
+**A process failure worth not repeating.** `data/hours.json` is HAND FORMATTED,
+one stop per line with aligned padding. Editing it by `json.loads` then
+`json.dumps` reproduced the content exactly and destroyed the layout: a two-line
+change landed as a **729-line diff** on a file Kevin was working in. Nothing was
+lost, verified by parsing both revisions and comparing all 96 entries, but the
+churn was mine and needless. **Edit that file as text.** `data/stops.json`
+happens to survive a round trip because its format already matches; hours.json
+does not.
+
+Same commit also carried the version and cache bump that a failed assertion had
+skipped — the bump ran *after* the commit in one script, so a data change shipped
+without the cache bump that makes data changes visible at all.
+
+
 **Session 44** — The route diagram had no end station. 1.23.1.
 
 Kevin, on the new `leg1-plan`: *"it shows Knoxville Truck stop as my last stop"*
