@@ -343,6 +343,35 @@ Android Auto is no.
 
 ## Session log
 
+**Session 46** — Leg 2 leaves on the Saturday afternoon. 1.25.0.
+
+Kevin: *"Let's leave afternoon the 26th."* An afternoon start on the 26th rather
+than a morning one on the 27th, which buys a whole extra day and lands Houston on
+the **29th** with two clear days before New Year's Eve instead of one.
+
+**Bellingrath is what shapes the whole leg, and it is not obvious.** Its Christmas
+lights run 17:00 to 21:00 and it sits 339 miles past Atlanta. That forces an early
+Atlanta departure, which forces the aquarium to be first thing Sunday, which
+forces Saturday night to end within about 70 miles of Atlanta. Every other choice
+on this leg falls out of that one closing time.
+
+**Two fixes the new date forced:**
+
+- **Tanger Commerce landed at 21:15 and it shuts at 21:00.** Falls Park and
+  downtown Greenville are the same riverside block off the same exit, and three
+  hours there on a half-day start is what pushed it past closing. Downtown
+  Greenville is off the plan route; Falls Park stays, at 16:31, which is golden
+  hour with sunset at 17:20. Tanger now gets 18:59 to 20:29.
+- **`bed-atlanta` sorted two miles BEFORE the outlets**, so the app had you sleep
+  and then shop, which delays Sunday by ninety minutes and pushes Bellingrath past
+  closing. The doc's entry covers "Commerce, Suwanee, and the north Atlanta ring",
+  a 66-mile stretch, so the pin moved to **Suwanee**: after the outlets, and 29
+  miles from the aquarium instead of 66. Renamed to say so.
+
+**The bump is now read-and-increment with an assertion**, after session 45 shipped
+leg 2's data on an unchanged cache name because a `sed` for the old value matched
+nothing and said nothing.
+
 **Session 45** — Leg 2 gets beds and a route of its own. 1.24.0.
 
 Kevin handed over `Where you can sleep, leg 2` and said do leg 2, then get it

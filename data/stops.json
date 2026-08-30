@@ -1880,8 +1880,7 @@
       "winter": null,
       "routes": [
         "leg2-gulf",
-        "leg2-inland",
-        "leg2-plan"
+        "leg2-inland"
       ]
     },
     {
@@ -2658,19 +2657,19 @@
     },
     {
       "id": "bed-atlanta",
-      "name": "Atlanta truck stops, north ring",
-      "town": "Atlanta",
+      "name": "I-85 truck stops, Commerce to Atlanta",
+      "town": "Suwanee",
       "state": "GA",
       "ll": [
-        33.74869,
-        -84.38843
+        34.0515,
+        -84.0713
       ],
       "routes": [
         "leg2-gulf",
         "leg2-inland",
         "leg2-plan"
       ],
-      "why": "Georgia has exactly two rest areas on the whole of I-85 and one of them, the Lavonia welcome center, posts against overnight parking. Private lots carry this stretch: the chains at Commerce, Suwanee and the north Atlanta ring.",
+      "why": "Georgia has exactly two rest areas on the whole of I-85 and one of them, the Lavonia welcome center, posts against overnight parking. Private lots carry this stretch: the chains at Commerce, Suwanee and the north Atlanta ring. Pinned at Suwanee so it sorts after the Commerce outlets rather than two miles before them.",
       "winter": "No elevation and no cold to speak of. It is a city, so take the lit chain lot rather than a side street.",
       "detour": 0,
       "dwell": 0,
