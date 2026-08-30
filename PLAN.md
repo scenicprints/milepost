@@ -349,6 +349,49 @@ Android Auto is no.
 
 ## Session log
 
+**Session 50** — Three legs, three departures. 1.28.0.
+
+Kevin: *"I need to know what day and time my departures are."* The app could not
+tell him, and worse, what it did say was wrong.
+
+**One departure for a three-leg trip.** `store.departure` and `departAt` were a
+single pair, so leg 2 and leg 3 dated their days off the morning you leave home
+and leg 3 day 1 read as December. Departures are now per leg, migrated so the
+old single value becomes leg 1's, which is what the countdown and the booking
+deadlines always meant by it. The Days tab opens with a **Leaves** row carrying
+the day and the hour, both editable there, and every day now carries its own
+date and the time you actually pull out. The desktop planner switches its two
+boxes with the leg.
+
+**A night was attached to a bed, and three beds are on two legs.** Amarillo,
+Meteor Crater and Barstow are driven on leg 1 AND leg 3. `sleeps` is keyed by
+stop id, so leg 1's 8h24 at Amarillo, correct for arriving at nine at night, was
+reused on leg 3 where you arrive at 11:19 in the morning, and set you off again
+at **19:43**. That then wrecked every day behind it: Gallup at 03:58, Barstow
+leaving at 16:57. Four of the twelve roads were affected. Nights are now stored
+per leg under a `leg:stop` key; a bare key is older data and belongs to the
+first leg its bed appears on, so nothing needed migrating and nothing leaked.
+`store.sleepsScoped(legId, ownerOf)` is the single implementation, with the app
+and the planner each supplying their own owner lookup.
+
+**An unset night was eight hours flat from arrival**, which is only a night if
+you happen to arrive at bedtime. Reach a bed at 18:12 and it woke you at 02:12;
+reach one at 11:11 and it had you leaving at 19:11. An unset night now runs to
+first light. Nights you have SET are still exact, and still flagged if they put
+you on the road in the dark, because that is your call to make.
+
+**First light, not `open`.** The first cut of that held to `dayFor().open`,
+which folds in the plow window. Atlanta's says 12:00, because the city barely
+plows and you wait it out IF there is ice, and every unset night there started
+the day at noon on a dry December morning. The hold uses first light; the plow
+warning still fires and still names the plows.
+
+Departures across all twelve roads are now morning departures, and leg 1 keeps
+its hand-tuned nights untouched.
+
+**Worth saying plainly: the dates are not in the repo and cannot be.** CLAUDE.md
+forbids it and the repo is public. The fields are his to fill on the phone.
+
 **Session 49** — The other nine roads checked. 1.27.1.
 
 Session 48 put Days, Next and the header on `itinerary.build`, but only

@@ -269,9 +269,45 @@ export function build(route, chosen, start, data) {
 
     // ---- a bed: you arrive, you sleep, the day ends here ------------------
     if (s.kind === 'lodging') {
-      const nap = Math.round(Number(sleeps[s.id]) || DEFAULT_NIGHT);
-      const wake = arrive + nap;
-      const next = dayFor(wake, s.ll, s.tz);
+      // A night you have SET is exact: eight hours means eight hours, and if
+      // that has you moving before dawn the flag below says so and you decide.
+      //
+      // A night you have NOT set is a default, and eight hours flat from
+      // arrival is a bad one. Reach a bed at 18:12 and it pulled you out at
+      // 02:12, which is not a morning; it made every leg you had not yet
+      // detailed by hand read as nonsense. An unset night therefore holds
+      // until the road is usable -- first light, or the plows on a winter
+      // crossing -- and only then does it hand the day back.
+      const set = sleeps[s.id] != null;
+      let nap = Math.round(Number(sleeps[s.id]) || DEFAULT_NIGHT);
+      let wake = arrive + nap;
+      let next = dayFor(wake, s.ll, s.tz);
+      if (!set) {
+        // Walk forward to the next hour the road is actually usable. Eight
+        // hours from arrival lands wherever it lands: reach the bed at 18:12
+        // and it woke you at 02:12, reach it at 11:11 and it had you setting
+        // off at 19:11. Neither is a morning. Step to the next open, and if
+        // that has already gone by, step to the one after it.
+        for (let guard = 0; guard < 3; guard++) {
+          const wakeMin = ((next.local % MIN_PER_DAY) + MIN_PER_DAY) % MIN_PER_DAY;
+          // FIRST LIGHT, not `open`. `open` also carries the plow window, and
+          // a plow window is conditional -- Atlanta's says noon, because the
+          // city barely plows and you wait it out IF there is ice. Holding
+          // every unset night to that started the day at 12:00 on a dry
+          // December morning. The warning above still fires and still names
+          // the plows; this only decides when a night you never set ends.
+          const light = next.rise + 45;
+          // Past noon is never a departure a night was meant to produce, so
+          // that rolls to the following morning too.
+          const hold = wakeMin < light ? light - wakeMin
+                     : wakeMin > 12 * 60 ? MIN_PER_DAY - wakeMin + light
+                     : 0;
+          if (hold <= 0) break;
+          nap += hold;
+          wake = arrive + nap;
+          next = dayFor(wake, s.ll, s.tz);
+        }
+      }
       const downLocal = arriveLocal;
       const wakeLocal = next.local;
       const wakeAt = ((wakeLocal % MIN_PER_DAY) + MIN_PER_DAY) % MIN_PER_DAY;

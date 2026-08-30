@@ -20,6 +20,13 @@ const DEFAULTS = () => ({
   custom: [],            // your own places, same shape as data/stops.json entries
   pace: { ...DEFAULT_PACE },
   departure: null,       // yyyy-mm-dd, set by the user, never committed
+  // ONE departure was wrong the moment there were three legs. You leave home,
+  // you leave Mooresville after Christmas and you leave Houston after New Year,
+  // and those are three different mornings at three different hours. A single
+  // pair dated every leg's days off leg 1, so leg 3 day 1 read as December.
+  // Keyed by leg id; `departure`/`departAt` below still mean leg 1, which is
+  // what the countdown and the booking deadlines are actually counting to.
+  departures: {},        // legId -> { date: 'yyyy-mm-dd'|null, at: 'HH:MM' }
   // Nights, as MINUTES ASLEEP keyed by the stop you sleep AFTER. Not a place
   // and not a hotel: the planner used to break the day by itself whenever the
   // clock ran past dusk, which invented a bedtime nobody chose. Now the day
@@ -65,6 +72,7 @@ class Store extends EventTarget {
     } catch (_) {}
     this.chosen = new Set(this.s.chosen);
     this.#migrateNights();
+    this.#migrateDepartures();
   }
 
   /// Nights briefly stored as `{ m, at }`, a duration hung off a neighbouring
@@ -85,6 +93,16 @@ class Store extends EventTarget {
       this.s.chosen = [...this.chosen];
       try { localStorage.setItem(KEY, JSON.stringify(this.s)); } catch (_) {}
     }
+  }
+
+  /// The trip carried one departure. Give it to leg 1, which is the leg it was
+  /// always describing, and leave the other two unset rather than guessing a
+  /// date for them.
+  #migrateDepartures() {
+    if (!this.s.departures) this.s.departures = {};
+    if (this.s.departures.leg1) return;
+    this.s.departures.leg1 = { date: this.s.departure || null,
+                               at: this.s.departAt || '06:00' };
   }
 
   save() {
@@ -215,16 +233,51 @@ class Store extends EventTarget {
   // its own position, so a night at one needs no anchor and no second field.
   get sleeps() { return this.s.sleeps || (this.s.sleeps = {}); }
 
-  sleepAfter(id) { return this.sleeps[id] ?? null; }
+  // A night belongs to a LEG as well as a bed: three beds are driven on both
+  // leg 1 and leg 3, and one duration cannot describe arriving at nine at
+  // night and arriving at eleven in the morning. Keys are `leg:stop`; a bare
+  // key is older data, read as belonging to the first leg the bed is on.
+  #skey(id, legId) { return legId ? legId + ':' + id : id; }
+  sleepAfter(id, legId) {
+    return this.sleeps[this.#skey(id, legId)] ?? (legId ? this.sleeps[id] : null) ?? null;
+  }
 
-  setSleep(id, minutes) {
+  /// The nights that apply to ONE leg, flattened to the plain
+  /// `{ stopId: minutes }` the builder wants. `ownerOf(stopId)` says which leg
+  /// a bed belongs to; the store has no route data, so the caller supplies it.
+  /// Bare keys go down first and leg-scoped ones on top, so a night set for
+  /// this leg always beats the older shared value.
+  sleepsScoped(legId, ownerOf) {
+    const all = this.sleeps, out = {};
+    for (const [k, v] of Object.entries(all)) {
+      if (k.includes(':')) continue;
+      const owner = ownerOf ? ownerOf(k) : null;
+      if (!owner || owner === legId) out[k] = v;
+    }
+    for (const [k, v] of Object.entries(all)) {
+      const cut = k.indexOf(':');
+      if (cut > 0 && k.slice(0, cut) === legId) out[k.slice(cut + 1)] = v;
+    }
+    return out;
+  }
+
+  // Writes are always scoped when a leg is given. Bare keys are never written
+  // again; they are older data, and which leg they belong to is worked out in
+  // ui.js, which is the only place that knows what road a bed sits on.
+  setSleep(id, minutes, legId) {
     const m = Math.round(Number(minutes) || 0);
-    if (m > 0) this.sleeps[id] = m;
-    else delete this.sleeps[id];
+    const k = this.#skey(id, legId);
+    if (m > 0) this.sleeps[k] = m; else delete this.sleeps[k];
     this.save();
   }
 
-  clearSleep(id) { delete this.sleeps[id]; this.save(); }
+  /// Clearing a night on a leg also drops the bare key, or the old value would
+  /// come straight back on the next read.
+  clearSleep(id, legId) {
+    delete this.sleeps[this.#skey(id, legId)];
+    if (legId) delete this.sleeps[id];
+    this.save();
+  }
 
   // ---- dwell ----
   //
@@ -293,11 +346,33 @@ class Store extends EventTarget {
   get pace() { return this.s.pace; }
   setPace(p) { this.s.pace = { ...this.s.pace, ...p }; this.save(); }
 
-  get departure() { return this.s.departure; }
-  setDeparture(d) { this.s.departure = d; this.save(); }
+  // ---- departures, one per leg ----
+  //
+  // `departure` and `departAt` are leg 1's, kept under the old names because
+  // the countdown, the booking deadlines and the desktop planner all mean
+  // "when does the trip start" when they ask.
+  depFor(legId) {
+    const d = this.s.departures[legId];
+    return { date: d ? d.date : null, at: (d && d.at) || '06:00' };
+  }
+  setDepFor(legId, date, at) {
+    const cur = this.depFor(legId);
+    this.s.departures[legId] = {
+      date: date === undefined ? cur.date : date,
+      at: at === undefined ? cur.at : (at || '06:00'),
+    };
+    if (legId === 'leg1') {
+      this.s.departure = this.s.departures.leg1.date;
+      this.s.departAt = this.s.departures.leg1.at;
+    }
+    this.save();
+  }
 
-  get departAt() { return this.s.departAt || '06:00'; }
-  setDepartAt(t) { this.s.departAt = t || '06:00'; this.save(); }
+  get departure() { return this.depFor('leg1').date; }
+  setDeparture(d) { this.setDepFor('leg1', d, undefined); }
+
+  get departAt() { return this.depFor('leg1').at; }
+  setDepartAt(t) { this.setDepFor('leg1', undefined, t); }
 
   // ---- saved plans ----
   //
@@ -335,6 +410,7 @@ class Store extends EventTarget {
       afters: { ...this.afters },
       departure: this.s.departure || null,
       departAt: this.departAt,
+      departures: JSON.parse(JSON.stringify(this.s.departures || {})),
     };
   }
 
@@ -389,6 +465,10 @@ class Store extends EventTarget {
     this.s.afters = { ...(p.afters || {}) };
     this.s.departure = p.departure || null;
     this.s.departAt = p.departAt || '06:00';
+    // Older plans predate per-leg departures and carry only the one.
+    this.s.departures = p.departures
+      ? JSON.parse(JSON.stringify(p.departures))
+      : { leg1: { date: p.departure || null, at: p.departAt || '06:00' } };
     this.s.activePlan = id;
     this.save();
     return p;

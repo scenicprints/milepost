@@ -599,6 +599,13 @@ document.addEventListener('click', e => {
 
 document.addEventListener('change', e => {
   if (e.target.id === 'depart' && e.target.value) store.setDeparture(e.target.value);
+
+  // Per-leg departure, set on the Days tab. The date may be cleared back to
+  // nothing; the time may not, so an empty one falls back in the store.
+  const dd = e.target.dataset && e.target.dataset.depdate;
+  if (dd) { store.setDepFor(dd, e.target.value || null, undefined); return; }
+  const da = e.target.dataset && e.target.dataset.depat;
+  if (da) { store.setDepFor(da, undefined, e.target.value); return; }
 });
 
 // Notes save as you type, debounced, without redrawing the sheet under you.

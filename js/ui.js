@@ -85,23 +85,69 @@ export const legRoute = i => legChoice(DATA.route.legs[i]);
 // Per-day mileage and minutes are summed from the ROWS rather than asked of
 // build(), because the rows already carry `driveMin` and `dwell` and a second
 // source for the same number is a second thing to keep in step.
-const startOf = () => ({
-  date: store.departure ? new Date(store.departure + 'T00:00:00Z')
-                        : new Date(new Date().toISOString().slice(0, 10) + 'T00:00:00Z'),
-  at: store.departAt || '06:00',
-});
+/// Which leg a road belongs to. Roads are unique to a leg, so this is a lookup
+/// rather than a guess.
+export function legIdOf(route) {
+  for (const leg of DATA.route.legs)
+    if (leg.routes.some(r => r.id === route.id)) return leg.id;
+  return 'leg1';
+}
+
+// ============================================ nights belong to a leg, not a bed
+//
+// `sleeps` is keyed by stop id, and three beds -- Amarillo, Meteor Crater and
+// Barstow -- are driven on BOTH leg 1 and leg 3. Leg 1's night at Amarillo is
+// 8h24 because you get there at nine at night. Leg 3 reaches the same bed at
+// 11:19 in the morning, and that same 8h24 had you setting off again at 19:43,
+// which then wrecked every day after it.
+//
+// A night set for one leg therefore stays on that leg. Newly set nights are
+// written under a `leg:stop` key; a bare key predates this and belongs to the
+// FIRST leg the bed appears on, which is where it was set.
+// stopId -> the first leg it appears on. Built once and rebuilt only when the
+// stop list itself changes, because this is read on every draw.
+let ownerCache = { key: null, map: null };
+function legOwners() {
+  const key = allStops().length + '#' + store.custom.length;
+  if (ownerCache.key === key) return ownerCache.map;
+  const map = new Map();
+  for (const leg of DATA.route.legs)
+    for (const r of leg.routes)
+      for (const st of routeById(r.id).stops || [])
+        if (!map.has(st.id)) map.set(st.id, leg.id);
+  ownerCache = { key, map };
+  return map;
+}
+
+/// The nights that apply to one leg, flattened to the plain
+/// `{ stopId: minutes }` the builder wants.
+export const sleepsFor = legId =>
+  store.sleepsScoped(legId, id => legOwners().get(id));
+
+const startOf = (route) => {
+  const d = store.depFor(legIdOf(route));
+  return {
+    date: d.date ? new Date(d.date + 'T00:00:00Z')
+                 : new Date(new Date().toISOString().slice(0, 10) + 'T00:00:00Z'),
+    at: d.at,
+    set: !!d.date,
+  };
+};
 
 let dayCache = { key: null, val: null };
 
 export function realDays(route) {
-  const key = [route.id, [...store.chosen].sort().join(','), JSON.stringify(store.sleeps),
+  const legId = legIdOf(route);
+  const sleeps = sleepsFor(legId);
+  const dep = store.depFor(legId);
+  const key = [route.id, [...store.chosen].sort().join(','), JSON.stringify(sleeps),
                JSON.stringify(store.dwells), JSON.stringify(store.afters),
-               store.departure, store.departAt].join('|');
+               dep.date, dep.at].join('|');
   if (dayCache.key === key) return dayCache.val;
 
-  const it = build(route, store.chosen, startOf(), {
+  const it = build(route, store.chosen, startOf(route), {
     HOURS: DATA.hours, WINTER: DATA.winter,
-    sleeps: store.sleeps, afters: store.afters,
+    sleeps, afters: store.afters,
   });
 
   const out = [];
@@ -114,6 +160,10 @@ export function realDays(route) {
     const term = route.waypoints[route.waypoints.length - 1];
     out.push({
       date: d.date,                       // the real calendar day, not a counter
+      // The hour you actually pull out: the leg's departure on day one, the
+      // hour you leave the bed on every day after it. build() already worked
+      // this out, in the local time of wherever you woke up.
+      startAt: d.startAt,
       from: { name: d.from },
       overnight: bedRow
         ? { name: bedRow.stop.name, mile: bedRow.mile }
@@ -371,10 +421,37 @@ export function paintMap(legIx, scale, view) {
 }
 
 // ============================================================== days
+// Short and long forms of a day. The days are built in UTC so they must be
+// read in UTC; getDay() on a local clock is a day out for anyone west of
+// Greenwich, which is everywhere this trip goes.
+const WD = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const MON = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
+             'August', 'September', 'October', 'November', 'December'];
+const longDate = d => `${WD[d.getUTCDay()]} ${d.getUTCDate()} ${MON[d.getUTCMonth()]}`;
+const shortDate = d => `${WD[d.getUTCDay()].slice(0, 3)} ${d.getUTCDate()} ${MON[d.getUTCMonth()].slice(0, 3)}`;
+
 export function renderDays(legIx) {
   const rt = legRoute(legIx);
   const D = realDays(rt);
+  const legId = legIdOf(rt);
+  const dep = store.depFor(legId);
   let h = '<div class="days">';
+
+  // THE DEPARTURE. It used to be one date for the whole trip, which meant leg
+  // 2 and leg 3 dated their days off the morning you left home. Each leg now
+  // owns the day and the hour it starts, and this is where you set them.
+  h += `<div class="dep${dep.date ? '' : ' unset'}">
+    <div class="deplab">Leaves</div>
+    <div class="depval">${dep.date
+      ? `${esc(longDate(new Date(dep.date + 'T00:00:00Z')))}, ${esc(dep.at)}`
+      : 'Not set yet'}</div>
+    <div class="depset">
+      <input type="date" value="${esc(dep.date || '')}" data-depdate="${legId}"
+             aria-label="Departure date">
+      <input type="time" value="${esc(dep.at)}" data-depat="${legId}"
+             aria-label="Departure time">
+    </div>
+  </div>`;
   const picked = D.reduce((a, d) => a + d.stops.length, 0);
   // A day ends where you place a sleep and nowhere else, so a road with stops
   // ticked and no bed chosen is honestly ONE day -- of about six. That is right
@@ -391,8 +468,9 @@ export function renderDays(legIx) {
     h += `<div class="err">${esc(w)}</div>`;
 
   D.forEach((d, i) => {
+    const out = d.startAt;
     h += `<div class="day">
-      <div class="dnum">Day ${i + 1}</div>
+      <div class="dnum">Day ${i + 1}${dep.date ? ` <span class="ddate">${esc(shortDate(d.date))}</span>` : ''}${out ? ` <span class="dout">out ${esc(out)}</span>` : ''}</div>
       <div class="dto">${esc(d.from.name)} → ${esc(d.overnight.name)}${d.sameTown ? " (2nd night)" : ""}</div>
       <div class="dmeta">${Math.round(d.miles).toLocaleString()} mi · ${fmtHours(d.driveMins)} driving${d.stopMins ? ` · ${fmtHours(d.stopMins)} stopped` : ""}</div>
       ${d.risks.length ? `<div class="warn">Winter watch — ${d.risks.map(r => esc(r.name)).join(", ")}</div>` : ""}
@@ -694,13 +772,14 @@ export async function hydrateWeather(id) {
 
 /// Which calendar day this stop falls on, given a departure date.
 export function plannedDate(id) {
-  if (!store.departure) return null;
   // The day carries its own date now. The old version counted days across legs
   // and added that many to the departure, which silently assumed every leg
   // starts the morning the previous one ends.
-  for (const r of selected())
+  for (const r of selected()) {
+    if (!store.depFor(legIdOf(r)).date) continue;   // that leg has no date yet
     for (const d of realDays(r))
       if (d.stops.some(s => s.id === id)) return d.date.toISOString().slice(0, 10);
+  }
   return null;
 }
 

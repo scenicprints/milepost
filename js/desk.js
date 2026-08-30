@@ -43,6 +43,35 @@ const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct
 // carries a stable data-k, and draw() puts the focus back on it.
 let refocus = null;
 
+// Which leg the planner is looking at, and which leg a bed belongs to. Nights
+// are stored per leg because Amarillo, Meteor Crater and Barstow are driven on
+// both leg 1 and leg 3, and one duration cannot describe both arrivals.
+const legId = () => (DATA && DATA.route.legs[legIx] ? DATA.route.legs[legIx].id : 'leg1');
+
+let ownerCache = null;
+function ownerOf(stopId) {
+  if (!ownerCache) {
+    ownerCache = new Map();
+    const all = DATA.stops.concat(store.custom);
+    for (const leg of DATA.route.legs) {
+      const ids = new Set(leg.routes.map(r => r.id));
+      for (const st of all)
+        if (!ownerCache.has(st.id) && (st.routes || []).some(r => ids.has(r)))
+          ownerCache.set(st.id, leg.id);
+    }
+  }
+  return ownerCache.get(stopId) || null;
+}
+const sleepsFor = id => store.sleepsScoped(id, ownerOf);
+
+/// Put the selected leg's departure into the two boxes. Everything downstream
+/// reads the boxes, so keeping them in step with the leg is the whole job.
+function showDeparture() {
+  const d = store.depFor(legId());
+  $('date').value = d.date || '';
+  $('at').value = d.at;
+}
+
 // The editor's own state. It is deliberately NOT part of draw(): the itinerary
 // rebuilds on every toggle and keystroke, and a text field inside that would be
 // destroyed under the caret. drawEditor() is called only when the form itself
@@ -86,15 +115,16 @@ async function boot() {
     .map((l, i) => `<option value="${i}">${esc(l.name)}</option>`).join('');
 
   // The departure lives in the store now, because a saved plan has to be able
-  // to carry a different one. It is still never committed to the repo.
-  if (store.departure) $('date').value = store.departure;
-  $('at').value = store.departAt;
+  // to carry a different one. It is still never committed to the repo. It is
+  // also per leg: you leave home, Mooresville and Houston on three different
+  // mornings, and one date dated all three off the first.
+  showDeparture();
 
   for (const el of ['leg', 'road', 'date', 'at'])
     $(el).addEventListener('change', () => {
-      if (el === 'leg') { legIx = +$('leg').value; fillRoads(); }
-      if (el === 'date') store.setDeparture($('date').value);
-      if (el === 'at') store.setDepartAt($('at').value);
+      if (el === 'leg') { legIx = +$('leg').value; fillRoads(); showDeparture(); }
+      if (el === 'date') store.setDepFor(legId(), $('date').value || null, undefined);
+      if (el === 'at') store.setDepFor(legId(), undefined, $('at').value);
       draw();
     });
 
@@ -200,10 +230,13 @@ async function boot() {
     }
 
     const add = e.target.closest('[data-addsleep]');
-    if (add) { refocus = 'sh-' + add.dataset.addsleep; return store.setSleep(add.dataset.addsleep, 8 * 60); }
+    if (add) {
+      refocus = 'sh-' + add.dataset.addsleep;
+      return store.setSleep(add.dataset.addsleep, 8 * 60, legId());
+    }
 
     const drop = e.target.closest('[data-dropsleep]');
-    if (drop) return store.clearSleep(drop.dataset.dropsleep);
+    if (drop) return store.clearSleep(drop.dataset.dropsleep, legId());
 
     const dd = e.target.closest('[data-dropdwell]');
     if (dd) return store.clearDwell(dd.dataset.dropdwell);
@@ -226,7 +259,7 @@ async function boot() {
       const id = f.dataset.sleep;
       refocus = f.dataset.k;
       return store.setSleep(id, Math.min(pair('sleep', id, 'h'), 47) * 60
-                              + Math.min(pair('sleep', id, 'm'), 59));
+                              + Math.min(pair('sleep', id, 'm'), 59), legId());
     }
 
     const d = e.target.closest('[data-dwell]');
@@ -260,7 +293,7 @@ function current() {
   const it = build(
     route, store.chosen,
     { date: new Date($('date').value + 'T00:00:00Z'), at: $('at').value || '06:00' },
-    { HOURS: DATA.HOURS, WINTER: DATA.WINTER, sleeps: store.sleeps, afters: store.afters });
+    { HOURS: DATA.HOURS, WINTER: DATA.WINTER, sleeps: sleepsFor(legId()), afters: store.afters });
   return { route, it };
 }
 
@@ -464,8 +497,7 @@ function wirePlans() {
       return;
     }
     store.loadPlan(id);
-    if (store.departure) $('date').value = store.departure;
-    $('at').value = store.departAt;
+    showDeparture();
     draw();
   });
 

@@ -219,6 +219,29 @@ input, textarea { font: inherit; color: inherit; }
 .dstop.seen span { text-decoration: line-through; text-decoration-color: var(--rule2); }
 .warn { font-size: 11.5px; font-family: var(--mono); color: var(--signal); margin-top: 9px; }
 
+/* THE DEPARTURE, at the head of the leg's days. Each leg leaves on its own
+   morning at its own hour, so this sits above day one rather than in the trip
+   sheet, where one date stood for all three. */
+.dep { padding-bottom: 20px; border-bottom: 1px solid var(--rule); margin-bottom: 20px; }
+.deplab { font-size: 10.5px; font-family: var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink2); }
+.depval { font-size: 17px; margin-top: 7px; letter-spacing: -.015em; font-variant-numeric: tabular-nums; }
+.dep.unset .depval { color: var(--ink2); }
+.depset { display: flex; gap: 10px; margin-top: 11px; }
+.depset input {
+  font: inherit; font-size: 13px; font-family: var(--mono);
+  color: var(--ink); background: transparent;
+  border: 0; border-bottom: 1px solid var(--rule2);
+  padding: 3px 0; min-width: 0;
+}
+.depset input:focus-visible { outline: none; border-bottom-color: var(--signal); }
+
+/* Date and pull-out time ride the DAY N line, which was carrying a counter and
+   nothing else. */
+.ddate, .dout { font-family: var(--mono); letter-spacing: .16em; }
+.ddate { color: var(--ink); }
+.dout { color: var(--ink2); }
+.ddate::before, .dout::before { content: "·"; margin: 0 6px 0 4px; color: var(--rule2); letter-spacing: 0; }
+
 /* -------------------------------------------------------------------- map */
 /* On the map tab the map IS the page: no padding, no scroll, nothing under it.
    touch-action must sit on the SVG itself — the browser was claiming the pinch
