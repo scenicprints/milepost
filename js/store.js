@@ -12,7 +12,7 @@ import { DEFAULT_PACE } from './plan.js';
 const KEY = 'milepost.v1';
 
 const DEFAULTS = () => ({
-  routes: { leg1: 'leg1-i40', leg2: 'leg2-gulf', leg3: 'leg3-i10' },
+  routes: { leg1: 'leg1-i40', leg2: 'leg2-gulf', leg3: 'leg3-i40' },
   chosen: [],            // stop ids
   seen: {},              // stopId -> yyyy-mm-dd
   notes: {},             // stopId -> text

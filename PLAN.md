@@ -349,6 +349,33 @@ Android Auto is no.
 
 ## Session log
 
+**Session 49** — The other nine roads checked. 1.27.1.
+
+Session 48 put Days, Next and the header on `itinerary.build`, but only
+`leg1-plan` was ever run through it. Ten other roads use those same three
+screens, so all twelve were built and rendered.
+
+They pass. Every road splits into real days, because the beds carry route ids
+for each road on their leg rather than only the plan road: leg 1 gives six days
+on all four roads, leg 2 four, leg 3 seven or eight. No throws, no NaN, and
+each road ends in the right city with its own distance to it.
+
+One case did read as broken. A day ends where you place a sleep and nowhere
+else, so a road with stops ticked and no bed chosen is honestly ONE day of
+about six — the Days tab showed a single 143 hour day with no explanation.
+That is right and it looks wrong, so it now says which it is and how to split
+it. `buildDays` always split by pace, so this state could not arise before.
+
+Also: the header could now read "1 days", since a leg reaching one day is newly
+possible; it says "1 day". And `store.js` defaulted leg 3 to `leg3-i10`, a
+route id that does not exist — `legChoice` silently repaired it to the first
+road on the leg every time, so nothing broke and nothing said so. Corrected to
+`leg3-i40`.
+
+Timing checked before adding machinery: a full build on the largest road is
+0.4 ms, so the single-entry day cache thrashing across the header's three legs
+costs nothing and stays as it is.
+
 **Session 48** — The phone stops guessing. 1.27.0.
 
 The outstanding job from sessions 44 to 47, and the one that changed what you

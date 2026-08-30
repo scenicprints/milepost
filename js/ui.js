@@ -178,7 +178,7 @@ export function renderHead(legIx, tab) {
           <div><span class="tnum on">${Math.round(pct)}</span><span class="tlab">%</span></div>`;
       })() : `
       <div><span class="tnum">${Math.round(tab === "trip" ? wm : t.miles).toLocaleString()}</span><span class="tlab">mi</span></div>
-      <div><span class="tnum">${tab === "trip" ? wd : t.days}</span><span class="tlab">days</span></div>
+      <div><span class="tnum">${tab === "trip" ? wd : t.days}</span><span class="tlab">${(tab === "trip" ? wd : t.days) === 1 ? "day" : "days"}</span></div>
       <div><span class="tnum on">${tab === "trip" ? ws : t.stops}</span><span class="tlab">stops</span></div>`}
     </div>
     ${tab === "trip" || tab === "next" ? "" : `<div class="legs">${DATA.route.legs.map((l, i) =>
@@ -375,8 +375,18 @@ export function renderDays(legIx) {
   const rt = legRoute(legIx);
   const D = realDays(rt);
   let h = '<div class="days">';
-  if (!D.length)
-    h += `<div class="err">Nothing chosen on this road yet. Tick some stops on the Route tab.</div>`;
+  const picked = D.reduce((a, d) => a + d.stops.length, 0);
+  // A day ends where you place a sleep and nowhere else, so a road with stops
+  // ticked and no bed chosen is honestly ONE day -- of about six. That is right
+  // and it reads as broken, so say which it is rather than printing a 143 hour
+  // day and letting you wonder.
+  const noNights = D.length === 1 && !D[0].rows.some(r => r.kind === 'bed' || r.sleep);
+  if (!picked)
+    h += `<div class="err">Nothing ticked on this road yet. Choose some stops on the Route tab.</div>`;
+  else if (noNights)
+    h += `<div class="err">No nights placed on this road, so this is one very long day.
+      A day ends where you sleep. Tick one of the beds on the Route tab and the days will
+      split there.</div>`;
   for (const w of (D.warnings || []))
     h += `<div class="err">${esc(w)}</div>`;
 
