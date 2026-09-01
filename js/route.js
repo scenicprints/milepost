@@ -245,8 +245,13 @@ export function buildRoute(route, allStops, dwells, throughs) {
       // `dwells` is the user's own override of how long they will really be
       // somewhere. The seeded number is a research guess; this is the answer.
       // Zero is a legitimate answer, so only undefined falls back to the seed.
+      // The seed itself can differ by road — `dwellBy` — because the same
+      // place is a different visit on different trips: Bearizona is the full
+      // park on the menu roads and the drive-through loop alone on a plan
+      // that needs the canyon's light.
+      const seedDwell = byRoad(s.dwellBy, s.dwell);
       const over = dwells && dwells[s.id];
-      const dwell = Number.isFinite(over) ? over : s.dwell;
+      const dwell = Number.isFinite(over) ? over : seedDwell;
       // TWO different flags that were briefly one:
       //   `through`     — geometry. This stop spans road and replaces it.
       //                   Data's call, and only Petrified Forest has it.
@@ -261,10 +266,16 @@ export function buildRoute(route, allStops, dwells, throughs) {
         !!byRoad(s.throughTimeBy, false);
       const tOver = throughs && throughs[s.id];
       const throughTime = tOver === undefined ? seedThrough : !!tOver;
+      // A night's length and a next-morning pin can be written into the plan
+      // per road, the same way a detour can. `sleepBy` and `afterBy` resolve
+      // here so the walk downstream never has to know which road it is on;
+      // a bare `sleep` (Biloxi) still means every road, as it always has.
+      const sleep = byRoad(s.sleepBy, s.sleep);
+      const after = !!byRoad(s.afterBy, s.after);
       return {
-        ...s, detour, dwell, seedDwell: s.dwell, throughTime,
+        ...s, detour, dwell, sleep, after, seedDwell, throughTime,
         throughSet: tOver !== undefined && tOver !== seedThrough,
-        dwellSet: Number.isFinite(over) && over !== s.dwell,
+        dwellSet: Number.isFinite(over) && over !== seedDwell,
         mile: p.mile, offRoute: p.off, tz: tzFor(s.state, s.ll[1]), turnoff: null, throughTo: null,
       };
     })
