@@ -840,7 +840,8 @@
               "tz": -8,
               "urban": true,
               "road": "CA-99",
-              "limit": 70
+              "limit": 70,
+              "miles": 99
             },
             {
               "name": "Bakersfield",
@@ -852,7 +853,8 @@
               "tz": -8,
               "urban": true,
               "road": "CA-99",
-              "limit": 70
+              "limit": 70,
+              "miles": 108
             },
             {
               "name": "Tehachapi Pass",
@@ -866,7 +868,8 @@
               "note": "Chain control posts here. Your FWD Accord needs chains ON under R2 — the exemption is AWD only.",
               "tz": -8,
               "road": "CA-58",
-              "limit": 70
+              "limit": 70,
+              "miles": 42
             },
             {
               "name": "Mojave",
@@ -877,7 +880,8 @@
               ],
               "tz": -8,
               "road": "CA-58",
-              "limit": 70
+              "limit": 70,
+              "miles": 20
             },
             {
               "name": "Barstow",
@@ -889,7 +893,8 @@
               "note": "I-40 begins. One road for the next 2,400 miles.",
               "tz": -8,
               "road": "CA-58",
-              "limit": 70
+              "limit": 70,
+              "miles": 68
             },
             {
               "name": "Needles",
@@ -900,7 +905,8 @@
               ],
               "tz": -8,
               "road": "I-40 CA",
-              "limit": 70
+              "limit": 70,
+              "miles": 143
             },
             {
               "name": "Kingman",
@@ -913,7 +919,8 @@
               "note": "Below the snow line. Sleep here if Flagstaff is getting hit and go over in the morning.",
               "tz": -7,
               "road": "I-40 AZ",
-              "limit": 75
+              "limit": 75,
+              "miles": 53
             },
             {
               "name": "Seligman",
@@ -924,7 +931,8 @@
               ],
               "tz": -7,
               "road": "I-40 AZ",
-              "limit": 75
+              "limit": 75,
+              "miles": 87
             },
             {
               "name": "Williams",
@@ -937,7 +945,8 @@
               "note": "Turn north here for the Grand Canyon.",
               "tz": -7,
               "road": "I-40 AZ",
-              "limit": 75
+              "limit": 75,
+              "miles": 44
             },
             {
               "name": "Valle",
@@ -949,7 +958,8 @@
               "elev": 5999,
               "tz": -7,
               "road": "AZ-64",
-              "limit": 65
+              "limit": 65,
+              "miles": 29
             },
             {
               "name": "Tusayan",
@@ -961,7 +971,8 @@
               "elev": 6612,
               "tz": -7,
               "road": "AZ-64",
-              "limit": 65
+              "limit": 65,
+              "miles": 22
             },
             {
               "name": "Grand Canyon Village",
@@ -975,7 +986,8 @@
               "note": "The rim is plowed and open all winter, but the road in can close during a storm. (928) 638-7496 for conditions.",
               "tz": -7,
               "road": "AZ-64",
-              "limit": 65
+              "limit": 65,
+              "miles": 7
             },
             {
               "name": "Desert View",
@@ -989,7 +1001,8 @@
               "note": "The highest point on this road, and the piece of the park that closes first in bad weather. Desert View Drive shuts for winter storms while the south entrance stays open.",
               "tz": -7,
               "road": "AZ-64 park",
-              "limit": 45
+              "limit": 45,
+              "miles": 23
             },
             {
               "name": "Cameron",
@@ -1001,7 +1014,8 @@
               "elev": 4200,
               "tz": -7,
               "road": "AZ-64 / US-89",
-              "limit": 65
+              "limit": 65,
+              "miles": 32
             },
             {
               "name": "Flagstaff",
@@ -1015,7 +1029,8 @@
               "note": "The most likely place on this whole trip to find the interstate closed. Check the forecast 48 hours out.",
               "tz": -7,
               "road": "AZ-64 / US-89",
-              "limit": 65
+              "limit": 65,
+              "miles": 52
             },
             {
               "name": "Winslow",
@@ -1026,7 +1041,8 @@
               ],
               "tz": -7,
               "road": "I-40 AZ",
-              "limit": 75
+              "limit": 75,
+              "miles": 58
             },
             {
               "name": "Holbrook",
@@ -1037,7 +1053,8 @@
               ],
               "tz": -7,
               "road": "I-40 AZ",
-              "limit": 75
+              "limit": 75,
+              "miles": 33
             },
             {
               "name": "Gallup",
@@ -1048,7 +1065,8 @@
               ],
               "tz": -7,
               "road": "I-40 AZ",
-              "limit": 75
+              "limit": 75,
+              "miles": 86
             },
             {
               "name": "Continental Divide",
@@ -1062,7 +1080,8 @@
               "note": "High point of the drive. Rain west of here ends up in the Pacific.",
               "tz": -7,
               "road": "I-40 NM",
-              "limit": 75
+              "limit": 75,
+              "miles": 25
             },
             {
               "name": "Albuquerque",
@@ -1075,7 +1094,8 @@
               "tz": -7,
               "urban": true,
               "road": "I-40 NM",
-              "limit": 75
+              "limit": 75,
+              "miles": 115
             },
             {
               "name": "Santa Rosa",
@@ -1086,7 +1106,8 @@
               ],
               "tz": -7,
               "road": "I-40 NM",
-              "limit": 75
+              "limit": 75,
+              "miles": 114
             },
             {
               "name": "Tucumcari",
@@ -1097,7 +1118,8 @@
               ],
               "tz": -7,
               "road": "I-40 NM",
-              "limit": 75
+              "limit": 75,
+              "miles": 59
             },
             {
               "name": "Amarillo",
@@ -1112,7 +1134,8 @@
               "tz": -6,
               "urban": true,
               "road": "I-40 NM",
-              "limit": 75
+              "limit": 75,
+              "miles": 111
             },
             {
               "name": "Oklahoma City",
@@ -1125,7 +1148,8 @@
               "tz": -6,
               "urban": true,
               "road": "I-40 TX/OK",
-              "limit": 72
+              "limit": 72,
+              "miles": 259
             },
             {
               "name": "Fort Smith",
@@ -1136,7 +1160,8 @@
               ],
               "tz": -6,
               "road": "I-40 OK",
-              "limit": 70
+              "limit": 70,
+              "miles": 180
             },
             {
               "name": "Little Rock",
@@ -1148,7 +1173,8 @@
               "tz": -6,
               "urban": true,
               "road": "I-40 AR",
-              "limit": 75
+              "limit": 75,
+              "miles": 160
             },
             {
               "name": "Memphis",
@@ -1161,7 +1187,8 @@
               "tz": -6,
               "urban": true,
               "road": "I-40 AR",
-              "limit": 75
+              "limit": 75,
+              "miles": 137
             },
             {
               "name": "Nashville",
@@ -1173,7 +1200,8 @@
               "tz": -6,
               "urban": true,
               "road": "I-40 TN",
-              "limit": 70
+              "limit": 70,
+              "miles": 210
             },
             {
               "name": "Knoxville",
@@ -1185,7 +1213,8 @@
               "tz": -5,
               "urban": true,
               "road": "I-40 TN",
-              "limit": 70
+              "limit": 70,
+              "miles": 180
             },
             {
               "name": "Asheville",
@@ -1199,7 +1228,8 @@
               "note": "I-40 climbs through the Smokies to get here and does ice up. The Blue Ridge Parkway closes outright.",
               "tz": -5,
               "road": "I-40 TN",
-              "limit": 70
+              "limit": 62,
+              "miles": 116
             },
             {
               "name": "Hickory",
@@ -1210,7 +1240,8 @@
               ],
               "tz": -5,
               "road": "I-40 NC",
-              "limit": 70
+              "limit": 70,
+              "miles": 78
             },
             {
               "name": "Statesville",
@@ -1221,7 +1252,8 @@
               ],
               "tz": -5,
               "road": "I-40 NC",
-              "limit": 70
+              "limit": 70,
+              "miles": 32
             },
             {
               "name": "Mooresville",
@@ -1232,7 +1264,8 @@
               ],
               "tz": -5,
               "road": "I-40 NC",
-              "limit": 70
+              "limit": 70,
+              "miles": 14
             }
           ]
         },

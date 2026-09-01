@@ -366,6 +366,41 @@ Android Auto is no.
 
 ## Session log
 
+**Session 59** — The road stops lying: atlas miles as ground truth. 1.36.0.
+
+Kevin gave the licence to change the route model itself so the schedule
+matches the real road, and that turned session 58's audit findings into fixes.
+
+**A waypoint may now carry `miles`** — the real road miles of the segment
+leading into it, from the atlas — and `measure()` takes it over the
+polyline-times-WIGGLE guess outright. The polyline cuts corners the road does
+not (the Kingman curve, the Pigeon River Gorge) and WIGGLE over-pays on
+dead-straight desert, and the two errors cancel in a calibrated total while
+lying about every day in between. **All 33 canyon-road segments now carry
+atlas miles; the route is 2,796 mi, its true length.** The gorge's `limit`
+dropped from a fictional 70 to 62 (twenty of those miles are posted 55–60).
+Other roads keep their own waypoints and are untouched — leg3-vegas verified
+byte-identical, all nine build.
+
+**The plan re-tuned on the honest road,** and two wakes moved: Barstow to
+05:45 (dark flat desert, allowed under the snow rule), which sets Desert View
+at 16:53 — a real 25-minute sunset margin instead of the fictional 29 that
+was actually 10 — and North Little Rock to 07:15, because on true miles
+Gus's landed at 10:57, three minutes before its own door. It now lands 11:02.
+The Asheville ridge moved from a 45-minute brine violation to 09:51, nine
+minutes inside the guideline, and the honest arrival is ~11:45 — which is
+what the hand math predicted before the fix, which is the point.
+
+**Zero shut doors, zero hours misses, all nine roads build.** Remaining flags
+are the trip's shape: Tehachapi and Flagstaff dark crossings (dry fine, storm
+contingencies stand), the two brine crossings under the wet-morning 10:00
+hold rule.
+
+**Not done, deliberately:** the other roads' segments carry the same class of
+polyline error (leg1-i40 shares this tarmac; leg3 shares Kingman). Give them
+atlas miles when their plans are rebuilt — the verification harness pattern
+is in session 57.
+
 **Session 58** — Shipped on Kevin's word, with Buc-ee's, and a mileage audit. 1.35.0.
 
 **The incident first, honestly.** Session 57's work was pushed once WITHOUT

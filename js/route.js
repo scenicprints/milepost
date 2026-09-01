@@ -22,10 +22,22 @@ export function milesBetween(a, b) {
 }
 
 /// Cumulative road-mile at each waypoint, plus the route total.
+///
+/// A waypoint may carry `miles`: the REAL road miles of the segment leading
+/// into it, from the atlas. It overrides the polyline guess outright. The
+/// polyline cuts corners the road does not (the Kingman curve, the Pigeon
+/// River Gorge) and WIGGLE over-pays on dead-straight desert, and the two
+/// errors cancel in a total while lying about every day in between — a
+/// per-segment audit found segments off by up to 28 miles on a calibrated
+/// route. Ground truth beats a fudge factor wherever someone has looked the
+/// distance up.
 export function measure(waypoints) {
   const cum = [0];
   for (let i = 1; i < waypoints.length; i++) {
-    cum.push(cum[i - 1] + milesBetween(waypoints[i - 1].ll, waypoints[i].ll) * WIGGLE);
+    const w = waypoints[i];
+    const seg = w.miles != null ? w.miles
+      : milesBetween(waypoints[i - 1].ll, w.ll) * WIGGLE;
+    cum.push(cum[i - 1] + seg);
   }
   return { cum, total: cum[cum.length - 1] };
 }
