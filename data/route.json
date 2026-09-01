@@ -1,3401 +1,3374 @@
 {
- "_comment": "The road itself. Each LEG has two or more ROUTES you can swap between — for weather, for closures, or just for what you feel like. Waypoints are real lat/lon, dense enough that the polyline through them approximates true road distance (the app applies a 1.04 wiggle factor). Mileage, day splits and every stop's position are recomputed from this, so edit freely. 'risk' marks winter trouble; 'elev' is feet.",
- "home": {
-  "name": "Modesto",
-  "state": "CA",
-  "ll": [
-   37.639,
-   -120.997
+  "_comment": "The road itself. Each LEG has two or more ROUTES you can swap between — for weather, for closures, or just for what you feel like. Waypoints are real lat/lon, dense enough that the polyline through them approximates true road distance (the app applies a 1.04 wiggle factor). Mileage, day splits and every stop's position are recomputed from this, so edit freely. 'risk' marks winter trouble; 'elev' is feet.",
+  "home": {
+    "name": "Modesto",
+    "state": "CA",
+    "ll": [
+      37.639,
+      -120.997
+    ]
+  },
+  "vehicle": {
+    "name": "2023 Honda Accord Hybrid EX-L",
+    "drive": "FWD",
+    "tires": "Michelin Defender 2 (all-season touring, not 3PMSF snow-rated)",
+    "chainRule": "FWD does NOT qualify for California's R2 exemption, which is 4WD/AWD only. Under R2 this car needs chains ON. Carry low-clearance cable-style devices sized to the sidewall — check the owner's manual for Honda's chain clearance restriction before buying.",
+    "note": "Low ground clearance and touring all-seasons. This is a car that should not be on a mountain interstate during a storm regardless of what's in the trunk."
+  },
+  "legs": [
+    {
+      "id": "leg1",
+      "name": "Modesto to North Carolina",
+      "from": "Modesto, CA",
+      "to": "Mooresville, NC",
+      "routes": [
+        {
+          "id": "leg1-i40",
+          "name": "The Route 66 road",
+          "road": "CA-99 · CA-58 · I-40",
+          "character": "The great one. Everything worth seeing between here and Memphis is strung along it.",
+          "why": "The Grand Canyon, Meteor Crater, the Painted Desert and 1,500 miles of old Route 66. If the weather cooperates there is no argument for taking anything else.",
+          "costs": "Two genuine winter obstacles — Flagstaff at 6,900 feet and the Panhandle ice belt.",
+          "waypoints": [
+            {
+              "name": "Modesto",
+              "state": "CA",
+              "ll": [
+                37.639,
+                -120.997
+              ],
+              "tz": -8
+            },
+            {
+              "name": "Fresno",
+              "state": "CA",
+              "ll": [
+                36.746,
+                -119.772
+              ],
+              "tz": -8,
+              "urban": true,
+              "road": "CA-99",
+              "limit": 70
+            },
+            {
+              "name": "Bakersfield",
+              "state": "CA",
+              "ll": [
+                35.373,
+                -119.019
+              ],
+              "tz": -8,
+              "urban": true,
+              "road": "CA-99",
+              "limit": 70
+            },
+            {
+              "name": "Tehachapi Pass",
+              "state": "CA",
+              "ll": [
+                35.132,
+                -118.449
+              ],
+              "elev": 3793,
+              "risk": "chains",
+              "note": "Chain control posts here. Your FWD Accord needs chains ON under R2 — the exemption is AWD only.",
+              "tz": -8,
+              "road": "CA-58",
+              "limit": 70
+            },
+            {
+              "name": "Mojave",
+              "state": "CA",
+              "ll": [
+                35.053,
+                -118.174
+              ],
+              "tz": -8,
+              "road": "CA-58",
+              "limit": 70
+            },
+            {
+              "name": "Barstow",
+              "state": "CA",
+              "ll": [
+                34.899,
+                -117.023
+              ],
+              "note": "I-40 begins. One road for the next 2,400 miles.",
+              "tz": -8,
+              "road": "CA-58",
+              "limit": 70
+            },
+            {
+              "name": "Needles",
+              "state": "CA",
+              "ll": [
+                34.848,
+                -114.614
+              ],
+              "tz": -8,
+              "road": "I-40 CA",
+              "limit": 70
+            },
+            {
+              "name": "Kingman",
+              "state": "AZ",
+              "ll": [
+                35.189,
+                -114.053
+              ],
+              "elev": 3333,
+              "note": "Below the snow line. Sleep here if Flagstaff is getting hit and go over in the morning.",
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Seligman",
+              "state": "AZ",
+              "ll": [
+                35.326,
+                -112.874
+              ],
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Williams",
+              "state": "AZ",
+              "ll": [
+                35.249,
+                -112.191
+              ],
+              "elev": 6766,
+              "note": "Turn north here for the Grand Canyon.",
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Flagstaff",
+              "state": "AZ",
+              "ll": [
+                35.198,
+                -111.651
+              ],
+              "elev": 6909,
+              "risk": "snow",
+              "note": "The most likely place on this whole trip to find the interstate closed. Check the forecast 48 hours out.",
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Winslow",
+              "state": "AZ",
+              "ll": [
+                35.024,
+                -110.697
+              ],
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Holbrook",
+              "state": "AZ",
+              "ll": [
+                34.902,
+                -110.159
+              ],
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Gallup",
+              "state": "NM",
+              "ll": [
+                35.528,
+                -108.742
+              ],
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Continental Divide",
+              "state": "NM",
+              "ll": [
+                35.44,
+                -108.35
+              ],
+              "elev": 7275,
+              "risk": "snow",
+              "note": "High point of the drive. Rain west of here ends up in the Pacific.",
+              "tz": -7,
+              "road": "I-40 NM",
+              "limit": 75
+            },
+            {
+              "name": "Albuquerque",
+              "state": "NM",
+              "ll": [
+                35.084,
+                -106.651
+              ],
+              "elev": 5312,
+              "tz": -7,
+              "urban": true,
+              "road": "I-40 NM",
+              "limit": 75
+            },
+            {
+              "name": "Santa Rosa",
+              "state": "NM",
+              "ll": [
+                34.938,
+                -104.682
+              ],
+              "tz": -7,
+              "road": "I-40 NM",
+              "limit": 75
+            },
+            {
+              "name": "Tucumcari",
+              "state": "NM",
+              "ll": [
+                35.172,
+                -103.725
+              ],
+              "tz": -7,
+              "road": "I-40 NM",
+              "limit": 75
+            },
+            {
+              "name": "Amarillo",
+              "state": "TX",
+              "ll": [
+                35.222,
+                -101.831
+              ],
+              "elev": 3605,
+              "risk": "ice",
+              "note": "Here to Little Rock is ice-storm country in late December. Chains do nothing on ice — the only move is to not drive that day.",
+              "tz": -6,
+              "urban": true,
+              "road": "I-40 NM",
+              "limit": 75
+            },
+            {
+              "name": "Oklahoma City",
+              "state": "OK",
+              "ll": [
+                35.468,
+                -97.516
+              ],
+              "risk": "ice",
+              "tz": -6,
+              "urban": true,
+              "road": "I-40 TX/OK",
+              "limit": 72
+            },
+            {
+              "name": "Fort Smith",
+              "state": "AR",
+              "ll": [
+                35.386,
+                -94.398
+              ],
+              "tz": -6,
+              "road": "I-40 OK",
+              "limit": 70
+            },
+            {
+              "name": "Little Rock",
+              "state": "AR",
+              "ll": [
+                34.746,
+                -92.289
+              ],
+              "tz": -6,
+              "urban": true,
+              "road": "I-40 AR",
+              "limit": 75
+            },
+            {
+              "name": "Memphis",
+              "state": "TN",
+              "ll": [
+                35.149,
+                -90.049
+              ],
+              "note": "You cross the Mississippi here.",
+              "tz": -6,
+              "urban": true,
+              "road": "I-40 AR",
+              "limit": 75
+            },
+            {
+              "name": "Nashville",
+              "state": "TN",
+              "ll": [
+                36.163,
+                -86.781
+              ],
+              "tz": -6,
+              "urban": true,
+              "road": "I-40 TN",
+              "limit": 70
+            },
+            {
+              "name": "Knoxville",
+              "state": "TN",
+              "ll": [
+                35.961,
+                -83.921
+              ],
+              "tz": -5,
+              "urban": true,
+              "road": "I-40 TN",
+              "limit": 70
+            },
+            {
+              "name": "Asheville",
+              "state": "NC",
+              "ll": [
+                35.595,
+                -82.552
+              ],
+              "elev": 2134,
+              "risk": "ice",
+              "note": "I-40 climbs through the Smokies to get here and does ice up. The Blue Ridge Parkway closes outright.",
+              "tz": -5,
+              "road": "I-40 TN",
+              "limit": 70
+            },
+            {
+              "name": "Hickory",
+              "state": "NC",
+              "ll": [
+                35.733,
+                -81.341
+              ],
+              "tz": -5,
+              "road": "I-40 NC",
+              "limit": 70
+            },
+            {
+              "name": "Statesville",
+              "state": "NC",
+              "ll": [
+                35.783,
+                -80.887
+              ],
+              "tz": -5,
+              "road": "I-40 NC",
+              "limit": 70
+            },
+            {
+              "name": "Mooresville",
+              "state": "NC",
+              "ll": [
+                35.585,
+                -80.81
+              ],
+              "tz": -5,
+              "road": "I-40 NC",
+              "limit": 70
+            }
+          ],
+          "default": true
+        },
+        {
+          "id": "leg1-south",
+          "name": "The southern line",
+          "road": "I-40 to Nashville, then I-24, I-75 and I-85",
+          "character": "Same road as far as Nashville, then it drops around the Smokies instead of climbing through them.",
+          "why": "If Asheville is icing, this trades the mountain crossing for Chattanooga and Atlanta, and picks up the two great aquariums on the way. It lands at the Charlotte end of things, which is where the food is anyway.",
+          "costs": "Adds about 120 miles over the Asheville road, and you give up the Smokies, Dollywood and downtown Asheville. Monteagle Mountain on I-24 still ices, it is just a shorter climb with more ways around it.",
+          "waypoints": [
+            {
+              "name": "Modesto",
+              "state": "CA",
+              "ll": [
+                37.639,
+                -120.997
+              ],
+              "tz": -8
+            },
+            {
+              "name": "Fresno",
+              "state": "CA",
+              "ll": [
+                36.746,
+                -119.772
+              ],
+              "tz": -8,
+              "urban": true,
+              "road": "CA-99",
+              "limit": 70
+            },
+            {
+              "name": "Bakersfield",
+              "state": "CA",
+              "ll": [
+                35.373,
+                -119.019
+              ],
+              "tz": -8,
+              "urban": true,
+              "road": "CA-99",
+              "limit": 70
+            },
+            {
+              "name": "Tehachapi Pass",
+              "state": "CA",
+              "ll": [
+                35.132,
+                -118.449
+              ],
+              "elev": 3793,
+              "risk": "chains",
+              "note": "Chain control posts here. Your FWD Accord needs chains ON under R2 — the exemption is AWD only.",
+              "tz": -8,
+              "road": "CA-58",
+              "limit": 70
+            },
+            {
+              "name": "Mojave",
+              "state": "CA",
+              "ll": [
+                35.053,
+                -118.174
+              ],
+              "tz": -8,
+              "road": "CA-58",
+              "limit": 70
+            },
+            {
+              "name": "Barstow",
+              "state": "CA",
+              "ll": [
+                34.899,
+                -117.023
+              ],
+              "note": "I-40 begins. One road for the next 2,400 miles.",
+              "tz": -8,
+              "road": "CA-58",
+              "limit": 70
+            },
+            {
+              "name": "Needles",
+              "state": "CA",
+              "ll": [
+                34.848,
+                -114.614
+              ],
+              "tz": -8,
+              "road": "I-40 CA",
+              "limit": 70
+            },
+            {
+              "name": "Kingman",
+              "state": "AZ",
+              "ll": [
+                35.189,
+                -114.053
+              ],
+              "elev": 3333,
+              "note": "Below the snow line. Sleep here if Flagstaff is getting hit and go over in the morning.",
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Seligman",
+              "state": "AZ",
+              "ll": [
+                35.326,
+                -112.874
+              ],
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Williams",
+              "state": "AZ",
+              "ll": [
+                35.249,
+                -112.191
+              ],
+              "elev": 6766,
+              "note": "Turn north here for the Grand Canyon.",
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Flagstaff",
+              "state": "AZ",
+              "ll": [
+                35.198,
+                -111.651
+              ],
+              "elev": 6909,
+              "risk": "snow",
+              "note": "The most likely place on this whole trip to find the interstate closed. Check the forecast 48 hours out.",
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Winslow",
+              "state": "AZ",
+              "ll": [
+                35.024,
+                -110.697
+              ],
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Holbrook",
+              "state": "AZ",
+              "ll": [
+                34.902,
+                -110.159
+              ],
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Gallup",
+              "state": "NM",
+              "ll": [
+                35.528,
+                -108.742
+              ],
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Continental Divide",
+              "state": "NM",
+              "ll": [
+                35.44,
+                -108.35
+              ],
+              "elev": 7275,
+              "risk": "snow",
+              "note": "High point of the drive. Rain west of here ends up in the Pacific.",
+              "tz": -7,
+              "road": "I-40 NM",
+              "limit": 75
+            },
+            {
+              "name": "Albuquerque",
+              "state": "NM",
+              "ll": [
+                35.084,
+                -106.651
+              ],
+              "elev": 5312,
+              "tz": -7,
+              "urban": true,
+              "road": "I-40 NM",
+              "limit": 75
+            },
+            {
+              "name": "Santa Rosa",
+              "state": "NM",
+              "ll": [
+                34.938,
+                -104.682
+              ],
+              "tz": -7,
+              "road": "I-40 NM",
+              "limit": 75
+            },
+            {
+              "name": "Tucumcari",
+              "state": "NM",
+              "ll": [
+                35.172,
+                -103.725
+              ],
+              "tz": -7,
+              "road": "I-40 NM",
+              "limit": 75
+            },
+            {
+              "name": "Amarillo",
+              "state": "TX",
+              "ll": [
+                35.222,
+                -101.831
+              ],
+              "elev": 3605,
+              "risk": "ice",
+              "note": "Here to Little Rock is ice-storm country in late December. Chains do nothing on ice — the only move is to not drive that day.",
+              "tz": -6,
+              "urban": true,
+              "road": "I-40 NM",
+              "limit": 75
+            },
+            {
+              "name": "Oklahoma City",
+              "state": "OK",
+              "ll": [
+                35.468,
+                -97.516
+              ],
+              "risk": "ice",
+              "tz": -6,
+              "urban": true,
+              "road": "I-40 TX/OK",
+              "limit": 72
+            },
+            {
+              "name": "Fort Smith",
+              "state": "AR",
+              "ll": [
+                35.386,
+                -94.398
+              ],
+              "tz": -6,
+              "road": "I-40 OK",
+              "limit": 70
+            },
+            {
+              "name": "Little Rock",
+              "state": "AR",
+              "ll": [
+                34.746,
+                -92.289
+              ],
+              "tz": -6,
+              "urban": true,
+              "road": "I-40 AR",
+              "limit": 75
+            },
+            {
+              "name": "Memphis",
+              "state": "TN",
+              "ll": [
+                35.149,
+                -90.049
+              ],
+              "note": "You cross the Mississippi here.",
+              "tz": -6,
+              "urban": true,
+              "road": "I-40 AR",
+              "limit": 75
+            },
+            {
+              "name": "Nashville",
+              "state": "TN",
+              "ll": [
+                36.163,
+                -86.781
+              ],
+              "tz": -6,
+              "urban": true,
+              "road": "I-40 TN",
+              "limit": 70
+            },
+            {
+              "name": "Murfreesboro",
+              "state": "TN",
+              "ll": [
+                35.846,
+                -86.39
+              ],
+              "tz": -6,
+              "road": "I-24 TN",
+              "limit": 70
+            },
+            {
+              "name": "Monteagle",
+              "state": "TN",
+              "ll": [
+                35.248,
+                -85.842
+              ],
+              "elev": 1918,
+              "risk": "ice",
+              "note": "The I-24 grade over the mountain is the worst ice trap between Nashville and Atlanta. Truckers treat it with respect in dry weather.",
+              "tz": -6,
+              "road": "I-24 TN",
+              "limit": 70
+            },
+            {
+              "name": "Chattanooga",
+              "state": "TN",
+              "ll": [
+                35.046,
+                -85.31
+              ],
+              "elev": 676,
+              "tz": -5,
+              "urban": true,
+              "road": "I-24 TN",
+              "limit": 70
+            },
+            {
+              "name": "Dalton",
+              "state": "GA",
+              "ll": [
+                34.77,
+                -84.97
+              ],
+              "tz": -5,
+              "road": "I-75 GA",
+              "limit": 70
+            },
+            {
+              "name": "Marietta",
+              "state": "GA",
+              "ll": [
+                33.953,
+                -84.55
+              ],
+              "tz": -5,
+              "road": "I-75 GA",
+              "limit": 70
+            },
+            {
+              "name": "Atlanta",
+              "state": "GA",
+              "ll": [
+                33.749,
+                -84.388
+              ],
+              "elev": 1050,
+              "tz": -5,
+              "urban": true,
+              "road": "I-75 GA",
+              "limit": 70
+            },
+            {
+              "name": "Commerce",
+              "state": "GA",
+              "ll": [
+                34.204,
+                -83.457
+              ],
+              "tz": -5,
+              "road": "I-85 GA",
+              "limit": 70
+            },
+            {
+              "name": "Greenville",
+              "state": "SC",
+              "ll": [
+                34.853,
+                -82.394
+              ],
+              "tz": -5,
+              "urban": true,
+              "road": "I-85 GA",
+              "limit": 70
+            },
+            {
+              "name": "Gastonia",
+              "state": "NC",
+              "ll": [
+                35.262,
+                -81.187
+              ],
+              "tz": -5,
+              "road": "I-85 SC/NC",
+              "limit": 70
+            },
+            {
+              "name": "Charlotte",
+              "state": "NC",
+              "ll": [
+                35.227,
+                -80.843
+              ],
+              "elev": 751,
+              "tz": -5,
+              "urban": true,
+              "road": "I-85 SC/NC",
+              "limit": 70
+            },
+            {
+              "name": "Mooresville",
+              "state": "NC",
+              "ll": [
+                35.585,
+                -80.81
+              ],
+              "tz": -5,
+              "road": "I-85 SC/NC",
+              "limit": 70
+            }
+          ]
+        },
+        {
+          "id": "leg1-canyon",
+          "name": "The canyon road",
+          "road": "I-40 to Williams, AZ-64 through the park, US-89 down to Flagstaff",
+          "character": "Through the canyon instead of out and back to it. You come in at Desert View, take the rim road past Lipan, Moran and Grandview as part of the driving, and leave by the other entrance.",
+          "why": "The out-and-back from Williams drives the same 60 miles twice. This costs about the same and does not repeat a mile of it, and the Watchtower end is the quiet entrance. It also puts Sunset Crater and Wupatki on the road rather than off it, since US-89 is the way through.",
+          "costs": "About 130 miles more than staying on I-40, near enough exactly what the out-and-back costs. Higher and more exposed, though: Desert View sits at 7,438 feet and is the first thing to close in weather. If the forecast is bad, take the plain interstate and do the canyon as a spur from Williams, or skip it.",
+          "waypoints": [
+            {
+              "name": "Modesto",
+              "state": "CA",
+              "ll": [
+                37.639,
+                -120.997
+              ],
+              "tz": -8
+            },
+            {
+              "name": "Fresno",
+              "state": "CA",
+              "ll": [
+                36.746,
+                -119.772
+              ],
+              "tz": -8,
+              "urban": true,
+              "road": "CA-99",
+              "limit": 70
+            },
+            {
+              "name": "Bakersfield",
+              "state": "CA",
+              "ll": [
+                35.373,
+                -119.019
+              ],
+              "tz": -8,
+              "urban": true,
+              "road": "CA-99",
+              "limit": 70
+            },
+            {
+              "name": "Tehachapi Pass",
+              "state": "CA",
+              "ll": [
+                35.132,
+                -118.449
+              ],
+              "elev": 3793,
+              "risk": "chains",
+              "note": "Chain control posts here. Your FWD Accord needs chains ON under R2 — the exemption is AWD only.",
+              "tz": -8,
+              "road": "CA-58",
+              "limit": 70
+            },
+            {
+              "name": "Mojave",
+              "state": "CA",
+              "ll": [
+                35.053,
+                -118.174
+              ],
+              "tz": -8,
+              "road": "CA-58",
+              "limit": 70
+            },
+            {
+              "name": "Barstow",
+              "state": "CA",
+              "ll": [
+                34.899,
+                -117.023
+              ],
+              "note": "I-40 begins. One road for the next 2,400 miles.",
+              "tz": -8,
+              "road": "CA-58",
+              "limit": 70
+            },
+            {
+              "name": "Needles",
+              "state": "CA",
+              "ll": [
+                34.848,
+                -114.614
+              ],
+              "tz": -8,
+              "road": "I-40 CA",
+              "limit": 70
+            },
+            {
+              "name": "Kingman",
+              "state": "AZ",
+              "ll": [
+                35.189,
+                -114.053
+              ],
+              "elev": 3333,
+              "note": "Below the snow line. Sleep here if Flagstaff is getting hit and go over in the morning.",
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Seligman",
+              "state": "AZ",
+              "ll": [
+                35.326,
+                -112.874
+              ],
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Williams",
+              "state": "AZ",
+              "ll": [
+                35.249,
+                -112.191
+              ],
+              "elev": 6766,
+              "note": "Turn north here for the Grand Canyon.",
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Valle",
+              "state": "AZ",
+              "ll": [
+                35.652,
+                -112.143
+              ],
+              "elev": 5999,
+              "tz": -7,
+              "road": "AZ-64",
+              "limit": 65
+            },
+            {
+              "name": "Tusayan",
+              "state": "AZ",
+              "ll": [
+                35.976,
+                -112.126
+              ],
+              "elev": 6612,
+              "tz": -7,
+              "road": "AZ-64",
+              "limit": 65
+            },
+            {
+              "name": "Grand Canyon Village",
+              "state": "AZ",
+              "ll": [
+                36.058,
+                -112.14
+              ],
+              "elev": 6800,
+              "risk": "snow",
+              "note": "The rim is plowed and open all winter, but the road in can close during a storm. (928) 638-7496 for conditions.",
+              "tz": -7,
+              "road": "AZ-64",
+              "limit": 65
+            },
+            {
+              "name": "Desert View",
+              "state": "AZ",
+              "ll": [
+                36.043,
+                -111.826
+              ],
+              "elev": 7438,
+              "risk": "snow",
+              "note": "The highest point on this road, and the piece of the park that closes first in bad weather. Desert View Drive shuts for winter storms while the south entrance stays open.",
+              "tz": -7,
+              "road": "AZ-64 park",
+              "limit": 45
+            },
+            {
+              "name": "Cameron",
+              "state": "AZ",
+              "ll": [
+                35.877,
+                -111.416
+              ],
+              "elev": 4200,
+              "tz": -7,
+              "road": "AZ-64 / US-89",
+              "limit": 65
+            },
+            {
+              "name": "Flagstaff",
+              "state": "AZ",
+              "ll": [
+                35.198,
+                -111.651
+              ],
+              "elev": 6909,
+              "risk": "snow",
+              "note": "The most likely place on this whole trip to find the interstate closed. Check the forecast 48 hours out.",
+              "tz": -7,
+              "road": "AZ-64 / US-89",
+              "limit": 65
+            },
+            {
+              "name": "Winslow",
+              "state": "AZ",
+              "ll": [
+                35.024,
+                -110.697
+              ],
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Holbrook",
+              "state": "AZ",
+              "ll": [
+                34.902,
+                -110.159
+              ],
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Gallup",
+              "state": "NM",
+              "ll": [
+                35.528,
+                -108.742
+              ],
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Continental Divide",
+              "state": "NM",
+              "ll": [
+                35.44,
+                -108.35
+              ],
+              "elev": 7275,
+              "risk": "snow",
+              "note": "High point of the drive. Rain west of here ends up in the Pacific.",
+              "tz": -7,
+              "road": "I-40 NM",
+              "limit": 75
+            },
+            {
+              "name": "Albuquerque",
+              "state": "NM",
+              "ll": [
+                35.084,
+                -106.651
+              ],
+              "elev": 5312,
+              "tz": -7,
+              "urban": true,
+              "road": "I-40 NM",
+              "limit": 75
+            },
+            {
+              "name": "Santa Rosa",
+              "state": "NM",
+              "ll": [
+                34.938,
+                -104.682
+              ],
+              "tz": -7,
+              "road": "I-40 NM",
+              "limit": 75
+            },
+            {
+              "name": "Tucumcari",
+              "state": "NM",
+              "ll": [
+                35.172,
+                -103.725
+              ],
+              "tz": -7,
+              "road": "I-40 NM",
+              "limit": 75
+            },
+            {
+              "name": "Amarillo",
+              "state": "TX",
+              "ll": [
+                35.222,
+                -101.831
+              ],
+              "elev": 3605,
+              "risk": "ice",
+              "note": "Here to Little Rock is ice-storm country in late December. Chains do nothing on ice — the only move is to not drive that day.",
+              "tz": -6,
+              "urban": true,
+              "road": "I-40 NM",
+              "limit": 75
+            },
+            {
+              "name": "Oklahoma City",
+              "state": "OK",
+              "ll": [
+                35.468,
+                -97.516
+              ],
+              "risk": "ice",
+              "tz": -6,
+              "urban": true,
+              "road": "I-40 TX/OK",
+              "limit": 72
+            },
+            {
+              "name": "Fort Smith",
+              "state": "AR",
+              "ll": [
+                35.386,
+                -94.398
+              ],
+              "tz": -6,
+              "road": "I-40 OK",
+              "limit": 70
+            },
+            {
+              "name": "Little Rock",
+              "state": "AR",
+              "ll": [
+                34.746,
+                -92.289
+              ],
+              "tz": -6,
+              "urban": true,
+              "road": "I-40 AR",
+              "limit": 75
+            },
+            {
+              "name": "Memphis",
+              "state": "TN",
+              "ll": [
+                35.149,
+                -90.049
+              ],
+              "note": "You cross the Mississippi here.",
+              "tz": -6,
+              "urban": true,
+              "road": "I-40 AR",
+              "limit": 75
+            },
+            {
+              "name": "Nashville",
+              "state": "TN",
+              "ll": [
+                36.163,
+                -86.781
+              ],
+              "tz": -6,
+              "urban": true,
+              "road": "I-40 TN",
+              "limit": 70
+            },
+            {
+              "name": "Knoxville",
+              "state": "TN",
+              "ll": [
+                35.961,
+                -83.921
+              ],
+              "tz": -5,
+              "urban": true,
+              "road": "I-40 TN",
+              "limit": 70
+            },
+            {
+              "name": "Asheville",
+              "state": "NC",
+              "ll": [
+                35.595,
+                -82.552
+              ],
+              "elev": 2134,
+              "risk": "ice",
+              "note": "I-40 climbs through the Smokies to get here and does ice up. The Blue Ridge Parkway closes outright.",
+              "tz": -5,
+              "road": "I-40 TN",
+              "limit": 70
+            },
+            {
+              "name": "Hickory",
+              "state": "NC",
+              "ll": [
+                35.733,
+                -81.341
+              ],
+              "tz": -5,
+              "road": "I-40 NC",
+              "limit": 70
+            },
+            {
+              "name": "Statesville",
+              "state": "NC",
+              "ll": [
+                35.783,
+                -80.887
+              ],
+              "tz": -5,
+              "road": "I-40 NC",
+              "limit": 70
+            },
+            {
+              "name": "Mooresville",
+              "state": "NC",
+              "ll": [
+                35.585,
+                -80.81
+              ],
+              "tz": -5,
+              "road": "I-40 NC",
+              "limit": 70
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "leg2",
+      "name": "North Carolina to Houston",
+      "from": "Mooresville, NC",
+      "to": "Houston, TX",
+      "routes": [
+        {
+          "id": "leg2-gulf",
+          "name": "The Gulf Coast",
+          "road": "I-85 · I-65 · I-10",
+          "default": true,
+          "character": "Down through Atlanta and Montgomery to the water, then west along the coast.",
+          "why": "New Orleans over New Year's, the Gulf, Mobile, and the Legacy Museum in Montgomery. This is the interesting one.",
+          "costs": "Slower, and New Orleans on New Year's Eve means booking a room well ahead.",
+          "waypoints": [
+            {
+              "name": "Mooresville",
+              "state": "NC",
+              "ll": [
+                35.585,
+                -80.81
+              ],
+              "tz": -5
+            },
+            {
+              "name": "Charlotte",
+              "state": "NC",
+              "ll": [
+                35.227,
+                -80.843
+              ],
+              "tz": -5,
+              "urban": true,
+              "road": "I-85 NC/SC",
+              "limit": 70
+            },
+            {
+              "name": "Gastonia",
+              "state": "NC",
+              "ll": [
+                35.262,
+                -81.187
+              ],
+              "tz": -5,
+              "road": "I-85 NC/SC",
+              "limit": 70
+            },
+            {
+              "name": "Spartanburg",
+              "state": "SC",
+              "ll": [
+                34.95,
+                -81.932
+              ],
+              "tz": -5,
+              "road": "I-85 NC/SC",
+              "limit": 70
+            },
+            {
+              "name": "Greenville",
+              "state": "SC",
+              "ll": [
+                34.853,
+                -82.394
+              ],
+              "tz": -5,
+              "urban": true,
+              "road": "I-85 NC/SC",
+              "limit": 70
+            },
+            {
+              "name": "Commerce",
+              "state": "GA",
+              "ll": [
+                34.204,
+                -83.457
+              ],
+              "tz": -5,
+              "road": "I-85 NC/SC",
+              "limit": 70
+            },
+            {
+              "name": "Atlanta",
+              "state": "GA",
+              "ll": [
+                33.749,
+                -84.388
+              ],
+              "elev": 1050,
+              "risk": "ice",
+              "note": "Atlanta ices rarely but completely. If a storm is named, wait it out rather than creep through it.",
+              "tz": -5,
+              "urban": true,
+              "road": "I-85 NC/SC",
+              "limit": 70
+            },
+            {
+              "name": "Montgomery",
+              "state": "AL",
+              "ll": [
+                32.367,
+                -86.3
+              ],
+              "tz": -6,
+              "urban": true,
+              "road": "I-65 AL",
+              "limit": 70
+            },
+            {
+              "name": "Mobile",
+              "state": "AL",
+              "ll": [
+                30.695,
+                -88.04
+              ],
+              "tz": -6,
+              "urban": true,
+              "road": "I-65 AL",
+              "limit": 70
+            },
+            {
+              "name": "Gulfport",
+              "state": "MS",
+              "ll": [
+                30.367,
+                -89.093
+              ],
+              "tz": -6,
+              "road": "I-10 AL/MS/LA",
+              "limit": 70
+            },
+            {
+              "name": "New Orleans",
+              "state": "LA",
+              "ll": [
+                29.951,
+                -90.072
+              ],
+              "tz": -6,
+              "urban": true,
+              "road": "I-10 AL/MS/LA",
+              "limit": 70
+            },
+            {
+              "name": "Baton Rouge",
+              "state": "LA",
+              "ll": [
+                30.451,
+                -91.187
+              ],
+              "tz": -6,
+              "urban": true,
+              "road": "I-10 AL/MS/LA",
+              "limit": 70
+            },
+            {
+              "name": "Lafayette",
+              "state": "LA",
+              "ll": [
+                30.224,
+                -92.02
+              ],
+              "tz": -6,
+              "road": "I-10 AL/MS/LA",
+              "limit": 70
+            },
+            {
+              "name": "Lake Charles",
+              "state": "LA",
+              "ll": [
+                30.226,
+                -93.217
+              ],
+              "tz": -6,
+              "road": "I-10 AL/MS/LA",
+              "limit": 70
+            },
+            {
+              "name": "Beaumont",
+              "state": "TX",
+              "ll": [
+                30.08,
+                -94.127
+              ],
+              "tz": -6,
+              "road": "I-10 AL/MS/LA",
+              "limit": 70
+            },
+            {
+              "name": "Houston",
+              "state": "TX",
+              "ll": [
+                29.76,
+                -95.37
+              ],
+              "tz": -6,
+              "urban": true,
+              "road": "I-10 TX",
+              "limit": 75
+            }
+          ]
+        },
+        {
+          "id": "leg2-inland",
+          "name": "The inland run",
+          "road": "I-85 to Atlanta, I-20 to Marshall, then US-59 south",
+          "character": "Straight across through Birmingham, Jackson and Dallas.",
+          "why": "Birmingham's civil rights blocks, Vicksburg, and the cypress trees at Caddo Lake, then straight down US-59 instead of the long way around through Dallas.",
+          "costs": "Skips New Orleans and the Gulf entirely — which is most of what makes this leg worth doing.",
+          "waypoints": [
+            {
+              "name": "Mooresville",
+              "state": "NC",
+              "ll": [
+                35.585,
+                -80.81
+              ],
+              "tz": -5
+            },
+            {
+              "name": "Charlotte",
+              "state": "NC",
+              "ll": [
+                35.227,
+                -80.843
+              ],
+              "tz": -5,
+              "urban": true,
+              "road": "I-85 NC/SC",
+              "limit": 70
+            },
+            {
+              "name": "Gastonia",
+              "state": "NC",
+              "ll": [
+                35.262,
+                -81.187
+              ],
+              "tz": -5,
+              "road": "I-85 NC/SC",
+              "limit": 70
+            },
+            {
+              "name": "Spartanburg",
+              "state": "SC",
+              "ll": [
+                34.95,
+                -81.932
+              ],
+              "tz": -5,
+              "road": "I-85 NC/SC",
+              "limit": 70
+            },
+            {
+              "name": "Greenville",
+              "state": "SC",
+              "ll": [
+                34.853,
+                -82.394
+              ],
+              "tz": -5,
+              "urban": true,
+              "road": "I-85 NC/SC",
+              "limit": 70
+            },
+            {
+              "name": "Commerce",
+              "state": "GA",
+              "ll": [
+                34.204,
+                -83.457
+              ],
+              "tz": -5,
+              "road": "I-85 NC/SC",
+              "limit": 70
+            },
+            {
+              "name": "Atlanta",
+              "state": "GA",
+              "ll": [
+                33.749,
+                -84.388
+              ],
+              "elev": 1050,
+              "risk": "ice",
+              "note": "Atlanta ices rarely but completely. If a storm is named, wait it out rather than creep through it.",
+              "tz": -5,
+              "urban": true,
+              "road": "I-85 NC/SC",
+              "limit": 70
+            },
+            {
+              "name": "Birmingham",
+              "state": "AL",
+              "ll": [
+                33.519,
+                -86.81
+              ],
+              "tz": -6,
+              "urban": true,
+              "road": "I-20 AL/MS",
+              "limit": 70
+            },
+            {
+              "name": "Meridian",
+              "state": "MS",
+              "ll": [
+                32.364,
+                -88.704
+              ],
+              "tz": -6,
+              "road": "I-20 AL/MS",
+              "limit": 70
+            },
+            {
+              "name": "Jackson",
+              "state": "MS",
+              "ll": [
+                32.299,
+                -90.185
+              ],
+              "tz": -6,
+              "urban": true,
+              "road": "I-20 AL/MS",
+              "limit": 70
+            },
+            {
+              "name": "Vicksburg",
+              "state": "MS",
+              "ll": [
+                32.353,
+                -90.878
+              ],
+              "tz": -6,
+              "road": "I-20 AL/MS",
+              "limit": 70
+            },
+            {
+              "name": "Monroe",
+              "state": "LA",
+              "ll": [
+                32.51,
+                -92.119
+              ],
+              "tz": -6,
+              "road": "I-20 AL/MS",
+              "limit": 70
+            },
+            {
+              "name": "Shreveport",
+              "state": "LA",
+              "ll": [
+                32.515,
+                -93.747
+              ],
+              "tz": -6,
+              "urban": true,
+              "road": "I-20 AL/MS",
+              "limit": 70
+            },
+            {
+              "name": "Marshall",
+              "state": "TX",
+              "ll": [
+                32.545,
+                -94.367
+              ],
+              "tz": -6,
+              "road": "I-20 TX",
+              "limit": 75
+            },
+            {
+              "name": "Nacogdoches",
+              "state": "TX",
+              "ll": [
+                31.603,
+                -94.655
+              ],
+              "tz": -6,
+              "road": "US-59 TX",
+              "limit": 75
+            },
+            {
+              "name": "Lufkin",
+              "state": "TX",
+              "ll": [
+                31.338,
+                -94.729
+              ],
+              "tz": -6,
+              "road": "US-59 TX",
+              "limit": 75
+            },
+            {
+              "name": "Cleveland",
+              "state": "TX",
+              "ll": [
+                30.341,
+                -95.085
+              ],
+              "tz": -6,
+              "road": "US-59 TX",
+              "limit": 75
+            },
+            {
+              "name": "Houston",
+              "state": "TX",
+              "ll": [
+                29.76,
+                -95.37
+              ],
+              "tz": -6,
+              "urban": true,
+              "road": "US-59 TX",
+              "limit": 75
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "leg3",
+      "name": "Houston to Modesto",
+      "from": "Houston, TX",
+      "to": "Modesto, CA",
+      "routes": [
+        {
+          "id": "leg3-i40",
+          "name": "The road home",
+          "default": true,
+          "road": "I-45 to Dallas, US-287 to Amarillo, then I-40 back",
+          "character": "Up through Dallas and the empty US-287 corner, then leg 1 in reverse. Everything you skipped going east is still there.",
+          "why": "Tucumcari's neon works better westbound, Palo Duro is on the way in instead of a backtrack, and the Basque table in Bakersfield is a better last meal than a first one.",
+          "costs": "The Panhandle and Flagstaff in early January are the same winter problem as leg 1, in reverse order.",
+          "waypoints": [
+            {
+              "name": "Houston",
+              "state": "TX",
+              "ll": [
+                29.76,
+                -95.37
+              ],
+              "tz": -6,
+              "urban": true
+            },
+            {
+              "name": "Huntsville",
+              "state": "TX",
+              "ll": [
+                30.723,
+                -95.551
+              ],
+              "tz": -6,
+              "road": "I-45 TX",
+              "limit": 75
+            },
+            {
+              "name": "Centerville",
+              "state": "TX",
+              "ll": [
+                31.259,
+                -95.978
+              ],
+              "tz": -6,
+              "road": "I-45 TX",
+              "limit": 75
+            },
+            {
+              "name": "Corsicana",
+              "state": "TX",
+              "ll": [
+                32.095,
+                -96.469
+              ],
+              "tz": -6,
+              "road": "I-45 TX",
+              "limit": 75
+            },
+            {
+              "name": "Dallas",
+              "state": "TX",
+              "ll": [
+                32.777,
+                -96.797
+              ],
+              "tz": -6,
+              "urban": true,
+              "road": "I-45 TX",
+              "limit": 75
+            },
+            {
+              "name": "Fort Worth",
+              "state": "TX",
+              "ll": [
+                32.755,
+                -97.331
+              ],
+              "tz": -6,
+              "urban": true,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Decatur",
+              "state": "TX",
+              "ll": [
+                33.234,
+                -97.586
+              ],
+              "tz": -6,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Wichita Falls",
+              "state": "TX",
+              "ll": [
+                33.914,
+                -98.493
+              ],
+              "tz": -6,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Vernon",
+              "state": "TX",
+              "ll": [
+                34.155,
+                -99.266
+              ],
+              "tz": -6,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Quanah",
+              "state": "TX",
+              "ll": [
+                34.298,
+                -99.74
+              ],
+              "tz": -6,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Childress",
+              "state": "TX",
+              "ll": [
+                34.426,
+                -100.204
+              ],
+              "risk": "ice",
+              "note": "US-287 across the Panhandle ices the same as I-40. It is the same weather with fewer plows.",
+              "tz": -6,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Clarendon",
+              "state": "TX",
+              "ll": [
+                34.938,
+                -100.892
+              ],
+              "tz": -6,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Amarillo",
+              "state": "TX",
+              "ll": [
+                35.222,
+                -101.831
+              ],
+              "elev": 3605,
+              "risk": "ice",
+              "note": "Here to Little Rock is ice-storm country in late December. Chains do nothing on ice — the only move is to not drive that day.",
+              "tz": -6,
+              "urban": true,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Tucumcari",
+              "state": "NM",
+              "ll": [
+                35.172,
+                -103.725
+              ],
+              "tz": -7,
+              "road": "I-40 TX",
+              "limit": 75
+            },
+            {
+              "name": "Santa Rosa",
+              "state": "NM",
+              "ll": [
+                34.938,
+                -104.682
+              ],
+              "tz": -7,
+              "road": "I-40 TX",
+              "limit": 75
+            },
+            {
+              "name": "Albuquerque",
+              "state": "NM",
+              "ll": [
+                35.084,
+                -106.651
+              ],
+              "elev": 5312,
+              "tz": -7,
+              "urban": true,
+              "road": "I-40 TX",
+              "limit": 75
+            },
+            {
+              "name": "Continental Divide",
+              "state": "NM",
+              "ll": [
+                35.44,
+                -108.35
+              ],
+              "elev": 7275,
+              "risk": "snow",
+              "note": "High point of the drive. Rain west of here ends up in the Pacific.",
+              "tz": -7,
+              "road": "I-40 TX",
+              "limit": 75
+            },
+            {
+              "name": "Gallup",
+              "state": "NM",
+              "ll": [
+                35.528,
+                -108.742
+              ],
+              "tz": -7,
+              "road": "I-40 TX",
+              "limit": 75
+            },
+            {
+              "name": "Holbrook",
+              "state": "AZ",
+              "ll": [
+                34.902,
+                -110.159
+              ],
+              "tz": -7,
+              "road": "I-40 NM",
+              "limit": 75
+            },
+            {
+              "name": "Winslow",
+              "state": "AZ",
+              "ll": [
+                35.024,
+                -110.697
+              ],
+              "tz": -7,
+              "road": "I-40 NM",
+              "limit": 75
+            },
+            {
+              "name": "Flagstaff",
+              "state": "AZ",
+              "ll": [
+                35.198,
+                -111.651
+              ],
+              "elev": 6909,
+              "risk": "snow",
+              "note": "The most likely place on this whole trip to find the interstate closed. Check the forecast 48 hours out.",
+              "tz": -7,
+              "road": "I-40 NM",
+              "limit": 75
+            },
+            {
+              "name": "Williams",
+              "state": "AZ",
+              "ll": [
+                35.249,
+                -112.191
+              ],
+              "elev": 6766,
+              "note": "Turn north here for the Grand Canyon.",
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Seligman",
+              "state": "AZ",
+              "ll": [
+                35.326,
+                -112.874
+              ],
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Kingman",
+              "state": "AZ",
+              "ll": [
+                35.189,
+                -114.053
+              ],
+              "elev": 3333,
+              "note": "Below the snow line. Sleep here if Flagstaff is getting hit and go over in the morning.",
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Needles",
+              "state": "CA",
+              "ll": [
+                34.848,
+                -114.614
+              ],
+              "tz": -8,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Barstow",
+              "state": "CA",
+              "ll": [
+                34.899,
+                -117.023
+              ],
+              "note": "I-40 begins. One road for the next 2,400 miles.",
+              "tz": -8,
+              "road": "I-40 CA",
+              "limit": 70
+            },
+            {
+              "name": "Mojave",
+              "state": "CA",
+              "ll": [
+                35.053,
+                -118.174
+              ],
+              "tz": -8,
+              "road": "CA-58",
+              "limit": 70
+            },
+            {
+              "name": "Tehachapi Pass",
+              "state": "CA",
+              "ll": [
+                35.132,
+                -118.449
+              ],
+              "elev": 3793,
+              "risk": "chains",
+              "note": "Chain control posts here. Your FWD Accord needs chains ON under R2 — the exemption is AWD only.",
+              "tz": -8,
+              "road": "CA-58",
+              "limit": 70
+            },
+            {
+              "name": "Bakersfield",
+              "state": "CA",
+              "ll": [
+                35.373,
+                -119.019
+              ],
+              "tz": -8,
+              "urban": true,
+              "road": "CA-58",
+              "limit": 70
+            },
+            {
+              "name": "Fresno",
+              "state": "CA",
+              "ll": [
+                36.746,
+                -119.772
+              ],
+              "tz": -8,
+              "urban": true,
+              "road": "CA-99",
+              "limit": 70
+            },
+            {
+              "name": "Modesto",
+              "state": "CA",
+              "ll": [
+                37.639,
+                -120.997
+              ],
+              "tz": -8,
+              "road": "CA-99",
+              "limit": 70
+            }
+          ]
+        },
+        {
+          "id": "leg3-waco",
+          "name": "The Waco line",
+          "road": "TX-6 through College Station and Waco, then US-287 and I-40",
+          "character": "The other way from Houston to Dallas, nearly the same distance, through Waco instead of Huntsville.",
+          "why": "One reason: the mammoths. A nursery herd excavated where it fell, and you walk above the bones. It costs you the Sam Houston statue.",
+          "costs": "Two-lane Texas highway instead of interstate for the first stretch. Slower per mile, emptier per mile.",
+          "waypoints": [
+            {
+              "name": "Houston",
+              "state": "TX",
+              "ll": [
+                29.76,
+                -95.37
+              ],
+              "tz": -6,
+              "urban": true
+            },
+            {
+              "name": "Hempstead",
+              "state": "TX",
+              "ll": [
+                30.097,
+                -96.078
+              ],
+              "tz": -6,
+              "road": "TX-6",
+              "limit": 70
+            },
+            {
+              "name": "College Station",
+              "state": "TX",
+              "ll": [
+                30.628,
+                -96.334
+              ],
+              "tz": -6,
+              "road": "TX-6",
+              "limit": 70
+            },
+            {
+              "name": "Hearne",
+              "state": "TX",
+              "ll": [
+                30.879,
+                -96.593
+              ],
+              "tz": -6,
+              "road": "TX-6",
+              "limit": 70
+            },
+            {
+              "name": "Waco",
+              "state": "TX",
+              "ll": [
+                31.549,
+                -97.147
+              ],
+              "tz": -6,
+              "urban": true,
+              "road": "TX-6",
+              "limit": 70
+            },
+            {
+              "name": "Hillsboro",
+              "state": "TX",
+              "ll": [
+                32.011,
+                -97.13
+              ],
+              "tz": -6,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Dallas",
+              "state": "TX",
+              "ll": [
+                32.777,
+                -96.797
+              ],
+              "tz": -6,
+              "urban": true,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Fort Worth",
+              "state": "TX",
+              "ll": [
+                32.755,
+                -97.331
+              ],
+              "tz": -6,
+              "urban": true,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Decatur",
+              "state": "TX",
+              "ll": [
+                33.234,
+                -97.586
+              ],
+              "tz": -6,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Wichita Falls",
+              "state": "TX",
+              "ll": [
+                33.914,
+                -98.493
+              ],
+              "tz": -6,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Vernon",
+              "state": "TX",
+              "ll": [
+                34.155,
+                -99.266
+              ],
+              "tz": -6,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Quanah",
+              "state": "TX",
+              "ll": [
+                34.298,
+                -99.74
+              ],
+              "tz": -6,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Childress",
+              "state": "TX",
+              "ll": [
+                34.426,
+                -100.204
+              ],
+              "risk": "ice",
+              "note": "US-287 across the Panhandle ices the same as I-40. It is the same weather with fewer plows.",
+              "tz": -6,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Clarendon",
+              "state": "TX",
+              "ll": [
+                34.938,
+                -100.892
+              ],
+              "tz": -6,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Amarillo",
+              "state": "TX",
+              "ll": [
+                35.222,
+                -101.831
+              ],
+              "elev": 3605,
+              "risk": "ice",
+              "note": "Here to Little Rock is ice-storm country in late December. Chains do nothing on ice — the only move is to not drive that day.",
+              "tz": -6,
+              "urban": true,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Tucumcari",
+              "state": "NM",
+              "ll": [
+                35.172,
+                -103.725
+              ],
+              "tz": -7,
+              "road": "I-40 TX",
+              "limit": 75
+            },
+            {
+              "name": "Santa Rosa",
+              "state": "NM",
+              "ll": [
+                34.938,
+                -104.682
+              ],
+              "tz": -7,
+              "road": "I-40 TX",
+              "limit": 75
+            },
+            {
+              "name": "Albuquerque",
+              "state": "NM",
+              "ll": [
+                35.084,
+                -106.651
+              ],
+              "elev": 5312,
+              "tz": -7,
+              "urban": true,
+              "road": "I-40 TX",
+              "limit": 75
+            },
+            {
+              "name": "Continental Divide",
+              "state": "NM",
+              "ll": [
+                35.44,
+                -108.35
+              ],
+              "elev": 7275,
+              "risk": "snow",
+              "note": "High point of the drive. Rain west of here ends up in the Pacific.",
+              "tz": -7,
+              "road": "I-40 TX",
+              "limit": 75
+            },
+            {
+              "name": "Gallup",
+              "state": "NM",
+              "ll": [
+                35.528,
+                -108.742
+              ],
+              "tz": -7,
+              "road": "I-40 TX",
+              "limit": 75
+            },
+            {
+              "name": "Holbrook",
+              "state": "AZ",
+              "ll": [
+                34.902,
+                -110.159
+              ],
+              "tz": -7,
+              "road": "I-40 NM",
+              "limit": 75
+            },
+            {
+              "name": "Winslow",
+              "state": "AZ",
+              "ll": [
+                35.024,
+                -110.697
+              ],
+              "tz": -7,
+              "road": "I-40 NM",
+              "limit": 75
+            },
+            {
+              "name": "Flagstaff",
+              "state": "AZ",
+              "ll": [
+                35.198,
+                -111.651
+              ],
+              "elev": 6909,
+              "risk": "snow",
+              "note": "The most likely place on this whole trip to find the interstate closed. Check the forecast 48 hours out.",
+              "tz": -7,
+              "road": "I-40 NM",
+              "limit": 75
+            },
+            {
+              "name": "Williams",
+              "state": "AZ",
+              "ll": [
+                35.249,
+                -112.191
+              ],
+              "elev": 6766,
+              "note": "Turn north here for the Grand Canyon.",
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Seligman",
+              "state": "AZ",
+              "ll": [
+                35.326,
+                -112.874
+              ],
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Kingman",
+              "state": "AZ",
+              "ll": [
+                35.189,
+                -114.053
+              ],
+              "elev": 3333,
+              "note": "Below the snow line. Sleep here if Flagstaff is getting hit and go over in the morning.",
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Needles",
+              "state": "CA",
+              "ll": [
+                34.848,
+                -114.614
+              ],
+              "tz": -8,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Barstow",
+              "state": "CA",
+              "ll": [
+                34.899,
+                -117.023
+              ],
+              "note": "I-40 begins. One road for the next 2,400 miles.",
+              "tz": -8,
+              "road": "I-40 CA",
+              "limit": 70
+            },
+            {
+              "name": "Mojave",
+              "state": "CA",
+              "ll": [
+                35.053,
+                -118.174
+              ],
+              "tz": -8,
+              "road": "CA-58",
+              "limit": 70
+            },
+            {
+              "name": "Tehachapi Pass",
+              "state": "CA",
+              "ll": [
+                35.132,
+                -118.449
+              ],
+              "elev": 3793,
+              "risk": "chains",
+              "note": "Chain control posts here. Your FWD Accord needs chains ON under R2 — the exemption is AWD only.",
+              "tz": -8,
+              "road": "CA-58",
+              "limit": 70
+            },
+            {
+              "name": "Bakersfield",
+              "state": "CA",
+              "ll": [
+                35.373,
+                -119.019
+              ],
+              "tz": -8,
+              "urban": true,
+              "road": "CA-58",
+              "limit": 70
+            },
+            {
+              "name": "Fresno",
+              "state": "CA",
+              "ll": [
+                36.746,
+                -119.772
+              ],
+              "tz": -8,
+              "urban": true,
+              "road": "CA-99",
+              "limit": 70
+            },
+            {
+              "name": "Modesto",
+              "state": "CA",
+              "ll": [
+                37.639,
+                -120.997
+              ],
+              "tz": -8,
+              "road": "CA-99",
+              "limit": 70
+            }
+          ]
+        },
+        {
+          "id": "leg3-vegas",
+          "name": "The Vegas diversion",
+          "road": "The road home until Kingman, then US-93 north, I-15 south",
+          "character": "Cut north at Kingman for Hoover Dam and the Strip, come back down to Barstow past Seven Magic Mountains.",
+          "why": "Ada has never seen anything like the Strip, the dam is free to walk, and the painted boulders are directly on the road out.",
+          "costs": "Adds roughly 4 hours of driving over staying on I-40, and you give up Oatman's burros on the way through.",
+          "waypoints": [
+            {
+              "name": "Houston",
+              "state": "TX",
+              "ll": [
+                29.76,
+                -95.37
+              ],
+              "tz": -6,
+              "urban": true
+            },
+            {
+              "name": "Huntsville",
+              "state": "TX",
+              "ll": [
+                30.723,
+                -95.551
+              ],
+              "tz": -6,
+              "road": "I-45 TX",
+              "limit": 75
+            },
+            {
+              "name": "Centerville",
+              "state": "TX",
+              "ll": [
+                31.259,
+                -95.978
+              ],
+              "tz": -6,
+              "road": "I-45 TX",
+              "limit": 75
+            },
+            {
+              "name": "Corsicana",
+              "state": "TX",
+              "ll": [
+                32.095,
+                -96.469
+              ],
+              "tz": -6,
+              "road": "I-45 TX",
+              "limit": 75
+            },
+            {
+              "name": "Dallas",
+              "state": "TX",
+              "ll": [
+                32.777,
+                -96.797
+              ],
+              "tz": -6,
+              "urban": true,
+              "road": "I-45 TX",
+              "limit": 75
+            },
+            {
+              "name": "Fort Worth",
+              "state": "TX",
+              "ll": [
+                32.755,
+                -97.331
+              ],
+              "tz": -6,
+              "urban": true,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Decatur",
+              "state": "TX",
+              "ll": [
+                33.234,
+                -97.586
+              ],
+              "tz": -6,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Wichita Falls",
+              "state": "TX",
+              "ll": [
+                33.914,
+                -98.493
+              ],
+              "tz": -6,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Vernon",
+              "state": "TX",
+              "ll": [
+                34.155,
+                -99.266
+              ],
+              "tz": -6,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Quanah",
+              "state": "TX",
+              "ll": [
+                34.298,
+                -99.74
+              ],
+              "tz": -6,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Childress",
+              "state": "TX",
+              "ll": [
+                34.426,
+                -100.204
+              ],
+              "risk": "ice",
+              "note": "US-287 across the Panhandle ices the same as I-40. It is the same weather with fewer plows.",
+              "tz": -6,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Clarendon",
+              "state": "TX",
+              "ll": [
+                34.938,
+                -100.892
+              ],
+              "tz": -6,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Amarillo",
+              "state": "TX",
+              "ll": [
+                35.222,
+                -101.831
+              ],
+              "elev": 3605,
+              "risk": "ice",
+              "note": "Here to Little Rock is ice-storm country in late December. Chains do nothing on ice — the only move is to not drive that day.",
+              "tz": -6,
+              "urban": true,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Tucumcari",
+              "state": "NM",
+              "ll": [
+                35.172,
+                -103.725
+              ],
+              "tz": -7,
+              "road": "I-40 TX",
+              "limit": 75
+            },
+            {
+              "name": "Santa Rosa",
+              "state": "NM",
+              "ll": [
+                34.938,
+                -104.682
+              ],
+              "tz": -7,
+              "road": "I-40 TX",
+              "limit": 75
+            },
+            {
+              "name": "Albuquerque",
+              "state": "NM",
+              "ll": [
+                35.084,
+                -106.651
+              ],
+              "elev": 5312,
+              "tz": -7,
+              "urban": true,
+              "road": "I-40 TX",
+              "limit": 75
+            },
+            {
+              "name": "Continental Divide",
+              "state": "NM",
+              "ll": [
+                35.44,
+                -108.35
+              ],
+              "elev": 7275,
+              "risk": "snow",
+              "note": "High point of the drive. Rain west of here ends up in the Pacific.",
+              "tz": -7,
+              "road": "I-40 TX",
+              "limit": 75
+            },
+            {
+              "name": "Gallup",
+              "state": "NM",
+              "ll": [
+                35.528,
+                -108.742
+              ],
+              "tz": -7,
+              "road": "I-40 TX",
+              "limit": 75
+            },
+            {
+              "name": "Holbrook",
+              "state": "AZ",
+              "ll": [
+                34.902,
+                -110.159
+              ],
+              "tz": -7,
+              "road": "I-40 NM",
+              "limit": 75
+            },
+            {
+              "name": "Winslow",
+              "state": "AZ",
+              "ll": [
+                35.024,
+                -110.697
+              ],
+              "tz": -7,
+              "road": "I-40 NM",
+              "limit": 75
+            },
+            {
+              "name": "Flagstaff",
+              "state": "AZ",
+              "ll": [
+                35.198,
+                -111.651
+              ],
+              "elev": 6909,
+              "risk": "snow",
+              "note": "The most likely place on this whole trip to find the interstate closed. Check the forecast 48 hours out.",
+              "tz": -7,
+              "road": "I-40 NM",
+              "limit": 75
+            },
+            {
+              "name": "Williams",
+              "state": "AZ",
+              "ll": [
+                35.249,
+                -112.191
+              ],
+              "elev": 6766,
+              "note": "Turn north here for the Grand Canyon.",
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Seligman",
+              "state": "AZ",
+              "ll": [
+                35.326,
+                -112.874
+              ],
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Kingman",
+              "state": "AZ",
+              "ll": [
+                35.189,
+                -114.053
+              ],
+              "elev": 3333,
+              "note": "Below the snow line. Sleep here if Flagstaff is getting hit and go over in the morning.",
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Boulder City",
+              "state": "NV",
+              "ll": [
+                35.978,
+                -114.832
+              ],
+              "tz": -8,
+              "road": "US-93 AZ/NV",
+              "limit": 70
+            },
+            {
+              "name": "Las Vegas",
+              "state": "NV",
+              "ll": [
+                36.115,
+                -115.173
+              ],
+              "tz": -8,
+              "urban": true,
+              "road": "I-15 NV",
+              "limit": 75
+            },
+            {
+              "name": "Jean",
+              "state": "NV",
+              "ll": [
+                35.779,
+                -115.324
+              ],
+              "tz": -8,
+              "road": "I-15 NV",
+              "limit": 75
+            },
+            {
+              "name": "Primm",
+              "state": "NV",
+              "ll": [
+                35.61,
+                -115.388
+              ],
+              "tz": -8,
+              "road": "I-15 NV",
+              "limit": 75
+            },
+            {
+              "name": "Baker",
+              "state": "CA",
+              "ll": [
+                35.262,
+                -116.074
+              ],
+              "tz": -8,
+              "road": "I-15 CA",
+              "limit": 70
+            },
+            {
+              "name": "Barstow",
+              "state": "CA",
+              "ll": [
+                34.899,
+                -117.023
+              ],
+              "note": "I-40 begins. One road for the next 2,400 miles.",
+              "tz": -8,
+              "road": "I-15 CA",
+              "limit": 70
+            },
+            {
+              "name": "Mojave",
+              "state": "CA",
+              "ll": [
+                35.053,
+                -118.174
+              ],
+              "tz": -8,
+              "road": "CA-58",
+              "limit": 70
+            },
+            {
+              "name": "Tehachapi Pass",
+              "state": "CA",
+              "ll": [
+                35.132,
+                -118.449
+              ],
+              "elev": 3793,
+              "risk": "chains",
+              "note": "Chain control posts here. Your FWD Accord needs chains ON under R2 — the exemption is AWD only.",
+              "tz": -8,
+              "road": "CA-58",
+              "limit": 70
+            },
+            {
+              "name": "Bakersfield",
+              "state": "CA",
+              "ll": [
+                35.373,
+                -119.019
+              ],
+              "tz": -8,
+              "urban": true,
+              "road": "CA-58",
+              "limit": 70
+            },
+            {
+              "name": "Fresno",
+              "state": "CA",
+              "ll": [
+                36.746,
+                -119.772
+              ],
+              "tz": -8,
+              "urban": true,
+              "road": "CA-99",
+              "limit": 70
+            },
+            {
+              "name": "Modesto",
+              "state": "CA",
+              "ll": [
+                37.639,
+                -120.997
+              ],
+              "tz": -8,
+              "road": "CA-99",
+              "limit": 70
+            }
+          ]
+        },
+        {
+          "id": "leg3-canyon",
+          "name": "The canyon road",
+          "road": "US-89 up from Flagstaff, AZ-64 through the park, down to Williams",
+          "character": "Through the canyon instead of out and back to it. You come in at Desert View, take the rim road past Lipan, Moran and Grandview as part of the driving, and leave by the other entrance.",
+          "why": "The out-and-back from Williams drives the same 60 miles twice. This costs about the same and does not repeat a mile of it, and the Watchtower end is the quiet entrance. It also puts Sunset Crater and Wupatki on the road rather than off it, since US-89 is the way through.",
+          "costs": "About 130 miles more than staying on I-40, near enough exactly what the out-and-back costs. Higher and more exposed, though: Desert View sits at 7,438 feet and is the first thing to close in weather. If the forecast is bad, take the plain interstate and do the canyon as a spur from Williams, or skip it.",
+          "waypoints": [
+            {
+              "name": "Houston",
+              "state": "TX",
+              "ll": [
+                29.76,
+                -95.37
+              ],
+              "tz": -6,
+              "urban": true
+            },
+            {
+              "name": "Huntsville",
+              "state": "TX",
+              "ll": [
+                30.723,
+                -95.551
+              ],
+              "tz": -6,
+              "road": "I-45 TX",
+              "limit": 75
+            },
+            {
+              "name": "Centerville",
+              "state": "TX",
+              "ll": [
+                31.259,
+                -95.978
+              ],
+              "tz": -6,
+              "road": "I-45 TX",
+              "limit": 75
+            },
+            {
+              "name": "Corsicana",
+              "state": "TX",
+              "ll": [
+                32.095,
+                -96.469
+              ],
+              "tz": -6,
+              "road": "I-45 TX",
+              "limit": 75
+            },
+            {
+              "name": "Dallas",
+              "state": "TX",
+              "ll": [
+                32.777,
+                -96.797
+              ],
+              "tz": -6,
+              "urban": true,
+              "road": "I-45 TX",
+              "limit": 75
+            },
+            {
+              "name": "Fort Worth",
+              "state": "TX",
+              "ll": [
+                32.755,
+                -97.331
+              ],
+              "tz": -6,
+              "urban": true,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Decatur",
+              "state": "TX",
+              "ll": [
+                33.234,
+                -97.586
+              ],
+              "tz": -6,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Wichita Falls",
+              "state": "TX",
+              "ll": [
+                33.914,
+                -98.493
+              ],
+              "tz": -6,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Vernon",
+              "state": "TX",
+              "ll": [
+                34.155,
+                -99.266
+              ],
+              "tz": -6,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Quanah",
+              "state": "TX",
+              "ll": [
+                34.298,
+                -99.74
+              ],
+              "tz": -6,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Childress",
+              "state": "TX",
+              "ll": [
+                34.426,
+                -100.204
+              ],
+              "risk": "ice",
+              "note": "US-287 across the Panhandle ices the same as I-40. It is the same weather with fewer plows.",
+              "tz": -6,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Clarendon",
+              "state": "TX",
+              "ll": [
+                34.938,
+                -100.892
+              ],
+              "tz": -6,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Amarillo",
+              "state": "TX",
+              "ll": [
+                35.222,
+                -101.831
+              ],
+              "elev": 3605,
+              "risk": "ice",
+              "note": "Here to Little Rock is ice-storm country in late December. Chains do nothing on ice — the only move is to not drive that day.",
+              "tz": -6,
+              "urban": true,
+              "road": "US-287 TX",
+              "limit": 75
+            },
+            {
+              "name": "Tucumcari",
+              "state": "NM",
+              "ll": [
+                35.172,
+                -103.725
+              ],
+              "tz": -7,
+              "road": "I-40 TX",
+              "limit": 75
+            },
+            {
+              "name": "Santa Rosa",
+              "state": "NM",
+              "ll": [
+                34.938,
+                -104.682
+              ],
+              "tz": -7,
+              "road": "I-40 TX",
+              "limit": 75
+            },
+            {
+              "name": "Albuquerque",
+              "state": "NM",
+              "ll": [
+                35.084,
+                -106.651
+              ],
+              "elev": 5312,
+              "tz": -7,
+              "urban": true,
+              "road": "I-40 TX",
+              "limit": 75
+            },
+            {
+              "name": "Continental Divide",
+              "state": "NM",
+              "ll": [
+                35.44,
+                -108.35
+              ],
+              "elev": 7275,
+              "risk": "snow",
+              "note": "High point of the drive. Rain west of here ends up in the Pacific.",
+              "tz": -7,
+              "road": "I-40 TX",
+              "limit": 75
+            },
+            {
+              "name": "Gallup",
+              "state": "NM",
+              "ll": [
+                35.528,
+                -108.742
+              ],
+              "tz": -7,
+              "road": "I-40 TX",
+              "limit": 75
+            },
+            {
+              "name": "Holbrook",
+              "state": "AZ",
+              "ll": [
+                34.902,
+                -110.159
+              ],
+              "tz": -7,
+              "road": "I-40 NM",
+              "limit": 75
+            },
+            {
+              "name": "Winslow",
+              "state": "AZ",
+              "ll": [
+                35.024,
+                -110.697
+              ],
+              "tz": -7,
+              "road": "I-40 NM",
+              "limit": 75
+            },
+            {
+              "name": "Flagstaff",
+              "state": "AZ",
+              "ll": [
+                35.198,
+                -111.651
+              ],
+              "elev": 6909,
+              "risk": "snow",
+              "note": "The most likely place on this whole trip to find the interstate closed. Check the forecast 48 hours out.",
+              "tz": -7,
+              "road": "I-40 NM",
+              "limit": 75
+            },
+            {
+              "name": "Cameron",
+              "state": "AZ",
+              "ll": [
+                35.877,
+                -111.416
+              ],
+              "elev": 4200,
+              "tz": -7,
+              "road": "US-89 AZ",
+              "limit": 65
+            },
+            {
+              "name": "Desert View",
+              "state": "AZ",
+              "ll": [
+                36.043,
+                -111.826
+              ],
+              "elev": 7438,
+              "risk": "snow",
+              "note": "The highest point on this road, and the piece of the park that closes first in bad weather. Desert View Drive shuts for winter storms while the south entrance stays open.",
+              "tz": -7,
+              "road": "US-89 AZ",
+              "limit": 65
+            },
+            {
+              "name": "Grand Canyon Village",
+              "state": "AZ",
+              "ll": [
+                36.058,
+                -112.14
+              ],
+              "elev": 6800,
+              "risk": "snow",
+              "note": "The rim is plowed and open all winter, but the road in can close during a storm. (928) 638-7496 for conditions.",
+              "tz": -7,
+              "road": "AZ-64 park",
+              "limit": 45
+            },
+            {
+              "name": "Tusayan",
+              "state": "AZ",
+              "ll": [
+                35.976,
+                -112.126
+              ],
+              "elev": 6612,
+              "tz": -7,
+              "road": "AZ-64",
+              "limit": 65
+            },
+            {
+              "name": "Valle",
+              "state": "AZ",
+              "ll": [
+                35.652,
+                -112.143
+              ],
+              "elev": 5999,
+              "tz": -7,
+              "road": "AZ-64",
+              "limit": 65
+            },
+            {
+              "name": "Williams",
+              "state": "AZ",
+              "ll": [
+                35.249,
+                -112.191
+              ],
+              "elev": 6766,
+              "note": "Turn north here for the Grand Canyon.",
+              "tz": -7,
+              "road": "AZ-64",
+              "limit": 65
+            },
+            {
+              "name": "Seligman",
+              "state": "AZ",
+              "ll": [
+                35.326,
+                -112.874
+              ],
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Kingman",
+              "state": "AZ",
+              "ll": [
+                35.189,
+                -114.053
+              ],
+              "elev": 3333,
+              "note": "Below the snow line. Sleep here if Flagstaff is getting hit and go over in the morning.",
+              "tz": -7,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Needles",
+              "state": "CA",
+              "ll": [
+                34.848,
+                -114.614
+              ],
+              "tz": -8,
+              "road": "I-40 AZ",
+              "limit": 75
+            },
+            {
+              "name": "Barstow",
+              "state": "CA",
+              "ll": [
+                34.899,
+                -117.023
+              ],
+              "note": "I-40 begins. One road for the next 2,400 miles.",
+              "tz": -8,
+              "road": "I-40 CA",
+              "limit": 70
+            },
+            {
+              "name": "Mojave",
+              "state": "CA",
+              "ll": [
+                35.053,
+                -118.174
+              ],
+              "tz": -8,
+              "road": "CA-58",
+              "limit": 70
+            },
+            {
+              "name": "Tehachapi Pass",
+              "state": "CA",
+              "ll": [
+                35.132,
+                -118.449
+              ],
+              "elev": 3793,
+              "risk": "chains",
+              "note": "Chain control posts here. Your FWD Accord needs chains ON under R2 — the exemption is AWD only.",
+              "tz": -8,
+              "road": "CA-58",
+              "limit": 70
+            },
+            {
+              "name": "Bakersfield",
+              "state": "CA",
+              "ll": [
+                35.373,
+                -119.019
+              ],
+              "tz": -8,
+              "urban": true,
+              "road": "CA-58",
+              "limit": 70
+            },
+            {
+              "name": "Fresno",
+              "state": "CA",
+              "ll": [
+                36.746,
+                -119.772
+              ],
+              "tz": -8,
+              "urban": true,
+              "road": "CA-99",
+              "limit": 70
+            },
+            {
+              "name": "Modesto",
+              "state": "CA",
+              "ll": [
+                37.639,
+                -120.997
+              ],
+              "tz": -8,
+              "road": "CA-99",
+              "limit": 70
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dot": [
+    {
+      "state": "CA",
+      "name": "Caltrans QuickMap",
+      "url": "https://quickmap.dot.ca.gov/"
+    },
+    {
+      "state": "NV",
+      "name": "NV Roads",
+      "url": "https://www.nvroads.com/"
+    },
+    {
+      "state": "AZ",
+      "name": "ADOT AZ511",
+      "url": "https://az511.gov/"
+    },
+    {
+      "state": "NM",
+      "name": "NMRoads",
+      "url": "https://nmroads.com/"
+    },
+    {
+      "state": "TX",
+      "name": "DriveTexas",
+      "url": "https://drivetexas.org/"
+    },
+    {
+      "state": "OK",
+      "name": "OK511",
+      "url": "https://oktraffic.org/"
+    },
+    {
+      "state": "AR",
+      "name": "IDriveArkansas",
+      "url": "https://www.idrivearkansas.com/"
+    },
+    {
+      "state": "TN",
+      "name": "TDOT SmartWay",
+      "url": "https://smartway.tn.gov/traffic"
+    },
+    {
+      "state": "NC",
+      "name": "DriveNC",
+      "url": "https://drivenc.gov/"
+    },
+    {
+      "state": "GA",
+      "name": "511 Georgia",
+      "url": "https://511ga.org/"
+    },
+    {
+      "state": "AL",
+      "name": "ALGO Traffic",
+      "url": "https://algotraffic.com/"
+    },
+    {
+      "state": "MS",
+      "name": "MDOT Traffic",
+      "url": "https://www.mdottraffic.com/"
+    },
+    {
+      "state": "LA",
+      "name": "511LA",
+      "url": "https://www.511la.org/"
+    }
   ]
- },
- "vehicle": {
-  "name": "2023 Honda Accord Hybrid EX-L",
-  "drive": "FWD",
-  "tires": "Michelin Defender 2 (all-season touring, not 3PMSF snow-rated)",
-  "chainRule": "FWD does NOT qualify for California's R2 exemption, which is 4WD/AWD only. Under R2 this car needs chains ON. Carry low-clearance cable-style devices sized to the sidewall — check the owner's manual for Honda's chain clearance restriction before buying.",
-  "note": "Low ground clearance and touring all-seasons. This is a car that should not be on a mountain interstate during a storm regardless of what's in the trunk."
- },
- "legs": [
-  {
-   "id": "leg1",
-   "name": "Modesto to North Carolina",
-   "from": "Modesto, CA",
-   "to": "Mooresville, NC",
-   "routes": [
-    {
-     "id": "leg1-i40",
-     "name": "The Route 66 road",
-     "road": "CA-99 · CA-58 · I-40",
-     "character": "The great one. Everything worth seeing between here and Memphis is strung along it.",
-     "why": "The Grand Canyon, Meteor Crater, the Painted Desert and 1,500 miles of old Route 66. If the weather cooperates there is no argument for taking anything else.",
-     "costs": "Two genuine winter obstacles — Flagstaff at 6,900 feet and the Panhandle ice belt.",
-     "waypoints": [
-      {
-       "name": "Modesto",
-       "state": "CA",
-       "ll": [
-        37.639,
-        -120.997
-       ],
-       "tz": -8
-      },
-      {
-       "name": "Fresno",
-       "state": "CA",
-       "ll": [
-        36.746,
-        -119.772
-       ],
-       "tz": -8,
-       "urban": true,
-       "road": "CA-99",
-       "limit": 70
-      },
-      {
-       "name": "Bakersfield",
-       "state": "CA",
-       "ll": [
-        35.373,
-        -119.019
-       ],
-       "tz": -8,
-       "urban": true,
-       "road": "CA-99",
-       "limit": 70
-      },
-      {
-       "name": "Tehachapi Pass",
-       "state": "CA",
-       "ll": [
-        35.132,
-        -118.449
-       ],
-       "elev": 3793,
-       "risk": "chains",
-       "note": "Chain control posts here. Your FWD Accord needs chains ON under R2 — the exemption is AWD only.",
-       "tz": -8,
-       "road": "CA-58",
-       "limit": 70
-      },
-      {
-       "name": "Mojave",
-       "state": "CA",
-       "ll": [
-        35.053,
-        -118.174
-       ],
-       "tz": -8,
-       "road": "CA-58",
-       "limit": 70
-      },
-      {
-       "name": "Barstow",
-       "state": "CA",
-       "ll": [
-        34.899,
-        -117.023
-       ],
-       "note": "I-40 begins. One road for the next 2,400 miles.",
-       "tz": -8,
-       "road": "CA-58",
-       "limit": 70
-      },
-      {
-       "name": "Needles",
-       "state": "CA",
-       "ll": [
-        34.848,
-        -114.614
-       ],
-       "tz": -8,
-       "road": "I-40 CA",
-       "limit": 70
-      },
-      {
-       "name": "Kingman",
-       "state": "AZ",
-       "ll": [
-        35.189,
-        -114.053
-       ],
-       "elev": 3333,
-       "note": "Below the snow line. Sleep here if Flagstaff is getting hit and go over in the morning.",
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Seligman",
-       "state": "AZ",
-       "ll": [
-        35.326,
-        -112.874
-       ],
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Williams",
-       "state": "AZ",
-       "ll": [
-        35.249,
-        -112.191
-       ],
-       "elev": 6766,
-       "note": "Turn north here for the Grand Canyon.",
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Flagstaff",
-       "state": "AZ",
-       "ll": [
-        35.198,
-        -111.651
-       ],
-       "elev": 6909,
-       "risk": "snow",
-       "note": "The most likely place on this whole trip to find the interstate closed. Check the forecast 48 hours out.",
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Winslow",
-       "state": "AZ",
-       "ll": [
-        35.024,
-        -110.697
-       ],
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Holbrook",
-       "state": "AZ",
-       "ll": [
-        34.902,
-        -110.159
-       ],
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Gallup",
-       "state": "NM",
-       "ll": [
-        35.528,
-        -108.742
-       ],
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Continental Divide",
-       "state": "NM",
-       "ll": [
-        35.44,
-        -108.35
-       ],
-       "elev": 7275,
-       "risk": "snow",
-       "note": "High point of the drive. Rain west of here ends up in the Pacific.",
-       "tz": -7,
-       "road": "I-40 NM",
-       "limit": 75
-      },
-      {
-       "name": "Albuquerque",
-       "state": "NM",
-       "ll": [
-        35.084,
-        -106.651
-       ],
-       "elev": 5312,
-       "tz": -7,
-       "urban": true,
-       "road": "I-40 NM",
-       "limit": 75
-      },
-      {
-       "name": "Santa Rosa",
-       "state": "NM",
-       "ll": [
-        34.938,
-        -104.682
-       ],
-       "tz": -7,
-       "road": "I-40 NM",
-       "limit": 75
-      },
-      {
-       "name": "Tucumcari",
-       "state": "NM",
-       "ll": [
-        35.172,
-        -103.725
-       ],
-       "tz": -7,
-       "road": "I-40 NM",
-       "limit": 75
-      },
-      {
-       "name": "Amarillo",
-       "state": "TX",
-       "ll": [
-        35.222,
-        -101.831
-       ],
-       "elev": 3605,
-       "risk": "ice",
-       "note": "Here to Little Rock is ice-storm country in late December. Chains do nothing on ice — the only move is to not drive that day.",
-       "tz": -6,
-       "urban": true,
-       "road": "I-40 NM",
-       "limit": 75
-      },
-      {
-       "name": "Oklahoma City",
-       "state": "OK",
-       "ll": [
-        35.468,
-        -97.516
-       ],
-       "risk": "ice",
-       "tz": -6,
-       "urban": true,
-       "road": "I-40 TX/OK",
-       "limit": 72
-      },
-      {
-       "name": "Fort Smith",
-       "state": "AR",
-       "ll": [
-        35.386,
-        -94.398
-       ],
-       "tz": -6,
-       "road": "I-40 OK",
-       "limit": 70
-      },
-      {
-       "name": "Little Rock",
-       "state": "AR",
-       "ll": [
-        34.746,
-        -92.289
-       ],
-       "tz": -6,
-       "urban": true,
-       "road": "I-40 AR",
-       "limit": 75
-      },
-      {
-       "name": "Memphis",
-       "state": "TN",
-       "ll": [
-        35.149,
-        -90.049
-       ],
-       "note": "You cross the Mississippi here.",
-       "tz": -6,
-       "urban": true,
-       "road": "I-40 AR",
-       "limit": 75
-      },
-      {
-       "name": "Nashville",
-       "state": "TN",
-       "ll": [
-        36.163,
-        -86.781
-       ],
-       "tz": -6,
-       "urban": true,
-       "road": "I-40 TN",
-       "limit": 70
-      },
-      {
-       "name": "Knoxville",
-       "state": "TN",
-       "ll": [
-        35.961,
-        -83.921
-       ],
-       "tz": -5,
-       "urban": true,
-       "road": "I-40 TN",
-       "limit": 70
-      },
-      {
-       "name": "Asheville",
-       "state": "NC",
-       "ll": [
-        35.595,
-        -82.552
-       ],
-       "elev": 2134,
-       "risk": "ice",
-       "note": "I-40 climbs through the Smokies to get here and does ice up. The Blue Ridge Parkway closes outright.",
-       "tz": -5,
-       "road": "I-40 TN",
-       "limit": 70
-      },
-      {
-       "name": "Hickory",
-       "state": "NC",
-       "ll": [
-        35.733,
-        -81.341
-       ],
-       "tz": -5,
-       "road": "I-40 NC",
-       "limit": 70
-      },
-      {
-       "name": "Statesville",
-       "state": "NC",
-       "ll": [
-        35.783,
-        -80.887
-       ],
-       "tz": -5,
-       "road": "I-40 NC",
-       "limit": 70
-      },
-      {
-       "name": "Mooresville",
-       "state": "NC",
-       "ll": [
-        35.585,
-        -80.81
-       ],
-       "tz": -5,
-       "road": "I-40 NC",
-       "limit": 70
-      }
-     ],
-     "default": true
-    },
-    {
-     "id": "leg1-south",
-     "name": "The southern line",
-     "road": "I-40 to Nashville, then I-24, I-75 and I-85",
-     "character": "Same road as far as Nashville, then it drops around the Smokies instead of climbing through them.",
-     "why": "If Asheville is icing, this trades the mountain crossing for Chattanooga and Atlanta, and picks up the two great aquariums on the way. It lands at the Charlotte end of things, which is where the food is anyway.",
-     "costs": "Adds about 120 miles over the Asheville road, and you give up the Smokies, Dollywood and downtown Asheville. Monteagle Mountain on I-24 still ices, it is just a shorter climb with more ways around it.",
-     "waypoints": [
-      {
-       "name": "Modesto",
-       "state": "CA",
-       "ll": [
-        37.639,
-        -120.997
-       ],
-       "tz": -8
-      },
-      {
-       "name": "Fresno",
-       "state": "CA",
-       "ll": [
-        36.746,
-        -119.772
-       ],
-       "tz": -8,
-       "urban": true,
-       "road": "CA-99",
-       "limit": 70
-      },
-      {
-       "name": "Bakersfield",
-       "state": "CA",
-       "ll": [
-        35.373,
-        -119.019
-       ],
-       "tz": -8,
-       "urban": true,
-       "road": "CA-99",
-       "limit": 70
-      },
-      {
-       "name": "Tehachapi Pass",
-       "state": "CA",
-       "ll": [
-        35.132,
-        -118.449
-       ],
-       "elev": 3793,
-       "risk": "chains",
-       "note": "Chain control posts here. Your FWD Accord needs chains ON under R2 — the exemption is AWD only.",
-       "tz": -8,
-       "road": "CA-58",
-       "limit": 70
-      },
-      {
-       "name": "Mojave",
-       "state": "CA",
-       "ll": [
-        35.053,
-        -118.174
-       ],
-       "tz": -8,
-       "road": "CA-58",
-       "limit": 70
-      },
-      {
-       "name": "Barstow",
-       "state": "CA",
-       "ll": [
-        34.899,
-        -117.023
-       ],
-       "note": "I-40 begins. One road for the next 2,400 miles.",
-       "tz": -8,
-       "road": "CA-58",
-       "limit": 70
-      },
-      {
-       "name": "Needles",
-       "state": "CA",
-       "ll": [
-        34.848,
-        -114.614
-       ],
-       "tz": -8,
-       "road": "I-40 CA",
-       "limit": 70
-      },
-      {
-       "name": "Kingman",
-       "state": "AZ",
-       "ll": [
-        35.189,
-        -114.053
-       ],
-       "elev": 3333,
-       "note": "Below the snow line. Sleep here if Flagstaff is getting hit and go over in the morning.",
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Seligman",
-       "state": "AZ",
-       "ll": [
-        35.326,
-        -112.874
-       ],
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Williams",
-       "state": "AZ",
-       "ll": [
-        35.249,
-        -112.191
-       ],
-       "elev": 6766,
-       "note": "Turn north here for the Grand Canyon.",
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Flagstaff",
-       "state": "AZ",
-       "ll": [
-        35.198,
-        -111.651
-       ],
-       "elev": 6909,
-       "risk": "snow",
-       "note": "The most likely place on this whole trip to find the interstate closed. Check the forecast 48 hours out.",
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Winslow",
-       "state": "AZ",
-       "ll": [
-        35.024,
-        -110.697
-       ],
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Holbrook",
-       "state": "AZ",
-       "ll": [
-        34.902,
-        -110.159
-       ],
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Gallup",
-       "state": "NM",
-       "ll": [
-        35.528,
-        -108.742
-       ],
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Continental Divide",
-       "state": "NM",
-       "ll": [
-        35.44,
-        -108.35
-       ],
-       "elev": 7275,
-       "risk": "snow",
-       "note": "High point of the drive. Rain west of here ends up in the Pacific.",
-       "tz": -7,
-       "road": "I-40 NM",
-       "limit": 75
-      },
-      {
-       "name": "Albuquerque",
-       "state": "NM",
-       "ll": [
-        35.084,
-        -106.651
-       ],
-       "elev": 5312,
-       "tz": -7,
-       "urban": true,
-       "road": "I-40 NM",
-       "limit": 75
-      },
-      {
-       "name": "Santa Rosa",
-       "state": "NM",
-       "ll": [
-        34.938,
-        -104.682
-       ],
-       "tz": -7,
-       "road": "I-40 NM",
-       "limit": 75
-      },
-      {
-       "name": "Tucumcari",
-       "state": "NM",
-       "ll": [
-        35.172,
-        -103.725
-       ],
-       "tz": -7,
-       "road": "I-40 NM",
-       "limit": 75
-      },
-      {
-       "name": "Amarillo",
-       "state": "TX",
-       "ll": [
-        35.222,
-        -101.831
-       ],
-       "elev": 3605,
-       "risk": "ice",
-       "note": "Here to Little Rock is ice-storm country in late December. Chains do nothing on ice — the only move is to not drive that day.",
-       "tz": -6,
-       "urban": true,
-       "road": "I-40 NM",
-       "limit": 75
-      },
-      {
-       "name": "Oklahoma City",
-       "state": "OK",
-       "ll": [
-        35.468,
-        -97.516
-       ],
-       "risk": "ice",
-       "tz": -6,
-       "urban": true,
-       "road": "I-40 TX/OK",
-       "limit": 72
-      },
-      {
-       "name": "Fort Smith",
-       "state": "AR",
-       "ll": [
-        35.386,
-        -94.398
-       ],
-       "tz": -6,
-       "road": "I-40 OK",
-       "limit": 70
-      },
-      {
-       "name": "Little Rock",
-       "state": "AR",
-       "ll": [
-        34.746,
-        -92.289
-       ],
-       "tz": -6,
-       "urban": true,
-       "road": "I-40 AR",
-       "limit": 75
-      },
-      {
-       "name": "Memphis",
-       "state": "TN",
-       "ll": [
-        35.149,
-        -90.049
-       ],
-       "note": "You cross the Mississippi here.",
-       "tz": -6,
-       "urban": true,
-       "road": "I-40 AR",
-       "limit": 75
-      },
-      {
-       "name": "Nashville",
-       "state": "TN",
-       "ll": [
-        36.163,
-        -86.781
-       ],
-       "tz": -6,
-       "urban": true,
-       "road": "I-40 TN",
-       "limit": 70
-      },
-      {
-       "name": "Murfreesboro",
-       "state": "TN",
-       "ll": [
-        35.846,
-        -86.39
-       ],
-       "tz": -6,
-       "road": "I-24 TN",
-       "limit": 70
-      },
-      {
-       "name": "Monteagle",
-       "state": "TN",
-       "ll": [
-        35.248,
-        -85.842
-       ],
-       "elev": 1918,
-       "risk": "ice",
-       "note": "The I-24 grade over the mountain is the worst ice trap between Nashville and Atlanta. Truckers treat it with respect in dry weather.",
-       "tz": -6,
-       "road": "I-24 TN",
-       "limit": 70
-      },
-      {
-       "name": "Chattanooga",
-       "state": "TN",
-       "ll": [
-        35.046,
-        -85.31
-       ],
-       "elev": 676,
-       "tz": -5,
-       "urban": true,
-       "road": "I-24 TN",
-       "limit": 70
-      },
-      {
-       "name": "Dalton",
-       "state": "GA",
-       "ll": [
-        34.77,
-        -84.97
-       ],
-       "tz": -5,
-       "road": "I-75 GA",
-       "limit": 70
-      },
-      {
-       "name": "Marietta",
-       "state": "GA",
-       "ll": [
-        33.953,
-        -84.55
-       ],
-       "tz": -5,
-       "road": "I-75 GA",
-       "limit": 70
-      },
-      {
-       "name": "Atlanta",
-       "state": "GA",
-       "ll": [
-        33.749,
-        -84.388
-       ],
-       "elev": 1050,
-       "tz": -5,
-       "urban": true,
-       "road": "I-75 GA",
-       "limit": 70
-      },
-      {
-       "name": "Commerce",
-       "state": "GA",
-       "ll": [
-        34.204,
-        -83.457
-       ],
-       "tz": -5,
-       "road": "I-85 GA",
-       "limit": 70
-      },
-      {
-       "name": "Greenville",
-       "state": "SC",
-       "ll": [
-        34.853,
-        -82.394
-       ],
-       "tz": -5,
-       "urban": true,
-       "road": "I-85 GA",
-       "limit": 70
-      },
-      {
-       "name": "Gastonia",
-       "state": "NC",
-       "ll": [
-        35.262,
-        -81.187
-       ],
-       "tz": -5,
-       "road": "I-85 SC/NC",
-       "limit": 70
-      },
-      {
-       "name": "Charlotte",
-       "state": "NC",
-       "ll": [
-        35.227,
-        -80.843
-       ],
-       "elev": 751,
-       "tz": -5,
-       "urban": true,
-       "road": "I-85 SC/NC",
-       "limit": 70
-      },
-      {
-       "name": "Mooresville",
-       "state": "NC",
-       "ll": [
-        35.585,
-        -80.81
-       ],
-       "tz": -5,
-       "road": "I-85 SC/NC",
-       "limit": 70
-      }
-     ]
-    },
-    {
-     "id": "leg1-canyon",
-     "name": "The canyon road",
-     "road": "I-40 to Williams, AZ-64 through the park, US-89 down to Flagstaff",
-     "character": "Through the canyon instead of out and back to it. You come in at Desert View, take the rim road past Lipan, Moran and Grandview as part of the driving, and leave by the other entrance.",
-     "why": "The out-and-back from Williams drives the same 60 miles twice. This costs about the same and does not repeat a mile of it, and the Watchtower end is the quiet entrance. It also puts Sunset Crater and Wupatki on the road rather than off it, since US-89 is the way through.",
-     "costs": "About 130 miles more than staying on I-40, near enough exactly what the out-and-back costs. Higher and more exposed, though: Desert View sits at 7,438 feet and is the first thing to close in weather. If the forecast is bad, take the plain interstate and do the canyon as a spur from Williams, or skip it.",
-     "waypoints": [
-      {
-       "name": "Modesto",
-       "state": "CA",
-       "ll": [
-        37.639,
-        -120.997
-       ],
-       "tz": -8
-      },
-      {
-       "name": "Fresno",
-       "state": "CA",
-       "ll": [
-        36.746,
-        -119.772
-       ],
-       "tz": -8,
-       "urban": true,
-       "road": "CA-99",
-       "limit": 70
-      },
-      {
-       "name": "Bakersfield",
-       "state": "CA",
-       "ll": [
-        35.373,
-        -119.019
-       ],
-       "tz": -8,
-       "urban": true,
-       "road": "CA-99",
-       "limit": 70
-      },
-      {
-       "name": "Tehachapi Pass",
-       "state": "CA",
-       "ll": [
-        35.132,
-        -118.449
-       ],
-       "elev": 3793,
-       "risk": "chains",
-       "note": "Chain control posts here. Your FWD Accord needs chains ON under R2 — the exemption is AWD only.",
-       "tz": -8,
-       "road": "CA-58",
-       "limit": 70
-      },
-      {
-       "name": "Mojave",
-       "state": "CA",
-       "ll": [
-        35.053,
-        -118.174
-       ],
-       "tz": -8,
-       "road": "CA-58",
-       "limit": 70
-      },
-      {
-       "name": "Barstow",
-       "state": "CA",
-       "ll": [
-        34.899,
-        -117.023
-       ],
-       "note": "I-40 begins. One road for the next 2,400 miles.",
-       "tz": -8,
-       "road": "CA-58",
-       "limit": 70
-      },
-      {
-       "name": "Needles",
-       "state": "CA",
-       "ll": [
-        34.848,
-        -114.614
-       ],
-       "tz": -8,
-       "road": "I-40 CA",
-       "limit": 70
-      },
-      {
-       "name": "Kingman",
-       "state": "AZ",
-       "ll": [
-        35.189,
-        -114.053
-       ],
-       "elev": 3333,
-       "note": "Below the snow line. Sleep here if Flagstaff is getting hit and go over in the morning.",
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Seligman",
-       "state": "AZ",
-       "ll": [
-        35.326,
-        -112.874
-       ],
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Williams",
-       "state": "AZ",
-       "ll": [
-        35.249,
-        -112.191
-       ],
-       "elev": 6766,
-       "note": "Turn north here for the Grand Canyon.",
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Valle",
-       "state": "AZ",
-       "ll": [
-        35.652,
-        -112.143
-       ],
-       "elev": 5999,
-       "tz": -7,
-       "road": "AZ-64",
-       "limit": 65
-      },
-      {
-       "name": "Tusayan",
-       "state": "AZ",
-       "ll": [
-        35.976,
-        -112.126
-       ],
-       "elev": 6612,
-       "tz": -7,
-       "road": "AZ-64",
-       "limit": 65
-      },
-      {
-       "name": "Grand Canyon Village",
-       "state": "AZ",
-       "ll": [
-        36.058,
-        -112.14
-       ],
-       "elev": 6800,
-       "risk": "snow",
-       "note": "The rim is plowed and open all winter, but the road in can close during a storm. (928) 638-7496 for conditions.",
-       "tz": -7,
-       "road": "AZ-64",
-       "limit": 65
-      },
-      {
-       "name": "Desert View",
-       "state": "AZ",
-       "ll": [
-        36.043,
-        -111.826
-       ],
-       "elev": 7438,
-       "risk": "snow",
-       "note": "The highest point on this road, and the piece of the park that closes first in bad weather. Desert View Drive shuts for winter storms while the south entrance stays open.",
-       "tz": -7,
-       "road": "AZ-64 park",
-       "limit": 45
-      },
-      {
-       "name": "Cameron",
-       "state": "AZ",
-       "ll": [
-        35.877,
-        -111.416
-       ],
-       "elev": 4200,
-       "tz": -7,
-       "road": "AZ-64 / US-89",
-       "limit": 65
-      },
-      {
-       "name": "Flagstaff",
-       "state": "AZ",
-       "ll": [
-        35.198,
-        -111.651
-       ],
-       "elev": 6909,
-       "risk": "snow",
-       "note": "The most likely place on this whole trip to find the interstate closed. Check the forecast 48 hours out.",
-       "tz": -7,
-       "road": "AZ-64 / US-89",
-       "limit": 65
-      },
-      {
-       "name": "Winslow",
-       "state": "AZ",
-       "ll": [
-        35.024,
-        -110.697
-       ],
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Holbrook",
-       "state": "AZ",
-       "ll": [
-        34.902,
-        -110.159
-       ],
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Gallup",
-       "state": "NM",
-       "ll": [
-        35.528,
-        -108.742
-       ],
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Continental Divide",
-       "state": "NM",
-       "ll": [
-        35.44,
-        -108.35
-       ],
-       "elev": 7275,
-       "risk": "snow",
-       "note": "High point of the drive. Rain west of here ends up in the Pacific.",
-       "tz": -7,
-       "road": "I-40 NM",
-       "limit": 75
-      },
-      {
-       "name": "Albuquerque",
-       "state": "NM",
-       "ll": [
-        35.084,
-        -106.651
-       ],
-       "elev": 5312,
-       "tz": -7,
-       "urban": true,
-       "road": "I-40 NM",
-       "limit": 75
-      },
-      {
-       "name": "Santa Rosa",
-       "state": "NM",
-       "ll": [
-        34.938,
-        -104.682
-       ],
-       "tz": -7,
-       "road": "I-40 NM",
-       "limit": 75
-      },
-      {
-       "name": "Tucumcari",
-       "state": "NM",
-       "ll": [
-        35.172,
-        -103.725
-       ],
-       "tz": -7,
-       "road": "I-40 NM",
-       "limit": 75
-      },
-      {
-       "name": "Amarillo",
-       "state": "TX",
-       "ll": [
-        35.222,
-        -101.831
-       ],
-       "elev": 3605,
-       "risk": "ice",
-       "note": "Here to Little Rock is ice-storm country in late December. Chains do nothing on ice — the only move is to not drive that day.",
-       "tz": -6,
-       "urban": true,
-       "road": "I-40 NM",
-       "limit": 75
-      },
-      {
-       "name": "Oklahoma City",
-       "state": "OK",
-       "ll": [
-        35.468,
-        -97.516
-       ],
-       "risk": "ice",
-       "tz": -6,
-       "urban": true,
-       "road": "I-40 TX/OK",
-       "limit": 72
-      },
-      {
-       "name": "Fort Smith",
-       "state": "AR",
-       "ll": [
-        35.386,
-        -94.398
-       ],
-       "tz": -6,
-       "road": "I-40 OK",
-       "limit": 70
-      },
-      {
-       "name": "Little Rock",
-       "state": "AR",
-       "ll": [
-        34.746,
-        -92.289
-       ],
-       "tz": -6,
-       "urban": true,
-       "road": "I-40 AR",
-       "limit": 75
-      },
-      {
-       "name": "Memphis",
-       "state": "TN",
-       "ll": [
-        35.149,
-        -90.049
-       ],
-       "note": "You cross the Mississippi here.",
-       "tz": -6,
-       "urban": true,
-       "road": "I-40 AR",
-       "limit": 75
-      },
-      {
-       "name": "Nashville",
-       "state": "TN",
-       "ll": [
-        36.163,
-        -86.781
-       ],
-       "tz": -6,
-       "urban": true,
-       "road": "I-40 TN",
-       "limit": 70
-      },
-      {
-       "name": "Knoxville",
-       "state": "TN",
-       "ll": [
-        35.961,
-        -83.921
-       ],
-       "tz": -5,
-       "urban": true,
-       "road": "I-40 TN",
-       "limit": 70
-      },
-      {
-       "name": "Asheville",
-       "state": "NC",
-       "ll": [
-        35.595,
-        -82.552
-       ],
-       "elev": 2134,
-       "risk": "ice",
-       "note": "I-40 climbs through the Smokies to get here and does ice up. The Blue Ridge Parkway closes outright.",
-       "tz": -5,
-       "road": "I-40 TN",
-       "limit": 70
-      },
-      {
-       "name": "Hickory",
-       "state": "NC",
-       "ll": [
-        35.733,
-        -81.341
-       ],
-       "tz": -5,
-       "road": "I-40 NC",
-       "limit": 70
-      },
-      {
-       "name": "Statesville",
-       "state": "NC",
-       "ll": [
-        35.783,
-        -80.887
-       ],
-       "tz": -5,
-       "road": "I-40 NC",
-       "limit": 70
-      },
-      {
-       "name": "Mooresville",
-       "state": "NC",
-       "ll": [
-        35.585,
-        -80.81
-       ],
-       "tz": -5,
-       "road": "I-40 NC",
-       "limit": 70
-      }
-     ]
-    },
-    {
-      "id": "leg1-plan",
-      "name": "Five nights to Mooresville",
-      "sameRoadAs": "leg1-canyon",
-      "road": "The canyon road, and only the stops that are in the plan",
-      "character": "Not a different road. The canyon road exactly, carrying only the twenty stops and five beds this trip actually makes, in the order it makes them.",
-      "why": "The other three roads show you everything that is possible. This one shows you what you decided. Pick it and the map draws your trip rather than the menu: Seligman and the Snow Cap, Bearizona, the rim, Meteor Crater, Petrified Forest, and the five places you sleep.",
-      "costs": "Nothing, because it is the same tarmac as the canyon road. What it costs is the choosing, and that is already done. Swap back to the canyon road to see everything you left out."
-    }
-   ]
-  },
-  {
-   "id": "leg2",
-   "name": "North Carolina to Houston",
-   "from": "Mooresville, NC",
-   "to": "Houston, TX",
-   "routes": [
-    {
-     "id": "leg2-gulf",
-     "name": "The Gulf Coast",
-     "road": "I-85 · I-65 · I-10",
-     "default": true,
-     "character": "Down through Atlanta and Montgomery to the water, then west along the coast.",
-     "why": "New Orleans over New Year's, the Gulf, Mobile, and the Legacy Museum in Montgomery. This is the interesting one.",
-     "costs": "Slower, and New Orleans on New Year's Eve means booking a room well ahead.",
-     "waypoints": [
-      {
-       "name": "Mooresville",
-       "state": "NC",
-       "ll": [
-        35.585,
-        -80.81
-       ],
-       "tz": -5
-      },
-      {
-       "name": "Charlotte",
-       "state": "NC",
-       "ll": [
-        35.227,
-        -80.843
-       ],
-       "tz": -5,
-       "urban": true,
-       "road": "I-85 NC/SC",
-       "limit": 70
-      },
-      {
-       "name": "Gastonia",
-       "state": "NC",
-       "ll": [
-        35.262,
-        -81.187
-       ],
-       "tz": -5,
-       "road": "I-85 NC/SC",
-       "limit": 70
-      },
-      {
-       "name": "Spartanburg",
-       "state": "SC",
-       "ll": [
-        34.95,
-        -81.932
-       ],
-       "tz": -5,
-       "road": "I-85 NC/SC",
-       "limit": 70
-      },
-      {
-       "name": "Greenville",
-       "state": "SC",
-       "ll": [
-        34.853,
-        -82.394
-       ],
-       "tz": -5,
-       "urban": true,
-       "road": "I-85 NC/SC",
-       "limit": 70
-      },
-      {
-       "name": "Commerce",
-       "state": "GA",
-       "ll": [
-        34.204,
-        -83.457
-       ],
-       "tz": -5,
-       "road": "I-85 NC/SC",
-       "limit": 70
-      },
-      {
-       "name": "Atlanta",
-       "state": "GA",
-       "ll": [
-        33.749,
-        -84.388
-       ],
-       "elev": 1050,
-       "risk": "ice",
-       "note": "Atlanta ices rarely but completely. If a storm is named, wait it out rather than creep through it.",
-       "tz": -5,
-       "urban": true,
-       "road": "I-85 NC/SC",
-       "limit": 70
-      },
-      {
-       "name": "Montgomery",
-       "state": "AL",
-       "ll": [
-        32.367,
-        -86.3
-       ],
-       "tz": -6,
-       "urban": true,
-       "road": "I-65 AL",
-       "limit": 70
-      },
-      {
-       "name": "Mobile",
-       "state": "AL",
-       "ll": [
-        30.695,
-        -88.04
-       ],
-       "tz": -6,
-       "urban": true,
-       "road": "I-65 AL",
-       "limit": 70
-      },
-      {
-       "name": "Gulfport",
-       "state": "MS",
-       "ll": [
-        30.367,
-        -89.093
-       ],
-       "tz": -6,
-       "road": "I-10 AL/MS/LA",
-       "limit": 70
-      },
-      {
-       "name": "New Orleans",
-       "state": "LA",
-       "ll": [
-        29.951,
-        -90.072
-       ],
-       "tz": -6,
-       "urban": true,
-       "road": "I-10 AL/MS/LA",
-       "limit": 70
-      },
-      {
-       "name": "Baton Rouge",
-       "state": "LA",
-       "ll": [
-        30.451,
-        -91.187
-       ],
-       "tz": -6,
-       "urban": true,
-       "road": "I-10 AL/MS/LA",
-       "limit": 70
-      },
-      {
-       "name": "Lafayette",
-       "state": "LA",
-       "ll": [
-        30.224,
-        -92.02
-       ],
-       "tz": -6,
-       "road": "I-10 AL/MS/LA",
-       "limit": 70
-      },
-      {
-       "name": "Lake Charles",
-       "state": "LA",
-       "ll": [
-        30.226,
-        -93.217
-       ],
-       "tz": -6,
-       "road": "I-10 AL/MS/LA",
-       "limit": 70
-      },
-      {
-       "name": "Beaumont",
-       "state": "TX",
-       "ll": [
-        30.08,
-        -94.127
-       ],
-       "tz": -6,
-       "road": "I-10 AL/MS/LA",
-       "limit": 70
-      },
-      {
-       "name": "Houston",
-       "state": "TX",
-       "ll": [
-        29.76,
-        -95.37
-       ],
-       "tz": -6,
-       "urban": true,
-       "road": "I-10 TX",
-       "limit": 75
-      }
-     ]
-    },
-    {
-     "id": "leg2-inland",
-     "name": "The inland run",
-     "road": "I-85 to Atlanta, I-20 to Marshall, then US-59 south",
-     "character": "Straight across through Birmingham, Jackson and Dallas.",
-     "why": "Birmingham's civil rights blocks, Vicksburg, and the cypress trees at Caddo Lake, then straight down US-59 instead of the long way around through Dallas.",
-     "costs": "Skips New Orleans and the Gulf entirely — which is most of what makes this leg worth doing.",
-     "waypoints": [
-      {
-       "name": "Mooresville",
-       "state": "NC",
-       "ll": [
-        35.585,
-        -80.81
-       ],
-       "tz": -5
-      },
-      {
-       "name": "Charlotte",
-       "state": "NC",
-       "ll": [
-        35.227,
-        -80.843
-       ],
-       "tz": -5,
-       "urban": true,
-       "road": "I-85 NC/SC",
-       "limit": 70
-      },
-      {
-       "name": "Gastonia",
-       "state": "NC",
-       "ll": [
-        35.262,
-        -81.187
-       ],
-       "tz": -5,
-       "road": "I-85 NC/SC",
-       "limit": 70
-      },
-      {
-       "name": "Spartanburg",
-       "state": "SC",
-       "ll": [
-        34.95,
-        -81.932
-       ],
-       "tz": -5,
-       "road": "I-85 NC/SC",
-       "limit": 70
-      },
-      {
-       "name": "Greenville",
-       "state": "SC",
-       "ll": [
-        34.853,
-        -82.394
-       ],
-       "tz": -5,
-       "urban": true,
-       "road": "I-85 NC/SC",
-       "limit": 70
-      },
-      {
-       "name": "Commerce",
-       "state": "GA",
-       "ll": [
-        34.204,
-        -83.457
-       ],
-       "tz": -5,
-       "road": "I-85 NC/SC",
-       "limit": 70
-      },
-      {
-       "name": "Atlanta",
-       "state": "GA",
-       "ll": [
-        33.749,
-        -84.388
-       ],
-       "elev": 1050,
-       "risk": "ice",
-       "note": "Atlanta ices rarely but completely. If a storm is named, wait it out rather than creep through it.",
-       "tz": -5,
-       "urban": true,
-       "road": "I-85 NC/SC",
-       "limit": 70
-      },
-      {
-       "name": "Birmingham",
-       "state": "AL",
-       "ll": [
-        33.519,
-        -86.81
-       ],
-       "tz": -6,
-       "urban": true,
-       "road": "I-20 AL/MS",
-       "limit": 70
-      },
-      {
-       "name": "Meridian",
-       "state": "MS",
-       "ll": [
-        32.364,
-        -88.704
-       ],
-       "tz": -6,
-       "road": "I-20 AL/MS",
-       "limit": 70
-      },
-      {
-       "name": "Jackson",
-       "state": "MS",
-       "ll": [
-        32.299,
-        -90.185
-       ],
-       "tz": -6,
-       "urban": true,
-       "road": "I-20 AL/MS",
-       "limit": 70
-      },
-      {
-       "name": "Vicksburg",
-       "state": "MS",
-       "ll": [
-        32.353,
-        -90.878
-       ],
-       "tz": -6,
-       "road": "I-20 AL/MS",
-       "limit": 70
-      },
-      {
-       "name": "Monroe",
-       "state": "LA",
-       "ll": [
-        32.51,
-        -92.119
-       ],
-       "tz": -6,
-       "road": "I-20 AL/MS",
-       "limit": 70
-      },
-      {
-       "name": "Shreveport",
-       "state": "LA",
-       "ll": [
-        32.515,
-        -93.747
-       ],
-       "tz": -6,
-       "urban": true,
-       "road": "I-20 AL/MS",
-       "limit": 70
-      },
-      {
-       "name": "Marshall",
-       "state": "TX",
-       "ll": [
-        32.545,
-        -94.367
-       ],
-       "tz": -6,
-       "road": "I-20 TX",
-       "limit": 75
-      },
-      {
-       "name": "Nacogdoches",
-       "state": "TX",
-       "ll": [
-        31.603,
-        -94.655
-       ],
-       "tz": -6,
-       "road": "US-59 TX",
-       "limit": 75
-      },
-      {
-       "name": "Lufkin",
-       "state": "TX",
-       "ll": [
-        31.338,
-        -94.729
-       ],
-       "tz": -6,
-       "road": "US-59 TX",
-       "limit": 75
-      },
-      {
-       "name": "Cleveland",
-       "state": "TX",
-       "ll": [
-        30.341,
-        -95.085
-       ],
-       "tz": -6,
-       "road": "US-59 TX",
-       "limit": 75
-      },
-      {
-       "name": "Houston",
-       "state": "TX",
-       "ll": [
-        29.76,
-        -95.37
-       ],
-       "tz": -6,
-       "urban": true,
-       "road": "US-59 TX",
-       "limit": 75
-      }
-     ]
-    },
-    {
-      "id": "leg2-plan",
-      "name": "Christmas to New Year",
-      "sameRoadAs": "leg2-gulf",
-      "road": "The Gulf Coast, and only the stops this trip makes",
-      "character": "Not a different road. The Gulf Coast exactly, carrying the eight stops and three beds the run to Houston actually makes.",
-      "why": "Four unhurried days between your mom's and New Year's Eve. Atlanta on the way out, the Bellingrath lights after dark, a night on the Biloxi coast, and a whole afternoon and evening in the French Quarter. It lands in Houston mid-afternoon on the 30th with the 31st completely free.",
-      "costs": "Nothing, because it is the same road as the Gulf Coast. What it gives up is the inland run, and with it Birmingham and Vicksburg and Caddo Lake. Swap back to see everything left out."
-    }
-   ]
-  },
-  {
-   "id": "leg3",
-   "name": "Houston to Modesto",
-   "from": "Houston, TX",
-   "to": "Modesto, CA",
-   "routes": [
-    {
-     "id": "leg3-i40",
-     "name": "The road home",
-     "default": true,
-     "road": "I-45 to Dallas, US-287 to Amarillo, then I-40 back",
-     "character": "Up through Dallas and the empty US-287 corner, then leg 1 in reverse. Everything you skipped going east is still there.",
-     "why": "Tucumcari's neon works better westbound, Palo Duro is on the way in instead of a backtrack, and the Basque table in Bakersfield is a better last meal than a first one.",
-     "costs": "The Panhandle and Flagstaff in early January are the same winter problem as leg 1, in reverse order.",
-     "waypoints": [
-      {
-       "name": "Houston",
-       "state": "TX",
-       "ll": [
-        29.76,
-        -95.37
-       ],
-       "tz": -6,
-       "urban": true
-      },
-      {
-       "name": "Huntsville",
-       "state": "TX",
-       "ll": [
-        30.723,
-        -95.551
-       ],
-       "tz": -6,
-       "road": "I-45 TX",
-       "limit": 75
-      },
-      {
-       "name": "Centerville",
-       "state": "TX",
-       "ll": [
-        31.259,
-        -95.978
-       ],
-       "tz": -6,
-       "road": "I-45 TX",
-       "limit": 75
-      },
-      {
-       "name": "Corsicana",
-       "state": "TX",
-       "ll": [
-        32.095,
-        -96.469
-       ],
-       "tz": -6,
-       "road": "I-45 TX",
-       "limit": 75
-      },
-      {
-       "name": "Dallas",
-       "state": "TX",
-       "ll": [
-        32.777,
-        -96.797
-       ],
-       "tz": -6,
-       "urban": true,
-       "road": "I-45 TX",
-       "limit": 75
-      },
-      {
-       "name": "Fort Worth",
-       "state": "TX",
-       "ll": [
-        32.755,
-        -97.331
-       ],
-       "tz": -6,
-       "urban": true,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Decatur",
-       "state": "TX",
-       "ll": [
-        33.234,
-        -97.586
-       ],
-       "tz": -6,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Wichita Falls",
-       "state": "TX",
-       "ll": [
-        33.914,
-        -98.493
-       ],
-       "tz": -6,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Vernon",
-       "state": "TX",
-       "ll": [
-        34.155,
-        -99.266
-       ],
-       "tz": -6,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Quanah",
-       "state": "TX",
-       "ll": [
-        34.298,
-        -99.74
-       ],
-       "tz": -6,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Childress",
-       "state": "TX",
-       "ll": [
-        34.426,
-        -100.204
-       ],
-       "risk": "ice",
-       "note": "US-287 across the Panhandle ices the same as I-40. It is the same weather with fewer plows.",
-       "tz": -6,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Clarendon",
-       "state": "TX",
-       "ll": [
-        34.938,
-        -100.892
-       ],
-       "tz": -6,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Amarillo",
-       "state": "TX",
-       "ll": [
-        35.222,
-        -101.831
-       ],
-       "elev": 3605,
-       "risk": "ice",
-       "note": "Here to Little Rock is ice-storm country in late December. Chains do nothing on ice — the only move is to not drive that day.",
-       "tz": -6,
-       "urban": true,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Tucumcari",
-       "state": "NM",
-       "ll": [
-        35.172,
-        -103.725
-       ],
-       "tz": -7,
-       "road": "I-40 TX",
-       "limit": 75
-      },
-      {
-       "name": "Santa Rosa",
-       "state": "NM",
-       "ll": [
-        34.938,
-        -104.682
-       ],
-       "tz": -7,
-       "road": "I-40 TX",
-       "limit": 75
-      },
-      {
-       "name": "Albuquerque",
-       "state": "NM",
-       "ll": [
-        35.084,
-        -106.651
-       ],
-       "elev": 5312,
-       "tz": -7,
-       "urban": true,
-       "road": "I-40 TX",
-       "limit": 75
-      },
-      {
-       "name": "Continental Divide",
-       "state": "NM",
-       "ll": [
-        35.44,
-        -108.35
-       ],
-       "elev": 7275,
-       "risk": "snow",
-       "note": "High point of the drive. Rain west of here ends up in the Pacific.",
-       "tz": -7,
-       "road": "I-40 TX",
-       "limit": 75
-      },
-      {
-       "name": "Gallup",
-       "state": "NM",
-       "ll": [
-        35.528,
-        -108.742
-       ],
-       "tz": -7,
-       "road": "I-40 TX",
-       "limit": 75
-      },
-      {
-       "name": "Holbrook",
-       "state": "AZ",
-       "ll": [
-        34.902,
-        -110.159
-       ],
-       "tz": -7,
-       "road": "I-40 NM",
-       "limit": 75
-      },
-      {
-       "name": "Winslow",
-       "state": "AZ",
-       "ll": [
-        35.024,
-        -110.697
-       ],
-       "tz": -7,
-       "road": "I-40 NM",
-       "limit": 75
-      },
-      {
-       "name": "Flagstaff",
-       "state": "AZ",
-       "ll": [
-        35.198,
-        -111.651
-       ],
-       "elev": 6909,
-       "risk": "snow",
-       "note": "The most likely place on this whole trip to find the interstate closed. Check the forecast 48 hours out.",
-       "tz": -7,
-       "road": "I-40 NM",
-       "limit": 75
-      },
-      {
-       "name": "Williams",
-       "state": "AZ",
-       "ll": [
-        35.249,
-        -112.191
-       ],
-       "elev": 6766,
-       "note": "Turn north here for the Grand Canyon.",
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Seligman",
-       "state": "AZ",
-       "ll": [
-        35.326,
-        -112.874
-       ],
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Kingman",
-       "state": "AZ",
-       "ll": [
-        35.189,
-        -114.053
-       ],
-       "elev": 3333,
-       "note": "Below the snow line. Sleep here if Flagstaff is getting hit and go over in the morning.",
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Needles",
-       "state": "CA",
-       "ll": [
-        34.848,
-        -114.614
-       ],
-       "tz": -8,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Barstow",
-       "state": "CA",
-       "ll": [
-        34.899,
-        -117.023
-       ],
-       "note": "I-40 begins. One road for the next 2,400 miles.",
-       "tz": -8,
-       "road": "I-40 CA",
-       "limit": 70
-      },
-      {
-       "name": "Mojave",
-       "state": "CA",
-       "ll": [
-        35.053,
-        -118.174
-       ],
-       "tz": -8,
-       "road": "CA-58",
-       "limit": 70
-      },
-      {
-       "name": "Tehachapi Pass",
-       "state": "CA",
-       "ll": [
-        35.132,
-        -118.449
-       ],
-       "elev": 3793,
-       "risk": "chains",
-       "note": "Chain control posts here. Your FWD Accord needs chains ON under R2 — the exemption is AWD only.",
-       "tz": -8,
-       "road": "CA-58",
-       "limit": 70
-      },
-      {
-       "name": "Bakersfield",
-       "state": "CA",
-       "ll": [
-        35.373,
-        -119.019
-       ],
-       "tz": -8,
-       "urban": true,
-       "road": "CA-58",
-       "limit": 70
-      },
-      {
-       "name": "Fresno",
-       "state": "CA",
-       "ll": [
-        36.746,
-        -119.772
-       ],
-       "tz": -8,
-       "urban": true,
-       "road": "CA-99",
-       "limit": 70
-      },
-      {
-       "name": "Modesto",
-       "state": "CA",
-       "ll": [
-        37.639,
-        -120.997
-       ],
-       "tz": -8,
-       "road": "CA-99",
-       "limit": 70
-      }
-     ]
-    },
-    {
-     "id": "leg3-waco",
-     "name": "The Waco line",
-     "road": "TX-6 through College Station and Waco, then US-287 and I-40",
-     "character": "The other way from Houston to Dallas, nearly the same distance, through Waco instead of Huntsville.",
-     "why": "One reason: the mammoths. A nursery herd excavated where it fell, and you walk above the bones. It costs you the Sam Houston statue.",
-     "costs": "Two-lane Texas highway instead of interstate for the first stretch. Slower per mile, emptier per mile.",
-     "waypoints": [
-      {
-       "name": "Houston",
-       "state": "TX",
-       "ll": [
-        29.76,
-        -95.37
-       ],
-       "tz": -6,
-       "urban": true
-      },
-      {
-       "name": "Hempstead",
-       "state": "TX",
-       "ll": [
-        30.097,
-        -96.078
-       ],
-       "tz": -6,
-       "road": "TX-6",
-       "limit": 70
-      },
-      {
-       "name": "College Station",
-       "state": "TX",
-       "ll": [
-        30.628,
-        -96.334
-       ],
-       "tz": -6,
-       "road": "TX-6",
-       "limit": 70
-      },
-      {
-       "name": "Hearne",
-       "state": "TX",
-       "ll": [
-        30.879,
-        -96.593
-       ],
-       "tz": -6,
-       "road": "TX-6",
-       "limit": 70
-      },
-      {
-       "name": "Waco",
-       "state": "TX",
-       "ll": [
-        31.549,
-        -97.147
-       ],
-       "tz": -6,
-       "urban": true,
-       "road": "TX-6",
-       "limit": 70
-      },
-      {
-       "name": "Hillsboro",
-       "state": "TX",
-       "ll": [
-        32.011,
-        -97.13
-       ],
-       "tz": -6,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Dallas",
-       "state": "TX",
-       "ll": [
-        32.777,
-        -96.797
-       ],
-       "tz": -6,
-       "urban": true,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Fort Worth",
-       "state": "TX",
-       "ll": [
-        32.755,
-        -97.331
-       ],
-       "tz": -6,
-       "urban": true,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Decatur",
-       "state": "TX",
-       "ll": [
-        33.234,
-        -97.586
-       ],
-       "tz": -6,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Wichita Falls",
-       "state": "TX",
-       "ll": [
-        33.914,
-        -98.493
-       ],
-       "tz": -6,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Vernon",
-       "state": "TX",
-       "ll": [
-        34.155,
-        -99.266
-       ],
-       "tz": -6,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Quanah",
-       "state": "TX",
-       "ll": [
-        34.298,
-        -99.74
-       ],
-       "tz": -6,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Childress",
-       "state": "TX",
-       "ll": [
-        34.426,
-        -100.204
-       ],
-       "risk": "ice",
-       "note": "US-287 across the Panhandle ices the same as I-40. It is the same weather with fewer plows.",
-       "tz": -6,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Clarendon",
-       "state": "TX",
-       "ll": [
-        34.938,
-        -100.892
-       ],
-       "tz": -6,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Amarillo",
-       "state": "TX",
-       "ll": [
-        35.222,
-        -101.831
-       ],
-       "elev": 3605,
-       "risk": "ice",
-       "note": "Here to Little Rock is ice-storm country in late December. Chains do nothing on ice — the only move is to not drive that day.",
-       "tz": -6,
-       "urban": true,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Tucumcari",
-       "state": "NM",
-       "ll": [
-        35.172,
-        -103.725
-       ],
-       "tz": -7,
-       "road": "I-40 TX",
-       "limit": 75
-      },
-      {
-       "name": "Santa Rosa",
-       "state": "NM",
-       "ll": [
-        34.938,
-        -104.682
-       ],
-       "tz": -7,
-       "road": "I-40 TX",
-       "limit": 75
-      },
-      {
-       "name": "Albuquerque",
-       "state": "NM",
-       "ll": [
-        35.084,
-        -106.651
-       ],
-       "elev": 5312,
-       "tz": -7,
-       "urban": true,
-       "road": "I-40 TX",
-       "limit": 75
-      },
-      {
-       "name": "Continental Divide",
-       "state": "NM",
-       "ll": [
-        35.44,
-        -108.35
-       ],
-       "elev": 7275,
-       "risk": "snow",
-       "note": "High point of the drive. Rain west of here ends up in the Pacific.",
-       "tz": -7,
-       "road": "I-40 TX",
-       "limit": 75
-      },
-      {
-       "name": "Gallup",
-       "state": "NM",
-       "ll": [
-        35.528,
-        -108.742
-       ],
-       "tz": -7,
-       "road": "I-40 TX",
-       "limit": 75
-      },
-      {
-       "name": "Holbrook",
-       "state": "AZ",
-       "ll": [
-        34.902,
-        -110.159
-       ],
-       "tz": -7,
-       "road": "I-40 NM",
-       "limit": 75
-      },
-      {
-       "name": "Winslow",
-       "state": "AZ",
-       "ll": [
-        35.024,
-        -110.697
-       ],
-       "tz": -7,
-       "road": "I-40 NM",
-       "limit": 75
-      },
-      {
-       "name": "Flagstaff",
-       "state": "AZ",
-       "ll": [
-        35.198,
-        -111.651
-       ],
-       "elev": 6909,
-       "risk": "snow",
-       "note": "The most likely place on this whole trip to find the interstate closed. Check the forecast 48 hours out.",
-       "tz": -7,
-       "road": "I-40 NM",
-       "limit": 75
-      },
-      {
-       "name": "Williams",
-       "state": "AZ",
-       "ll": [
-        35.249,
-        -112.191
-       ],
-       "elev": 6766,
-       "note": "Turn north here for the Grand Canyon.",
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Seligman",
-       "state": "AZ",
-       "ll": [
-        35.326,
-        -112.874
-       ],
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Kingman",
-       "state": "AZ",
-       "ll": [
-        35.189,
-        -114.053
-       ],
-       "elev": 3333,
-       "note": "Below the snow line. Sleep here if Flagstaff is getting hit and go over in the morning.",
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Needles",
-       "state": "CA",
-       "ll": [
-        34.848,
-        -114.614
-       ],
-       "tz": -8,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Barstow",
-       "state": "CA",
-       "ll": [
-        34.899,
-        -117.023
-       ],
-       "note": "I-40 begins. One road for the next 2,400 miles.",
-       "tz": -8,
-       "road": "I-40 CA",
-       "limit": 70
-      },
-      {
-       "name": "Mojave",
-       "state": "CA",
-       "ll": [
-        35.053,
-        -118.174
-       ],
-       "tz": -8,
-       "road": "CA-58",
-       "limit": 70
-      },
-      {
-       "name": "Tehachapi Pass",
-       "state": "CA",
-       "ll": [
-        35.132,
-        -118.449
-       ],
-       "elev": 3793,
-       "risk": "chains",
-       "note": "Chain control posts here. Your FWD Accord needs chains ON under R2 — the exemption is AWD only.",
-       "tz": -8,
-       "road": "CA-58",
-       "limit": 70
-      },
-      {
-       "name": "Bakersfield",
-       "state": "CA",
-       "ll": [
-        35.373,
-        -119.019
-       ],
-       "tz": -8,
-       "urban": true,
-       "road": "CA-58",
-       "limit": 70
-      },
-      {
-       "name": "Fresno",
-       "state": "CA",
-       "ll": [
-        36.746,
-        -119.772
-       ],
-       "tz": -8,
-       "urban": true,
-       "road": "CA-99",
-       "limit": 70
-      },
-      {
-       "name": "Modesto",
-       "state": "CA",
-       "ll": [
-        37.639,
-        -120.997
-       ],
-       "tz": -8,
-       "road": "CA-99",
-       "limit": 70
-      }
-     ]
-    },
-    {
-     "id": "leg3-vegas",
-     "name": "The Vegas diversion",
-     "road": "The road home until Kingman, then US-93 north, I-15 south",
-     "character": "Cut north at Kingman for Hoover Dam and the Strip, come back down to Barstow past Seven Magic Mountains.",
-     "why": "Ada has never seen anything like the Strip, the dam is free to walk, and the painted boulders are directly on the road out.",
-     "costs": "Adds roughly 4 hours of driving over staying on I-40, and you give up Oatman's burros on the way through.",
-     "waypoints": [
-      {
-       "name": "Houston",
-       "state": "TX",
-       "ll": [
-        29.76,
-        -95.37
-       ],
-       "tz": -6,
-       "urban": true
-      },
-      {
-       "name": "Huntsville",
-       "state": "TX",
-       "ll": [
-        30.723,
-        -95.551
-       ],
-       "tz": -6,
-       "road": "I-45 TX",
-       "limit": 75
-      },
-      {
-       "name": "Centerville",
-       "state": "TX",
-       "ll": [
-        31.259,
-        -95.978
-       ],
-       "tz": -6,
-       "road": "I-45 TX",
-       "limit": 75
-      },
-      {
-       "name": "Corsicana",
-       "state": "TX",
-       "ll": [
-        32.095,
-        -96.469
-       ],
-       "tz": -6,
-       "road": "I-45 TX",
-       "limit": 75
-      },
-      {
-       "name": "Dallas",
-       "state": "TX",
-       "ll": [
-        32.777,
-        -96.797
-       ],
-       "tz": -6,
-       "urban": true,
-       "road": "I-45 TX",
-       "limit": 75
-      },
-      {
-       "name": "Fort Worth",
-       "state": "TX",
-       "ll": [
-        32.755,
-        -97.331
-       ],
-       "tz": -6,
-       "urban": true,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Decatur",
-       "state": "TX",
-       "ll": [
-        33.234,
-        -97.586
-       ],
-       "tz": -6,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Wichita Falls",
-       "state": "TX",
-       "ll": [
-        33.914,
-        -98.493
-       ],
-       "tz": -6,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Vernon",
-       "state": "TX",
-       "ll": [
-        34.155,
-        -99.266
-       ],
-       "tz": -6,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Quanah",
-       "state": "TX",
-       "ll": [
-        34.298,
-        -99.74
-       ],
-       "tz": -6,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Childress",
-       "state": "TX",
-       "ll": [
-        34.426,
-        -100.204
-       ],
-       "risk": "ice",
-       "note": "US-287 across the Panhandle ices the same as I-40. It is the same weather with fewer plows.",
-       "tz": -6,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Clarendon",
-       "state": "TX",
-       "ll": [
-        34.938,
-        -100.892
-       ],
-       "tz": -6,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Amarillo",
-       "state": "TX",
-       "ll": [
-        35.222,
-        -101.831
-       ],
-       "elev": 3605,
-       "risk": "ice",
-       "note": "Here to Little Rock is ice-storm country in late December. Chains do nothing on ice — the only move is to not drive that day.",
-       "tz": -6,
-       "urban": true,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Tucumcari",
-       "state": "NM",
-       "ll": [
-        35.172,
-        -103.725
-       ],
-       "tz": -7,
-       "road": "I-40 TX",
-       "limit": 75
-      },
-      {
-       "name": "Santa Rosa",
-       "state": "NM",
-       "ll": [
-        34.938,
-        -104.682
-       ],
-       "tz": -7,
-       "road": "I-40 TX",
-       "limit": 75
-      },
-      {
-       "name": "Albuquerque",
-       "state": "NM",
-       "ll": [
-        35.084,
-        -106.651
-       ],
-       "elev": 5312,
-       "tz": -7,
-       "urban": true,
-       "road": "I-40 TX",
-       "limit": 75
-      },
-      {
-       "name": "Continental Divide",
-       "state": "NM",
-       "ll": [
-        35.44,
-        -108.35
-       ],
-       "elev": 7275,
-       "risk": "snow",
-       "note": "High point of the drive. Rain west of here ends up in the Pacific.",
-       "tz": -7,
-       "road": "I-40 TX",
-       "limit": 75
-      },
-      {
-       "name": "Gallup",
-       "state": "NM",
-       "ll": [
-        35.528,
-        -108.742
-       ],
-       "tz": -7,
-       "road": "I-40 TX",
-       "limit": 75
-      },
-      {
-       "name": "Holbrook",
-       "state": "AZ",
-       "ll": [
-        34.902,
-        -110.159
-       ],
-       "tz": -7,
-       "road": "I-40 NM",
-       "limit": 75
-      },
-      {
-       "name": "Winslow",
-       "state": "AZ",
-       "ll": [
-        35.024,
-        -110.697
-       ],
-       "tz": -7,
-       "road": "I-40 NM",
-       "limit": 75
-      },
-      {
-       "name": "Flagstaff",
-       "state": "AZ",
-       "ll": [
-        35.198,
-        -111.651
-       ],
-       "elev": 6909,
-       "risk": "snow",
-       "note": "The most likely place on this whole trip to find the interstate closed. Check the forecast 48 hours out.",
-       "tz": -7,
-       "road": "I-40 NM",
-       "limit": 75
-      },
-      {
-       "name": "Williams",
-       "state": "AZ",
-       "ll": [
-        35.249,
-        -112.191
-       ],
-       "elev": 6766,
-       "note": "Turn north here for the Grand Canyon.",
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Seligman",
-       "state": "AZ",
-       "ll": [
-        35.326,
-        -112.874
-       ],
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Kingman",
-       "state": "AZ",
-       "ll": [
-        35.189,
-        -114.053
-       ],
-       "elev": 3333,
-       "note": "Below the snow line. Sleep here if Flagstaff is getting hit and go over in the morning.",
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Boulder City",
-       "state": "NV",
-       "ll": [
-        35.978,
-        -114.832
-       ],
-       "tz": -8,
-       "road": "US-93 AZ/NV",
-       "limit": 70
-      },
-      {
-       "name": "Las Vegas",
-       "state": "NV",
-       "ll": [
-        36.115,
-        -115.173
-       ],
-       "tz": -8,
-       "urban": true,
-       "road": "I-15 NV",
-       "limit": 75
-      },
-      {
-       "name": "Jean",
-       "state": "NV",
-       "ll": [
-        35.779,
-        -115.324
-       ],
-       "tz": -8,
-       "road": "I-15 NV",
-       "limit": 75
-      },
-      {
-       "name": "Primm",
-       "state": "NV",
-       "ll": [
-        35.61,
-        -115.388
-       ],
-       "tz": -8,
-       "road": "I-15 NV",
-       "limit": 75
-      },
-      {
-       "name": "Baker",
-       "state": "CA",
-       "ll": [
-        35.262,
-        -116.074
-       ],
-       "tz": -8,
-       "road": "I-15 CA",
-       "limit": 70
-      },
-      {
-       "name": "Barstow",
-       "state": "CA",
-       "ll": [
-        34.899,
-        -117.023
-       ],
-       "note": "I-40 begins. One road for the next 2,400 miles.",
-       "tz": -8,
-       "road": "I-15 CA",
-       "limit": 70
-      },
-      {
-       "name": "Mojave",
-       "state": "CA",
-       "ll": [
-        35.053,
-        -118.174
-       ],
-       "tz": -8,
-       "road": "CA-58",
-       "limit": 70
-      },
-      {
-       "name": "Tehachapi Pass",
-       "state": "CA",
-       "ll": [
-        35.132,
-        -118.449
-       ],
-       "elev": 3793,
-       "risk": "chains",
-       "note": "Chain control posts here. Your FWD Accord needs chains ON under R2 — the exemption is AWD only.",
-       "tz": -8,
-       "road": "CA-58",
-       "limit": 70
-      },
-      {
-       "name": "Bakersfield",
-       "state": "CA",
-       "ll": [
-        35.373,
-        -119.019
-       ],
-       "tz": -8,
-       "urban": true,
-       "road": "CA-58",
-       "limit": 70
-      },
-      {
-       "name": "Fresno",
-       "state": "CA",
-       "ll": [
-        36.746,
-        -119.772
-       ],
-       "tz": -8,
-       "urban": true,
-       "road": "CA-99",
-       "limit": 70
-      },
-      {
-       "name": "Modesto",
-       "state": "CA",
-       "ll": [
-        37.639,
-        -120.997
-       ],
-       "tz": -8,
-       "road": "CA-99",
-       "limit": 70
-      }
-     ]
-    },
-    {
-     "id": "leg3-canyon",
-     "name": "The canyon road",
-     "road": "US-89 up from Flagstaff, AZ-64 through the park, down to Williams",
-     "character": "Through the canyon instead of out and back to it. You come in at Desert View, take the rim road past Lipan, Moran and Grandview as part of the driving, and leave by the other entrance.",
-     "why": "The out-and-back from Williams drives the same 60 miles twice. This costs about the same and does not repeat a mile of it, and the Watchtower end is the quiet entrance. It also puts Sunset Crater and Wupatki on the road rather than off it, since US-89 is the way through.",
-     "costs": "About 130 miles more than staying on I-40, near enough exactly what the out-and-back costs. Higher and more exposed, though: Desert View sits at 7,438 feet and is the first thing to close in weather. If the forecast is bad, take the plain interstate and do the canyon as a spur from Williams, or skip it.",
-     "waypoints": [
-      {
-       "name": "Houston",
-       "state": "TX",
-       "ll": [
-        29.76,
-        -95.37
-       ],
-       "tz": -6,
-       "urban": true
-      },
-      {
-       "name": "Huntsville",
-       "state": "TX",
-       "ll": [
-        30.723,
-        -95.551
-       ],
-       "tz": -6,
-       "road": "I-45 TX",
-       "limit": 75
-      },
-      {
-       "name": "Centerville",
-       "state": "TX",
-       "ll": [
-        31.259,
-        -95.978
-       ],
-       "tz": -6,
-       "road": "I-45 TX",
-       "limit": 75
-      },
-      {
-       "name": "Corsicana",
-       "state": "TX",
-       "ll": [
-        32.095,
-        -96.469
-       ],
-       "tz": -6,
-       "road": "I-45 TX",
-       "limit": 75
-      },
-      {
-       "name": "Dallas",
-       "state": "TX",
-       "ll": [
-        32.777,
-        -96.797
-       ],
-       "tz": -6,
-       "urban": true,
-       "road": "I-45 TX",
-       "limit": 75
-      },
-      {
-       "name": "Fort Worth",
-       "state": "TX",
-       "ll": [
-        32.755,
-        -97.331
-       ],
-       "tz": -6,
-       "urban": true,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Decatur",
-       "state": "TX",
-       "ll": [
-        33.234,
-        -97.586
-       ],
-       "tz": -6,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Wichita Falls",
-       "state": "TX",
-       "ll": [
-        33.914,
-        -98.493
-       ],
-       "tz": -6,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Vernon",
-       "state": "TX",
-       "ll": [
-        34.155,
-        -99.266
-       ],
-       "tz": -6,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Quanah",
-       "state": "TX",
-       "ll": [
-        34.298,
-        -99.74
-       ],
-       "tz": -6,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Childress",
-       "state": "TX",
-       "ll": [
-        34.426,
-        -100.204
-       ],
-       "risk": "ice",
-       "note": "US-287 across the Panhandle ices the same as I-40. It is the same weather with fewer plows.",
-       "tz": -6,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Clarendon",
-       "state": "TX",
-       "ll": [
-        34.938,
-        -100.892
-       ],
-       "tz": -6,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Amarillo",
-       "state": "TX",
-       "ll": [
-        35.222,
-        -101.831
-       ],
-       "elev": 3605,
-       "risk": "ice",
-       "note": "Here to Little Rock is ice-storm country in late December. Chains do nothing on ice — the only move is to not drive that day.",
-       "tz": -6,
-       "urban": true,
-       "road": "US-287 TX",
-       "limit": 75
-      },
-      {
-       "name": "Tucumcari",
-       "state": "NM",
-       "ll": [
-        35.172,
-        -103.725
-       ],
-       "tz": -7,
-       "road": "I-40 TX",
-       "limit": 75
-      },
-      {
-       "name": "Santa Rosa",
-       "state": "NM",
-       "ll": [
-        34.938,
-        -104.682
-       ],
-       "tz": -7,
-       "road": "I-40 TX",
-       "limit": 75
-      },
-      {
-       "name": "Albuquerque",
-       "state": "NM",
-       "ll": [
-        35.084,
-        -106.651
-       ],
-       "elev": 5312,
-       "tz": -7,
-       "urban": true,
-       "road": "I-40 TX",
-       "limit": 75
-      },
-      {
-       "name": "Continental Divide",
-       "state": "NM",
-       "ll": [
-        35.44,
-        -108.35
-       ],
-       "elev": 7275,
-       "risk": "snow",
-       "note": "High point of the drive. Rain west of here ends up in the Pacific.",
-       "tz": -7,
-       "road": "I-40 TX",
-       "limit": 75
-      },
-      {
-       "name": "Gallup",
-       "state": "NM",
-       "ll": [
-        35.528,
-        -108.742
-       ],
-       "tz": -7,
-       "road": "I-40 TX",
-       "limit": 75
-      },
-      {
-       "name": "Holbrook",
-       "state": "AZ",
-       "ll": [
-        34.902,
-        -110.159
-       ],
-       "tz": -7,
-       "road": "I-40 NM",
-       "limit": 75
-      },
-      {
-       "name": "Winslow",
-       "state": "AZ",
-       "ll": [
-        35.024,
-        -110.697
-       ],
-       "tz": -7,
-       "road": "I-40 NM",
-       "limit": 75
-      },
-      {
-       "name": "Flagstaff",
-       "state": "AZ",
-       "ll": [
-        35.198,
-        -111.651
-       ],
-       "elev": 6909,
-       "risk": "snow",
-       "note": "The most likely place on this whole trip to find the interstate closed. Check the forecast 48 hours out.",
-       "tz": -7,
-       "road": "I-40 NM",
-       "limit": 75
-      },
-      {
-       "name": "Cameron",
-       "state": "AZ",
-       "ll": [
-        35.877,
-        -111.416
-       ],
-       "elev": 4200,
-       "tz": -7,
-       "road": "US-89 AZ",
-       "limit": 65
-      },
-      {
-       "name": "Desert View",
-       "state": "AZ",
-       "ll": [
-        36.043,
-        -111.826
-       ],
-       "elev": 7438,
-       "risk": "snow",
-       "note": "The highest point on this road, and the piece of the park that closes first in bad weather. Desert View Drive shuts for winter storms while the south entrance stays open.",
-       "tz": -7,
-       "road": "US-89 AZ",
-       "limit": 65
-      },
-      {
-       "name": "Grand Canyon Village",
-       "state": "AZ",
-       "ll": [
-        36.058,
-        -112.14
-       ],
-       "elev": 6800,
-       "risk": "snow",
-       "note": "The rim is plowed and open all winter, but the road in can close during a storm. (928) 638-7496 for conditions.",
-       "tz": -7,
-       "road": "AZ-64 park",
-       "limit": 45
-      },
-      {
-       "name": "Tusayan",
-       "state": "AZ",
-       "ll": [
-        35.976,
-        -112.126
-       ],
-       "elev": 6612,
-       "tz": -7,
-       "road": "AZ-64",
-       "limit": 65
-      },
-      {
-       "name": "Valle",
-       "state": "AZ",
-       "ll": [
-        35.652,
-        -112.143
-       ],
-       "elev": 5999,
-       "tz": -7,
-       "road": "AZ-64",
-       "limit": 65
-      },
-      {
-       "name": "Williams",
-       "state": "AZ",
-       "ll": [
-        35.249,
-        -112.191
-       ],
-       "elev": 6766,
-       "note": "Turn north here for the Grand Canyon.",
-       "tz": -7,
-       "road": "AZ-64",
-       "limit": 65
-      },
-      {
-       "name": "Seligman",
-       "state": "AZ",
-       "ll": [
-        35.326,
-        -112.874
-       ],
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Kingman",
-       "state": "AZ",
-       "ll": [
-        35.189,
-        -114.053
-       ],
-       "elev": 3333,
-       "note": "Below the snow line. Sleep here if Flagstaff is getting hit and go over in the morning.",
-       "tz": -7,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Needles",
-       "state": "CA",
-       "ll": [
-        34.848,
-        -114.614
-       ],
-       "tz": -8,
-       "road": "I-40 AZ",
-       "limit": 75
-      },
-      {
-       "name": "Barstow",
-       "state": "CA",
-       "ll": [
-        34.899,
-        -117.023
-       ],
-       "note": "I-40 begins. One road for the next 2,400 miles.",
-       "tz": -8,
-       "road": "I-40 CA",
-       "limit": 70
-      },
-      {
-       "name": "Mojave",
-       "state": "CA",
-       "ll": [
-        35.053,
-        -118.174
-       ],
-       "tz": -8,
-       "road": "CA-58",
-       "limit": 70
-      },
-      {
-       "name": "Tehachapi Pass",
-       "state": "CA",
-       "ll": [
-        35.132,
-        -118.449
-       ],
-       "elev": 3793,
-       "risk": "chains",
-       "note": "Chain control posts here. Your FWD Accord needs chains ON under R2 — the exemption is AWD only.",
-       "tz": -8,
-       "road": "CA-58",
-       "limit": 70
-      },
-      {
-       "name": "Bakersfield",
-       "state": "CA",
-       "ll": [
-        35.373,
-        -119.019
-       ],
-       "tz": -8,
-       "urban": true,
-       "road": "CA-58",
-       "limit": 70
-      },
-      {
-       "name": "Fresno",
-       "state": "CA",
-       "ll": [
-        36.746,
-        -119.772
-       ],
-       "tz": -8,
-       "urban": true,
-       "road": "CA-99",
-       "limit": 70
-      },
-      {
-       "name": "Modesto",
-       "state": "CA",
-       "ll": [
-        37.639,
-        -120.997
-       ],
-       "tz": -8,
-       "road": "CA-99",
-       "limit": 70
-      }
-     ]
-    },
-    {
-      "id": "leg3-plan",
-      "name": "The long way home",
-      "sameRoadAs": "leg3-vegas",
-      "road": "The Vegas diversion, and only the stops this trip makes",
-      "character": "Not a different road. The Vegas diversion exactly, carrying the eighteen stops and six beds the run home actually makes.",
-      "why": "Everything the drive out was too rushed to take. Palo Duro, the Blue Hole, Old Town Albuquerque after dark, the volcano and the pueblo ruins above Flagstaff, and then Hoover Dam and the Strip, which are three of Ada's firsts for the price of Oatman. Five days, home on the sixth.",
-      "costs": "Sixty-one miles and about an hour over staying on I-40, and it gives up Oatman's burros. Swap to The road home to get them back."
-    }
-   ]
-  }
- ],
- "dot": [
-  {
-   "state": "CA",
-   "name": "Caltrans QuickMap",
-   "url": "https://quickmap.dot.ca.gov/"
-  },
-  {
-   "state": "NV",
-   "name": "NV Roads",
-   "url": "https://www.nvroads.com/"
-  },
-  {
-   "state": "AZ",
-   "name": "ADOT AZ511",
-   "url": "https://az511.gov/"
-  },
-  {
-   "state": "NM",
-   "name": "NMRoads",
-   "url": "https://nmroads.com/"
-  },
-  {
-   "state": "TX",
-   "name": "DriveTexas",
-   "url": "https://drivetexas.org/"
-  },
-  {
-   "state": "OK",
-   "name": "OK511",
-   "url": "https://oktraffic.org/"
-  },
-  {
-   "state": "AR",
-   "name": "IDriveArkansas",
-   "url": "https://www.idrivearkansas.com/"
-  },
-  {
-   "state": "TN",
-   "name": "TDOT SmartWay",
-   "url": "https://smartway.tn.gov/traffic"
-  },
-  {
-   "state": "NC",
-   "name": "DriveNC",
-   "url": "https://drivenc.gov/"
-  },
-  {
-   "state": "GA",
-   "name": "511 Georgia",
-   "url": "https://511ga.org/"
-  },
-  {
-   "state": "AL",
-   "name": "ALGO Traffic",
-   "url": "https://algotraffic.com/"
-  },
-  {
-   "state": "MS",
-   "name": "MDOT Traffic",
-   "url": "https://www.mdottraffic.com/"
-  },
-  {
-   "state": "LA",
-   "name": "511LA",
-   "url": "https://www.511la.org/"
-  }
- ]
 }

@@ -21,8 +21,7 @@
       "routes": [
         "leg1-south",
         "leg2-gulf",
-        "leg2-inland",
-        "leg2-plan"
+        "leg2-inland"
       ],
       "big": true
     },
@@ -80,8 +79,7 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg3-plan"
+        "leg3-canyon"
       ],
       "big": true,
       "kind": "food"
@@ -139,8 +137,7 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg3-plan"
+        "leg3-canyon"
       ],
       "kind": "food"
     },
@@ -169,8 +166,7 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg3-plan"
+        "leg3-canyon"
       ]
     },
     {
@@ -197,8 +193,7 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg1-plan"
+        "leg3-canyon"
       ]
     },
     {
@@ -226,8 +221,7 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg1-plan"
+        "leg3-canyon"
       ],
       "kind": "food"
     },
@@ -257,8 +251,7 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg3-plan"
+        "leg3-canyon"
       ],
       "kind": "food"
     },
@@ -342,8 +335,7 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg1-plan"
+        "leg3-canyon"
       ]
     },
     {
@@ -399,8 +391,7 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg1-plan"
+        "leg3-canyon"
       ]
     },
     {
@@ -428,8 +419,7 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg3-plan"
+        "leg3-canyon"
       ]
     },
     {
@@ -457,8 +447,7 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg3-plan"
+        "leg3-canyon"
       ],
       "detourBy": {
         "leg1-canyon": 6,
@@ -490,8 +479,7 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg1-plan"
+        "leg3-canyon"
       ],
       "first": true,
       "big": true,
@@ -536,8 +524,7 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg1-plan"
+        "leg3-canyon"
       ]
     },
     {
@@ -564,8 +551,7 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg1-plan"
+        "leg3-canyon"
       ],
       "first": true,
       "big": true
@@ -595,8 +581,7 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg1-plan"
+        "leg3-canyon"
       ],
       "first": true,
       "big": true,
@@ -637,8 +622,7 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg3-plan"
+        "leg3-canyon"
       ],
       "kind": "food"
     },
@@ -667,8 +651,7 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg1-plan"
+        "leg3-canyon"
       ]
     },
     {
@@ -697,8 +680,7 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg1-plan"
+        "leg3-canyon"
       ],
       "kind": "food"
     },
@@ -755,8 +737,7 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg3-plan"
+        "leg3-canyon"
       ],
       "big": true
     },
@@ -785,8 +766,7 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg3-plan"
+        "leg3-canyon"
       ]
     },
     {
@@ -813,8 +793,7 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg3-plan"
+        "leg3-canyon"
       ]
     },
     {
@@ -842,9 +821,7 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg1-plan",
-        "leg3-plan"
+        "leg3-canyon"
       ]
     },
     {
@@ -899,8 +876,7 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg1-plan"
+        "leg3-canyon"
       ],
       "first": true,
       "big": true,
@@ -931,8 +907,7 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg1-plan"
+        "leg3-canyon"
       ],
       "first": true,
       "big": true
@@ -958,8 +933,7 @@
       "routes": [
         "leg1-i40",
         "leg1-south",
-        "leg1-canyon",
-        "leg1-plan"
+        "leg1-canyon"
       ]
     },
     {
@@ -1048,8 +1022,7 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg3-plan"
+        "leg3-canyon"
       ],
       "big": true
     },
@@ -1074,8 +1047,7 @@
       "routes": [
         "leg1-i40",
         "leg1-south",
-        "leg1-canyon",
-        "leg1-plan"
+        "leg1-canyon"
       ],
       "first": true,
       "big": true,
@@ -1176,8 +1148,7 @@
       "routes": [
         "leg1-i40",
         "leg1-south",
-        "leg1-canyon",
-        "leg1-plan"
+        "leg1-canyon"
       ]
     },
     {
@@ -1251,8 +1222,7 @@
       "routes": [
         "leg1-i40",
         "leg1-south",
-        "leg1-canyon",
-        "leg1-plan"
+        "leg1-canyon"
       ],
       "first": true,
       "big": true
@@ -1278,8 +1248,7 @@
       "routes": [
         "leg1-i40",
         "leg1-south",
-        "leg1-canyon",
-        "leg1-plan"
+        "leg1-canyon"
       ],
       "big": true
     },
@@ -1305,8 +1274,7 @@
       "routes": [
         "leg1-i40",
         "leg1-south",
-        "leg1-canyon",
-        "leg1-plan"
+        "leg1-canyon"
       ],
       "big": true,
       "kind": "food"
@@ -1432,8 +1400,7 @@
       "routes": [
         "leg1-i40",
         "leg1-south",
-        "leg1-canyon",
-        "leg1-plan"
+        "leg1-canyon"
       ]
     },
     {
@@ -1869,8 +1836,7 @@
       "winter": null,
       "routes": [
         "leg2-gulf",
-        "leg2-inland",
-        "leg2-plan"
+        "leg2-inland"
       ],
       "big": true
     },
@@ -1915,8 +1881,7 @@
       "winter": null,
       "routes": [
         "leg2-gulf",
-        "leg2-inland",
-        "leg2-plan"
+        "leg2-inland"
       ]
     },
     {
@@ -1940,8 +1905,7 @@
       "winter": null,
       "routes": [
         "leg2-gulf",
-        "leg2-inland",
-        "leg2-plan"
+        "leg2-inland"
       ],
       "big": true,
       "kind": "food"
@@ -2131,8 +2095,7 @@
       "why": "A 65-acre estate garden that runs Magic Christmas in Lights through the holidays, millions of lights across the grounds. One of the biggest displays in the South, and a real detour south of Mobile.",
       "winter": "The lights run 5pm to 9pm and continue past New Year's Eve. Buy the timed ticket online first.",
       "routes": [
-        "leg2-gulf",
-        "leg2-plan"
+        "leg2-gulf"
       ]
     },
     {
@@ -2154,8 +2117,7 @@
       "why": "Iron balconies, courtyards, buskers, and streets laid out in the 1720s. Jackson Square, the cathedral, the river walk, Royal Street for antiques. There is nothing like it anywhere else in the country. Skip Bourbon Street, park once and walk.",
       "winter": null,
       "routes": [
-        "leg2-gulf",
-        "leg2-plan"
+        "leg2-gulf"
       ],
       "first": true,
       "big": true
@@ -2201,8 +2163,7 @@
       "why": "An alligator rescue sanctuary with over 450 animals, including some of the largest in captivity. Guaranteed alligators regardless of the weather.",
       "winter": "Open 10 to 5 daily through the holidays. Winter gators are slow and stacked together, which is its own show.",
       "routes": [
-        "leg2-gulf",
-        "leg2-plan"
+        "leg2-gulf"
       ],
       "first": true
     },
@@ -2371,8 +2332,7 @@
       "routes": [
         "leg3-i40",
         "leg3-vegas",
-        "leg3-canyon",
-        "leg3-plan"
+        "leg3-canyon"
       ]
     },
     {
@@ -2421,8 +2381,7 @@
         "leg3-i40",
         "leg3-waco",
         "leg3-vegas",
-        "leg3-canyon",
-        "leg3-plan"
+        "leg3-canyon"
       ],
       "big": true,
       "kind": "food"
@@ -2450,8 +2409,7 @@
         "leg3-i40",
         "leg3-waco",
         "leg3-vegas",
-        "leg3-canyon",
-        "leg3-plan"
+        "leg3-canyon"
       ]
     },
     {
@@ -2473,8 +2431,7 @@
       "why": "Seven towers of boulders painted in fluorescent colours, stacked thirty feet high in empty desert beside the interstate. A Swiss artist put them there in 2016 for two years and they never came down. Directly on the road between Vegas and Barstow.",
       "winter": "No shade, no trash cans, and it is windy. Take your rubbish with you.",
       "routes": [
-        "leg3-vegas",
-        "leg3-plan"
+        "leg3-vegas"
       ],
       "big": true
     },
@@ -2497,8 +2454,7 @@
       "why": "726 feet of concrete wedged into Black Canyon, finished in 1936, still generating. Walking the crest and the memorial bridge is free, and the scale is genuinely hard to process.",
       "winter": "Crest walk 5am to 9pm. Park free in the Arizona-side lots, the Nevada garage is $10. Interior tours are timed and ticketed.",
       "routes": [
-        "leg3-vegas",
-        "leg3-plan"
+        "leg3-vegas"
       ],
       "first": true,
       "big": true
@@ -2522,8 +2478,7 @@
       "why": "The fountains at the Bellagio, the canals at the Venetian, the volcano, the conservatory, all free to walk through. Ada has never seen anything like it. Distances are much longer than they look.",
       "winter": null,
       "routes": [
-        "leg3-vegas",
-        "leg3-plan"
+        "leg3-vegas"
       ],
       "first": true,
       "big": true
@@ -2572,7 +2527,6 @@
         "leg1-i40",
         "leg1-south",
         "leg1-canyon",
-        "leg1-plan",
         "leg3-i40",
         "leg3-waco",
         "leg3-vegas",
@@ -2601,7 +2555,6 @@
         "leg1-i40",
         "leg1-south",
         "leg1-canyon",
-        "leg1-plan",
         "leg3-i40",
         "leg3-waco",
         "leg3-vegas",
@@ -2630,7 +2583,6 @@
         "leg1-i40",
         "leg1-south",
         "leg1-canyon",
-        "leg1-plan",
         "leg3-i40",
         "leg3-waco",
         "leg3-vegas",
@@ -2658,8 +2610,7 @@
       "routes": [
         "leg1-i40",
         "leg1-south",
-        "leg1-canyon",
-        "leg1-plan"
+        "leg1-canyon"
       ]
     },
     {
@@ -2683,8 +2634,7 @@
       "routes": [
         "leg1-i40",
         "leg1-south",
-        "leg1-canyon",
-        "leg1-plan"
+        "leg1-canyon"
       ]
     },
     {
@@ -2698,8 +2648,7 @@
       ],
       "routes": [
         "leg2-gulf",
-        "leg2-inland",
-        "leg2-plan"
+        "leg2-inland"
       ],
       "why": "Georgia has exactly two rest areas on the whole of I-85 and one of them, the Lavonia welcome center, posts against overnight parking. Private lots carry this stretch: the chains at Commerce, Suwanee and the north Atlanta ring. Pinned at Suwanee so it sorts after the Commerce outlets rather than two miles before them.",
       "winter": "No elevation and no cold to speak of. It is a city, so take the lit chain lot rather than a side street.",
@@ -2721,8 +2670,7 @@
         -88.91497
       ],
       "routes": [
-        "leg2-gulf",
-        "leg2-plan"
+        "leg2-gulf"
       ],
       "why": "The gravel RV lot behind the parking decks off Highway 90. Overnight parking allowed, level, dry, lit all night, security on site. The best bed on either trip. Beau Rivage is reported hotel-guests-only, so use this one or ring ahead.",
       "winter": "Sea level. Damp rather than cold, so crack a window for condensation and not for heat. Mississippi posts an eight hour limit and mentions towing, which is the only clock on this leg worth watching.",
@@ -2745,8 +2693,7 @@
         -91.81674
       ],
       "routes": [
-        "leg2-gulf",
-        "leg2-plan"
+        "leg2-gulf"
       ],
       "why": "I-10 exit 121, east of Lafayette, and one of only three facilities on the entire Louisiana stretch of I-10. No posted maximum stay.",
       "winter": "Louisiana staffs its rest areas around the clock, usually with sheriff's deputies. Expect a welfare check. That is a feature.",
@@ -2815,8 +2762,7 @@
         "leg3-i40",
         "leg3-waco",
         "leg3-vegas",
-        "leg3-canyon",
-        "leg3-plan"
+        "leg3-canyon"
       ],
       "why": "US-287 east of Quanah, and the closest facility to Copper Breaks, which is 12 miles south. US-287 runs 350 miles with four rest areas on it and long gaps between towns, so fuel and sleep on that basis rather than on interstate habits. Texas allows 24 hours.",
       "winter": "Low and flat. The panhandle ice belt is the concern rather than altitude, and TxDOT brines rather than plows, so a night here is fine but an early start is not.",
@@ -2841,8 +2787,7 @@
         "leg3-i40",
         "leg3-waco",
         "leg3-vegas",
-        "leg3-canyon",
-        "leg3-plan"
+        "leg3-canyon"
       ],
       "why": "Russell's is the chain you keep meeting across New Mexico and Arizona. In town, and it lands on Earl's and the El Rancho. Six Mile Canyon BLM nearby is closed December to March.",
       "winter": "6,500 ft, which is the highest night on this plan. New Mexico allows 24 hours in any three days as a statewide running total, not a per-site allowance.",
@@ -2864,8 +2809,7 @@
         -115.20752
       ],
       "routes": [
-        "leg3-vegas",
-        "leg3-plan"
+        "leg3-vegas"
       ],
       "why": "Off-Strip is the answer and the Strip garages mostly are not. South Point is reported to tolerate car sleeping with security patrolling, as are the Orleans and the Gold Coast. Ring first, because these policies change constantly.",
       "winter": "Nevada allows 18 hours per FORTNIGHT at its rest areas, which is a budget rather than a nightly allowance. This is a casino lot rather than a rest area, so the budget stays intact for the run out through Primm.",
@@ -2890,8 +2834,7 @@
         "leg3-i40",
         "leg3-waco",
         "leg3-vegas",
-        "leg3-canyon",
-        "leg3-plan"
+        "leg3-canyon"
       ],
       "why": "I-40 exit 66, two miles south. Documented as taking 43 ft rigs, so the Accord is fine, and it is the pick of the western half on both legs. Fourteen day limit. The Flying J at exit 53 and the Love's at 59 are the paved fallbacks if the road looks bad.",
       "winter": "3,300 ft. Cold but not a snow trap, and low enough to be the right side of the Flagstaff problem.",
