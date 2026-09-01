@@ -221,8 +221,7 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg1-plan"
+        "leg3-canyon"
       ],
       "kind": "food"
     },
@@ -336,8 +335,7 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg1-plan"
+        "leg3-canyon"
       ]
     },
     {
@@ -393,12 +391,8 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg1-plan"
-      ],
-      "dwellBy": {
-        "leg1-plan": 50
-      }
+        "leg3-canyon"
+      ]
     },
     {
       "id": "walnut-canyon",
@@ -485,8 +479,7 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg1-plan"
+        "leg3-canyon"
       ],
       "first": true,
       "big": true,
@@ -504,9 +497,6 @@
       "throughTimeBy": {
         "leg1-canyon": true,
         "leg3-canyon": true
-      },
-      "dwellBy": {
-        "leg1-plan": 120
       }
     },
     {
@@ -591,8 +581,7 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg1-plan"
+        "leg3-canyon"
       ],
       "first": true,
       "big": true,
@@ -633,8 +622,7 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg1-plan"
+        "leg3-canyon"
       ],
       "kind": "food"
     },
@@ -833,8 +821,7 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg1-plan"
+        "leg3-canyon"
       ]
     },
     {
@@ -920,14 +907,10 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon",
-        "leg1-plan"
+        "leg3-canyon"
       ],
       "first": true,
-      "big": true,
-      "afterBy": {
-        "leg1-plan": true
-      }
+      "big": true
     },
     {
       "id": "u-drop-inn",
@@ -1064,8 +1047,7 @@
       "routes": [
         "leg1-i40",
         "leg1-south",
-        "leg1-canyon",
-        "leg1-plan"
+        "leg1-canyon"
       ],
       "first": true,
       "big": true,
@@ -1240,8 +1222,7 @@
       "routes": [
         "leg1-i40",
         "leg1-south",
-        "leg1-canyon",
-        "leg1-plan"
+        "leg1-canyon"
       ],
       "first": true,
       "big": true
@@ -1267,8 +1248,7 @@
       "routes": [
         "leg1-i40",
         "leg1-south",
-        "leg1-canyon",
-        "leg1-plan"
+        "leg1-canyon"
       ],
       "big": true
     },
@@ -1294,8 +1274,7 @@
       "routes": [
         "leg1-i40",
         "leg1-south",
-        "leg1-canyon",
-        "leg1-plan"
+        "leg1-canyon"
       ],
       "big": true,
       "kind": "food"
@@ -1421,12 +1400,8 @@
       "routes": [
         "leg1-i40",
         "leg1-south",
-        "leg1-canyon",
-        "leg1-plan"
-      ],
-      "dwellBy": {
-        "leg1-plan": 180
-      }
+        "leg1-canyon"
+      ]
     },
     {
       "id": "arnolds",
@@ -2555,12 +2530,8 @@
         "leg3-i40",
         "leg3-waco",
         "leg3-vegas",
-        "leg3-canyon",
-        "leg1-plan"
-      ],
-      "sleepBy": {
-        "leg1-plan": 441
-      }
+        "leg3-canyon"
+      ]
     },
     {
       "id": "bed-meteor-crater",
@@ -2587,12 +2558,8 @@
         "leg3-i40",
         "leg3-waco",
         "leg3-vegas",
-        "leg3-canyon",
-        "leg1-plan"
-      ],
-      "sleepBy": {
-        "leg1-plan": 647
-      }
+        "leg3-canyon"
+      ]
     },
     {
       "id": "bed-amarillo",
@@ -2619,12 +2586,8 @@
         "leg3-i40",
         "leg3-waco",
         "leg3-vegas",
-        "leg3-canyon",
-        "leg1-plan"
-      ],
-      "sleepBy": {
-        "leg1-plan": 670
-      }
+        "leg3-canyon"
+      ]
     },
     {
       "id": "bed-little-rock",
@@ -2647,12 +2610,8 @@
       "routes": [
         "leg1-i40",
         "leg1-south",
-        "leg1-canyon",
-        "leg1-plan"
-      ],
-      "sleepBy": {
-        "leg1-plan": 735
-      }
+        "leg1-canyon"
+      ]
     },
     {
       "id": "bed-knoxville",
@@ -2675,12 +2634,8 @@
       "routes": [
         "leg1-i40",
         "leg1-south",
-        "leg1-canyon",
-        "leg1-plan"
-      ],
-      "sleepBy": {
-        "leg1-plan": 538
-      }
+        "leg1-canyon"
+      ]
     },
     {
       "id": "bed-atlanta",

@@ -17,28 +17,11 @@ agent, or a new Claude account, can continue without losing the thread.
 
 ## State
 
-**Leg 1's plan is rebuilt WITH Kevin, and this time the whole of it ships as
-data (session 57).** `leg1-plan`, "Five nights to Mooresville", is back on the
-canyon road with 13 stops and 5 beds — and now the five night lengths
-(`sleepBy`), the Cadillac Ranch morning pin (`afterBy`) and two plan-only
-dwells (`dwellBy`) are per-road data resolved through `byRoad`, not device
-state. The running brainstorm with Kevin lives on a private artifact:
-https://claude.ai/code/artifact/d5c489e7-7d62-480d-aa2b-573b599089e0 — dates
-and decisions live THERE and on the phones, never here.
-
-**The itinerary was restarted (sessions 55–56, same evening).** Kevin threw out
-all three plan routes and the invented sleep rules; sessions 55 and 56 are the
-two commits with no log entry ("Remove the three plan routes", "Delete the
-invented rules"). Leg 2 and leg 3 get the same rebuild treatment when their
-brainstorms land — do not resurrect the old ones from git.
-
 **The phone shows your real days (session 48).** Days, Next and the leg header
 run the same builder as the planner, so the nights are the ones you placed.
 
-**Historical, superseded by the restart:** the original plan routes of sessions
-43–47 (`leg2-plan` on the Gulf road, `leg3-plan` on the Vegas diversion) are
-deleted but their reasoning below still holds and will likely be rebuilt
-similarly.
+**All three legs now have a plan route (session 47).** `leg3-plan`, "The long way
+home", takes the Vegas diversion. Fourteen beds ship as data across the trip.
 
 **Leg 2 has a plan route too (session 45).** `leg2-plan`, "Christmas to New
 Year", borrows the Gulf road and carries eight stops and three beds. Five leg 2
@@ -365,80 +348,6 @@ Android Auto is no.
 ---
 
 ## Session log
-
-**Session 57** — The plan rebuilt with Kevin, and nailed down as data. 1.34.0.
-
-Kevin, after the restart: *"Let's make sure it is nailed down. The last AI
-fucked up royally."* So this plan was built the opposite way round: brainstormed
-with him on the war-room artifact (link in State), then seeded as data, then
-**run through the real `itinerary.build` headless before shipping** — not
-estimated, verified.
-
-**The plow rule, refined by Kevin this session:** *"I am okay with driving when
-it is dark. I just don't want to be in the dark where there is snow. I want to
-be in snow areas after snow plows and before it starts to pile up again."*
-Dark driving on dry flat ground is fine and its warns are advisories; the
-constraint is snow country, crossed behind the plows and ahead of new
-accumulation. No code change — the dark flags stay, as advisories, which is
-exactly the cfb0388 stance: flags inform, the plan decides.
-
-**His constraints, all in the data now:** a Friday-evening departure, five
-nights in the car, Mooresville by midday the sixth day. The canyon and
-Bearizona are non-negotiable drive-throughs; Seligman's Snow Cap, the Bass Pro
-pyramid and three hours on Broadway for Ada are musts. Meals are windows, not
-bookings.
-
-**The mechanism: three per-road fields, one existing resolver.** `sleepBy`,
-`dwellBy` and `afterBy` resolve in `buildRoute` through the same `byRoad` that
-already handles `detourBy` — so the plan's five night lengths, its two trimmed
-dwells (Bearizona 50, the loop only; Broadway 180, Ada's evening) and the
-Cadillac Ranch next-morning pin ride the route id and inherit through
-`sameRoadAs`, exactly like every other per-road fact. `build()` honours the
-data pin alongside `store.afters`. Precedence unchanged: a user's device
-override still beats the plan's dwell seed, and a plan `sleep` still beats a
-device night (the cfb0388 rule). A bare `sleep` (Biloxi) still means every
-road.
-
-**Why the sharing matters: the three western beds are on seven roads.** A flat
-`sleep` on `bed-barstow` would have re-created the session-50 bug on leg 3.
-`sleepBy` keyed to `leg1-plan` cannot. Verified: leg1-canyon and leg3-vegas
-build **byte-identical** output before and after the change, and all nine
-other roads still build.
-
-**Night lengths were tuned against the walk, not guessed** — a scratch script
-re-ran `build()` and nudged each `sleepBy` until the wakes landed where the
-brainstorm put them: Barstow 06:00, Meteor Crater 07:00, Amarillo 07:45 (so
-Cadillac Ranch lands at 08:14, past sunrise), North Little Rock 07:10 (so
-Gus's lands exactly on its 11:00 opening), Knoxville 08:00.
-
-**What the real model corrected in the sketch:**
-
-- **Pyrenees Café is unreachable on this departure** — the walk puts it at
-  20:45 against a 21:00 close, which is an apology, not a dinner. Off the
-  plan; Friday dinner is Bakersfield in the car, and the route data has
-  always said the Basque table is a better last meal on leg 3 anyway.
-- **The canyon dwell is 120 on the plan** (`dwellBy`), which crosses Desert
-  View at 16:49, twenty-nine minutes before sunset — through the
-  fair-weather road while the light is still on the rim.
-- **Broadway sits at 15:56–18:56 with no warnings at all**: inside its best
-  window, dark falls mid-visit, and the honky-tonks are the dinner.
-
-**The flags that remain are the trip's shape, all visible in-app:** Tehachapi
-Friday ~21:14 and Flagstaff Saturday ~19:36 are dark crossings of snow country
-— fine when dry or hours behind a storm's plows, and the standing contingency
-(chain control up → sleep Bakersfield / hold at Williams) covers the rest.
-Amarillo 09:04 and Asheville 09:15 run ahead of the 10:00 brine guideline —
-the rule: any overnight moisture, nobody leaves before 10:00, and the
-schedule holds either way. Zero shut doors, zero hours misses.
-
-**What the phone still needs from Kevin, one time:** pick "Five nights to
-Mooresville" on leg 1, tap its stops and beds into the plan (`chosen` is
-device state, 18 taps), and set the leg 1 departure. Everything timed —
-nights, pins, dwells — now comes from the data.
-
-**Sessions 55–56 have no log entry** — they were the restart itself, committed
-as "Remove the three plan routes" and "Delete the invented rules; the plan is
-the plan". Their reasoning is in those commit messages.
 
 **Session 54** — The plow rule, which I had deleted. 1.31.0.
 

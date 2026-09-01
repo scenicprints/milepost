@@ -1235,15 +1235,6 @@
               "limit": 70
             }
           ]
-        },
-        {
-          "id": "leg1-plan",
-          "name": "Five nights to Mooresville",
-          "sameRoadAs": "leg1-canyon",
-          "road": "The canyon road, and only the stops that are in the plan",
-          "character": "Not a different road. The canyon road exactly, carrying only the stops and five beds this trip actually makes, in the order it makes them.",
-          "why": "The other three roads show you everything that is possible. This one shows you what you decided: the Snow Cap at Seligman, the Bearizona loop, the rim at sunset, Petrified Forest at the gates, Tucumcari's neon at full dark, Cadillac Ranch at sunrise, the pyramid and Gus's, and three hours on Broadway with the lights coming on.",
-          "costs": "Nothing, because it is the same tarmac as the canyon road. What it costs is the choosing, and that is already done. Swap back to the canyon road to see everything you left out."
         }
       ]
     },
