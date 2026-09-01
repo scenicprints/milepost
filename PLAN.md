@@ -447,7 +447,9 @@ piles up. Tehachapi on the opening night is handled as a decision gate —
 check Caltrans at Modesto and again at Bakersfield; any chain control or
 active snow means sleeping Bakersfield and crossing behind the morning plows,
 which costs the canyon sunset and moves the rim to Sunday. A trunk traction
-device sized off the 235/45R18 sidewall (check Honda's chain restriction)
+device sized for 225/50R17 — the real sidewall, read off the car 2026-09-01;
+an earlier session wrote 235/45R18 here and that was wrong. Honda's manual
+approves the SCC Radial Chain SC1036 cable for this size. The device
 turns a checkpoint refusal into a wave-through and is never driven on snow.
 
 **Session 57** — The plan rebuilt with Kevin, and nailed down as data. 1.34.0.
