@@ -889,7 +889,8 @@
         "leg3-waco",
         "leg3-vegas",
         "leg1-canyon",
-        "leg3-canyon"
+        "leg3-canyon",
+        "leg1-plan"
       ],
       "first": true,
       "big": true,
@@ -2623,7 +2624,7 @@
         "leg1-plan"
       ],
       "sleepBy": {
-        "leg1-plan": 670
+        "leg1-plan": 625
       }
     },
     {
