@@ -185,8 +185,11 @@ export function build(route, chosen, start, data) {
   const stops = [];
   const held = [];
   const orphans = [];
+  // The pin is the user's (`store.afters`) or the plan's (`afterBy`, resolved
+  // onto the stop by buildRoute). Either way it means the same thing: you
+  // sleep first and double back to this in the morning.
   sorted.forEach((s, i) => {
-    if (afters[s.id] && s.kind !== 'lodging') {
+    if ((afters[s.id] || s.after) && s.kind !== 'lodging') {
       const bed = sorted.slice(i + 1).find(x => x.kind === 'lodging');
       if (bed && bed.mile - s.mile <= BACK_REACH) { held.push(s); return; }
       orphans.push({ stop: s, bed });
