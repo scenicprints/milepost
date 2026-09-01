@@ -43,7 +43,7 @@
 // TIME IS KEPT IN MINUTES from the trip's first midnight, one integer per
 // event. Dates and clock faces are formatting concerns, applied at the edge.
 
-import { stopCost, driveMinutes, tzAtMile } from './route.js';
+import { stopCost, driveMinutes, tzAtMile, project } from './route.js';
 import * as winter from './winter.js';
 
 const MIN_PER_DAY = 1440;
@@ -255,7 +255,35 @@ export function build(route, chosen, start, data) {
 
   const first = dayFor(clock, route.waypoints[0].ll, tzStart);
   const days = [{ ...first, ix: 0, from: route.waypoints[0].name, startedAt: clock, startAt: hhmm(clock) }];
-  const rows = [], warnings = [];
+  // ================================================= WHERE THE PASSES ARE
+  //
+  // Kevin's rule: you cross a chain-control pass AFTER the plows and the salt
+  // have been over it, not before and not in the dark.
+  //
+  // The data has always carried the rule -- every winter point has a
+  // `plowedBy` -- but the walk only ever applied it to GETTING OUT OF BED.
+  // Those are different questions. Leaving Georgia at 08:26 says nothing about
+  // what time you reach Flagstaff eleven hours later, and the plan crossed five
+  // of six risk points in the dark while every departure looked fine.
+  //
+  // So: find the risk points that actually lie on this road, in mile order.
+  // The walk can then ask what is AHEAD of it rather than what is near it.
+  const crossings = ((WINTER && WINTER.points) || [])
+    .filter(p => p.ll && p.plowedBy)
+    .map(p => { const q = project(p.ll, route.waypoints, route.cum);
+                return { p, mile: q.mile, off: q.off }; })
+    .filter(c => c.off <= 25)
+    .sort((a, b) => a.mile - b.mile);
+
+  /// Wall clock at a crossing for an absolute minute. The walk's clock is
+  /// already expressed against the START timezone, so this goes through
+  /// localOf like everything else rather than adding a raw offset twice.
+  const crossLocal = (c, abs) => {
+    const l = Math.round(localOf(abs, c.p.tz ?? tzAtMile(c.mile, route)));
+    return ((l % MIN_PER_DAY) + MIN_PER_DAY) % MIN_PER_DAY;
+  };
+
+  const rows = [], warnings = [], crossed = [];
 
   // A pin with no night after it cannot mean anything, so it was ignored
   // rather than quietly shunting the stop to the end of the trip.
@@ -339,6 +367,25 @@ export function build(route, chosen, start, data) {
           nap += hold;
           wake = arrive + nap;
           next = dayFor(wake, s.ll, s.tz);
+        }
+
+        // THE RULE. Having found a morning, hold it further if setting off then
+        // would put you on the next pass before the plows have been over it.
+        // This is the constraint that was missing: not "leave after the plows",
+        // which is meaningless four hundred miles away, but "arrive at the pass
+        // after the plows". Bounded to six hours so a pass with a late window
+        // cannot eat the whole day; past that it becomes a warning instead.
+        const ahead = crossings.find(c => c.mile > s.mile);
+        if (ahead) {
+          const runTo = driveMinutes(s.mile, ahead.mile, route);
+          const plowAt = toMin(ahead.p.plowedBy);
+          const at = crossLocal(ahead, wake + runTo);
+          const wait = plowAt - at;
+          if (wait > 0 && wait <= 6 * 60) {
+            nap += wait;
+            wake = arrive + nap;
+            next = dayFor(wake, s.ll, s.tz);
+          }
         }
       }
       const downLocal = arriveLocal;
@@ -499,8 +546,39 @@ export function build(route, chosen, start, data) {
       warnings.push(`Day ${d.ix + 1} is a short one: ${d.riskName} only opens up between ${hhmm(d.open)} and ${hhmm(d.shut)}.`);
 
   const driveMin = Math.round(drive(0, route.miles, route));
+  // ============================== what time you actually reach each pass
+  //
+  // Reconstructed from the finished walk rather than guessed at: the leg start
+  // plus every row is an anchor with a known mile and a known clock, so the
+  // time at any mile between them is that anchor's departure plus the drive.
+  // Every crossing on the road gets one of these, whether or not the schedule
+  // could do anything about it, because the failure mode here was silence.
+  {
+    const anchors = [{ mile: 0, at: toMin(start.at) }]
+      .concat(rows.map(r => ({ mile: r.mile, at: r.depart != null ? r.depart : r.arrive })));
+    for (const c of crossings) {
+      let prev = anchors[0];
+      for (const a of anchors) if (a.mile <= c.mile + 0.5) prev = a;
+      const abs = prev.at + driveMinutes(prev.mile, c.mile, route);
+      const at = crossLocal(c, abs);
+      const plowAt = toMin(c.p.plowedBy);
+      const day = dayFor(abs, c.p.ll, c.p.tz);
+      const rise = day.rise, set = day.set;
+      const dark = at < rise || at > set;
+      const early = at < plowAt;
+      crossed.push({ name: c.p.name, elev: c.p.elev || null, mile: Math.round(c.mile),
+                     at, atLabel: hhmm(at), plowedBy: c.p.plowedBy, dark, early });
+      if (dark || early)
+        warnings.push(`${c.p.name}${c.p.elev ? ', ' + c.p.elev.toLocaleString() + ' ft,' : ''} `
+          + `is crossed at ${hhmm(at)}`
+          + (dark ? ', in the dark' : '')
+          + (early ? `, before it is normally clear behind the plows at ${c.p.plowedBy}` : '')
+          + '.');
+    }
+  }
+
   return {
-    rows, days,
+    rows, days, crossings: crossed,
     totalMin: Math.round(endsAt - toMin(start.at)),
     endsAt, endsAtLabel: hhmm(endsLocal),
     tzStart, tzEnd, tzShift: tzEnd - tzStart,

@@ -349,6 +349,45 @@ Android Auto is no.
 
 ## Session log
 
+**Session 54** — The plow rule, which I had deleted. 1.31.0.
+
+Kevin: *"You hit the passes where there will be chain control AFTER snow plows and
+salt is laid."* His cardinal rule in route planning, and the plan broke it at five of
+six crossings.
+
+**The data always carried it.** Every winter point has a `plowedBy`. The walk only
+ever applied it to GETTING OUT OF BED, which is a different question: leaving Georgia
+at 08:26 says nothing about what time you reach Flagstaff eleven hours later. Every
+departure looked fine while Tehachapi was crossed at 21:14 and Amarillo at 01:21.
+
+**And in session 51 I removed even that.** Atlanta's `plowedBy` is 12:00 because the
+city waits ice out rather than plowing, and applied to every unset night it started
+days at noon on dry mornings. I changed the hold from `open` to first light and wrote
+it up as a fix. What I actually did was delete the only place the plow rule was
+enforced, to solve a cosmetic problem in a city that is not a pass.
+
+**What the rule actually is, and now does.** `crossings` is the list of winter points
+that lie ON the road, in mile order, so the walk can ask what is ahead rather than
+what is near. An unset night, having found a morning, is then held further if setting
+off then would put you on the next pass before the plows — bounded to six hours so
+a late window cannot eat a day. That is the real constraint: not *leave* after the
+plows, which is meaningless four hundred miles out, but *arrive at the pass* after
+them.
+
+**And every crossing is now computed and reported**, whether or not the schedule can
+do anything about it, because the failure mode here was silence. Reconstructed from
+the finished walk: the leg start plus every row is an anchor with a known mile and
+clock. Two bugs on the way — unrounded minutes, and adding a raw timezone offset
+on top of a clock already expressed against `tzStart`, which put Childress at 02:56.
+Both went through `localOf` and `dayFor` in the end, which is what they were for.
+
+The rule fixes what it can reach: **Childress 08:57 → 10:00, Amarillo on leg 3
+07:43 → 14:46.** It cannot reach a crossing with no bed before it (Tehachapi is on
+the opening run out of Modesto), one that is ten hours and six stops into a day
+(Flagstaff), or a night the user has set by hand. Those are warnings now, named and
+timed, on every road: `leg1-canyon` has six bad crossings, `leg1-i40` four,
+`leg3-i40` one.
+
 **Session 53** — The same audit on the other two legs. 1.30.1.
 
 Kevin: *"You should have been doing all three legs."* Correct. Session 51 fixed leg 2's
