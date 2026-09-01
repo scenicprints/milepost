@@ -349,6 +349,32 @@ Android Auto is no.
 
 ## Session log
 
+**Session 52** — A calendar of the whole trip. 1.30.0.
+
+Kevin: *"I keep forgetting when everything is."* Days is scoped to one leg, which is
+right while you are driving it and useless when the question is "what is happening on
+the 28th". **Dates** is a sixth tab: all three legs laid out by date, with the gaps
+between them filled in — Christmas at Mooresville, New Year in Houston — so the
+whole twenty days read as one list.
+
+Each driving day carries the leg and which day of it, where you start and finish, the
+hour you pull out, miles, driving and stopped time, any winter watch, every stop with
+its arrival time and how long you are there, and the bed. Parked days say so and name
+where you are. A leg with no departure date simply does not appear; with none set at
+all the tab says where to set them.
+
+The header follows: Trip and Dates both describe the whole trip, so both take the
+whole-trip totals and drop the leg and road pickers, which made no sense on a screen
+spanning all three.
+
+**A real bug fell out of building it.** The last day of every leg reported **0 min
+driving** — 201 miles into Mooresville, 237 into Houston, 490 into Modesto. The run
+from the final stop to the destination is not a row, because there is no stop there,
+so summing rows missed it entirely. `build()` counts it in the leg total, so the
+difference is exactly that run and it belongs to the last day. The per-day sums now
+equal the leg totals on all three legs, which is the invariant that should have been
+checked when `realDays` was written.
+
 **Session 51** — Leg 2 stops landing in their own opening hours. 1.29.0.
 
 Kevin asked why he reached Breaux Bridge at 14:30. Tracing it turned up three stops

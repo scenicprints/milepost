@@ -152,6 +152,12 @@ export function realDays(route) {
 
   const out = [];
   let startMile = 0;
+  // The run from the last stop into the destination is not a row -- there is
+  // no stop there, only the end of the road -- so summing rows gave the last
+  // day of every leg "0 min driving" for what is often two hundred miles.
+  // build() counts it in the leg total, so the difference is exactly that run.
+  const rowDrive = it.rows.reduce((a, r) => a + (r.driveMin || 0), 0);
+  const runIn = Math.max(0, it.driveMin - rowDrive);
   it.days.forEach((d, i) => {
     const rows = it.rows.filter(r => r.dayIx === i);
     const endMile = rows.length ? rows[rows.length - 1].mile : (i ? out[i - 1].endMile : 0);
@@ -171,7 +177,7 @@ export function realDays(route) {
             mile: last ? route.miles : endMile },
       startMile, endMile: last ? route.miles : endMile,
       miles: (last ? route.miles : endMile) - startMile,
-      driveMins: rows.reduce((a, r) => a + (r.driveMin || 0), 0),
+      driveMins: rows.reduce((a, r) => a + (r.driveMin || 0), 0) + (last ? runIn : 0),
       stopMins: rows.reduce((a, r) => a + (r.dwell || 0), 0),
       stops: rows.filter(r => r.kind !== 'bed').map(r => r.stop),
       firsts: rows.filter(r => r.stop && r.stop.first).length,
@@ -204,6 +210,9 @@ export { suggestStops };
 
 // ============================================================== head
 export function renderHead(legIx, tab) {
+  // Trip and Dates both describe the WHOLE trip, so they take the whole-trip
+  // totals and drop the leg and road pickers. Anything else is one leg.
+  const whole = tab === "trip" || tab === "cal";
   const rt = legRoute(legIx);
   const t = realTotals(rt);
   let wm = 0, wd = 0, ws = 0;
@@ -216,7 +225,7 @@ export function renderHead(legIx, tab) {
       <div class="wordmark">Milepost</div>
       <div class="whole">${Math.round(wm).toLocaleString()} mi · ${wd} days total</div>
     </div>
-    <div class="legname">${tab === "trip" ? "The whole trip"
+    <div class="legname">${whole ? "The whole trip"
       : tab === "next" ? esc(DATA.route.legs[whereNow().legIx].name)
       : esc(DATA.route.legs[legIx].name)}</div>
     <div class="totals">
@@ -227,11 +236,11 @@ export function renderHead(legIx, tab) {
           <div><span class="tnum">${Math.round(h.route.miles - h.mile).toLocaleString()}</span><span class="tlab">to go</span></div>
           <div><span class="tnum on">${Math.round(pct)}</span><span class="tlab">%</span></div>`;
       })() : `
-      <div><span class="tnum">${Math.round(tab === "trip" ? wm : t.miles).toLocaleString()}</span><span class="tlab">mi</span></div>
-      <div><span class="tnum">${tab === "trip" ? wd : t.days}</span><span class="tlab">${(tab === "trip" ? wd : t.days) === 1 ? "day" : "days"}</span></div>
-      <div><span class="tnum on">${tab === "trip" ? ws : t.stops}</span><span class="tlab">stops</span></div>`}
+      <div><span class="tnum">${Math.round(whole ? wm : t.miles).toLocaleString()}</span><span class="tlab">mi</span></div>
+      <div><span class="tnum">${whole ? wd : t.days}</span><span class="tlab">${(whole ? wd : t.days) === 1 ? "day" : "days"}</span></div>
+      <div><span class="tnum on">${whole ? ws : t.stops}</span><span class="tlab">stops</span></div>`}
     </div>
-    ${tab === "trip" || tab === "next" ? "" : `<div class="legs">${DATA.route.legs.map((l, i) =>
+    ${whole || tab === "next" ? "" : `<div class="legs">${DATA.route.legs.map((l, i) =>
       `<button data-leg="${i}" aria-selected="${i === legIx}">${esc(l.short || SHORT[i])}</button>`).join("")}</div>
     <div class="ways">${DATA.route.legs[legIx].routes.map(o =>
       `<button data-route="${o.id}" data-rleg="${DATA.route.legs[legIx].id}"
@@ -480,6 +489,99 @@ export function renderDays(legIx) {
     </div>`;
   });
   return h + "</div>";
+}
+
+// ================================================================= calendar
+//
+// Days is scoped to one leg, which is right when you are driving it and wrong
+// when the question is "what is happening on the 28th". This walks all three
+// legs at once, fills the gaps between them -- Christmas at Mooresville, New
+// Year in Houston -- and lays the whole thing out by date.
+//
+// A leg with no departure date set simply does not appear. There is no sane
+// place to put it on a calendar.
+export function renderCalendar() {
+  const legs = DATA.route.legs;
+  const byDate = new Map();
+  const spans = [];
+
+  legs.forEach((leg, li) => {
+    const rt = legRoute(li);
+    const dep = store.depFor(leg.id);
+    if (!dep.date) { spans.push({ leg, li, unset: true }); return; }
+    const D = realDays(rt);
+    D.forEach((d, di) => {
+      const key = d.date.toISOString().slice(0, 10);
+      byDate.set(key, { kind: 'drive', d, di, n: D.length, leg, li, rt });
+    });
+    spans.push({
+      leg, li,
+      from: D[0].date, to: D[D.length - 1].date,
+      endsAt: rt.waypoints[rt.waypoints.length - 1].name,
+    });
+  });
+
+  const dated = spans.filter(x => !x.unset);
+  if (!dated.length)
+    return `<div class="cal"><div class="err">No departure dates set yet. Put one on each leg’s
+      Days tab and the whole trip lays itself out here.</div></div>`;
+
+  // Fill the gaps between legs: you are parked wherever the last leg ended.
+  for (let i = 0; i < dated.length - 1; i++) {
+    const a = dated[i], b = dated[i + 1];
+    for (let t = a.to.valueOf() + 86400000; t < b.from.valueOf(); t += 86400000)
+      byDate.set(new Date(t).toISOString().slice(0, 10),
+        { kind: 'stay', where: a.endsAt, nextLeg: b.leg });
+  }
+
+  const first = dated[0].from, last = dated[dated.length - 1].to;
+  let h = '<div class="cal">';
+
+  // ---- the header: how long, and the dates that cannot move --------------
+  const nights = Math.round((last - first) / 86400000);
+  h += `<div class="calsum">
+    <div><b>${nights + 1}</b><span>days door to door</span></div>
+    <div><b>${byDate.size - [...byDate.values()].filter(x => x.kind === 'stay').length}</b><span>driving</span></div>
+    <div><b>${[...byDate.values()].filter(x => x.kind === 'stay').length}</b><span>parked up</span></div>
+  </div>`;
+
+  let month = '';
+  for (let t = first.valueOf(); t <= last.valueOf(); t += 86400000) {
+    const dt = new Date(t), key = dt.toISOString().slice(0, 10);
+    const e = byDate.get(key);
+    const mn = MON[dt.getUTCMonth()] + ' ' + dt.getUTCFullYear();
+    if (mn !== month) { month = mn; h += `<div class="calmon">${esc(month)}</div>`; }
+
+    const wd = WD[dt.getUTCDay()], dnum = dt.getUTCDate();
+    if (!e) { h += `<div class="cday empty"><div class="cdate"><b>${dnum}</b>
+      <span>${esc(wd.slice(0, 3))}</span></div><div class="cbody"></div></div>`; continue; }
+
+    if (e.kind === 'stay') {
+      h += `<div class="cday stay"><div class="cdate"><b>${dnum}</b><span>${esc(wd.slice(0, 3))}</span></div>
+        <div class="cbody"><div class="cwhere">${esc(e.where)}</div>
+        <div class="cnote">Nothing to drive. Next leg starts here.</div></div></div>`;
+      continue;
+    }
+
+    const { d, di, n, leg } = e;
+    const rows = d.rows.filter(r => r.kind !== 'bed');
+    const bed = d.rows.find(r => r.kind === 'bed');
+    h += `<div class="cday drive">
+      <div class="cdate"><b>${dnum}</b><span>${esc(wd.slice(0, 3))}</span></div>
+      <div class="cbody">
+        <div class="ctag">${esc(leg.short || SHORT[e.li])} · day ${di + 1} of ${n}</div>
+        <div class="cwhere">${esc(d.from.name)} → ${esc(d.overnight.name)}</div>
+        <div class="cmeta">out ${esc(d.startAt || '')} · ${Math.round(d.miles).toLocaleString()} mi
+          · ${fmtHours(d.driveMins)} driving${d.stopMins ? ' · ' + fmtHours(d.stopMins) + ' stopped' : ''}</div>
+        ${d.risks.length ? `<div class="cwarn">Winter watch — ${d.risks.map(r => esc(r.name)).join(', ')}</div>` : ''}
+        ${rows.length ? `<ol class="cstops">${rows.map(r =>
+          `<li><span class="ct">${esc(r.arriveAt)}</span><span class="cn">${esc(r.stop.name)}</span>
+           ${r.dwell ? `<span class="cd">${fmtHours(r.dwell)}</span>` : ''}</li>`).join('')}</ol>` : ''}
+        ${bed ? `<div class="cbed">${esc(bed.arriveAt)} · sleep at ${esc(bed.stop.name)}</div>`
+              : `<div class="cbed done">${esc(d.overnight.name)}</div>`}
+      </div></div>`;
+  }
+  return h + '</div>';
 }
 
 // ============================================================== place sheet

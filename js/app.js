@@ -13,6 +13,9 @@ const TABS = [
   { id: 'route', label: 'Route', render: ui.renderRoute },
   { id: 'map',   label: 'Map',   render: ui.renderMap },
   { id: 'days',  label: 'Days',  render: ui.renderDays },
+  // Days is one leg at a time. Dates is the whole trip on a calendar, which is
+  // the screen you want when the question is "what is happening on the 28th".
+  { id: 'cal',   label: 'Dates', render: () => ui.renderCalendar() },
   { id: 'trip',  label: 'Trip',  render: () => ui.renderTrip(upd) },
 ];
 
