@@ -137,6 +137,31 @@ export function build(route, chosen, start, data) {
     .filter(s => chosen.has(s.id))
     .sort((a, b) => a.mile - b.mile);
 
+  // ---- stops taken out of road order, inside one day --------------------
+  //
+  // Road order is right nearly always, and wrong where opening hours say so.
+  // Buford Highway sits EIGHT MILES before the Georgia Aquarium, so the walk
+  // reached it at 08:58 against an 11:00 opening, and then reached the
+  // aquarium at 11:28 against a best window that shuts at 10:30. Two stops,
+  // both missed by about two hours, for the sake of eight miles.
+  //
+  // `visitAfter` on a stop names the stop it should follow. It is lifted out
+  // and dropped straight after its anchor, and the walk below charges the
+  // drive back, the same way `afters` does, so doubling back is paid for
+  // rather than wished away. Unlike `afters` no bed is involved: this is a
+  // reorder within a day, not a night in the middle.
+  //
+  // Only ever moves a stop LATER. If the anchor is not chosen, or already
+  // comes first, road order stands.
+  for (let guard = 0; guard < 8; guard++) {
+    const i = sorted.findIndex((s, ix) =>
+      s.visitAfter && sorted.findIndex(x => x.id === s.visitAfter) > ix);
+    if (i < 0) break;
+    const moved = sorted.splice(i, 1)[0];
+    const at = sorted.findIndex(x => x.id === moved.visitAfter);
+    sorted.splice(at + 1, 0, moved);
+  }
+
   // ---- stops you double back to ----------------------------------------
   //
   // Road order is right for almost everything, and wrong for the case where
@@ -278,8 +303,16 @@ export function build(route, chosen, start, data) {
       // detailed by hand read as nonsense. An unset night therefore holds
       // until the road is usable -- first light, or the plows on a winter
       // crossing -- and only then does it hand the day back.
-      const set = sleeps[s.id] != null;
-      let nap = Math.round(Number(sleeps[s.id]) || DEFAULT_NIGHT);
+      // Three sources, in order. Your own `sleeps` entry wins. Failing that a
+      // `sleep` on the bed itself, which is the plan's researched answer for
+      // that night, exactly as `dwell` is for a stop -- Biloxi carries one
+      // because the French Quarter the next afternoon does not come alive
+      // until four, and leaving at first light wastes the whole point of it.
+      // Failing both, eight hours held to first light, below.
+      const seed = Number.isFinite(s.sleep) ? s.sleep : null;
+      const own = sleeps[s.id] != null ? Number(sleeps[s.id]) : null;
+      const set = own != null || seed != null;
+      let nap = Math.round(own ?? seed ?? DEFAULT_NIGHT);
       let wake = arrive + nap;
       let next = dayFor(wake, s.ll, s.tz);
       if (!set) {

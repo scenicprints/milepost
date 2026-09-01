@@ -11,7 +11,7 @@
         -84.3951
       ],
       "detour": 10,
-      "dwell": 180,
+      "dwell": 150,
       "cost": "$45 each",
       "tags": [
         "aquarium"
@@ -1928,7 +1928,8 @@
         -84.3129
       ],
       "detour": 13,
-      "dwell": 120,
+      "dwell": 90,
+      "visitAfter": "georgia-aquarium",
       "cost": "$",
       "tags": [
         "food",
@@ -2119,7 +2120,7 @@
         -88.1108
       ],
       "detour": 20,
-      "dwell": 120,
+      "dwell": 90,
       "cost": "About $30 each after dark",
       "tags": [
         "gardens",
@@ -2724,6 +2725,7 @@
       ],
       "why": "The gravel RV lot behind the parking decks off Highway 90. Overnight parking allowed, level, dry, lit all night, security on site. The best bed on either trip. Beau Rivage is reported hotel-guests-only, so use this one or ring ahead.",
       "winter": "Sea level. Damp rather than cold, so crack a window for condensation and not for heat. Mississippi posts an eight hour limit and mentions towing, which is the only clock on this leg worth watching.",
+      "sleep": 1033,
       "detour": 0,
       "dwell": 0,
       "cost": "Free",

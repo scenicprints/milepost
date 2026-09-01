@@ -349,6 +349,36 @@ Android Auto is no.
 
 ## Session log
 
+**Session 51** — Leg 2 stops landing in their own opening hours. 1.29.0.
+
+Kevin asked why he reached Breaux Bridge at 14:30. Tracing it turned up three stops
+timed against their own hours data and losing: **Buford Highway at 08:58 against an
+11:00 opening**, the **Georgia Aquarium at 11:28** against a best window shutting at
+10:30, and the **French Quarter at 09:02** against a best window that does not start
+until 16:09. I had previously written that nine in the morning was the only civilised
+hour for the Quarter. The app's own data says the opposite.
+
+**The fix is a reorder, and it costs eight miles.** Buford Highway is mile 271 and the
+aquarium is 279. Taking the aquarium first puts it two minutes after opening and puts
+Buford Highway at noon, which is when that road is worth going to anyway. `visitAfter`
+on a stop names the stop it should follow; the walk lifts it out and drops it after its
+anchor, and the existing backtrack accounting charges the drive back. Only ever moves a
+stop later, and falls back to road order if the anchor is not chosen.
+
+**Beds can now carry a `sleep`, exactly as stops carry a `dwell`** — the plan's
+researched answer for that night, beaten by the user's own `sleeps` entry and beating
+the eight-hours-to-first-light default. Biloxi carries 17h13 so the Quarter lands at
+16:10 rather than 15:30. Without this the fix needed a device setting he had no way to
+make on the phone.
+
+Leg 2 now runs with **no hours warnings at all** and needs no device state: aquarium
+09:02, Buford Highway 12:02, Bellingrath 18:57 out by 20:27, French Quarter 16:10,
+Gator Country 10:23. Houston still 29 December, two days clear of New Year.
+
+**Camping was scrapped.** Twelve nights were re-scored properly and only two survived
+— arrivals are after 8pm on ten of them, state parks gate at sunset, and the two
+best-placed private parks are RV-only. None of it was ever written to the data.
+
 **Session 50** — Three legs, three departures. 1.28.0.
 
 Kevin: *"I need to know what day and time my departures are."* The app could not
