@@ -322,65 +322,34 @@ export function build(route, chosen, start, data) {
 
     // ---- a bed: you arrive, you sleep, the day ends here ------------------
     if (s.kind === 'lodging') {
-      // A night you have SET is exact: eight hours means eight hours, and if
-      // that has you moving before dawn the flag below says so and you decide.
+      // THE PLAN IS THE PLAN.
       //
-      // A night you have NOT set is a default, and eight hours flat from
-      // arrival is a bad one. Reach a bed at 18:12 and it pulled you out at
-      // 02:12, which is not a morning; it made every leg you had not yet
-      // detailed by hand read as nonsense. An unset night therefore holds
-      // until the road is usable -- first light, or the plows on a winter
-      // crossing -- and only then does it hand the day back.
-      // Three sources, in order. Your own `sleeps` entry wins. Failing that a
-      // `sleep` on the bed itself, which is the plan's researched answer for
-      // that night, exactly as `dwell` is for a stop -- Biloxi carries one
-      // because the French Quarter the next afternoon does not come alive
-      // until four, and leaving at first light wastes the whole point of it.
-      // Failing both, eight hours held to first light, below.
-      const seed = Number.isFinite(s.sleep) ? s.sleep : null;
-      const own = sleeps[s.id] != null ? Number(sleeps[s.id]) : null;
-      const set = own != null || seed != null;
-      let nap = Math.round(own ?? seed ?? DEFAULT_NIGHT);
+      // A `sleep` written into the plan is what happens. Nothing cached on a
+      // phone outranks it. A device value fills in only where the plan is
+      // silent, and eight hours is the last resort.
+      //
+      // There used to be more here: a precedence that let a hand-set value on
+      // one browser beat the plan, a hold to first light, and a rule that
+      // rolled any wake past noon to the next morning. Those were mine, not
+      // asked for, and they made the schedule depend on state nobody could
+      // see. They are gone.
+      let nap = Math.round(
+        Number.isFinite(s.sleep) ? s.sleep
+        : sleeps[s.id] != null ? Number(sleeps[s.id])
+        : DEFAULT_NIGHT);
       let wake = arrive + nap;
       let next = dayFor(wake, s.ll, s.tz);
-      if (!set) {
-        // Walk forward to the next hour the road is actually usable. Eight
-        // hours from arrival lands wherever it lands: reach the bed at 18:12
-        // and it woke you at 02:12, reach it at 11:11 and it had you setting
-        // off at 19:11. Neither is a morning. Step to the next open, and if
-        // that has already gone by, step to the one after it.
-        for (let guard = 0; guard < 3; guard++) {
-          const wakeMin = ((next.local % MIN_PER_DAY) + MIN_PER_DAY) % MIN_PER_DAY;
-          // FIRST LIGHT, not `open`. `open` also carries the plow window, and
-          // a plow window is conditional -- Atlanta's says noon, because the
-          // city barely plows and you wait it out IF there is ice. Holding
-          // every unset night to that started the day at 12:00 on a dry
-          // December morning. The warning above still fires and still names
-          // the plows; this only decides when a night you never set ends.
-          const light = next.rise + 45;
-          // Past noon is never a departure a night was meant to produce, so
-          // that rolls to the following morning too.
-          const hold = wakeMin < light ? light - wakeMin
-                     : wakeMin > 12 * 60 ? MIN_PER_DAY - wakeMin + light
-                     : 0;
-          if (hold <= 0) break;
-          nap += hold;
-          wake = arrive + nap;
-          next = dayFor(wake, s.ll, s.tz);
-        }
 
-        // THE RULE. Having found a morning, hold it further if setting off then
-        // would put you on the next pass before the plows have been over it.
-        // This is the constraint that was missing: not "leave after the plows",
-        // which is meaningless four hundred miles away, but "arrive at the pass
-        // after the plows". Bounded to six hours so a pass with a late window
-        // cannot eat the whole day; past that it becomes a warning instead.
+      // The one rule that stays, because it is Kevin's: you reach a pass with
+      // chain control AFTER the plows and the salt, not before. Applied to any
+      // night the plan has not pinned, bounded to six hours so a late window
+      // cannot eat a day. Where the plan HAS pinned the night, his number
+      // stands and the crossing report says what it costs.
+      if (!Number.isFinite(s.sleep)) {
         const ahead = crossings.find(c => c.mile > s.mile);
         if (ahead) {
-          const runTo = driveMinutes(s.mile, ahead.mile, route);
-          const plowAt = toMin(ahead.p.plowedBy);
-          const at = crossLocal(ahead, wake + runTo);
-          const wait = plowAt - at;
+          const wait = toMin(ahead.p.plowedBy)
+            - crossLocal(ahead, wake + driveMinutes(s.mile, ahead.mile, route));
           if (wait > 0 && wait <= 6 * 60) {
             nap += wait;
             wake = arrive + nap;

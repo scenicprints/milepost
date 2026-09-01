@@ -13,7 +13,7 @@
 // preferring fresh. Data, icons and the vendored SDK stay cache-first — they
 // are large, they rarely change, and a stale copy of them is harmless.
 
-const CACHE = 'milepost-v66';
+const CACHE = 'milepost-v67';
 
 const SHELL = [
   'index.html', 'desk.html', 'manifest.webmanifest',
