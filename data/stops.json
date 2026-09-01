@@ -328,7 +328,7 @@
         -111.6513
       ],
       "detour": 4,
-      "dwell": 90,
+      "dwell": 80,
       "cost": "Free to walk",
       "tags": [
         "downtown"
@@ -740,7 +740,7 @@
         -106.6702
       ],
       "detour": 10,
-      "dwell": 90,
+      "dwell": 70,
       "cost": "Free",
       "tags": [
         "plaza",
@@ -1294,6 +1294,7 @@
       ],
       "detour": 7,
       "dwell": 60,
+      "visitAfter": "bass-pro-pyramid",
       "cost": "$",
       "tags": [
         "food",
@@ -2436,7 +2437,7 @@
         -99.742
       ],
       "detour": 18,
-      "dwell": 90,
+      "dwell": 80,
       "cost": "$3 each",
       "tags": [
         "state-park",

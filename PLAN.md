@@ -349,6 +349,39 @@ Android Auto is no.
 
 ## Session log
 
+**Session 53** — The same audit on the other two legs. 1.30.1.
+
+Kevin: *"You should have been doing all three legs."* Correct. Session 51 fixed leg 2's
+opening hours because that is where the question started, and stopped there. Run across
+all three, legs 1 and 3 had **twenty** hours problems between them and leg 2 had none,
+which is only because it was the one I had done.
+
+**One shut door and four overstays were real; the rest are golden hour.**
+
+- **Gus's, Memphis, arriving 09:40 against an 11:00 opening.** Gus's and the Bass Pro
+  pyramid are ONE MILE apart, so this is the Buford Highway fix again: `visitAfter`
+  puts the pyramid first at 09:28 against its 09:00 opening, and Gus's at 11:10, which
+  is lunch, which is what it is for.
+- **Four stops planned past their closing time** — downtown Flagstaff, Copper
+  Breaks and Old Town Albuquerque had their dwells trimmed to leave before the doors
+  shut.
+
+**A cascade, caught by re-auditing rather than by thinking.** The Cowboy Museum arrives
+15:58 against a 17:00 close, so I trimmed 120 minutes to 55. That pulled the whole of
+day 4 sixty-five minutes earlier, which pulled the Little Rock departure with it, which
+put Bass Pro at 08:23 and Gus's at 10:05 — **both shut**. Trimming a dwell moves
+every day after it. The trim was reverted; the reorder alone fixes Memphis, and the
+Cowboy Museum stays flagged rather than silently cut, because a 62-minute museum visit
+is a decision and not a rounding.
+
+**The remaining fifteen are golden-hour misses and cannot be fixed by flags.** Cadillac
+Ranch at 00:41 wants 16:10. The Strip at 11:12 wants the evening. Seven Magic Mountains
+at 07:59 wants 15:12. Palo Duro at 10:48 wants 16:17. These are a consequence of which
+direction the road runs and how long the days are, and moving one moves everything
+behind it. They are the trip's shape, not its errors.
+
+Zero shut doors across all three legs. One overstay left, deliberately.
+
 **Session 52** — A calendar of the whole trip. 1.30.0.
 
 Kevin: *"I keep forgetting when everything is."* Days is scoped to one leg, which is
