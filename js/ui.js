@@ -474,8 +474,10 @@ export function renderCalendar() {
     });
   });
 
-  // THE DEPARTURES live here now that Days is gone. Each leg owns the day and
-  // the hour it starts; everything below is computed from these three rows.
+  // The departure editors show ONLY when nothing is dated — a fresh phone
+  // needs somewhere to set them now that Days is gone. On a phone with dates
+  // set they never render: Kevin opens this tab to look ahead, not to be
+  // asked questions he answered in September.
   const depBlock = legs.map(leg => {
     const dep = store.depFor(leg.id);
     return `<div class="dep${dep.date ? '' : ' unset'}">
@@ -506,7 +508,7 @@ export function renderCalendar() {
   }
 
   const first = dated[0].from, last = dated[dated.length - 1].to;
-  let h = '<div class="cal">' + depBlock;
+  let h = '<div class="cal">';
 
   // ---- the header: how long, and the dates that cannot move --------------
   const nights = Math.round((last - first) / 86400000);
