@@ -12,9 +12,9 @@ const TABS = [
   { id: 'next',  label: 'Next',  render: () => ui.renderNext() },
   { id: 'route', label: 'Route', render: ui.renderRoute },
   { id: 'map',   label: 'Map',   render: ui.renderMap },
-  { id: 'days',  label: 'Days',  render: ui.renderDays },
-  // Days is one leg at a time. Dates is the whole trip on a calendar, which is
-  // the screen you want when the question is "what is happening on the 28th".
+  // Days is gone — Kevin: it was redundant with Dates, which now carries the
+  // whole trip clock (arrive, leave, time there, every stop and bed) and the
+  // per-leg departure editors that used to live on Days.
   { id: 'cal',   label: 'Dates', render: () => ui.renderCalendar() },
   { id: 'trip',  label: 'Trip',  render: () => ui.renderTrip(upd) },
 ];

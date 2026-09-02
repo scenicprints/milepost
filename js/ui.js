@@ -439,57 +439,10 @@ const MON = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
 const longDate = d => `${WD[d.getUTCDay()]} ${d.getUTCDate()} ${MON[d.getUTCMonth()]}`;
 const shortDate = d => `${WD[d.getUTCDay()].slice(0, 3)} ${d.getUTCDate()} ${MON[d.getUTCMonth()].slice(0, 3)}`;
 
-export function renderDays(legIx) {
-  const rt = legRoute(legIx);
-  const D = realDays(rt);
-  const legId = legIdOf(rt);
-  const dep = store.depFor(legId);
-  let h = '<div class="days">';
-
-  // THE DEPARTURE. It used to be one date for the whole trip, which meant leg
-  // 2 and leg 3 dated their days off the morning you left home. Each leg now
-  // owns the day and the hour it starts, and this is where you set them.
-  h += `<div class="dep${dep.date ? '' : ' unset'}">
-    <div class="deplab">Leaves</div>
-    <div class="depval">${dep.date
-      ? `${esc(longDate(new Date(dep.date + 'T00:00:00Z')))}, ${esc(dep.at)}`
-      : 'Not set yet'}</div>
-    <div class="depset">
-      <input type="date" value="${esc(dep.date || '')}" data-depdate="${legId}"
-             aria-label="Departure date">
-      <input type="time" value="${esc(dep.at)}" data-depat="${legId}"
-             aria-label="Departure time">
-    </div>
-  </div>`;
-  const picked = D.reduce((a, d) => a + d.stops.length, 0);
-  // A day ends where you place a sleep and nowhere else, so a road with stops
-  // ticked and no bed chosen is honestly ONE day -- of about six. That is right
-  // and it reads as broken, so say which it is rather than printing a 143 hour
-  // day and letting you wonder.
-  const noNights = D.length === 1 && !D[0].rows.some(r => r.kind === 'bed' || r.sleep);
-  if (!picked)
-    h += `<div class="err">Nothing ticked on this road yet. Choose some stops on the Route tab.</div>`;
-  else if (noNights)
-    h += `<div class="err">No nights placed on this road, so this is one very long day.
-      A day ends where you sleep. Tick one of the beds on the Route tab and the days will
-      split there.</div>`;
-  for (const w of (D.warnings || []))
-    h += `<div class="err">${esc(w)}</div>`;
-
-  D.forEach((d, i) => {
-    const out = d.startAt;
-    h += `<div class="day">
-      <div class="dnum">Day ${i + 1}${dep.date ? ` <span class="ddate">${esc(shortDate(d.date))}</span>` : ''}${out ? ` <span class="dout">out ${esc(out)}</span>` : ''}</div>
-      <div class="dto">${esc(d.from.name)} → ${esc(d.overnight.name)}${d.sameTown ? " (2nd night)" : ""}</div>
-      <div class="dmeta">${Math.round(d.miles).toLocaleString()} mi · ${fmtHours(d.driveMins)} driving${d.stopMins ? ` · ${fmtHours(d.stopMins)} stopped` : ""}</div>
-      ${d.risks.length ? `<div class="warn">Winter watch — ${d.risks.map(r => esc(r.name)).join(", ")}</div>` : ""}
-      ${d.stops.length ? `<div class="dstops">${d.stops.map(s =>
-        `<button class="dstop${store.isSeen(s.id) ? " seen" : ""}" data-stop="${s.id}"><i></i><span>${esc(s.name)}</span></button>`).join("")}</div>` : ""}
-      ${bedRow(rt, d, legIx)}
-    </div>`;
-  });
-  return h + "</div>";
-}
+// The Days tab is gone — Kevin's call: one leg of days was redundant once
+// Dates carried the whole trip. Its two jobs moved, not died: the per-leg
+// departure editors render at the top of the calendar now, and the full
+// per-stop clock (arrive, leave, time there) is on every calendar day.
 
 // ================================================================= calendar
 //
@@ -521,10 +474,28 @@ export function renderCalendar() {
     });
   });
 
+  // THE DEPARTURES live here now that Days is gone. Each leg owns the day and
+  // the hour it starts; everything below is computed from these three rows.
+  const depBlock = legs.map(leg => {
+    const dep = store.depFor(leg.id);
+    return `<div class="dep${dep.date ? '' : ' unset'}">
+      <div class="deplab">${esc(leg.name)} leaves</div>
+      <div class="depval">${dep.date
+        ? `${esc(longDate(new Date(dep.date + 'T00:00:00Z')))}, ${esc(dep.at)}`
+        : 'Not set yet'}</div>
+      <div class="depset">
+        <input type="date" value="${esc(dep.date || '')}" data-depdate="${esc(leg.id)}"
+               aria-label="Departure date">
+        <input type="time" value="${esc(dep.at)}" data-depat="${esc(leg.id)}"
+               aria-label="Departure time">
+      </div>
+    </div>`;
+  }).join('');
+
   const dated = spans.filter(x => !x.unset);
   if (!dated.length)
-    return `<div class="cal"><div class="err">No departure dates set yet. Put one on each leg’s
-      Days tab and the whole trip lays itself out here.</div></div>`;
+    return `<div class="cal">${depBlock}<div class="err">No departure dates set yet. Set them
+      above and the whole trip lays itself out here.</div></div>`;
 
   // Fill the gaps between legs: you are parked wherever the last leg ended.
   for (let i = 0; i < dated.length - 1; i++) {
@@ -535,7 +506,7 @@ export function renderCalendar() {
   }
 
   const first = dated[0].from, last = dated[dated.length - 1].to;
-  let h = '<div class="cal">';
+  let h = '<div class="cal">' + depBlock;
 
   // ---- the header: how long, and the dates that cannot move --------------
   const nights = Math.round((last - first) / 86400000);
@@ -575,9 +546,9 @@ export function renderCalendar() {
           · ${fmtHours(d.driveMins)} driving${d.stopMins ? ' · ' + fmtHours(d.stopMins) + ' stopped' : ''}</div>
         ${d.risks.length ? `<div class="cwarn">Winter watch — ${d.risks.map(r => esc(r.name)).join(', ')}</div>` : ''}
         ${rows.length ? `<ol class="cstops">${rows.map(r =>
-          `<li><span class="ct">${esc(r.arriveAt)}</span><span class="cn">${esc(r.stop.name)}</span>
-           ${r.dwell ? `<span class="cd">${fmtHours(r.dwell)}</span>` : ''}</li>`).join('')}</ol>` : ''}
-        ${bed ? `<div class="cbed">${esc(bed.arriveAt)} · sleep at ${esc(bed.stop.name)}</div>`
+          `<li><span class="ct">${esc(r.arriveAt)}–${esc(r.departAt)}</span><span class="cn">${esc(r.stop.name)}</span>
+           ${r.dwell ? `<span class="cd">${fmtHours(r.dwell)} there</span>` : ''}</li>`).join('')}</ol>` : ''}
+        ${bed ? `<div class="cbed">${esc(bed.arriveAt)} · sleep at ${esc(bed.stop.name)} · up ${esc(bed.departAt)}</div>`
               : `<div class="cbed done">${esc(d.overnight.name)}</div>`}
       </div></div>`;
   }
@@ -896,13 +867,6 @@ export function lodgingFor(route, mile) {
   return best;
 }
 
-function bedRow(route, day, legIx) {
-  const b = lodgingFor(route, day.endMile);
-  if (b) return `<button class="bedrow" data-stop="${b.id}">Sleeping at ${esc(b.name)}</button>`;
-  return `<button class="bedrow add" data-addbed="${legIx}" data-town="${esc(day.overnight.name)}"
-    data-st="${esc(day.overnight.state || '')}">Add where you are sleeping</button>`;
-}
-
 // ============================================================== editor
 let draft = null;
 export const editing = () => draft;
@@ -1019,11 +983,15 @@ export function whereNow() { return whereAmI() || fallbackSpot(); }
 /// Falls back to the first thing you have not marked seen, so the screen is
 /// still useful parked in the driveway in August.
 function fallbackSpot() {
+  // Beds count. They used to be filtered out here and in the Next list, so
+  // with nothing seen the screen skipped the Barstow night and named the Snow
+  // Cap, six hundred miles on. The next thing on the road is the next thing
+  // on the road, and sometimes that is where you sleep.
   const legs = selected();
   for (let i = 0; i < legs.length; i++) {
     const route = legs[i];
     for (const s of route.stops) {
-      if (store.isChosen(s.id) && !store.isSeen(s.id) && s.kind !== 'lodging')
+      if (store.isChosen(s.id) && !store.isSeen(s.id))
         return { route, legIx: i, mile: Math.max(0, s.mile - 1), off: 0, onRoute: false, guessed: true };
     }
   }
@@ -1037,7 +1005,7 @@ export function renderNext() {
   const day = days.find(d => here.mile >= d.startMile - 1 && here.mile <= d.endMile + 1) || days[0];
 
   const ahead = rt.stops
-    .filter(s => s.kind !== 'lodging' && store.isChosen(s.id) && s.mile > here.mile - 2 && !store.isSeen(s.id))
+    .filter(s => store.isChosen(s.id) && s.mile > here.mile - 2 && !store.isSeen(s.id))
     .sort((a, b) => a.mile - b.mile);
   const next = ahead[0];
   const after = ahead.slice(1, 4);
@@ -1063,8 +1031,9 @@ export function renderNext() {
       <div class="nlab">Next</div>
       <div class="nbig"><b>${dist.toLocaleString()}</b><span>mi</span></div>
       <div class="nname">${esc(next.name)}</div>
-      <div class="nsub">${esc(next.town)}, ${esc(next.state)} · ${next.detour} min off the road
-        · ${fmtHours(c.total)} all in</div>
+      <div class="nsub">${esc(next.town)}, ${esc(next.state)} · ${next.kind === 'lodging'
+        ? "tonight's bed"
+        : `${next.detour} min off the road · ${fmtHours(c.total)} all in`}</div>
     </button>
     <div class="actions" style="margin-top:2px">
       <a class="btn on" style="text-align:center;padding:13px 0"

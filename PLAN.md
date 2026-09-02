@@ -366,6 +366,32 @@ Android Auto is no.
 
 ## Session log
 
+**Session 63** — Next stops skipping the night, Days dies, Dates gets the whole clock. 1.40.0.
+
+Three asks from Kevin, all screens.
+
+**Next named the Snow Cap when the next thing on the road was the Barstow
+night.** Both `fallbackSpot` and the Next list filtered lodging out, so beds
+could never be Next — six hundred miles of Saturday hidden behind a screen
+that skipped where you sleep. Beds are in both now; a bed's card reads
+"tonight's bed" instead of detour arithmetic, and Been-there works on it.
+Verified in the preview with the real plan state: Next is Barstow truck
+stops, Then is Snow Cap → Bearizona → Grand Canyon.
+
+**The Days tab is gone — his call, it was redundant with Dates.** Its two
+real jobs moved rather than died: the per-leg "Leaves" departure editors
+render at the top of the calendar now (the event wiring is delegated, so the
+inputs work unchanged), and the per-stop detail went to the calendar days.
+`renderDays` and its `bedRow` helper are deleted; the Route tab remains where
+beds are ticked, and Next still offers add-a-bed.
+
+**Dates carries the whole clock: arrive–leave and time-there on every stop,
+down and up on every bed.** Rows read "10:56–11:41 · Delgadillo's Snow Cap ·
+45 min there"; nights read "22:34 · sleep at Barstow truck stops · up 05:45".
+The data was always in the rows — `departAt` has been computed since session
+48 — the screen just never showed it. Verified against the shipped plans:
+every time on the tab matches the harness output to the minute.
+
 **Session 62** — Leg 3: Three nights home, and the trip is whole again. 1.39.0.
 
 Kevin gave a Saturday departure after New Year's, a hard home-by deadline six
