@@ -366,6 +366,49 @@ Android Auto is no.
 
 ## Session log
 
+**Session 61** — Leg 2: Christmas to New Year, rebuilt and shipped. 1.38.0.
+
+Kevin gave the dates (a Saturday afternoon departure after Christmas, Houston
+before New Year's) and said make the best route. Built the same way leg 1 was:
+brainstormed on the war-room page, seeded as data, verified through the
+headless walk, reviewed by him as a doing/not-doing list, shipped on his word.
+
+**The Gulf road wins again, and harder than last time.** The calendar kills
+the inland road outright on these dates — the Birmingham Civil Rights
+Institute is closed Sundays and Mondays (exactly when it would be passed) and
+Marshall's lights are Thursday–Sunday with the season ending. The Gulf road
+has no closed doors at all, plus New Orleans. Bellingrath's show was verified
+against this season's published dates: it runs to early January, closed only
+Christmas Day, 17:00–21:00.
+
+**`leg2-plan`, "Christmas to New Year"**: 8 stops, 3 beds, four unhurried
+days. Falls Park at golden hour, Tanger Commerce for the first dinner, the
+aquarium one minute after opening (holiday week, go at the doors), Buford
+Highway lunch, Bellingrath inside its window, the Hard Rock Biloxi night with
+a deliberate free Gulf morning (the Quarter's own data wants nobody before
+16:00), the French Quarter as the lamps come on, Gator Country, and **a new
+data stop: `buc-ees-baytown`** — the full-size original on I-10 half an hour
+out, earned by the pool's own Buc-ee's entry. Houston mid-afternoon on the
+fourth day, two clear days plus the Eve in hand.
+
+**The Gulf road got the atlas treatment**: real miles on all 15 segments
+(1,127 true miles — the polyline ran light, exactly as PLAN.md warned), and
+the Atchafalaya Basin Bridge's 60-mph reality folded into the Lafayette
+segment. Nights pinned with `sleepBy` keyed to `leg2-plan`; `bed-biloxi`'s
+old bare `sleep: 1033` still stands for the raw Gulf road, untouched.
+
+**Winter on this leg is one point**: Atlanta ice, rare and total. The plan
+crosses it at 13:40, past the city's noon wait-it-out mark; the 08:25
+departure warn is the standing advisory, not a violation.
+
+**Not taken, and why, so nobody relitigates**: downtown Greenville (same
+block as Falls Park, would push Tanger past close), Ponce City (competes with
+Buford for the same meal), the Louisiana capitol (closes 16:00, 82 miles past
+the Quarter — geometry, not taste), the whole inland slate (calendar), and
+the Houston pool (day trips while parked, like the Charlotte cluster).
+Verified before shipping: zero shut doors, zero hours misses, leg1-plan
+byte-identical, all ten roads build.
+
 **Session 60** — The crater you were sleeping at. 1.37.0.
 
 Kevin: *"We are staying at meteor crater, but why aren't we seeing it?"* Right.

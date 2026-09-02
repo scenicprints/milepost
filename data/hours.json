@@ -112,6 +112,7 @@
   "french-quarter":       { "open": "00:00", "close": "23:59", "best": "evening", "why": "Iron balconies and buskers. It comes alive after dark, and parking is easier once the day trade leaves." },
   "la-state-capitol":     { "open": "08:00", "close": "16:00", "best": "morning", "why": "Closes at four, and the observation deck wants clear light." },
   "gator-country":        { "open": "10:00", "close": "17:00", "shut": ["12-24", "12-25"] },
+  "buc-ees-baytown":      { "open": "00:00", "close": "23:59" },
   "fritanga-gueguense":   { "open": "15:00", "close": "21:00", "closed": [1], "why": "A truck. Opens mid-afternoon, and phone service out there is spotty." },
   "la-carreta":           { "open": "12:00", "close": "20:00", "closed": [1, 2, 3], "best": "early", "why": "A small room that fills fast. Go at an off hour." },
   "pit-room":             { "open": "07:00", "close": "21:00" },

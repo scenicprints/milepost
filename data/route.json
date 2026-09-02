@@ -1314,7 +1314,8 @@
               "tz": -5,
               "urban": true,
               "road": "I-85 NC/SC",
-              "limit": 70
+              "limit": 70,
+              "miles": 28
             },
             {
               "name": "Gastonia",
@@ -1325,7 +1326,8 @@
               ],
               "tz": -5,
               "road": "I-85 NC/SC",
-              "limit": 70
+              "limit": 70,
+              "miles": 22
             },
             {
               "name": "Spartanburg",
@@ -1336,7 +1338,8 @@
               ],
               "tz": -5,
               "road": "I-85 NC/SC",
-              "limit": 70
+              "limit": 70,
+              "miles": 52
             },
             {
               "name": "Greenville",
@@ -1348,7 +1351,8 @@
               "tz": -5,
               "urban": true,
               "road": "I-85 NC/SC",
-              "limit": 70
+              "limit": 70,
+              "miles": 30
             },
             {
               "name": "Commerce",
@@ -1359,7 +1363,8 @@
               ],
               "tz": -5,
               "road": "I-85 NC/SC",
-              "limit": 70
+              "limit": 70,
+              "miles": 85
             },
             {
               "name": "Atlanta",
@@ -1374,7 +1379,8 @@
               "tz": -5,
               "urban": true,
               "road": "I-85 NC/SC",
-              "limit": 70
+              "limit": 70,
+              "miles": 68
             },
             {
               "name": "Montgomery",
@@ -1386,7 +1392,8 @@
               "tz": -6,
               "urban": true,
               "road": "I-65 AL",
-              "limit": 70
+              "limit": 70,
+              "miles": 160
             },
             {
               "name": "Mobile",
@@ -1398,7 +1405,8 @@
               "tz": -6,
               "urban": true,
               "road": "I-65 AL",
-              "limit": 70
+              "limit": 70,
+              "miles": 170
             },
             {
               "name": "Gulfport",
@@ -1409,7 +1417,8 @@
               ],
               "tz": -6,
               "road": "I-10 AL/MS/LA",
-              "limit": 70
+              "limit": 70,
+              "miles": 77
             },
             {
               "name": "New Orleans",
@@ -1421,7 +1430,8 @@
               "tz": -6,
               "urban": true,
               "road": "I-10 AL/MS/LA",
-              "limit": 70
+              "limit": 70,
+              "miles": 78
             },
             {
               "name": "Baton Rouge",
@@ -1433,7 +1443,8 @@
               "tz": -6,
               "urban": true,
               "road": "I-10 AL/MS/LA",
-              "limit": 70
+              "limit": 70,
+              "miles": 81
             },
             {
               "name": "Lafayette",
@@ -1444,7 +1455,8 @@
               ],
               "tz": -6,
               "road": "I-10 AL/MS/LA",
-              "limit": 70
+              "limit": 65,
+              "miles": 57
             },
             {
               "name": "Lake Charles",
@@ -1455,7 +1467,8 @@
               ],
               "tz": -6,
               "road": "I-10 AL/MS/LA",
-              "limit": 70
+              "limit": 70,
+              "miles": 76
             },
             {
               "name": "Beaumont",
@@ -1466,7 +1479,8 @@
               ],
               "tz": -6,
               "road": "I-10 AL/MS/LA",
-              "limit": 70
+              "limit": 70,
+              "miles": 58
             },
             {
               "name": "Houston",
@@ -1478,7 +1492,8 @@
               "tz": -6,
               "urban": true,
               "road": "I-10 TX",
-              "limit": 75
+              "limit": 75,
+              "miles": 85
             }
           ]
         },
@@ -1697,6 +1712,15 @@
               "limit": 75
             }
           ]
+        },
+        {
+          "id": "leg2-plan",
+          "name": "Christmas to New Year",
+          "sameRoadAs": "leg2-gulf",
+          "road": "The Gulf Coast, and only the stops that are in the plan",
+          "character": "Not a different road. The Gulf Coast exactly, carrying only the stops and three beds this run actually makes.",
+          "why": "Four unhurried days between Christmas and New Year's. Falls Park at golden hour, the whale sharks at opening, Buford Highway for lunch, Bellingrath's lights after dark, a lazy Biloxi morning, the French Quarter as the lamps come on, guaranteed alligators, and a Buc-ee's on the doorstep of Houston.",
+          "costs": "Nothing, because it is the same tarmac as the Gulf Coast. What it gives up is the inland run, and the calendar had already shut most of that road's doors. Swap back to see everything left out."
         }
       ]
     },
