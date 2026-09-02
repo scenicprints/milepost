@@ -366,6 +366,55 @@ Android Auto is no.
 
 ## Session log
 
+**Session 62** — Leg 3: Three nights home, and the trip is whole again. 1.39.0.
+
+Kevin gave a Saturday departure after New Year's, a hard home-by deadline six
+days later, and a wish for shorter. **The answer is four days — home Tuesday
+evening, three days inside the deadline** — because leg 1 already took the
+canyon country (Meteor Crater, Petrified Forest, the rim, Seligman) that
+stretched the old five-day version of this leg. Every spare day is weather
+armor: any storm hold anywhere costs a night, not the trip.
+
+**The Vegas diversion wins again**: Hoover Dam finishing at dusk, three hours
+on the Strip with the lights on, the South Point night with a real Vegas
+morning, and Seven Magic Mountains on the way out — Ada's firsts, for
+Oatman's burros and about an hour. Kevin confirmed the three-hour Strip
+evening over a longer Vegas stay.
+
+**`leg3-plan`, "Three nights home"**: 12 stops, 3 beds (Quanah, Gallup, South
+Point — all already in data). The leg is everything the drive out was too
+rushed for: Palo Duro to the canyon floor, the Blue Hole, **Earl's rescued as
+a Monday breakfast at its 07:30 open** (leg 1's Sunday could never reach it),
+Mr. D'z, La Chavala Linda in Dallas (meal plus the Nica import shop), the Sam
+Houston statue as the first leg-stretch, Peggy Sue's, and the Basque table at
+Bakersfield as the last supper at 16:41, which the route data always said was
+its right place. `leg3-vegas` got the atlas treatment: real miles on all 34
+segments, 1,978 true miles.
+
+**Winter, honestly**: Flagstaff 11:06 and Tehachapi 15:54, both daylight
+behind plows. Childress 08:41 under the standing brine rule (any overnight
+moisture, nobody leaves Quanah before 10:00 — costs the Blue Hole, nothing
+else). And the one Tehachapi-style call: **the Continental Divide crossed
+~20:00 Sunday in the dark** — dry and calm go; any snow or wind advisory,
+stop at the Albuquerque truck stops and cross behind the 08:00 plows, half a
+day late with days to spare. That crossing point's own data says wind is its
+danger, which is why the contingency names wind, not just snow.
+
+**Two flags that are features, not bugs**: La Chavala will show a false
+"opens 15:00" — that is its weekday window; weekends it opens at 10 and the
+plan passes Saturday at 13:19 (the hours model carries one window per stop,
+and bending shared data to one trip is how leg-50-class bugs start). Palo
+Duro day passes sell out; reserving online is on Kevin's before-leaving list.
+
+**Not taken, settled**: Tucumcari neon (done eastbound, better eastbound),
+Old Town ABQ (farolitos end with Christmas — the pool's own call), all of
+leg 1's canyon-country takes, Copper Breaks (dark-sky park without a night),
+Valley of Fire (wrong direction, half a day), Oatman (the known price of
+Vegas), Calico and the Barstow outlets (offered, not wanted).
+
+Verified before shipping: zero shut doors beyond the two documented flags,
+leg1-plan and leg2-plan byte-identical, all ten roads build.
+
 **Session 61** — Leg 2: Christmas to New Year, rebuilt and shipped. 1.38.0.
 
 Kevin gave the dates (a Saturday afternoon departure after Christmas, Houston

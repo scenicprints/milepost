@@ -2533,7 +2533,8 @@
               ],
               "tz": -6,
               "road": "I-45 TX",
-              "limit": 75
+              "limit": 75,
+              "miles": 70
             },
             {
               "name": "Centerville",
@@ -2544,7 +2545,8 @@
               ],
               "tz": -6,
               "road": "I-45 TX",
-              "limit": 75
+              "limit": 75,
+              "miles": 48
             },
             {
               "name": "Corsicana",
@@ -2555,7 +2557,8 @@
               ],
               "tz": -6,
               "road": "I-45 TX",
-              "limit": 75
+              "limit": 75,
+              "miles": 72
             },
             {
               "name": "Dallas",
@@ -2567,7 +2570,8 @@
               "tz": -6,
               "urban": true,
               "road": "I-45 TX",
-              "limit": 75
+              "limit": 75,
+              "miles": 55
             },
             {
               "name": "Fort Worth",
@@ -2579,7 +2583,8 @@
               "tz": -6,
               "urban": true,
               "road": "US-287 TX",
-              "limit": 75
+              "limit": 75,
+              "miles": 33
             },
             {
               "name": "Decatur",
@@ -2590,7 +2595,8 @@
               ],
               "tz": -6,
               "road": "US-287 TX",
-              "limit": 75
+              "limit": 75,
+              "miles": 41
             },
             {
               "name": "Wichita Falls",
@@ -2601,7 +2607,8 @@
               ],
               "tz": -6,
               "road": "US-287 TX",
-              "limit": 75
+              "limit": 75,
+              "miles": 80
             },
             {
               "name": "Vernon",
@@ -2612,7 +2619,8 @@
               ],
               "tz": -6,
               "road": "US-287 TX",
-              "limit": 75
+              "limit": 75,
+              "miles": 50
             },
             {
               "name": "Quanah",
@@ -2623,7 +2631,8 @@
               ],
               "tz": -6,
               "road": "US-287 TX",
-              "limit": 75
+              "limit": 75,
+              "miles": 30
             },
             {
               "name": "Childress",
@@ -2636,7 +2645,8 @@
               "note": "US-287 across the Panhandle ices the same as I-40. It is the same weather with fewer plows.",
               "tz": -6,
               "road": "US-287 TX",
-              "limit": 75
+              "limit": 75,
+              "miles": 30
             },
             {
               "name": "Clarendon",
@@ -2647,7 +2657,8 @@
               ],
               "tz": -6,
               "road": "US-287 TX",
-              "limit": 75
+              "limit": 75,
+              "miles": 57
             },
             {
               "name": "Amarillo",
@@ -2662,7 +2673,8 @@
               "tz": -6,
               "urban": true,
               "road": "US-287 TX",
-              "limit": 75
+              "limit": 75,
+              "miles": 60
             },
             {
               "name": "Tucumcari",
@@ -2673,7 +2685,8 @@
               ],
               "tz": -7,
               "road": "I-40 TX",
-              "limit": 75
+              "limit": 75,
+              "miles": 111
             },
             {
               "name": "Santa Rosa",
@@ -2684,7 +2697,8 @@
               ],
               "tz": -7,
               "road": "I-40 TX",
-              "limit": 75
+              "limit": 75,
+              "miles": 59
             },
             {
               "name": "Albuquerque",
@@ -2697,7 +2711,8 @@
               "tz": -7,
               "urban": true,
               "road": "I-40 TX",
-              "limit": 75
+              "limit": 75,
+              "miles": 114
             },
             {
               "name": "Continental Divide",
@@ -2711,7 +2726,8 @@
               "note": "High point of the drive. Rain west of here ends up in the Pacific.",
               "tz": -7,
               "road": "I-40 TX",
-              "limit": 75
+              "limit": 75,
+              "miles": 115
             },
             {
               "name": "Gallup",
@@ -2722,7 +2738,8 @@
               ],
               "tz": -7,
               "road": "I-40 TX",
-              "limit": 75
+              "limit": 75,
+              "miles": 25
             },
             {
               "name": "Holbrook",
@@ -2733,7 +2750,8 @@
               ],
               "tz": -7,
               "road": "I-40 NM",
-              "limit": 75
+              "limit": 75,
+              "miles": 86
             },
             {
               "name": "Winslow",
@@ -2744,7 +2762,8 @@
               ],
               "tz": -7,
               "road": "I-40 NM",
-              "limit": 75
+              "limit": 75,
+              "miles": 33
             },
             {
               "name": "Flagstaff",
@@ -2758,7 +2777,8 @@
               "note": "The most likely place on this whole trip to find the interstate closed. Check the forecast 48 hours out.",
               "tz": -7,
               "road": "I-40 NM",
-              "limit": 75
+              "limit": 75,
+              "miles": 58
             },
             {
               "name": "Williams",
@@ -2771,7 +2791,8 @@
               "note": "Turn north here for the Grand Canyon.",
               "tz": -7,
               "road": "I-40 AZ",
-              "limit": 75
+              "limit": 75,
+              "miles": 33
             },
             {
               "name": "Seligman",
@@ -2782,7 +2803,8 @@
               ],
               "tz": -7,
               "road": "I-40 AZ",
-              "limit": 75
+              "limit": 75,
+              "miles": 44
             },
             {
               "name": "Kingman",
@@ -2795,7 +2817,8 @@
               "note": "Below the snow line. Sleep here if Flagstaff is getting hit and go over in the morning.",
               "tz": -7,
               "road": "I-40 AZ",
-              "limit": 75
+              "limit": 75,
+              "miles": 87
             },
             {
               "name": "Boulder City",
@@ -2806,7 +2829,8 @@
               ],
               "tz": -8,
               "road": "US-93 AZ/NV",
-              "limit": 70
+              "limit": 70,
+              "miles": 72
             },
             {
               "name": "Las Vegas",
@@ -2818,7 +2842,8 @@
               "tz": -8,
               "urban": true,
               "road": "I-15 NV",
-              "limit": 75
+              "limit": 75,
+              "miles": 23
             },
             {
               "name": "Jean",
@@ -2829,7 +2854,8 @@
               ],
               "tz": -8,
               "road": "I-15 NV",
-              "limit": 75
+              "limit": 75,
+              "miles": 25
             },
             {
               "name": "Primm",
@@ -2840,7 +2866,8 @@
               ],
               "tz": -8,
               "road": "I-15 NV",
-              "limit": 75
+              "limit": 75,
+              "miles": 12
             },
             {
               "name": "Baker",
@@ -2851,7 +2878,8 @@
               ],
               "tz": -8,
               "road": "I-15 CA",
-              "limit": 70
+              "limit": 70,
+              "miles": 55
             },
             {
               "name": "Barstow",
@@ -2863,7 +2891,8 @@
               "note": "I-40 begins. One road for the next 2,400 miles.",
               "tz": -8,
               "road": "I-15 CA",
-              "limit": 70
+              "limit": 70,
+              "miles": 63
             },
             {
               "name": "Mojave",
@@ -2874,7 +2903,8 @@
               ],
               "tz": -8,
               "road": "CA-58",
-              "limit": 70
+              "limit": 70,
+              "miles": 68
             },
             {
               "name": "Tehachapi Pass",
@@ -2888,7 +2918,8 @@
               "note": "Chain control posts here. Your FWD Accord needs chains ON under R2 — the exemption is AWD only.",
               "tz": -8,
               "road": "CA-58",
-              "limit": 70
+              "limit": 70,
+              "miles": 20
             },
             {
               "name": "Bakersfield",
@@ -2900,7 +2931,8 @@
               "tz": -8,
               "urban": true,
               "road": "CA-58",
-              "limit": 70
+              "limit": 70,
+              "miles": 42
             },
             {
               "name": "Fresno",
@@ -2912,7 +2944,8 @@
               "tz": -8,
               "urban": true,
               "road": "CA-99",
-              "limit": 70
+              "limit": 70,
+              "miles": 108
             },
             {
               "name": "Modesto",
@@ -2923,7 +2956,8 @@
               ],
               "tz": -8,
               "road": "CA-99",
-              "limit": 70
+              "limit": 70,
+              "miles": 99
             }
           ]
         },
@@ -3366,6 +3400,15 @@
               "limit": 70
             }
           ]
+        },
+        {
+          "id": "leg3-plan",
+          "name": "Three nights home",
+          "sameRoadAs": "leg3-vegas",
+          "road": "The Vegas diversion, and only the stops that are in the plan",
+          "character": "Not a different road. The Vegas diversion exactly, carrying only the stops and three beds the run home actually makes.",
+          "why": "Everything the drive out was too rushed for, minus everything leg 1 already took. Palo Duro, the Blue Hole, breakfast at Earl's, then Hoover Dam in full daylight, the Strip with the lights on, Seven Magic Mountains in morning sun, and the Basque table at Bakersfield as the last meal, three hours from finished, which is what the data always said it was for.",
+          "costs": "Sixty-one miles and about an hour over staying on I-40, and it gives up Oatman's burros. Swap to The road home to get them back."
         }
       ]
     }
