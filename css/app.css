@@ -499,5 +499,15 @@ ol.cstops li:first-child { border-top: 0; }
 .cstops .cn { flex: 1; letter-spacing: -.01em; }
 .cstops .cd { font-family: var(--mono); font-size: 11px; color: var(--ink2); flex: none; }
 .cstops .ct b { font-weight: 500; }
-.cbed { font-family: var(--mono); font-size: 13px; color: var(--signal); margin-top: 10px; }
-.cbed.done { color: var(--ink2); }
+/* The night is a row like any other — same columns, same size, orange
+   because it is the night. "22:34 · sleep at X · up 05:45" made Kevin parse
+   a sentence to learn when to be at Barstow; now it reads like the stops. */
+.cbed { display: flex; gap: 12px; align-items: baseline; padding: 7px 0; font-size: 16px;
+  border-top: 1px solid var(--rule); color: var(--signal); }
+.cbed .ct { font-family: var(--mono); font-size: 15px; min-width: 104px;
+  font-variant-numeric: tabular-nums; flex: none; }
+.cbed .ct b { font-weight: 500; }
+.cbed .cn { flex: 1; letter-spacing: -.01em; }
+.cbed .cd { font-family: var(--mono); font-size: 11px; flex: none; }
+.cbed.done { display: block; border-top: 0; font-family: var(--mono); font-size: 13px;
+  color: var(--ink2); margin-top: 8px; }

@@ -550,7 +550,7 @@ export function renderCalendar() {
         ${rows.length ? `<ol class="cstops">${rows.map(r =>
           `<li><span class="ct"><b>${esc(r.arriveAt)}</b>–${esc(r.departAt)}</span><span class="cn">${esc(r.stop.name)}</span>
            ${r.dwell ? `<span class="cd">${fmtHours(r.dwell)}</span>` : ''}</li>`).join('')}</ol>` : ''}
-        ${bed ? `<div class="cbed">${esc(bed.arriveAt)} · sleep at ${esc(bed.stop.name)} · up ${esc(bed.departAt)}</div>`
+        ${bed ? `<div class="cbed"><span class="ct"><b>${esc(bed.arriveAt)}</b>–${esc(bed.departAt)}</span><span class="cn">${esc(bed.stop.name)}</span><span class="cd">sleep</span></div>`
               : `<div class="cbed done">${esc(d.overnight.name)}</div>`}
       </div></div>`;
   }
