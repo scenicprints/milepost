@@ -661,7 +661,17 @@ if ('serviceWorker' in navigator) {
   const register = async () => {
     try {
       reg = await navigator.serviceWorker.register('sw.js');
-      if (reg.waiting) setUpd({ updateReady: true, updateNote: 'An update is downloaded and ready.' });
+      // A worker still waiting at boot is yesterday's update that never took
+      // over. Waiting for the button trapped a phone for months: code is
+      // network-first so the version always read current, the update check
+      // compared fresh against fresh and said "no updates", and meanwhile the
+      // ancient ACTIVE worker kept serving its ancient data cache — no plan
+      // routes, August miles. Boot is the one safe moment to swap (the
+      // session is seconds old), so a waiting worker activates itself now and
+      // the controllerchange reload above brings everything current. The
+      // no-swap-mid-session rule still holds for updates found later.
+      if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+      reg.update().catch(() => {});
       reg.addEventListener('updatefound', () => {
         const w = reg.installing;
         if (!w) return;
