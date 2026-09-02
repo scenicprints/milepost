@@ -366,6 +366,27 @@ Android Auto is no.
 
 ## Session log
 
+**Session 60** — The crater you were sleeping at. 1.37.0.
+
+Kevin: *"We are staying at meteor crater, but why aren't we seeing it?"* Right.
+The rest area was picked for its position and the crater itself never made the
+committed list, so the plan woke at 07:00 and drove past a gate two miles away
+that opens at 08:00.
+
+**Meteor Crater is on the plan.** The night's wake moved to 07:55 so the
+crater lands at 08:02, first on the rim before the wind builds. The Sunday
+cascade, verified through the walk: Petrified Forest 10:42–12:42, **Earl's
+dies** (it truly closes at 14:00 on Sundays and the new clock cannot reach it
+— it comes off the plan and waits for the leg 3 brainstorm, where Gallup
+comes around again), lunch is now **Laguna Burger** at 14:59, Tucumcari's
+neon at 19:15, Buc-ee's 22:41, and the Amarillo night shortens to 8.3 hours
+with the 07:45 wake unchanged — Monday onward is minute-identical. Zero shut
+doors, zero early arrivals; leg3-vegas byte-identical; all nine roads build.
+
+Also corrected here: the tire size in session 58's winter note. The car reads
+**225/50R17**, not 235/45R18 — caught by another session reading the actual
+sidewall, carried into the winter section above.
+
 **Session 59** — The road stops lying: atlas miles as ground truth. 1.36.0.
 
 Kevin gave the licence to change the route model itself so the schedule
@@ -447,10 +468,17 @@ piles up. Tehachapi on the opening night is handled as a decision gate —
 check Caltrans at Modesto and again at Bakersfield; any chain control or
 active snow means sleeping Bakersfield and crossing behind the morning plows,
 which costs the canyon sunset and moves the rim to Sunday. A trunk traction
+<<<<<<< HEAD
 device sized for 225/50R17 — the real sidewall, read off the car 2026-09-01;
 an earlier session wrote 235/45R18 here and that was wrong. Honda's manual
 approves the SCC Radial Chain SC1036 cable for this size. The device
 turns a checkpoint refusal into a wave-through and is never driven on snow.
+=======
+device turns a checkpoint refusal into a wave-through and is never driven on
+snow. The real tire size, read off the car, is 225/50R17 — an earlier note
+here said 235/45R18, which was wrong. Honda's manual approves the SCC SC1036
+cable for this size.
+>>>>>>> 1a9771b (Meteor Crater joins the Sunday morning it was already sleeping at)
 
 **Session 57** — The plan rebuilt with Kevin, and nailed down as data. 1.34.0.
 
