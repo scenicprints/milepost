@@ -74,12 +74,28 @@ export async function connect(rawCode) {
   set({ status: 'connecting', error: null });
   try {
     const ref = f.doc(db, 'trips', code);
-    await f.getDoc(ref);          // rules reject a wrong code here
+    const snap = await f.getDoc(ref); // rules reject a wrong code here
     docRef = ref;
     localStorage.setItem(CODE_KEY, code);
     set({ on: true, status: 'connected', code, error: null });
-    watch();
-    push();
+    // PULL BEFORE PUSH. Connecting used to push this phone's state
+    // unconditionally, which meant every app open replayed a stale local copy
+    // over whatever the trip doc held — a seeded plan, the other phone's
+    // fresher state — with an old updatedAt, so the watch guard then saw
+    // nothing newer and the clobber stuck. The doc we already fetched to
+    // verify the code is the answer: if it is newer than this phone, it wins
+    // and there is nothing to push; only a phone that is genuinely ahead
+    // writes on connect.
+    const data = snap.exists() ? snap.data() : null;
+    if (data && typeof data.updatedAt === 'number' && data.updatedAt > store.updatedAt) {
+      applyingRemote = true;
+      try { store.applyRemote(data); } finally { applyingRemote = false; }
+      set({ lastPull: Date.now() });
+      watch();
+    } else {
+      watch();
+      push();
+    }
     return true;
   } catch (e) {
     set({
