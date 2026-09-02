@@ -1057,7 +1057,13 @@ export function renderNext() {
       </button>`).join('')}</div></div>`;
   }
 
-  if (day) {
+  // When the next thing on the road IS tonight's bed, the Tonight block would
+  // repeat the Next card word for word, with tomorrow's stops sandwiched
+  // between the two copies — Kevin caught it reading backwards. Tonight earns
+  // its place only while there are still stops between you and the bed.
+  const nextIsTonight = next && next.kind === 'lodging' &&
+    (bed ? bed.id === next.id : Math.abs(next.mile - (day ? day.endMile : -1)) < 2);
+  if (day && !nextIsTonight) {
     h += `<div class="nblock"><div class="slab">Tonight</div>
       <div class="nrow big">
         <span class="t">${esc(day.overnight.name)}${day.overnight.state ? ', ' + esc(day.overnight.state) : ''}</span>
