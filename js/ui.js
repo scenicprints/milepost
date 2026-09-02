@@ -548,8 +548,8 @@ export function renderCalendar() {
           · ${fmtHours(d.driveMins)} driving${d.stopMins ? ' · ' + fmtHours(d.stopMins) + ' stopped' : ''}</div>
         ${d.risks.length ? `<div class="cwarn">Winter watch — ${d.risks.map(r => esc(r.name)).join(', ')}</div>` : ''}
         ${rows.length ? `<ol class="cstops">${rows.map(r =>
-          `<li><span class="ct">${esc(r.arriveAt)}–${esc(r.departAt)}</span><span class="cn">${esc(r.stop.name)}</span>
-           ${r.dwell ? `<span class="cd">${fmtHours(r.dwell)} there</span>` : ''}</li>`).join('')}</ol>` : ''}
+          `<li><span class="ct"><b>${esc(r.arriveAt)}</b>–${esc(r.departAt)}</span><span class="cn">${esc(r.stop.name)}</span>
+           ${r.dwell ? `<span class="cd">${fmtHours(r.dwell)}</span>` : ''}</li>`).join('')}</ol>` : ''}
         ${bed ? `<div class="cbed">${esc(bed.arriveAt)} · sleep at ${esc(bed.stop.name)} · up ${esc(bed.departAt)}</div>`
               : `<div class="cbed done">${esc(d.overnight.name)}</div>`}
       </div></div>`;
