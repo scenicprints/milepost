@@ -156,3 +156,21 @@ async function push() {
 }
 
 store.addEventListener('change', nudge);
+
+// A phone that comes back from the background missed everything: the tab was
+// suspended, the snapshot listener frozen, and the first thing the user does
+// on waking stamps their stale state newest and pushes it over whatever
+// arrived while they were away. So on every return to the foreground, ask the
+// server once and apply if it is ahead — the same rule connect() uses.
+document.addEventListener('visibilitychange', async () => {
+  if (document.visibilityState !== 'visible' || !docRef || !f) return;
+  try {
+    const snap = await f.getDoc(docRef);
+    const data = snap.exists() ? snap.data() : null;
+    if (data && typeof data.updatedAt === 'number' && data.updatedAt > store.updatedAt) {
+      applyingRemote = true;
+      try { store.applyRemote(data); } finally { applyingRemote = false; }
+      set({ lastPull: Date.now() });
+    }
+  } catch (_) { /* offline wake; the live listener will catch up */ }
+});
