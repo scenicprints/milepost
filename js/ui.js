@@ -170,6 +170,11 @@ export function realDays(route) {
       // hour you leave the bed on every day after it. build() already worked
       // this out, in the local time of wherever you woke up.
       startAt: d.startAt,
+      // When you REACH the day's destination: the bed's arrival, or on the
+      // leg's last day the terminus arrival build() already computed. Kevin:
+      // the app told him when to leave Buc-ee's and never when he'd be in
+      // Houston. This is that number.
+      arriveAt: bedRow ? bedRow.arriveAt : (last ? it.endsAtLabel : null),
       from: { name: d.from },
       overnight: bedRow
         ? { name: bedRow.stop.name, mile: bedRow.mile }
@@ -544,14 +549,14 @@ export function renderCalendar() {
       <div class="cbody">
         <div class="ctag">${esc(leg.short || SHORT[e.li])} · day ${di + 1} of ${n}</div>
         <div class="cwhere">${esc(d.from.name)} → ${esc(d.overnight.name)}</div>
-        <div class="cmeta">out ${esc(d.startAt || '')} · ${Math.round(d.miles).toLocaleString()} mi
+        <div class="cmeta">out ${esc(d.startAt || '')}${d.arriveAt ? ' · in ' + esc(d.arriveAt) : ''} · ${Math.round(d.miles).toLocaleString()} mi
           · ${fmtHours(d.driveMins)} driving${d.stopMins ? ' · ' + fmtHours(d.stopMins) + ' stopped' : ''}</div>
         ${d.risks.length ? `<div class="cwarn">Winter watch — ${d.risks.map(r => esc(r.name)).join(', ')}</div>` : ''}
         ${rows.length ? `<ol class="cstops">${rows.map(r =>
           `<li><span class="ct"><b>${esc(r.arriveAt)}</b>–${esc(r.departAt)}</span><span class="cn">${esc(r.stop.name)}</span>
            ${r.dwell ? `<span class="cd">${fmtHours(r.dwell)}</span>` : ''}</li>`).join('')}</ol>` : ''}
         ${bed ? `<div class="cbed"><span class="ct"><b>${esc(bed.arriveAt)}</b>–${esc(bed.departAt)}</span><span class="cn">${esc(bed.stop.name)}</span><span class="cd">sleep</span></div>`
-              : `<div class="cbed done">${esc(d.overnight.name)}</div>`}
+              : `<div class="cbed"><span class="ct"><b>${esc(d.arriveAt || '')}</b></span><span class="cn">arrive ${esc(d.overnight.name)}</span><span class="cd">leg done</span></div>`}
       </div></div>`;
   }
   return h + '</div>';
