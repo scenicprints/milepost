@@ -186,12 +186,25 @@ export function realDays(route) {
       stopMins: rows.reduce((a, r) => a + (r.dwell || 0), 0),
       stops: rows.filter(r => r.kind !== 'bed').map(r => r.stop),
       firsts: rows.filter(r => r.stop && r.stop.first).length,
-      risks: d.risk ? [d.risk] : [],
+      risks: [],                         // filled below, from the real crossings
       sameTown: false,
       rows,
     });
     startMile = last ? route.miles : endMile;
   });
+  // WINTER WATCH: the passes this day actually drives over.
+  //
+  // It used to be `d.risk` — the winter point nearest to where you WOKE UP —
+  // which named Tehachapi on the morning AFTER you crossed it at 21:11, never
+  // named Flagstaff on the day you drive through it, and left the day that
+  // matters most showing nothing at all. build() already walks every crossing
+  // on this road with its mile, its clock time and whether it is dark or ahead
+  // of the plows; the day is simply the one whose miles contain it.
+  for (const c of it.crossings || []) {
+    const day = out.find(d => c.mile <= d.endMile + 0.5) || out[out.length - 1];
+    if (day) day.risks.push(c);
+  }
+
   out.warnings = it.warnings;
   out.it = it;
   dayCache = { key, val: out };
@@ -479,11 +492,13 @@ export function renderCalendar() {
     });
   });
 
-  // The departure editors show ONLY when nothing is dated — a fresh phone
-  // needs somewhere to set them now that Days is gone. On a phone with dates
-  // set they never render: Kevin opens this tab to look ahead, not to be
-  // asked questions he answered in September.
-  const depBlock = legs.map(leg => {
+  // A leg with no date is invisible on a calendar, so its editor has to be
+  // visible instead. Editors render for the legs that are still unset — a
+  // fresh phone gets all three, a phone missing only leg 1 gets leg 1, and a
+  // fully dated phone gets none: Kevin opens this tab to look ahead, not to be
+  // asked questions he answered in September. Hiding them the moment ANY leg
+  // was dated is what left leg 1 both undated and unsettable.
+  const depRow = leg => {
     const dep = store.depFor(leg.id);
     return `<div class="dep${dep.date ? '' : ' unset'}">
       <div class="deplab">${esc(leg.name)} leaves</div>
@@ -497,7 +512,9 @@ export function renderCalendar() {
                aria-label="Departure time">
       </div>
     </div>`;
-  }).join('');
+  };
+  const depBlock = legs.map(depRow).join('');
+  const unsetBlock = legs.filter(l => !store.depFor(l.id).date).map(depRow).join('');
 
   const dated = spans.filter(x => !x.unset);
   if (!dated.length)
@@ -513,7 +530,7 @@ export function renderCalendar() {
   }
 
   const first = dated[0].from, last = dated[dated.length - 1].to;
-  let h = '<div class="cal">';
+  let h = '<div class="cal">' + unsetBlock;
 
   // ---- the header: how long, and the dates that cannot move --------------
   const nights = Math.round((last - first) / 86400000);
@@ -551,7 +568,12 @@ export function renderCalendar() {
         <div class="cwhere">${esc(d.from.name)} → ${esc(d.overnight.name)}</div>
         <div class="cmeta">out ${esc(d.startAt || '')}${d.arriveAt ? ' · in ' + esc(d.arriveAt) : ''} · ${Math.round(d.miles).toLocaleString()} mi
           · ${fmtHours(d.driveMins)} driving${d.stopMins ? ' · ' + fmtHours(d.stopMins) + ' stopped' : ''}</div>
-        ${d.risks.length ? `<div class="cwarn">Winter watch — ${d.risks.map(r => esc(r.name)).join(', ')}</div>` : ''}
+        ${d.risks.length ? `<div class="cwarn">Winter watch — ${d.risks.map(r =>
+          esc(r.name + (r.atLabel ? ' ' + r.atLabel : '')
+            + (r.dark && r.early ? ', in the dark and before the plows'
+               : r.dark ? ', in the dark'
+               : r.early ? `, before the plows clear it at ${r.plowedBy}` : ''))
+        ).join(' · ')}</div>` : ''}
         ${rows.length ? `<ol class="cstops">${rows.map(r =>
           `<li><span class="ct"><b>${esc(r.arriveAt)}</b>–${esc(r.departAt)}</span><span class="cn">${esc(r.stop.name)}</span>
            ${r.dwell ? `<span class="cd">${fmtHours(r.dwell)}</span>` : ''}</li>`).join('')}</ol>` : ''}

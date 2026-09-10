@@ -43,6 +43,10 @@ const DEFAULTS = () => ({
   // everything added later showed up unticked and stayed that way. Ids in here
   // are never re-seeded, so a stop you deliberately untick stays unticked.
   seededIds: [],
+  // Which PLAN routes have had their one filling-in. A plan route is the trip
+  // itself, so it arrives whole rather than stop by stop through `seededIds`,
+  // which is keyed by id and cannot tell one road's cost from another's.
+  seededPlans: [],
   departAt: '06:00',     // clock time you pull out, paired with `departure`
   // Stops held until after the night, because the bed is further down the
   // road than they are and you double back to them in the morning. See the

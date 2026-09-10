@@ -52,8 +52,25 @@ async function boot() {
   // ticked like the rest, and anything you unticked stays unticked.
   {
     const seen = new Set(store.s.seededIds || []);
+    const plans = new Set(store.s.seededPlans || []);
     let fresh = false;
     for (const r of ui.selected()) {
+      // A PLAN ROUTE ARRIVES WHOLE, ONCE.
+      //
+      // `seededIds` is keyed by stop id, and a stop's cost depends on the road
+      // it is on: Bearizona is 98 minutes on the roads it shares and 50 on the
+      // plan road. Judged once on a shared road it failed the 70-minute rule,
+      // went into `seededIds`, and the id-level guard then meant the plan
+      // could never fill itself in — the Dates tab showed a plan with holes in
+      // it. So each plan route gets one pass of its own, recorded by route id.
+      // After that pass an untick sticks exactly like anywhere else.
+      if (/-plan$/.test(r.id) && !plans.has(r.id)) {
+        plans.add(r.id); fresh = true;
+        const all = new Set();
+        for (const s of r.stops) { seen.add(s.id); all.add(s.id); }
+        if (all.size) store.choose(all);
+        continue;
+      }
       const pick = ui.suggestStops(r);
       const add = new Set();
       for (const s of r.stops) {
@@ -63,7 +80,7 @@ async function boot() {
       }
       if (add.size) store.choose(add);
     }
-    if (fresh) { store.s.seededIds = [...seen]; store.save(); }
+    if (fresh) { store.s.seededIds = [...seen]; store.s.seededPlans = [...plans]; store.save(); }
   }
 
   $tabs.innerHTML = TABS.map(t =>

@@ -17,6 +17,18 @@ agent, or a new Claude account, can continue without losing the thread.
 
 ## State
 
+**A plan route now arrives WHOLE (session 64).** `*-plan` routes are the trip,
+not a pool, so the 70-minute suggester no longer votes on them and each one is
+filled exactly once, tracked by route id in `seededPlans`. Before this the
+plan could ship without its own non-negotiables — `seededIds` is keyed by stop
+id, and a stop judged on a shared road never got re-judged on the plan road
+where its `dwellBy` makes it cheap. If you add a stop to a plan route, existing
+phones will NOT pick it up: `seededPlans` has already recorded that route.
+
+**Dates tells you the passes you actually drive over (session 64),** with the
+clock time and whether it is dark or ahead of the plows, taken from
+`build()`'s crossings rather than from the winter point nearest your bed.
+
 **Leg 1's plan is rebuilt WITH Kevin, and this time the whole of it ships as
 data (session 57).** `leg1-plan`, "Five nights to Mooresville", is back on the
 canyon road with 13 stops and 5 beds — and now the five night lengths
@@ -365,6 +377,72 @@ Android Auto is no.
 ---
 
 ## Session log
+
+**Session 64** — The Dates tab was showing a plan with holes in it. 1.49.0.
+
+**First, a commit with no log entry:** `fb2e58d`, "Every day on Dates says when
+you arrive", shipped as 1.48.0 from another session while this one was working
+— `arriveAt` on every day, "out … · in …" in the header, and a real arrival row
+closing each leg. It is good and it is kept; this session rebased onto it. The
+law is one entry per session, so it is recorded here rather than lost.
+
+Kevin opened Dates and found the trip starting at leg 2, then: *"I'm confused.
+the dates tab is just supposed to give me that route, and tell me what time I
+will arrive and depart each stop. spots, winter watches, and rest stops."* It
+is, and it does. Four faults stood between it and that.
+
+**1. A leg with no departure date was invisible AND unsettable.**
+`renderCalendar` skips an undated leg, which is right — there is nowhere to put
+it on a calendar. But the departure editors rendered only when NOTHING was
+dated, so once the other legs had dates the undated one had no date input
+anywhere in the app. It could not be seen and it could not be fixed. Now an
+editor renders for each leg still unset, above the calendar; a fully dated
+phone still gets none. `js/ui.js`.
+
+**2. The winter watch named the wrong pass.** A day carried `d.risk` — the
+winter point NEAREST TO WHERE YOU WOKE UP. So it named a pass on the morning
+after you had already crossed it in the dark, never named Flagstaff on the day
+you drive through Flagstaff, and showed nothing at all on a day whose only
+crossing lay ahead of the wake position. `build()` has walked every crossing on
+the road since cfb0388, with its mile, its clock time and its dark/early flags;
+`realDays` now hands each crossing to the day whose miles contain it, and the
+calendar line carries the time and the condition. Flags still inform and the
+plan still decides — session 57's stance, unchanged. `js/ui.js`.
+
+**3. A plan route could not fill itself in, so the plan shipped with holes.**
+Two guards compounded. `suggestStops`' 70-minute rule was allowed to vote on
+plan routes, and `seededIds` is keyed by STOP ID while a stop's cost depends on
+the ROAD: Bearizona is 98 minutes on the roads it shares and 50 on the plan
+road, where session 57 trimmed it to the loop via `dwellBy`. Judged once on a
+shared road it failed the rule, went into `seededIds`, and could never be
+reconsidered — so the two things session 57 recorded as non-negotiable,
+Bearizona and Ada's three hours on Broadway, were quietly not in the trip. A
+`*-plan` route is the trip, not a pool of candidates: it is never filtered, and
+it is filled once per route id, recorded in the new `seededPlans`. After that
+one pass an untick sticks exactly like anywhere else. `js/plan.js`, `js/app.js`,
+`js/store.js`.
+
+**4. Historic downtown Flagstaff is off the plan.** Kevin: *"We are just
+driving through Flagstaff and trying to beat any storms."* Dropped from
+`leg1-plan` in `data/stops.json`; it stays on the roads that are not the plan.
+
+**The daylight arithmetic, which is Kevin's call and not the app's.** Taking
+downtown Flagstaff out moved the Flagstaff crossing 87 minutes but not into
+daylight, because Bearizona's 58 minutes sit in front of it: with Bearizona the
+pass goes dark, without it the pass is crossed in daylight. Told him plainly,
+including that an earlier 17:17 figure I had quoted predated Bearizona going
+in. **He kept Bearizona.**
+
+**Still latent, deliberately not fixed:** `renderCalendar` keys days by date in
+a `Map`, one entry per date, so if two planner days ever land on one calendar
+date the earlier one vanishes with all its stops. That is not hypothetical —
+it was eating three days while the legs were on the pool roads. On the plan
+routes no date repeats, so it is not biting; fixing it changes the calendar's
+day model and wants Kevin's word first.
+
+**On his device, not in this repo:** two legs were sitting on pool roads rather
+than their plan routes, and leg 1 had no departure. Both corrected in the trip
+doc, which is where that belongs.
 
 **Session 63** — Next stops skipping the night, Days dies, Dates gets the whole clock. 1.40.0.
 

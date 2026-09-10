@@ -154,6 +154,13 @@ export function planTotals(days) {
 /// cheap ones are free real estate, and a first she has no California
 /// equivalent for earns more patience than an ordinary stop.
 export function suggestStops(route) {
+  // A `*-plan` route is not a pool of candidates. It IS the trip, placed stop
+  // by stop, and every stop on it is already a decision — so nothing on it
+  // gets weighed against the 70-minute rule. That rule is what kept Bearizona
+  // off the plan: it costs 98 minutes on the roads it shares and 50 on the
+  // plan road, and it was judged once, on the wrong road, and never again.
+  if (/-plan$/.test(route.id)) return new Set(route.stops.map(s => s.id));
+
   const picked = new Set();
   for (const s of route.stops) {
     const c = stopCost(s);
