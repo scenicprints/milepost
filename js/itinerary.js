@@ -213,6 +213,20 @@ export function build(route, chosen, start, data) {
   const tzStart = tzAtMile(0, route);
   const localOf = (abs, tz) => abs + ((tz ?? tzStart) - tzStart) * 60;
 
+  /// Minutes from `at` until the next local occurrence of `leaveAt`. This is
+  /// what a night at a rest stop actually is: you leave at seven whether you
+  /// arrived at eight in the evening or at midnight. Null when nothing is
+  /// pinned, so a plain duration carries on behaving exactly as before.
+  const napUntil = (leaveAt, at, tz) => {
+    if (typeof leaveAt !== 'string' || !/^\d{1,2}:\d{2}$/.test(leaveAt)) return null;
+    const [h, m] = leaveAt.split(':').map(Number);
+    if (!(h >= 0 && h < 24 && m >= 0 && m < 60)) return null;
+    const now = ((localOf(at, tz) % MIN_PER_DAY) + MIN_PER_DAY) % MIN_PER_DAY;
+    let d = h * 60 + m - now;
+    if (d <= 0) d += MIN_PER_DAY;
+    return d;
+  };
+
   // The sun, and the crossing window, at a position on whatever calendar day
   // the absolute clock has reached.
   //
@@ -340,6 +354,10 @@ export function build(route, chosen, start, data) {
         Number.isFinite(s.sleep) ? s.sleep
         : sleeps[s.id] != null ? Number(sleeps[s.id])
         : DEFAULT_NIGHT);
+      // A pinned departure beats any duration, including the user's own: the
+      // whole point is that it survives arriving early or late.
+      const untilLeave = napUntil(s.leaveAt, arrive, s.tz);
+      if (untilLeave != null) nap = untilLeave;
       let wake = arrive + nap;
       let next = dayFor(wake, s.ll, s.tz);
 
@@ -347,8 +365,10 @@ export function build(route, chosen, start, data) {
       // chain control AFTER the plows and the salt, not before. Applied to any
       // night the plan has not pinned, bounded to six hours so a late window
       // cannot eat a day. Where the plan HAS pinned the night, his number
-      // stands and the crossing report says what it costs.
-      if (!Number.isFinite(s.sleep)) {
+      // stands and the crossing report says what it costs. A pinned DEPARTURE
+      // is just as much a pin as a pinned duration: the hour you leave is the
+      // hour you leave, and the crossing report can say if that is too early.
+      if (!Number.isFinite(s.sleep) && untilLeave == null) {
         const ahead = crossings.find(c => c.mile > s.mile);
         if (ahead) {
           const wait = toMin(ahead.p.plowedBy)
@@ -466,7 +486,10 @@ export function build(route, chosen, start, data) {
     // Just a duration, hung off this stop because there is no place naming a
     // position of its own. A night AT a bed is handled above, at the bed's
     // own mile, and needs none of this.
-    const nap = Math.round(Number(sleeps[s.id]) || 0);
+    const untilLeaveHere = napUntil(s.leaveAt, clock, s.tz);
+    const nap = untilLeaveHere != null
+      ? untilLeaveHere
+      : Math.round(Number(sleeps[s.id]) || 0);
     if (nap > 0) {
       const wake = clock + nap;
       const next = dayFor(wake, s.ll, s.tz);

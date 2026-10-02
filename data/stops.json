@@ -2758,8 +2758,10 @@
       ],
       "kind": "lodging",
       "sleepBy": {
-        "leg2-plan": 1024,
-        "leg2-newjersey-plan": 532
+        "leg2-plan": 1024
+      },
+      "leaveBy": {
+        "leg2-newjersey-plan": "07:40"
       }
     },
     {
@@ -3356,8 +3358,8 @@
       "routes": [
         "leg2-newjersey-plan"
       ],
-      "sleepBy": {
-        "leg2-newjersey-plan": 532
+      "leaveBy": {
+        "leg2-newjersey-plan": "07:10"
       }
     },
     {
@@ -3381,8 +3383,8 @@
       "routes": [
         "leg2-newjersey-plan"
       ],
-      "sleepBy": {
-        "leg2-newjersey-plan": 560
+      "leaveBy": {
+        "leg2-newjersey-plan": "07:00"
       }
     }
   ]

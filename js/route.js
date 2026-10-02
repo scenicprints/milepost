@@ -284,8 +284,13 @@ export function buildRoute(route, allStops, dwells, throughs) {
       // a bare `sleep` (Biloxi) still means every road, as it always has.
       const sleep = byRoad(s.sleepBy, s.sleep);
       const after = !!byRoad(s.afterBy, s.after);
+      // A night can be pinned by the hour you LEAVE rather than by how long
+      // you stay. A duration anchors to arrival, so reaching a truck stop two
+      // hours early sends you back out two hours early, at five in the morning.
+      // `leaveBy` is a local 'HH:MM' and does not care when you rolled in.
+      const leaveAt = byRoad(s.leaveBy, s.leaveAt ?? null);
       return {
-        ...s, detour, dwell, sleep, after, seedDwell, throughTime,
+        ...s, detour, dwell, sleep, after, leaveAt, seedDwell, throughTime,
         throughSet: tOver !== undefined && tOver !== seedThrough,
         dwellSet: Number.isFinite(over) && over !== seedDwell,
         mile: p.mile, offRoute: p.off, tz: tzFor(s.state, s.ll[1]), turnoff: null, throughTo: null,

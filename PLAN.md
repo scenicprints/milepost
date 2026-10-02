@@ -393,6 +393,32 @@ Android Auto is no.
 
 ## Session log
 
+**Session 67** — A night you LEAVE at an hour, not one you stay in for hours. 1.52.0.
+
+Kevin: *"you cant just say stay there for this many hours. What if I get to a
+rest stop early."* He is right, and it is a fault in the model rather than in
+the numbers. A night stored as MINUTES ASLEEP anchors to arrival, so reaching a
+truck stop two hours early sends you back out two hours early, at five in the
+morning. Leg 2.2 had him leaving Paterson at 01:15 and reaching Biloxi at 02:24.
+
+**`leaveBy` is a local HH:MM, per road, resolved through `byRoad` exactly like
+`sleepBy`.** Where it is set the night runs to that clock time whatever time you
+arrived, and the sleep length is whatever is left. Both night sites in
+`itinerary.js` honour it, and the plow hold now treats a pinned DEPARTURE as a pin
+the same way it already treated a pinned duration — without that, Duncan woke at
+09:01 instead of the 07:10 it was given. Entirely additive: no stop on legs 1, 2
+or 3 carries `leaveBy`, so nothing there moves.
+
+**What it exposed, and this is not fixed.** With the nights behaving, the app’s
+own clock says leg 2.2 day 1 runs 07:00 to 04:29 — **21h29** — leaving 2h41 at
+the wheel-stop. Narrowed to one eatery per slot it is still **20h35**. The cause
+is bed placement: 1,747 miles from Paterson over three days wants ~582 a day and
+day 1 carries 735, with Philadelphia in it. My own estimates had said 15h18,
+because I assumed 67 mph where the app computes about 53 for that stretch once
+metro penalties through Baltimore, the Beltway, Richmond and Charlotte are
+charged. **The app was right and I was optimistic. Trust `driveMinutes`, not a
+hand average.** Where the nights go is Kevin’s call and is still open.
+
 **Session 66** — The branch is a route on leg 2, not a leg of its own. 1.51.0.
 
 **Two faults, both found by Kevin opening the app.** The fourth leg rendered a
