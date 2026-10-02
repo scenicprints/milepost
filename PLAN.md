@@ -378,6 +378,41 @@ Android Auto is no.
 
 ## Session log
 
+**Session 71** — Leg 2.2, rebuilt from scratch and actually verified. 1.57.0.
+
+Scrapped in session 70 and rebuilt here against the itinerary agreed in chat,
+then run through `build()` before a word was said about it. **13 stops, 2,398
+miles, three days from Paterson.**
+
+
+
+**What changed from the first attempt, and why.**
+
+**Bellingrath is out and should stay out.** 1,247 miles in with a hard
+17:00–21:00 gate, it pins night 2 and forces either a sixteen-hour day or no
+lunch. It is the one stop that cannot coexist with Philadelphia in three days.
+
+**Sheetz is out.** It was chosen as the Virginia lunch; lunch is Reading
+Terminal now, and day 1 is 541 miles, inside one tank. Day 2 at 692 needs a
+fill and that is noted rather than placed.
+
+**Cook Out moved to Durham**, which is where the clock puts you at dinner.
+**Biscuitville is at Greensboro** — the chain is headquartered there, so unlike
+the earlier Greenville guess it is a certainty, and its 2pm close makes
+breakfast the only slot it fits.
+
+**A Clifton waypoint was added** so the diner stops snapping to Newark eleven
+miles on, and **`visitAfter` forces Independence Hall ahead of Reading Terminal**:
+both pin to the same Philadelphia junction, and left to itself the builder put
+the market first and the Hall at 11:01, past the ticket-free window.
+
+**The 06:30 departure is load-bearing.** At 07:00 the Hall lands 10:21, nine
+minutes before the open house shuts. 06:30 gives 09:51 and nearly forty minutes
+of margin.
+
+**Verified before pushing:** every door checked against `hours.json` — no shut
+doors, no stop without an entry; legs 1 and 3 byte-identical; all thirteen
+roads build.
 **Session 70** — Leg 2.2 is scrapped. 1.56.0.
 
 Kevin: *"Scrap the entire route you made."* It is gone — the

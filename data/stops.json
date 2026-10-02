@@ -1871,7 +1871,8 @@
       "routes": [
         "leg2-gulf",
         "leg2-inland",
-        "leg2-plan"
+        "leg2-plan",
+        "leg2-newjersey-plan"
       ],
       "big": true
     },
@@ -1967,7 +1968,8 @@
       "winter": null,
       "routes": [
         "leg2-gulf",
-        "leg2-inland"
+        "leg2-inland",
+        "leg2-newjersey-plan"
       ],
       "kind": "food"
     },
@@ -2156,7 +2158,8 @@
       "winter": null,
       "routes": [
         "leg2-gulf",
-        "leg2-plan"
+        "leg2-plan",
+        "leg2-newjersey-plan"
       ],
       "first": true,
       "big": true
@@ -2958,6 +2961,272 @@
         "leg2-plan"
       ],
       "kind": "food"
+    },
+    {
+      "id": "independence-hall",
+      "name": "Independence Hall and the Liberty Bell",
+      "town": "Philadelphia",
+      "state": "PA",
+      "ll": [
+        39.9489,
+        -75.15
+      ],
+      "detour": 17,
+      "dwell": 80,
+      "cost": "Free, and the Hall needs no ticket before 10:30",
+      "tags": [
+        "history",
+        "founding",
+        "indoor"
+      ],
+      "first": true,
+      "big": true,
+      "why": "The 1753 Pennsylvania State House. The Declaration and the Constitution were argued and signed in the same room, and the rising-sun chair Washington sat in is still in it. The Bell is across the street in a glass pavilion.",
+      "winter": "Independence Hall runs an open house 9:00 to 10:30 with no ticket at all; after 10:40 it is timed tours only. Be there at opening and the holiday-week ticket problem disappears. Liberty Bell 9:00 to 17:00, free, walk in.",
+      "routes": [
+        "leg2-newjersey-plan"
+      ],
+      "turnoffBy": {
+        "leg2-newjersey-plan": "Philadelphia (returning)"
+      }
+    },
+    {
+      "id": "tick-tock-diner",
+      "name": "Tick Tock Diner",
+      "town": "Clifton",
+      "state": "NJ",
+      "kind": "food",
+      "ll": [
+        40.839,
+        -74.146
+      ],
+      "detour": 5,
+      "dwell": 40,
+      "cost": "$12 to $18 each",
+      "tags": [
+        "diner",
+        "breakfast"
+      ],
+      "first": true,
+      "why": "Chrome, neon and vinyl booths on Route 3, open since 1948 and eight minutes from Paterson. New Jersey has more diners than anywhere on earth and this is one of the good ones. There is no California equivalent, and that is the whole reason it is here.",
+      "winter": "Open 24 hours, 365 days. Nothing to verify and nothing that can close.",
+      "routes": [
+        "leg2-newjersey-plan"
+      ],
+      "turnoffBy": {
+        "leg2-newjersey-plan": "Clifton (returning)"
+      }
+    },
+    {
+      "id": "reading-terminal",
+      "name": "Reading Terminal Market",
+      "town": "Philadelphia",
+      "state": "PA",
+      "kind": "food",
+      "ll": [
+        39.9533,
+        -75.1593
+      ],
+      "detour": 0,
+      "dwell": 40,
+      "cost": "$15 to $20 each",
+      "tags": [
+        "market",
+        "lunch"
+      ],
+      "big": true,
+      "why": "An 1893 train-shed market hall with around eighty stalls. Four blocks from the Liberty Bell, so you are already parked and the detour is nil.",
+      "winter": "Sunday 09:00 to 17:00, about two thirds of vendors trading. Deliberately sequenced AFTER Independence Hall: the Hall is ticket-free only until 10:30 and the market is open all day.",
+      "routes": [
+        "leg2-newjersey-plan"
+      ],
+      "turnoffBy": {
+        "leg2-newjersey-plan": "Philadelphia (returning)"
+      },
+      "visitAfter": "independence-hall"
+    },
+    {
+      "id": "whataburger-mobile",
+      "name": "Whataburger",
+      "town": "Mobile",
+      "state": "AL",
+      "kind": "food",
+      "ll": [
+        30.67,
+        -88.11
+      ],
+      "detour": 3,
+      "dwell": 30,
+      "cost": "About $12 each",
+      "tags": [
+        "burgers",
+        "dinner",
+        "late"
+      ],
+      "first": true,
+      "why": "Burgers cooked to order, open round the clock, three minutes off I-10. No California locations, so it only exists on this trip. It is also the stop that absorbs Bellingrath running long, because it cannot close.",
+      "winter": "Open 24 hours. The only Mobile option with no closing-time risk at all.",
+      "routes": [
+        "leg2-newjersey-plan"
+      ]
+    },
+    {
+      "id": "cafe-du-monde",
+      "name": "Café du Monde",
+      "town": "New Orleans",
+      "state": "LA",
+      "kind": "food",
+      "ll": [
+        29.9574,
+        -90.062
+      ],
+      "detour": 0,
+      "dwell": 25,
+      "cost": "About $6 each",
+      "tags": [
+        "beignets",
+        "coffee",
+        "breakfast"
+      ],
+      "first": true,
+      "why": "Beignets under a drift of powdered sugar and chicory café au lait, at the same corner since 1862. You are walking past it anyway, so it costs nothing but the time at the table.",
+      "winter": "Open around the clock, closed only on Christmas Day. Cash moves faster than card at the outdoor tables, but card is taken.",
+      "routes": [
+        "leg2-newjersey-plan"
+      ]
+    },
+    {
+      "id": "bed-paterson",
+      "name": "Paterson, the new house",
+      "town": "Paterson",
+      "state": "NJ",
+      "kind": "lodging",
+      "ll": [
+        40.9168,
+        -74.1718
+      ],
+      "detour": 0,
+      "dwell": 0,
+      "cost": "Free",
+      "tags": [
+        "bed"
+      ],
+      "why": "The end of the delivery run and the only night of this leg under a roof. Everything after it is a lot.",
+      "winter": "Nothing to arrange and nothing that can turn you away.",
+      "routes": [
+        "leg2-newjersey-plan"
+      ],
+      "leaveBy": {
+        "leg2-newjersey-plan": "06:30"
+      }
+    },
+    {
+      "id": "cook-out-durham",
+      "name": "Cook Out",
+      "town": "Durham",
+      "state": "NC",
+      "kind": "food",
+      "ll": [
+        35.994,
+        -78.88
+      ],
+      "detour": 4,
+      "dwell": 30,
+      "cost": "About $15 for both of you",
+      "tags": [
+        "burgers",
+        "dinner",
+        "late"
+      ],
+      "first": true,
+      "why": "Absurdly cheap trays and forty-plus real milkshakes, open late, all over the Carolinas. Durham because that is where the clock puts you at dinner on day one.",
+      "winter": "Opens 10:30 and runs into the small hours, so an evening arrival is the only slot it does not fight. Exact location not verified.",
+      "routes": [
+        "leg2-newjersey-plan"
+      ],
+      "turnoffBy": {
+        "leg2-newjersey-plan": "Durham (returning)"
+      }
+    },
+    {
+      "id": "biscuitville-greensboro",
+      "name": "Biscuitville",
+      "town": "Greensboro",
+      "state": "NC",
+      "kind": "food",
+      "ll": [
+        36.06,
+        -79.81
+      ],
+      "detour": 4,
+      "dwell": 25,
+      "cost": "Under $10 each",
+      "tags": [
+        "breakfast",
+        "biscuits"
+      ],
+      "first": true,
+      "why": "Biscuits rolled and cut on site every twenty minutes. The chain is headquartered in Greensboro, so unlike the Greenville guess this one is a certainty.",
+      "winter": "Closes at 2pm, so breakfast is the only slot it fits — which is exactly the slot day two needs.",
+      "routes": [
+        "leg2-newjersey-plan"
+      ],
+      "turnoffBy": {
+        "leg2-newjersey-plan": "Greensboro (returning)"
+      }
+    },
+    {
+      "id": "bed-greensboro",
+      "name": "I-85 truck stops, Greensboro",
+      "town": "Greensboro",
+      "state": "NC",
+      "kind": "lodging",
+      "ll": [
+        36.0726,
+        -79.792
+      ],
+      "detour": 0,
+      "dwell": 0,
+      "cost": "Free",
+      "tags": [
+        "bed"
+      ],
+      "why": "The I-85/I-40 junction, where the chains cluster. 541 miles from Paterson, which is what keeps day one under fourteen hours with Philadelphia in it. North Carolina posts its rest areas against overnight parking, so take a staffed lot.",
+      "winter": "Inland Piedmont, colder than the coast and well short of any pass. Exact exit still to pin.",
+      "routes": [
+        "leg2-newjersey-plan"
+      ],
+      "turnoffBy": {
+        "leg2-newjersey-plan": "Greensboro (returning)"
+      },
+      "leaveBy": {
+        "leg2-newjersey-plan": "07:00"
+      }
+    },
+    {
+      "id": "bed-mobile",
+      "name": "I-10 truck stops, Mobile",
+      "town": "Mobile",
+      "state": "AL",
+      "kind": "lodging",
+      "ll": [
+        30.66,
+        -88.16
+      ],
+      "detour": 0,
+      "dwell": 0,
+      "cost": "Free",
+      "tags": [
+        "bed"
+      ],
+      "why": "Night two, pinned just west of the Whataburger so dinner lands before the night rather than after it.",
+      "winter": "Sea level and mild. Damp rather than cold.",
+      "routes": [
+        "leg2-newjersey-plan"
+      ],
+      "leaveBy": {
+        "leg2-newjersey-plan": "07:00"
+      }
     }
   ]
 }
