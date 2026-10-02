@@ -540,7 +540,12 @@ export function renderCalendar() {
   };
   const branchBlock = legs.map(branchRow).join('');
   const depBlock = branchBlock + legs.map(depRow).join('');
-  const unsetBlock = legs.filter(l => !depOf(legChoice(l)).date).map(depRow).join('');
+  // A leg with a CHOICE of trips keeps its editor on screen even once dated,
+  // because each scenario carries its own departure and you cannot set the
+  // other one from a control that has hidden itself. Legs with a single plan
+  // behave as before: visible only while unset.
+  const unsetBlock = legs.filter(l => !depOf(legChoice(l)).date || plansOf(l).length > 1)
+    .map(depRow).join('');
 
   const dated = spans.filter(x => !x.unset);
   if (!dated.length)
