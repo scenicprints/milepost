@@ -17,20 +17,6 @@ agent, or a new Claude account, can continue without losing the thread.
 
 ## State
 
-**Leg 2.2 exists, and leg 2 may never happen (session 65).** Ada's mother has
-moved to New Jersey. If the weather allows, they take her to the new house after
-Christmas, which replaces leg 2 outright with a two-part branch: **2.1**,
-Mooresville to Paterson, a straight shot with no sightseeing and deliberately no
-route at all — Kevin's instruction, do not build one — and **2.2**, Paterson to
-Houston over three days. **It is weather-dependent and undecided.** Legs 1, 2 and
-3 are untouched and stay that way.
-
-**`leg2-newjersey-plan` is the road AND the trip (session 66).** Mooresville north to Paterson with nothing on it,
-then I-95 and I-85 back down, and from Gastonia south it is `leg2-gulf`'s own
-waypoints reused verbatim, so session 61's atlas miles still hold. 2,398 miles,
-39 waypoints, nothing above about 1,100 feet either way and the high point is
-Atlanta.
-
 **A plan route now arrives WHOLE (session 64).** `*-plan` routes are the trip,
 not a pool, so the 70-minute suggester no longer votes on them and each one is
 filled exactly once, tracked by route id in `seededPlans`. Before this the
@@ -236,7 +222,6 @@ offline.
 | 1. Modesto → NC | **The Route 66 road** — I-40, 2,771 mi, 36 stops | **The low road** — I-10/20/30, 2,984 mi, 25 stops. Nothing above 4,600 ft. |
 | 2. NC → Houston | **The Gulf Coast** — I-85/65/10, 1,221 mi, 9 stops | **The inland run** — I-20/45, 1,455 mi, 7 stops. Skips New Orleans. |
 | 3. Houston → Modesto | **The desert road** — I-10, 1,898 mi, 16 stops | **Up through Vegas** — 1,960 mi, 16 stops. No LA traffic. |
-| 2. *weather branch* | **Up through New Jersey** — Mooresville to Paterson and back down, 2,398 mi, 22 stops | A third option on leg 2, not a leg of its own. |
 
 ---
 
@@ -393,6 +378,33 @@ Android Auto is no.
 
 ## Session log
 
+**Session 70** — Leg 2.2 is scrapped. 1.56.0.
+
+Kevin: *"Scrap the entire route you made."* It is gone — the
+`leg2-newjersey-plan` route and its 39 waypoints, all 18 stops created for it,
+their `hours.json` entries, and every reference added to Falls Park, Ponce City
+Market and the French Quarter. Leg 2 is back to the Gulf Coast, the inland run
+and Christmas to New Year. The library is back to 111 stops. All twelve roads
+build.
+
+**Why, honestly.** The road and the clock were sound; the planning on top of
+them was not. I moved the nights from Duncan and Biloxi to Greensboro and
+Mobile and carried every meal across unchanged, so Cook Out ended up at 08:25
+against a 10:30 opening and Whataburger became breakfast. Asked directly
+whether moving the beds would disturb the eateries, I said no without checking.
+It did. Compounding that, I spent three rounds reasoning on a three-hour
+timezone error of my own making and invented a metro-penalty theory rather than
+checking `tzFor`.
+
+**Kept, because they are repairs to the app rather than to the route:** the
+northeastern timezones, `leaveBy` nights, the Dates branch toggle with per-route
+departures, and the per-leg `short` label. All four are independent of leg 2.2 and
+all four are tested.
+
+**If this leg is rebuilt**, the lessons are in sessions 67 and 68: take every
+number from `build()` and `driveMinutes` before saying it out loud, put every new
+stop in `hours.json` or the planner cannot check its doors, and re-slot the meals
+whenever a bed moves instead of assuming slots are fixed.
 **Session 69** — The meals did not follow the beds. 1.55.0.
 
 Moving the nights to Greensboro and Mobile moved every eatery out of the slot

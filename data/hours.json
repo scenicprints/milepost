@@ -602,47 +602,6 @@
       "close": "17:00",
       "best": "golden",
       "why": "Red sandstone, sunrise to sunset, and the colour is all in the low light."
-    },
-    "tick-tock-diner": {
-      "always": true,
-      "note": "Open 24 hours, 365 days."
-    },
-    "reading-terminal": {
-      "open": "09:00",
-      "close": "17:00",
-      "note": "Sunday 09:00-17:00; about two thirds of vendors trade."
-    },
-    "independence-hall": {
-      "open": "09:00",
-      "close": "17:00",
-      "note": "Open house 09:00-10:30 needs no ticket; after 10:40 it is timed tours only."
-    },
-    "sheetz-va": {
-      "always": true,
-      "note": "Open 24 hours."
-    },
-    "cook-out-greensboro": {
-      "open": "10:30",
-      "close": "03:00",
-      "note": "Opens 10:30 and runs into the small hours."
-    },
-    "methodical-coffee": {
-      "open": "07:00",
-      "close": "17:00",
-      "note": "Opens 07:00 on weekdays; holiday-week hours unverified."
-    },
-    "whataburger-mobile": {
-      "always": true,
-      "note": "Open 24 hours."
-    },
-    "cafe-du-monde": {
-      "always": true,
-      "note": "Open 24 hours, closed Christmas Day only."
-    },
-    "cafe-beignet": {
-      "open": "07:00",
-      "close": "22:00",
-      "note": "Not on the plan route; kept for reference."
     }
   }
 }
