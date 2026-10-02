@@ -1872,8 +1872,8 @@
         "leg2-gulf",
         "leg2-inland",
         "leg2-plan",
-        "leg22-low",
-        "leg22-plan"
+        "leg2-newjersey",
+        "leg2-nj-plan"
       ],
       "big": true
     },
@@ -1970,8 +1970,8 @@
       "routes": [
         "leg2-gulf",
         "leg2-inland",
-        "leg22-low",
-        "leg22-plan"
+        "leg2-newjersey",
+        "leg2-nj-plan"
       ],
       "kind": "food"
     },
@@ -2138,8 +2138,8 @@
       "routes": [
         "leg2-gulf",
         "leg2-plan",
-        "leg22-low",
-        "leg22-plan"
+        "leg2-newjersey",
+        "leg2-nj-plan"
       ]
     },
     {
@@ -2163,8 +2163,8 @@
       "routes": [
         "leg2-gulf",
         "leg2-plan",
-        "leg22-low",
-        "leg22-plan"
+        "leg2-newjersey",
+        "leg2-nj-plan"
       ],
       "first": true,
       "big": true
@@ -2749,8 +2749,8 @@
       "routes": [
         "leg2-gulf",
         "leg2-plan",
-        "leg22-low",
-        "leg22-plan"
+        "leg2-newjersey",
+        "leg2-nj-plan"
       ],
       "why": "The gravel RV lot behind the parking decks off Highway 90. Overnight parking allowed, level, dry, lit all night, security on site. The best bed on either trip. Beau Rivage is reported hotel-guests-only, so use this one or ring ahead.",
       "winter": "Sea level. Damp rather than cold, so crack a window for condensation and not for heat. Mississippi posts an eight hour limit and mentions towing, which is the only clock on this leg worth watching.",
@@ -2764,7 +2764,7 @@
       "kind": "lodging",
       "sleepBy": {
         "leg2-plan": 1024,
-        "leg22-plan": 532
+        "leg2-nj-plan": 532
       }
     },
     {
@@ -2992,9 +2992,13 @@
       "why": "The 1753 Pennsylvania State House. The Declaration and the Constitution were argued and signed in the same room, and the rising-sun chair Washington sat in is still in it. The Bell is across the street in a glass pavilion.",
       "winter": "Independence Hall runs an open house 9:00 to 10:30 with no ticket at all; after 10:40 it is timed tours only. Be there at opening and the holiday-week ticket problem disappears. Liberty Bell 9:00 to 17:00, free, walk in.",
       "routes": [
-        "leg22-low",
-        "leg22-plan"
-      ]
+        "leg2-newjersey",
+        "leg2-nj-plan"
+      ],
+      "turnoffBy": {
+        "leg2-newjersey": "Philadelphia (returning)",
+        "leg2-nj-plan": "Philadelphia (returning)"
+      }
     },
     {
       "id": "tick-tock-diner",
@@ -3017,9 +3021,13 @@
       "why": "Chrome, neon and vinyl booths on Route 3, open since 1948 and eight minutes from Paterson. New Jersey has more diners than anywhere on earth and this is one of the good ones. There is no California equivalent, and that is the whole reason it is here.",
       "winter": "Open 24 hours, 365 days. Nothing to verify and nothing that can close.",
       "routes": [
-        "leg22-low",
-        "leg22-plan"
-      ]
+        "leg2-newjersey",
+        "leg2-nj-plan"
+      ],
+      "turnoffBy": {
+        "leg2-newjersey": "Newark (returning)",
+        "leg2-nj-plan": "Newark (returning)"
+      }
     },
     {
       "id": "reading-terminal",
@@ -3042,9 +3050,13 @@
       "why": "An 1893 train-shed market hall with around eighty stalls. Four blocks from the Liberty Bell, so you are already parked and the detour is nil.",
       "winter": "Verified open Sunday 9:00 to 17:00 with about two thirds of vendors trading. Closed only on the major holidays, and the 27th is not one.",
       "routes": [
-        "leg22-low",
-        "leg22-plan"
-      ]
+        "leg2-newjersey",
+        "leg2-nj-plan"
+      ],
+      "turnoffBy": {
+        "leg2-newjersey": "Philadelphia (returning)",
+        "leg2-nj-plan": "Philadelphia (returning)"
+      }
     },
     {
       "id": "sheetz-va",
@@ -3066,9 +3078,13 @@
       "why": "Touchscreen-ordered sandwiches with a fuel island attached, which makes lunch and the second fill the same stop. Pinned at Ashland, but any Sheetz on the Virginia stretch does the job.",
       "winter": "Open 24 hours. Position is approximate on purpose — take whichever one the clock reaches.",
       "routes": [
-        "leg22-low",
-        "leg22-plan"
-      ]
+        "leg2-newjersey",
+        "leg2-nj-plan"
+      ],
+      "turnoffBy": {
+        "leg2-newjersey": "Richmond (returning)",
+        "leg2-nj-plan": "Richmond (returning)"
+      }
     },
     {
       "id": "cook-out-charlotte",
@@ -3093,8 +3109,8 @@
       "why": "Absurdly cheap trays and forty-plus real milkshakes, open late, all over the Carolinas. The Mooresville entry in this library sits on I-77 and is no use here, so this one is pinned on I-85.",
       "winter": "Open late, which is what a 20:20 arrival on a Sunday needs. Many locations are drive-thru only. Closing time not verified.",
       "routes": [
-        "leg22-low",
-        "leg22-plan"
+        "leg2-newjersey",
+        "leg2-nj-plan"
       ]
     },
     {
@@ -3117,8 +3133,8 @@
       "why": "Fast Latin counter service across Charlotte — arepas, tacos, bowls, plantains. The alternative to Cook Out at the same hour.",
       "winter": "Hours vary by location and the I-85 one is unverified at 20:20 on a Sunday. Cook Out is the safer bet that late.",
       "routes": [
-        "leg22-low",
-        "leg22-plan"
+        "leg2-newjersey",
+        "leg2-nj-plan"
       ]
     },
     {
@@ -3141,8 +3157,8 @@
       "why": "Biscuits rolled and cut on site every twenty minutes all morning. A real breakfast if coffee alone will not hold.",
       "winter": "Closes at 2pm — breakfast only. VERIFY THERE IS A GREENVILLE LOCATION: the chain’s footprint is mainly North Carolina and Virginia and the South Carolina coverage is not confirmed.",
       "routes": [
-        "leg22-low",
-        "leg22-plan"
+        "leg2-newjersey",
+        "leg2-nj-plan"
       ]
     },
     {
@@ -3165,8 +3181,8 @@
       "why": "Cat-head biscuits the size of a fist and a whole bar of house jams and honeys. A short walk from Falls Park.",
       "winter": "Opening time believed 07:00 or 07:30. If it is 07:30 it collides with the sunrise at the falls, which is the reason the plan takes coffee instead.",
       "routes": [
-        "leg22-low",
-        "leg22-plan"
+        "leg2-newjersey",
+        "leg2-nj-plan"
       ]
     },
     {
@@ -3189,8 +3205,8 @@
       "why": "Serious coffee and pastries on Main Street, a few minutes from the falls. Twenty minutes, which is what a 567-mile day wants out of breakfast.",
       "winter": "Believed open 07:00 on weekdays. Holiday-week hours unverified; Biscuitville is the fallback.",
       "routes": [
-        "leg22-low",
-        "leg22-plan"
+        "leg2-newjersey",
+        "leg2-nj-plan"
       ]
     },
     {
@@ -3215,8 +3231,8 @@
       "why": "Burgers cooked to order, open round the clock, three minutes off I-10. No California locations, so it only exists on this trip. It is also the stop that absorbs Bellingrath running long, because it cannot close.",
       "winter": "Open 24 hours. The only Mobile option with no closing-time risk at all.",
       "routes": [
-        "leg22-low",
-        "leg22-plan"
+        "leg2-newjersey",
+        "leg2-nj-plan"
       ]
     },
     {
@@ -3239,8 +3255,8 @@
       "why": "An Alabama-born taqueria, counter service, clear of pork and shellfish throughout.",
       "winter": "Usually closes around 21:00, so it only works if day 2 is on time. Holiday-week hours unverified.",
       "routes": [
-        "leg22-low",
-        "leg22-plan"
+        "leg2-newjersey",
+        "leg2-nj-plan"
       ]
     },
     {
@@ -3264,8 +3280,8 @@
       "why": "Small square steamed beef sliders, going since 1932. The South’s older answer to White Castle and nothing like it in California.",
       "winter": "Many locations run late or 24 hours. Verify the Mobile one.",
       "routes": [
-        "leg22-low",
-        "leg22-plan"
+        "leg2-newjersey",
+        "leg2-nj-plan"
       ]
     },
     {
@@ -3288,8 +3304,8 @@
       "why": "A neighbourhood bar in Oakleigh with a burger that gets written about nationally. The best meal of the four in Mobile, and the one to take only if day 2 is ahead of schedule.",
       "winter": "Nine minutes into town, the wrong direction from Biloxi. Late hours unverified.",
       "routes": [
-        "leg22-low",
-        "leg22-plan"
+        "leg2-newjersey",
+        "leg2-nj-plan"
       ]
     },
     {
@@ -3314,8 +3330,8 @@
       "why": "Beignets under a drift of powdered sugar and chicory café au lait, at the same corner since 1862. You are walking past it anyway, so it costs nothing but the time at the table.",
       "winter": "Open around the clock, closed only on Christmas Day. Cash moves faster than card at the outdoor tables, but card is taken.",
       "routes": [
-        "leg22-low",
-        "leg22-plan"
+        "leg2-newjersey",
+        "leg2-nj-plan"
       ]
     },
     {
@@ -3339,8 +3355,8 @@
       "why": "The other beignet place, with a courtyard on Royal Street. Same walk, and usually a far shorter line.",
       "winter": "Opens early. The bail-out if Café du Monde has a queue round the block.",
       "routes": [
-        "leg22-low",
-        "leg22-plan"
+        "leg2-newjersey",
+        "leg2-nj-plan"
       ]
     },
     {
@@ -3362,11 +3378,37 @@
       "why": "187 truck spaces, staffed around the clock, fuel and a restaurant on site. Seventeen miles short of Greenville on purpose: you stop before the city, and Falls Park is ahead of you at sunrise with no doubling back.",
       "winter": "South Carolina posts its state rest areas against overnight parking and Greenville has an ordinance against sleeping on public property, so a staffed private lot is the right answer here. Late December lows run around freezing.",
       "routes": [
-        "leg22-low",
-        "leg22-plan"
+        "leg2-newjersey",
+        "leg2-nj-plan"
       ],
       "sleepBy": {
-        "leg22-plan": 532
+        "leg2-nj-plan": 532
+      }
+    },
+    {
+      "id": "bed-paterson",
+      "name": "Paterson, the new house",
+      "town": "Paterson",
+      "state": "NJ",
+      "kind": "lodging",
+      "ll": [
+        40.9168,
+        -74.1718
+      ],
+      "detour": 0,
+      "dwell": 0,
+      "cost": "Free",
+      "tags": [
+        "bed"
+      ],
+      "why": "The end of the delivery run and the only night of this leg under a roof. Everything after it is a lot.",
+      "winter": "Nothing to arrange and nothing that can turn you away.",
+      "routes": [
+        "leg2-newjersey",
+        "leg2-nj-plan"
+      ],
+      "sleepBy": {
+        "leg2-nj-plan": 560
       }
     }
   ]

@@ -25,10 +25,11 @@ route at all — Kevin's instruction, do not build one — and **2.2**, Paterson
 Houston over three days. **It is weather-dependent and undecided.** Legs 1, 2 and
 3 are untouched and stay that way.
 
-**`leg22-low` is the road and `leg22-plan` is the trip.** I-95 to Richmond,
-I-85 through the Carolinas, and from Gastonia south it is `leg2-gulf`'s own
-waypoints reused verbatim, so session 61's atlas miles still hold. 1,747 miles,
-27 waypoints, nothing above about 1,100 feet and the high point is Atlanta.
+**`leg2-newjersey` is the road and `leg2-nj-plan` is the trip (restructured, session 66).** Mooresville north to Paterson with nothing on it,
+then I-95 and I-85 back down, and from Gastonia south it is `leg2-gulf`'s own
+waypoints reused verbatim, so session 61's atlas miles still hold. 2,398 miles,
+39 waypoints, nothing above about 1,100 feet either way and the high point is
+Atlanta.
 
 **A plan route now arrives WHOLE (session 64).** `*-plan` routes are the trip,
 not a pool, so the 70-minute suggester no longer votes on them and each one is
@@ -235,7 +236,7 @@ offline.
 | 1. Modesto → NC | **The Route 66 road** — I-40, 2,771 mi, 36 stops | **The low road** — I-10/20/30, 2,984 mi, 25 stops. Nothing above 4,600 ft. |
 | 2. NC → Houston | **The Gulf Coast** — I-85/65/10, 1,221 mi, 9 stops | **The inland run** — I-20/45, 1,455 mi, 7 stops. Skips New Orleans. |
 | 3. Houston → Modesto | **The desert road** — I-10, 1,898 mi, 16 stops | **Up through Vegas** — 1,960 mi, 16 stops. No LA traffic. |
-| 2.2 Paterson → Houston *(branch)* | **The low road** — I-95/I-85/Gulf, 1,747 mi, 21 stops | None. The I-81 mountain line was rejected on elevation. |
+| 2. *weather branch* | **Up through New Jersey** — Mooresville to Paterson and back down, 2,398 mi, 22 stops | A third option on leg 2, not a leg of its own. |
 
 ---
 
@@ -391,6 +392,42 @@ Android Auto is no.
 ---
 
 ## Session log
+
+**Session 66** — The branch is a route on leg 2, not a leg of its own. 1.51.0.
+
+**Two faults, both found by Kevin opening the app.** The fourth leg rendered a
+tab with no label, because `SHORT` in `ui.js` is a hardcoded three-element array
+indexed by leg position. The tab row already preferred a per-leg `short`, so that
+half was data; the custom-place leg picker had no such fallback and forced a
+three-column grid, so it got both the label and a grid that drops to two-up
+past three legs.
+
+**The deeper fault was the model, and it was mine.** A fourth leg tab says you
+drive four legs in sequence, and you do not — the New Jersey run REPLACES leg 2.
+It is now `leg2-newjersey` and `leg2-nj-plan`, sitting alongside the Gulf Coast
+and the inland run, so the weather call is one tap in the switcher. Which is
+what it actually is.
+
+**The retrace needed handling.** Mooresville → Paterson → Houston drives the
+I-95 and I-85 corridor twice, and `project()` takes the nearest point on the
+road — so Philadelphia, Richmond and Clifton all landed on the run NORTH, which
+has no stops on it at all. The southbound waypoints are therefore suffixed
+*(returning)* and four stops carry `turnoffBy` pinning them to that pass.
+Verified by running `buildRoute` headlessly rather than by eye: Paterson at mile
+651, Tick Tock 668, Philadelphia 756, Richmond 1004, Charlotte 1298, the falls
+1404, Atlanta 1554, Mobile 1890, the Quarter 2040. Correct order, and
+`leg2-gulf` and `leg2-plan` still build at 1,127 miles with 20 and 11 stops.
+
+**`bed-paterson` is new** and exists because the day builder had nowhere to break
+a 651-mile run north.
+
+**A trap for the next session: data-only releases are invisible.** `sw.js` serves
+code network-first and data cache-first, on the stated grounds that data rarely
+changes. Session 65 changed nothing but data, so the version badge read 1.50.0
+off the network while `data/route.json` still came from the old cache — new code,
+old data, and the badge reporting only the half that had moved. The update
+button fixes it. Kevin wants to keep updating manually, so the worker still
+waits; just know a data-only release shows nothing until that button is pressed.
 
 **Session 65** — Leg 2.2: Paterson to Houston, built from scratch with Kevin. 1.50.0.
 

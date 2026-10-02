@@ -1721,6 +1721,515 @@
           "character": "Not a different road. The Gulf Coast exactly, carrying only the stops and three beds this run actually makes.",
           "why": "Four unhurried days between Christmas and New Year's. Falls Park at golden hour, the whale sharks at opening, Buford Highway for lunch, Bellingrath's lights after dark, a lazy Biloxi morning, the French Quarter as the lamps come on, guaranteed alligators, and a Buc-ee's on the doorstep of Houston.",
           "costs": "Nothing, because it is the same tarmac as the Gulf Coast. What it gives up is the inland run, and the calendar had already shut most of that road's doors. Swap back to see everything left out."
+        },
+        {
+          "id": "leg2-newjersey",
+          "name": "Up through New Jersey",
+          "road": "North to Paterson, then I-95 and I-85 back down to the Gulf road",
+          "character": "The weather branch. Up to Paterson with Ada’s mother and her belongings, then the whole way back down and across. Nothing above about 1,100 feet in either direction.",
+          "why": "If the roads allow it, her mother is delivered to the new house and the drive to Houston starts from New Jersey instead of Mooresville. The run north carries no stops at all — it is a straight shot and this app is for sightseeing.",
+          "costs": "It more than doubles the leg: 2,398 miles against the Gulf road’s 1,127, and it spends two fifteen-hour days doing it. Swap back to the Gulf Coast the moment the forecast says no.",
+          "waypoints": [
+            {
+              "name": "Mooresville",
+              "state": "NC",
+              "ll": [
+                35.585,
+                -80.81
+              ],
+              "tz": -5
+            },
+            {
+              "name": "Greensboro",
+              "state": "NC",
+              "ll": [
+                36.0726,
+                -79.792
+              ],
+              "tz": -5,
+              "urban": true,
+              "road": "I-40/I-85 N",
+              "limit": 70,
+              "miles": 95
+            },
+            {
+              "name": "Durham",
+              "state": "NC",
+              "ll": [
+                35.994,
+                -78.8986
+              ],
+              "tz": -5,
+              "urban": true,
+              "road": "I-85 N",
+              "limit": 70,
+              "miles": 55
+            },
+            {
+              "name": "Petersburg",
+              "state": "VA",
+              "ll": [
+                37.2279,
+                -77.4019
+              ],
+              "tz": -5,
+              "road": "I-85 N",
+              "limit": 70,
+              "miles": 123
+            },
+            {
+              "name": "Richmond",
+              "state": "VA",
+              "ll": [
+                37.5407,
+                -77.436
+              ],
+              "tz": -5,
+              "urban": true,
+              "road": "I-95 N",
+              "limit": 70,
+              "miles": 25
+            },
+            {
+              "name": "Fredericksburg",
+              "state": "VA",
+              "ll": [
+                38.3032,
+                -77.4605
+              ],
+              "tz": -5,
+              "road": "I-95 N",
+              "limit": 70,
+              "miles": 57
+            },
+            {
+              "name": "Springfield",
+              "state": "VA",
+              "ll": [
+                38.7893,
+                -77.1872
+              ],
+              "tz": -5,
+              "urban": true,
+              "road": "I-95 N (Capital Beltway)",
+              "limit": 55,
+              "miles": 48
+            },
+            {
+              "name": "Baltimore",
+              "state": "MD",
+              "ll": [
+                39.2904,
+                -76.6122
+              ],
+              "tz": -5,
+              "urban": true,
+              "road": "I-95 N",
+              "limit": 65,
+              "miles": 45
+            },
+            {
+              "name": "Wilmington",
+              "state": "DE",
+              "ll": [
+                39.7459,
+                -75.5466
+              ],
+              "tz": -5,
+              "road": "I-95 N",
+              "limit": 65,
+              "miles": 68
+            },
+            {
+              "name": "Philadelphia",
+              "state": "PA",
+              "ll": [
+                39.9526,
+                -75.1652
+              ],
+              "tz": -5,
+              "urban": true,
+              "road": "I-95 N",
+              "limit": 55,
+              "miles": 30
+            },
+            {
+              "name": "Trenton",
+              "state": "NJ",
+              "ll": [
+                40.2171,
+                -74.7429
+              ],
+              "tz": -5,
+              "road": "NJ Turnpike N",
+              "limit": 65,
+              "miles": 33
+            },
+            {
+              "name": "Newark",
+              "state": "NJ",
+              "ll": [
+                40.7357,
+                -74.1724
+              ],
+              "tz": -5,
+              "urban": true,
+              "road": "NJ Turnpike N",
+              "limit": 65,
+              "miles": 55
+            },
+            {
+              "name": "Paterson",
+              "state": "NJ",
+              "ll": [
+                40.9168,
+                -74.1718
+              ],
+              "tz": -5,
+              "road": "I-80 W",
+              "limit": 55,
+              "miles": 17
+            },
+            {
+              "name": "Newark (returning)",
+              "state": "NJ",
+              "ll": [
+                40.7357,
+                -74.1724
+              ],
+              "tz": -5,
+              "urban": true,
+              "road": "NJ Turnpike",
+              "limit": 65,
+              "miles": 17
+            },
+            {
+              "name": "Trenton (returning)",
+              "state": "NJ",
+              "ll": [
+                40.2171,
+                -74.7429
+              ],
+              "tz": -5,
+              "road": "NJ Turnpike",
+              "limit": 65,
+              "miles": 55
+            },
+            {
+              "name": "Philadelphia (returning)",
+              "state": "PA",
+              "ll": [
+                39.9526,
+                -75.1652
+              ],
+              "tz": -5,
+              "urban": true,
+              "road": "I-95 PA/DE/MD",
+              "limit": 55,
+              "miles": 33
+            },
+            {
+              "name": "Wilmington (returning)",
+              "state": "DE",
+              "ll": [
+                39.7459,
+                -75.5466
+              ],
+              "tz": -5,
+              "road": "I-95 PA/DE/MD",
+              "limit": 65,
+              "miles": 30
+            },
+            {
+              "name": "Baltimore (returning)",
+              "state": "MD",
+              "ll": [
+                39.2904,
+                -76.6122
+              ],
+              "tz": -5,
+              "urban": true,
+              "road": "I-95 PA/DE/MD",
+              "limit": 65,
+              "miles": 68
+            },
+            {
+              "name": "Springfield (returning)",
+              "state": "VA",
+              "ll": [
+                38.7893,
+                -77.1872
+              ],
+              "tz": -5,
+              "urban": true,
+              "road": "I-95 VA (Capital Beltway)",
+              "limit": 55,
+              "miles": 45
+            },
+            {
+              "name": "Fredericksburg (returning)",
+              "state": "VA",
+              "ll": [
+                38.3032,
+                -77.4605
+              ],
+              "tz": -5,
+              "road": "I-95 VA",
+              "limit": 70,
+              "miles": 48
+            },
+            {
+              "name": "Richmond (returning)",
+              "state": "VA",
+              "ll": [
+                37.5407,
+                -77.436
+              ],
+              "tz": -5,
+              "urban": true,
+              "road": "I-95 VA",
+              "limit": 70,
+              "miles": 57
+            },
+            {
+              "name": "Petersburg (returning)",
+              "state": "VA",
+              "ll": [
+                37.2279,
+                -77.4019
+              ],
+              "tz": -5,
+              "road": "I-85 VA/NC",
+              "limit": 70,
+              "miles": 25
+            },
+            {
+              "name": "Durham (returning)",
+              "state": "NC",
+              "ll": [
+                35.994,
+                -78.8986
+              ],
+              "tz": -5,
+              "urban": true,
+              "road": "I-85 VA/NC",
+              "limit": 70,
+              "miles": 123
+            },
+            {
+              "name": "Greensboro (returning)",
+              "state": "NC",
+              "ll": [
+                36.0726,
+                -79.792
+              ],
+              "tz": -5,
+              "urban": true,
+              "road": "I-85 VA/NC",
+              "limit": 70,
+              "miles": 55
+            },
+            {
+              "name": "Charlotte",
+              "state": "NC",
+              "ll": [
+                35.227,
+                -80.843
+              ],
+              "tz": -5,
+              "urban": true,
+              "road": "I-85 VA/NC",
+              "limit": 70,
+              "miles": 92
+            },
+            {
+              "name": "Gastonia",
+              "state": "NC",
+              "ll": [
+                35.262,
+                -81.187
+              ],
+              "tz": -5,
+              "road": "I-85 NC/SC",
+              "limit": 70,
+              "miles": 22
+            },
+            {
+              "name": "Spartanburg",
+              "state": "SC",
+              "ll": [
+                34.95,
+                -81.932
+              ],
+              "tz": -5,
+              "road": "I-85 NC/SC",
+              "limit": 70,
+              "miles": 52
+            },
+            {
+              "name": "Greenville",
+              "state": "SC",
+              "ll": [
+                34.853,
+                -82.394
+              ],
+              "tz": -5,
+              "urban": true,
+              "road": "I-85 NC/SC",
+              "limit": 70,
+              "miles": 30
+            },
+            {
+              "name": "Commerce",
+              "state": "GA",
+              "ll": [
+                34.204,
+                -83.457
+              ],
+              "tz": -5,
+              "road": "I-85 NC/SC",
+              "limit": 70,
+              "miles": 85
+            },
+            {
+              "name": "Atlanta",
+              "state": "GA",
+              "ll": [
+                33.749,
+                -84.388
+              ],
+              "elev": 1050,
+              "risk": "ice",
+              "note": "Atlanta ices rarely but completely. If a storm is named, wait it out rather than creep through it.",
+              "tz": -5,
+              "urban": true,
+              "road": "I-85 NC/SC",
+              "limit": 70,
+              "miles": 68
+            },
+            {
+              "name": "Montgomery",
+              "state": "AL",
+              "ll": [
+                32.367,
+                -86.3
+              ],
+              "tz": -6,
+              "urban": true,
+              "road": "I-65 AL",
+              "limit": 70,
+              "miles": 160
+            },
+            {
+              "name": "Mobile",
+              "state": "AL",
+              "ll": [
+                30.695,
+                -88.04
+              ],
+              "tz": -6,
+              "urban": true,
+              "road": "I-65 AL",
+              "limit": 70,
+              "miles": 170
+            },
+            {
+              "name": "Gulfport",
+              "state": "MS",
+              "ll": [
+                30.367,
+                -89.093
+              ],
+              "tz": -6,
+              "road": "I-10 AL/MS/LA",
+              "limit": 70,
+              "miles": 77
+            },
+            {
+              "name": "New Orleans",
+              "state": "LA",
+              "ll": [
+                29.951,
+                -90.072
+              ],
+              "tz": -6,
+              "urban": true,
+              "road": "I-10 AL/MS/LA",
+              "limit": 70,
+              "miles": 78
+            },
+            {
+              "name": "Baton Rouge",
+              "state": "LA",
+              "ll": [
+                30.451,
+                -91.187
+              ],
+              "tz": -6,
+              "urban": true,
+              "road": "I-10 AL/MS/LA",
+              "limit": 70,
+              "miles": 81
+            },
+            {
+              "name": "Lafayette",
+              "state": "LA",
+              "ll": [
+                30.224,
+                -92.02
+              ],
+              "tz": -6,
+              "road": "I-10 AL/MS/LA",
+              "limit": 65,
+              "miles": 57
+            },
+            {
+              "name": "Lake Charles",
+              "state": "LA",
+              "ll": [
+                30.226,
+                -93.217
+              ],
+              "tz": -6,
+              "road": "I-10 AL/MS/LA",
+              "limit": 70,
+              "miles": 76
+            },
+            {
+              "name": "Beaumont",
+              "state": "TX",
+              "ll": [
+                30.08,
+                -94.127
+              ],
+              "tz": -6,
+              "road": "I-10 AL/MS/LA",
+              "limit": 70,
+              "miles": 58
+            },
+            {
+              "name": "Houston",
+              "state": "TX",
+              "ll": [
+                29.76,
+                -95.37
+              ],
+              "tz": -6,
+              "urban": true,
+              "road": "I-10 TX",
+              "limit": 75,
+              "miles": 85
+            }
+          ]
+        },
+        {
+          "id": "leg2-nj-plan",
+          "name": "Four days by way of Paterson",
+          "sameRoadAs": "leg2-newjersey",
+          "road": "The New Jersey road, carrying only what this run actually stops for",
+          "character": "Not a different road. Up through New Jersey exactly, with the four sights, the meals and the three nights that were chosen stop by stop.",
+          "why": "A straight shot north on the first day with nothing on it. Then Philadelphia and 737 miles, the falls at sunrise with Atlanta at lunch and Bellingrath after dark, and an easy run in through the Quarter. Day 3’s lunch is deliberately unplaced — the time is reserved, the place is not.",
+          "costs": "Two fifteen-hour days back to back, and leg 2’s own unhurried Gulf trip given up entirely. That is the price of the detour, chosen with the numbers in front of us."
         }
       ]
     },
@@ -3409,374 +3918,6 @@
           "character": "Not a different road. The Vegas diversion exactly, carrying only the stops and three beds the run home actually makes.",
           "why": "Everything the drive out was too rushed for, minus everything leg 1 already took. Palo Duro, the Blue Hole, breakfast at Earl's, then Hoover Dam in full daylight, the Strip with the lights on, Seven Magic Mountains in morning sun, and the Basque table at Bakersfield as the last meal, three hours from finished, which is what the data always said it was for.",
           "costs": "Sixty-one miles and about an hour over staying on I-40, and it gives up Oatman's burros. Swap to The road home to get them back."
-        }
-      ]
-    },
-    {
-      "id": "leg22",
-      "name": "Paterson to Houston",
-      "short": "Paterson",
-      "from": "Paterson, NJ",
-      "to": "Houston, TX",
-      "routes": [
-        {
-          "id": "leg22-low",
-          "name": "The low road",
-          "road": "I-95 to Richmond, I-85 through the Carolinas, then the Gulf Coast",
-          "default": true,
-          "character": "Nothing above about 1,100 feet, and the high point is Atlanta itself. From Gastonia south it is leg 2’s own Gulf road, so the atlas miles are the ones already measured.",
-          "why": "Three days, Paterson to Houston, arriving on the third. Independence Hall during the open house when it needs no ticket, Falls Park at sunrise, a food hall in Atlanta, Bellingrath as the lights come on, and the French Quarter on a quiet Tuesday morning.",
-          "costs": "About 100 miles more than the I-81 mountain line, and it passes back through Charlotte twenty minutes from where Christmas was. Both were accepted deliberately: the mountain road tops out near 2,400 feet and this winter is a strong El Niño, so the hazard is ice rather than snow and elevation buys nothing.",
-          "waypoints": [
-            {
-              "name": "Paterson",
-              "state": "NJ",
-              "ll": [
-                40.9168,
-                -74.1718
-              ],
-              "tz": -5
-            },
-            {
-              "name": "Newark",
-              "state": "NJ",
-              "ll": [
-                40.7357,
-                -74.1724
-              ],
-              "tz": -5,
-              "urban": true,
-              "road": "NJ Turnpike",
-              "limit": 65,
-              "miles": 17
-            },
-            {
-              "name": "Trenton",
-              "state": "NJ",
-              "ll": [
-                40.2171,
-                -74.7429
-              ],
-              "tz": -5,
-              "road": "NJ Turnpike",
-              "limit": 65,
-              "miles": 55
-            },
-            {
-              "name": "Philadelphia",
-              "state": "PA",
-              "ll": [
-                39.9526,
-                -75.1652
-              ],
-              "tz": -5,
-              "urban": true,
-              "road": "I-95 PA/DE/MD",
-              "limit": 55,
-              "miles": 33
-            },
-            {
-              "name": "Wilmington",
-              "state": "DE",
-              "ll": [
-                39.7459,
-                -75.5466
-              ],
-              "tz": -5,
-              "road": "I-95 PA/DE/MD",
-              "limit": 65,
-              "miles": 30
-            },
-            {
-              "name": "Baltimore",
-              "state": "MD",
-              "ll": [
-                39.2904,
-                -76.6122
-              ],
-              "tz": -5,
-              "urban": true,
-              "road": "I-95 PA/DE/MD",
-              "limit": 65,
-              "miles": 68
-            },
-            {
-              "name": "Springfield",
-              "state": "VA",
-              "ll": [
-                38.7893,
-                -77.1872
-              ],
-              "tz": -5,
-              "urban": true,
-              "road": "I-95 VA (Capital Beltway)",
-              "limit": 55,
-              "miles": 45
-            },
-            {
-              "name": "Fredericksburg",
-              "state": "VA",
-              "ll": [
-                38.3032,
-                -77.4605
-              ],
-              "tz": -5,
-              "road": "I-95 VA",
-              "limit": 70,
-              "miles": 48
-            },
-            {
-              "name": "Richmond",
-              "state": "VA",
-              "ll": [
-                37.5407,
-                -77.436
-              ],
-              "tz": -5,
-              "urban": true,
-              "road": "I-95 VA",
-              "limit": 70,
-              "miles": 57
-            },
-            {
-              "name": "Petersburg",
-              "state": "VA",
-              "ll": [
-                37.2279,
-                -77.4019
-              ],
-              "tz": -5,
-              "road": "I-85 VA/NC",
-              "limit": 70,
-              "miles": 25
-            },
-            {
-              "name": "Durham",
-              "state": "NC",
-              "ll": [
-                35.994,
-                -78.8986
-              ],
-              "tz": -5,
-              "urban": true,
-              "road": "I-85 VA/NC",
-              "limit": 70,
-              "miles": 123
-            },
-            {
-              "name": "Greensboro",
-              "state": "NC",
-              "ll": [
-                36.0726,
-                -79.792
-              ],
-              "tz": -5,
-              "urban": true,
-              "road": "I-85 VA/NC",
-              "limit": 70,
-              "miles": 55
-            },
-            {
-              "name": "Charlotte",
-              "state": "NC",
-              "ll": [
-                35.227,
-                -80.843
-              ],
-              "tz": -5,
-              "urban": true,
-              "road": "I-85 VA/NC",
-              "limit": 70,
-              "miles": 92
-            },
-            {
-              "name": "Gastonia",
-              "state": "NC",
-              "ll": [
-                35.262,
-                -81.187
-              ],
-              "tz": -5,
-              "road": "I-85 NC/SC",
-              "limit": 70,
-              "miles": 22
-            },
-            {
-              "name": "Spartanburg",
-              "state": "SC",
-              "ll": [
-                34.95,
-                -81.932
-              ],
-              "tz": -5,
-              "road": "I-85 NC/SC",
-              "limit": 70,
-              "miles": 52
-            },
-            {
-              "name": "Greenville",
-              "state": "SC",
-              "ll": [
-                34.853,
-                -82.394
-              ],
-              "tz": -5,
-              "urban": true,
-              "road": "I-85 NC/SC",
-              "limit": 70,
-              "miles": 30
-            },
-            {
-              "name": "Commerce",
-              "state": "GA",
-              "ll": [
-                34.204,
-                -83.457
-              ],
-              "tz": -5,
-              "road": "I-85 NC/SC",
-              "limit": 70,
-              "miles": 85
-            },
-            {
-              "name": "Atlanta",
-              "state": "GA",
-              "ll": [
-                33.749,
-                -84.388
-              ],
-              "elev": 1050,
-              "risk": "ice",
-              "note": "Atlanta ices rarely but completely. If a storm is named, wait it out rather than creep through it.",
-              "tz": -5,
-              "urban": true,
-              "road": "I-85 NC/SC",
-              "limit": 70,
-              "miles": 68
-            },
-            {
-              "name": "Montgomery",
-              "state": "AL",
-              "ll": [
-                32.367,
-                -86.3
-              ],
-              "tz": -6,
-              "urban": true,
-              "road": "I-65 AL",
-              "limit": 70,
-              "miles": 160
-            },
-            {
-              "name": "Mobile",
-              "state": "AL",
-              "ll": [
-                30.695,
-                -88.04
-              ],
-              "tz": -6,
-              "urban": true,
-              "road": "I-65 AL",
-              "limit": 70,
-              "miles": 170
-            },
-            {
-              "name": "Gulfport",
-              "state": "MS",
-              "ll": [
-                30.367,
-                -89.093
-              ],
-              "tz": -6,
-              "road": "I-10 AL/MS/LA",
-              "limit": 70,
-              "miles": 77
-            },
-            {
-              "name": "New Orleans",
-              "state": "LA",
-              "ll": [
-                29.951,
-                -90.072
-              ],
-              "tz": -6,
-              "urban": true,
-              "road": "I-10 AL/MS/LA",
-              "limit": 70,
-              "miles": 78
-            },
-            {
-              "name": "Baton Rouge",
-              "state": "LA",
-              "ll": [
-                30.451,
-                -91.187
-              ],
-              "tz": -6,
-              "urban": true,
-              "road": "I-10 AL/MS/LA",
-              "limit": 70,
-              "miles": 81
-            },
-            {
-              "name": "Lafayette",
-              "state": "LA",
-              "ll": [
-                30.224,
-                -92.02
-              ],
-              "tz": -6,
-              "road": "I-10 AL/MS/LA",
-              "limit": 65,
-              "miles": 57
-            },
-            {
-              "name": "Lake Charles",
-              "state": "LA",
-              "ll": [
-                30.226,
-                -93.217
-              ],
-              "tz": -6,
-              "road": "I-10 AL/MS/LA",
-              "limit": 70,
-              "miles": 76
-            },
-            {
-              "name": "Beaumont",
-              "state": "TX",
-              "ll": [
-                30.08,
-                -94.127
-              ],
-              "tz": -6,
-              "road": "I-10 AL/MS/LA",
-              "limit": 70,
-              "miles": 58
-            },
-            {
-              "name": "Houston",
-              "state": "TX",
-              "ll": [
-                29.76,
-                -95.37
-              ],
-              "tz": -6,
-              "urban": true,
-              "road": "I-10 TX",
-              "limit": 75,
-              "miles": 85
-            }
-          ]
-        },
-        {
-          "id": "leg22-plan",
-          "name": "Three days to Houston",
-          "sameRoadAs": "leg22-low",
-          "road": "The low road, carrying only what this run actually stops for",
-          "character": "Not a different road. The low road exactly, with the four sights, the meals and the two nights that were chosen stop by stop.",
-          "why": "Day 1 is Philadelphia and 737 miles. Day 2 is the falls at sunrise, Atlanta at lunch, Bellingrath after dark. Day 3 is the Quarter and an easy run in. Day 3 lunch is deliberately unplaced — the time is reserved, the place is not.",
-          "costs": "Two fifteen-hour days back to back. That is the price of doing it in three days with everything on this list, and it was chosen with the numbers in front of us."
         }
       ]
     }
