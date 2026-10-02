@@ -521,6 +521,28 @@ new waypoints are no sparser than session 61's measured work; legs 1, 2 and 3
 byte-identical; and the whole diff scanned for travel dates, since this repo is
 public.
 
+**And then the nights were re-placed, because the plan did not fit.** With the
+clock finally honest, leg 2.2 day 1 ran 20h35 and left 3h35 at the wheel-stop.
+A search over every bed pairing against `build()` found the cause, and it was
+not the eateries: **Bellingrath**. Its hard 17:00–21:00 gate pinned night 2 at
+Biloxi, which forced night 2 to be reachable in a day, which forced night 1 out
+to Duncan, which dumped 735 miles and Philadelphia onto one day. Every
+arrangement with humane days reached Bellingrath at 10:07 in the morning.
+
+**Bellingrath is off the route and the nights moved to Greensboro and Mobile.**
+Day 1 is 06:00–23:05 with 7h55 after it; day 2 is 07:00–21:41 with 9h19. Kevin
+kept the Tick Tock Diner and moved the Paterson departure to 06:00 to pay for
+it, which puts Independence Hall at 10:00 — inside the free open house, where a
+holiday-week ticket is not needed. The losing alternative at each meal slot came
+off the route too, so the plan seeds one per slot.
+
+**One thing unexplained, recorded rather than buried.** Between Independence
+Hall and the Virginia fuel stop the clock advances 3h17 more than the row’s own
+drive figure. Every other leg on the walk reconciles to the minute. The likely
+answer is the metro penalties for Baltimore, the Capital Beltway and Richmond
+being charged to the clock but not shown in `driveMin` — likely, not proven.
+If a later session needs that stretch to the minute, start there.
+
 **A correction worth keeping.** The `first` flag means *no California
 equivalent*, not *not available in Modesto*. I had inflated it to about a third
 of entries when the library's own rate is 18 in 111. Kevin caught it. Hold the

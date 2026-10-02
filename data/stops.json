@@ -2135,8 +2135,7 @@
       "winter": "The lights run 5pm to 9pm and continue past New Year's Eve. Buy the timed ticket online first.",
       "routes": [
         "leg2-gulf",
-        "leg2-plan",
-        "leg2-newjersey-plan"
+        "leg2-plan"
       ]
     },
     {
@@ -2744,8 +2743,7 @@
       ],
       "routes": [
         "leg2-gulf",
-        "leg2-plan",
-        "leg2-newjersey-plan"
+        "leg2-plan"
       ],
       "why": "The gravel RV lot behind the parking decks off Highway 90. Overnight parking allowed, level, dry, lit all night, security on site. The best bed on either trip. Beau Rivage is reported hotel-guests-only, so use this one or ring ahead.",
       "winter": "Sea level. Damp rather than cold, so crack a window for condensation and not for heat. Mississippi posts an eight hour limit and mentions towing, which is the only clock on this leg worth watching.",
@@ -2759,9 +2757,6 @@
       "kind": "lodging",
       "sleepBy": {
         "leg2-plan": 1024
-      },
-      "leaveBy": {
-        "leg2-newjersey-plan": "07:40"
       }
     },
     {
@@ -3120,9 +3115,7 @@
       ],
       "why": "Fast Latin counter service across Charlotte — arepas, tacos, bowls, plantains. The alternative to Cook Out at the same hour.",
       "winter": "Hours vary by location and the I-85 one is unverified at 20:20 on a Sunday. Cook Out is the safer bet that late.",
-      "routes": [
-        "leg2-newjersey-plan"
-      ]
+      "routes": []
     },
     {
       "id": "biscuitville-upstate",
@@ -3143,9 +3136,7 @@
       ],
       "why": "Biscuits rolled and cut on site every twenty minutes all morning. A real breakfast if coffee alone will not hold.",
       "winter": "Closes at 2pm — breakfast only. VERIFY THERE IS A GREENVILLE LOCATION: the chain’s footprint is mainly North Carolina and Virginia and the South Carolina coverage is not confirmed.",
-      "routes": [
-        "leg2-newjersey-plan"
-      ]
+      "routes": []
     },
     {
       "id": "biscuit-head-greenville",
@@ -3166,9 +3157,7 @@
       ],
       "why": "Cat-head biscuits the size of a fist and a whole bar of house jams and honeys. A short walk from Falls Park.",
       "winter": "Opening time believed 07:00 or 07:30. If it is 07:30 it collides with the sunrise at the falls, which is the reason the plan takes coffee instead.",
-      "routes": [
-        "leg2-newjersey-plan"
-      ]
+      "routes": []
     },
     {
       "id": "methodical-coffee",
@@ -3237,9 +3226,7 @@
       ],
       "why": "An Alabama-born taqueria, counter service, clear of pork and shellfish throughout.",
       "winter": "Usually closes around 21:00, so it only works if day 2 is on time. Holiday-week hours unverified.",
-      "routes": [
-        "leg2-newjersey-plan"
-      ]
+      "routes": []
     },
     {
       "id": "krystal-mobile",
@@ -3261,9 +3248,7 @@
       "first": true,
       "why": "Small square steamed beef sliders, going since 1932. The South’s older answer to White Castle and nothing like it in California.",
       "winter": "Many locations run late or 24 hours. Verify the Mobile one.",
-      "routes": [
-        "leg2-newjersey-plan"
-      ]
+      "routes": []
     },
     {
       "id": "callaghans-mobile",
@@ -3284,9 +3269,7 @@
       ],
       "why": "A neighbourhood bar in Oakleigh with a burger that gets written about nationally. The best meal of the four in Mobile, and the one to take only if day 2 is ahead of schedule.",
       "winter": "Nine minutes into town, the wrong direction from Biloxi. Late hours unverified.",
-      "routes": [
-        "leg2-newjersey-plan"
-      ]
+      "routes": []
     },
     {
       "id": "cafe-du-monde",
@@ -3333,34 +3316,7 @@
       ],
       "why": "The other beignet place, with a courtyard on Royal Street. Same walk, and usually a far shorter line.",
       "winter": "Opens early. The bail-out if Café du Monde has a queue round the block.",
-      "routes": [
-        "leg2-newjersey-plan"
-      ]
-    },
-    {
-      "id": "bed-duncan",
-      "name": "TA Spartanburg, I-85 Exit 63",
-      "town": "Duncan",
-      "state": "SC",
-      "kind": "lodging",
-      "ll": [
-        34.938,
-        -82.143
-      ],
-      "detour": 0,
-      "dwell": 0,
-      "cost": "Free",
-      "tags": [
-        "bed"
-      ],
-      "why": "187 truck spaces, staffed around the clock, fuel and a restaurant on site. Seventeen miles short of Greenville on purpose: you stop before the city, and Falls Park is ahead of you at sunrise with no doubling back.",
-      "winter": "South Carolina posts its state rest areas against overnight parking and Greenville has an ordinance against sleeping on public property, so a staffed private lot is the right answer here. Late December lows run around freezing.",
-      "routes": [
-        "leg2-newjersey-plan"
-      ],
-      "leaveBy": {
-        "leg2-newjersey-plan": "07:10"
-      }
+      "routes": []
     },
     {
       "id": "bed-paterson",
@@ -3380,6 +3336,59 @@
       ],
       "why": "The end of the delivery run and the only night of this leg under a roof. Everything after it is a lot.",
       "winter": "Nothing to arrange and nothing that can turn you away.",
+      "routes": [
+        "leg2-newjersey-plan"
+      ],
+      "leaveBy": {
+        "leg2-newjersey-plan": "06:00"
+      }
+    },
+    {
+      "id": "bed-greensboro",
+      "name": "I-85 truck stops, Greensboro",
+      "town": "Greensboro",
+      "state": "NC",
+      "kind": "lodging",
+      "ll": [
+        36.0726,
+        -79.792
+      ],
+      "detour": 0,
+      "dwell": 0,
+      "cost": "Free",
+      "tags": [
+        "bed"
+      ],
+      "why": "The I-85/I-40 junction, where the chains cluster. Night one sits here because 735 miles with Philadelphia in it is a twenty-hour day and 555 is a thirteen-hour one. North Carolina posts its rest areas against overnight parking, so take a staffed lot.",
+      "winter": "Inland Piedmont, so colder than the coast and well short of any pass. Exact exit still to pin.",
+      "routes": [
+        "leg2-newjersey-plan"
+      ],
+      "leaveBy": {
+        "leg2-newjersey-plan": "07:00"
+      },
+      "turnoffBy": {
+        "leg2-newjersey-plan": "Greensboro (returning)"
+      }
+    },
+    {
+      "id": "bed-mobile",
+      "name": "I-10 truck stops, Mobile",
+      "town": "Mobile",
+      "state": "AL",
+      "kind": "lodging",
+      "ll": [
+        30.695,
+        -88.04
+      ],
+      "detour": 0,
+      "dwell": 0,
+      "cost": "Free",
+      "tags": [
+        "bed"
+      ],
+      "why": "Night two. It used to be the Hard Rock at Biloxi, which only worked because Bellingrath pinned the evening there; with Bellingrath off the route the night moves 66 miles back and takes an hour and a half off day two.",
+      "winter": "Sea level and mild. Damp rather than cold.",
       "routes": [
         "leg2-newjersey-plan"
       ],
