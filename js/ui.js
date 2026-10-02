@@ -961,8 +961,8 @@ export function editorSheet() {
       </div>
 
       <div class="field"><div class="slab">Which leg</div>
-        <div class="seg2 three">${legNames().map((n, i) =>
-          `<button data-leg-pick="${i}" aria-pressed="${d.leg === i}">${esc(SHORT[i])}</button>`).join('')}</div>
+        <div class="seg2 ${legs().length === 3 ? 'three' : ''}">${legs().map((l, i) =>
+          `<button data-leg-pick="${i}" aria-pressed="${d.leg === i}">${esc(l.short || SHORT[i])}</button>`).join('')}</div>
       </div>
 
       ${bed ? '' : `<div class="field"><div class="slab">Roughly how long</div>

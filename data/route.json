@@ -3415,6 +3415,7 @@
     {
       "id": "leg22",
       "name": "Paterson to Houston",
+      "short": "Paterson",
       "from": "Paterson, NJ",
       "to": "Houston, TX",
       "routes": [
