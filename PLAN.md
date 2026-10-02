@@ -25,7 +25,7 @@ route at all — Kevin's instruction, do not build one — and **2.2**, Paterson
 Houston over three days. **It is weather-dependent and undecided.** Legs 1, 2 and
 3 are untouched and stay that way.
 
-**`leg2-newjersey` is the road and `leg2-nj-plan` is the trip (restructured, session 66).** Mooresville north to Paterson with nothing on it,
+**`leg2-newjersey-plan` is the road AND the trip (session 66).** Mooresville north to Paterson with nothing on it,
 then I-95 and I-85 back down, and from Gastonia south it is `leg2-gulf`'s own
 waypoints reused verbatim, so session 61's atlas miles still hold. 2,398 miles,
 39 waypoints, nothing above about 1,100 feet either way and the high point is
@@ -404,7 +404,7 @@ past three legs.
 
 **The deeper fault was the model, and it was mine.** A fourth leg tab says you
 drive four legs in sequence, and you do not — the New Jersey run REPLACES leg 2.
-It is now `leg2-newjersey` and `leg2-nj-plan`, sitting alongside the Gulf Coast
+It is now `leg2-newjersey-plan`, sitting alongside the Gulf Coast
 and the inland run, so the weather call is one tap in the switcher. Which is
 what it actually is.
 
@@ -417,6 +417,20 @@ Verified by running `buildRoute` headlessly rather than by eye: Paterson at mile
 651, Tick Tock 668, Philadelphia 756, Richmond 1004, Charlotte 1298, the falls
 1404, Atlanta 1554, Mobile 1890, the Quarter 2040. Correct order, and
 `leg2-gulf` and `leg2-plan` still build at 1,127 miles with 20 and 11 stops.
+
+**Collapsed to one route, same session.** It shipped as a road plus a plan,
+following the pattern every other leg uses. But the pool/plan split earns its
+place only where the pool is bigger than the plan — leg 2 has 20 stops on the
+Gulf road against 11 in the plan — and here Kevin and I narrowed the list down
+to 22 BEFORE anything was built, so both routes carried the identical 22. Two
+switcher entries producing the same trip, and only one of them behaving: the
+road version was subject to the 70-minute suggester and dropped Ponce,
+Bellingrath and the Paterson night. It is now one route, `leg2-newjersey-plan`,
+named *Up through New Jersey*. The id keeps the `-plan` suffix because that
+suffix is what makes a route arrive whole; the name does not have to admit it.
+
+**If a future leg is built this way — decided before it is built — give it one
+route, not two.**
 
 **`bed-paterson` is new** and exists because the day builder had nowhere to break
 a 651-mile run north.

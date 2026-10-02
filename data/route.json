@@ -1723,12 +1723,12 @@
           "costs": "Nothing, because it is the same tarmac as the Gulf Coast. What it gives up is the inland run, and the calendar had already shut most of that road's doors. Swap back to see everything left out."
         },
         {
-          "id": "leg2-newjersey",
+          "id": "leg2-newjersey-plan",
           "name": "Up through New Jersey",
           "road": "North to Paterson, then I-95 and I-85 back down to the Gulf road",
-          "character": "The weather branch. Up to Paterson with Ada’s mother and her belongings, then the whole way back down and across. Nothing above about 1,100 feet in either direction.",
-          "why": "If the roads allow it, her mother is delivered to the new house and the drive to Houston starts from New Jersey instead of Mooresville. The run north carries no stops at all — it is a straight shot and this app is for sightseeing.",
-          "costs": "It more than doubles the leg: 2,398 miles against the Gulf road’s 1,127, and it spends two fifteen-hour days doing it. Swap back to the Gulf Coast the moment the forecast says no.",
+          "character": "The weather branch, and the only route here that is its own plan. Up to Paterson with Ada’s mother and her belongings, then the whole way back down and across. Nothing above about 1,100 feet in either direction.",
+          "why": "If the roads allow it, her mother is delivered to the new house and the drive to Houston starts from New Jersey instead of Mooresville. The run north carries no stops at all — it is a straight shot and this app is for sightseeing. Everything south of Paterson was chosen stop by stop, so there is no pool to swap against: this road and the trip on it are the same thing.",
+          "costs": "It more than doubles the leg: 2,398 miles against the Gulf road’s 1,127, and two fifteen-hour days doing it. Leg 2’s own unhurried Gulf trip is given up entirely. Swap back to the Gulf Coast the moment the forecast says no.",
           "waypoints": [
             {
               "name": "Mooresville",
@@ -2221,15 +2221,6 @@
               "miles": 85
             }
           ]
-        },
-        {
-          "id": "leg2-nj-plan",
-          "name": "Four days by way of Paterson",
-          "sameRoadAs": "leg2-newjersey",
-          "road": "The New Jersey road, carrying only what this run actually stops for",
-          "character": "Not a different road. Up through New Jersey exactly, with the four sights, the meals and the three nights that were chosen stop by stop.",
-          "why": "A straight shot north on the first day with nothing on it. Then Philadelphia and 737 miles, the falls at sunrise with Atlanta at lunch and Bellingrath after dark, and an easy run in through the Quarter. Day 3’s lunch is deliberately unplaced — the time is reserved, the place is not.",
-          "costs": "Two fifteen-hour days back to back, and leg 2’s own unhurried Gulf trip given up entirely. That is the price of the detour, chosen with the numbers in front of us."
         }
       ]
     },
