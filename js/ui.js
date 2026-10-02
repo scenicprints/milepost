@@ -556,7 +556,7 @@ export function renderCalendar() {
   }
 
   const first = dated[0].from, last = dated[dated.length - 1].to;
-  let h = '<div class="cal">' + unsetBlock;
+  let h = '<div class="cal">' + branchBlock + unsetBlock;
 
   // ---- the header: how long, and the dates that cannot move --------------
   const nights = Math.round((last - first) / 86400000);
