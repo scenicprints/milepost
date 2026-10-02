@@ -3071,14 +3071,14 @@
       }
     },
     {
-      "id": "cook-out-charlotte",
+      "id": "cook-out-greensboro",
       "name": "Cook Out",
-      "town": "Charlotte",
+      "town": "Greensboro",
       "state": "NC",
       "kind": "food",
       "ll": [
-        35.262,
-        -80.855
+        36.052,
+        -79.83
       ],
       "detour": 2,
       "dwell": 30,
@@ -3090,11 +3090,12 @@
       ],
       "first": true,
       "big": true,
-      "why": "Absurdly cheap trays and forty-plus real milkshakes, open late, all over the Carolinas. The Mooresville entry in this library sits on I-77 and is no use here, so this one is pinned on I-85.",
-      "winter": "Open late, which is what a 20:20 arrival on a Sunday needs. Many locations are drive-thru only. Closing time not verified.",
-      "routes": [
-        "leg2-newjersey-plan"
-      ]
+      "why": "Absurdly cheap trays and forty-plus real milkshakes, open late, all over the Carolinas. Pinned at Greensboro rather than Charlotte: the night is here, and Charlotte now falls at half past eight in the morning when Cook Out is still shut.",
+      "winter": "Opens 10:30 and runs to the small hours, so it suits an evening arrival and nothing earlier. Exact location still to pin.",
+      "routes": [],
+      "turnoffBy": {
+        "leg2-newjersey-plan": "Greensboro (returning)"
+      }
     },
     {
       "id": "sabor-latin-charlotte",
@@ -3378,8 +3379,8 @@
       "state": "AL",
       "kind": "lodging",
       "ll": [
-        30.695,
-        -88.04
+        30.66,
+        -88.16
       ],
       "detour": 0,
       "dwell": 0,
@@ -3387,7 +3388,7 @@
       "tags": [
         "bed"
       ],
-      "why": "Night two. It used to be the Hard Rock at Biloxi, which only worked because Bellingrath pinned the evening there; with Bellingrath off the route the night moves 66 miles back and takes an hour and a half off day two.",
+      "why": "Night two. It used to be the Hard Rock at Biloxi, which only worked because Bellingrath pinned the evening there; with Bellingrath off the route the night moves 66 miles back and takes an hour and a half off day two. Pinned just west of the Whataburger so dinner lands before the night rather than after it.",
       "winter": "Sea level and mild. Damp rather than cold.",
       "routes": [
         "leg2-newjersey-plan"

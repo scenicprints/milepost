@@ -393,6 +393,28 @@ Android Auto is no.
 
 ## Session log
 
+**Session 69** — The meals did not follow the beds. 1.55.0.
+
+Moving the nights to Greensboro and Mobile moved every eatery out of the slot
+it was chosen for, and I told Kevin it had not. It had. **Cook Out was a 21:00
+Charlotte dinner and landed at 08:25 against a 10:30 opening. Whataburger was
+the Mobile dinner and landed at 07:08 the next morning.**
+
+**Nothing flagged it because eight of the eleven stops added for this leg were
+never in `hours.json`.** The app had no opening times for them, so it could not
+check what it was scheduling. All nine are in now, `cafe-beignet` included.
+**Any stop added to this app without an `hours.json` entry is unchecked, and the
+planner will cheerfully book a shut door.**
+
+**Fixed:** `bed-mobile` moved five miles west so Whataburger falls before the night
+rather than after it — dinner at 21:15, bed at 21:51. Cook Out is off the route:
+at Charlotte it is shut, and at Greensboro the retraced corridor puts it either
+on the run north or after the night, neither of which is a dinner. Kevin will
+sort day 1’s dinner himself on the 3h29 run down from Virginia.
+
+**A presentation lesson too.** A summary that lists only the stops makes a
+3h29 drive invisible and reads as though the day ends at a fuel stop. Days end
+at their arrival; show the final leg.
 **Session 68** — New Jersey and Pennsylvania were in Pacific time. 1.54.0.
 
 **`TZ_STATE` had no NJ, PA, DE or MD, and `tzFor` fell through to -8 without a
