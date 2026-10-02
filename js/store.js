@@ -355,8 +355,14 @@ class Store extends EventTarget {
   // `departure` and `departAt` are leg 1's, kept under the old names because
   // the countdown, the booking deadlines and the desktop planner all mean
   // "when does the trip start" when they ask.
-  depFor(legId) {
-    const d = this.s.departures[legId];
+  /// `routeKey` is passed when a leg has more than one plan to choose
+  /// between, because the scenarios do not leave at the same hour: the Gulf
+  /// road goes after Christmas lunch, the New Jersey run has 617 miles to do
+  /// and leaves at seven. One departure per leg meant flipping between them
+  /// silently kept the wrong one. Falls back to the leg so nothing already
+  /// set is lost the first time a branch appears.
+  depFor(legId, routeKey) {
+    const d = (routeKey && this.s.departures[routeKey]) || this.s.departures[legId];
     return { date: d ? d.date : null, at: (d && d.at) || '06:00' };
   }
   setDepFor(legId, date, at) {

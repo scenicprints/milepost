@@ -543,6 +543,19 @@ answer is the metro penalties for Baltimore, the Capital Beltway and Richmond
 being charged to the clock but not shown in `driveMin` — likely, not proven.
 If a later session needs that stretch to the minute, start there.
 
+**A toggle on Dates for whether the branch happens, and departures that belong
+to the scenario.** Kevin: the switch is a DATES question as much as a route one,
+because it changes which mornings you leave and when you arrive. Any leg
+carrying more than one `*-plan` route now shows a two-way switch at the top of
+the calendar; it emits the same attributes the Route tab’s switcher uses, so the
+existing handler takes it and no new wiring exists to go stale.
+
+**`depFor(legId, routeKey)`** is the other half. One departure per leg meant
+flipping between the Gulf trip and the New Jersey run silently kept the wrong
+hour — they leave Mooresville on different mornings. Where a leg has a choice of
+plans the departure is keyed by route, falling back to the leg so nothing
+already set is lost. Legs 1 and 3 have one plan each and are untouched.
+
 **A correction worth keeping.** The `first` flag means *no California
 equivalent*, not *not available in Modesto*. I had inflated it to about a third
 of entries when the library's own rate is 18 in 111. Kevin caught it. Hold the

@@ -67,6 +67,16 @@ function legChoice(l) {
   store.setRoute(l.id, def.id);
   return routeById(def.id);
 }
+/// A leg carrying more than one `*-plan` route is a leg with a CHOICE of
+/// trips, not just a choice of roads — leg 2 can be the Gulf Coast at
+/// Christmas or the run up to New Jersey, and those are different departures
+/// on different mornings. Where that is true the departure is keyed by route.
+export const plansOf = leg => leg.routes.filter(r => /-plan$/.test(r.id));
+export const depKey = route => {
+  const leg = DATA.route.legs.find(l => l.id === legIdOf(route));
+  return leg && plansOf(leg).length > 1 ? route.id : legIdOf(route);
+};
+export const depOf = route => store.depFor(legIdOf(route), depKey(route));
 export const selected = () => DATA.route.legs.map(legChoice);
 export const legRoute = i => legChoice(DATA.route.legs[i]);
 
@@ -125,7 +135,7 @@ export const sleepsFor = legId =>
   store.sleepsScoped(legId, id => legOwners().get(id));
 
 const startOf = (route) => {
-  const d = store.depFor(legIdOf(route));
+  const d = depOf(route);
   return {
     date: d.date ? new Date(d.date + 'T00:00:00Z')
                  : new Date(new Date().toISOString().slice(0, 10) + 'T00:00:00Z'),
@@ -139,7 +149,7 @@ let dayCache = { key: null, val: null };
 export function realDays(route) {
   const legId = legIdOf(route);
   const sleeps = sleepsFor(legId);
-  const dep = store.depFor(legId);
+  const dep = depOf(route);
   const key = [route.id, [...store.chosen].sort().join(','), JSON.stringify(sleeps),
                JSON.stringify(store.dwells), JSON.stringify(store.afters),
                dep.date, dep.at].join('|');
@@ -478,7 +488,7 @@ export function renderCalendar() {
 
   legs.forEach((leg, li) => {
     const rt = legRoute(li);
-    const dep = store.depFor(leg.id);
+    const dep = depOf(rt);
     if (!dep.date) { spans.push({ leg, li, unset: true }); return; }
     const D = realDays(rt);
     D.forEach((d, di) => {
@@ -499,22 +509,38 @@ export function renderCalendar() {
   // asked questions he answered in September. Hiding them the moment ANY leg
   // was dated is what left leg 1 both undated and unsettable.
   const depRow = leg => {
-    const dep = store.depFor(leg.id);
+    const rt = legChoice(leg);
+    const dep = depOf(rt);
     return `<div class="dep${dep.date ? '' : ' unset'}">
       <div class="deplab">${esc(leg.name)} leaves</div>
       <div class="depval">${dep.date
         ? `${esc(longDate(new Date(dep.date + 'T00:00:00Z')))}, ${esc(dep.at)}`
         : 'Not set yet'}</div>
       <div class="depset">
-        <input type="date" value="${esc(dep.date || '')}" data-depdate="${esc(leg.id)}"
+        <input type="date" value="${esc(dep.date || '')}" data-depdate="${esc(depKey(rt))}"
                aria-label="Departure date">
-        <input type="time" value="${esc(dep.at)}" data-depat="${esc(leg.id)}"
+        <input type="time" value="${esc(dep.at)}" data-depat="${esc(depKey(rt))}"
                aria-label="Departure time">
       </div>
     </div>`;
   };
-  const depBlock = legs.map(depRow).join('');
-  const unsetBlock = legs.filter(l => !store.depFor(l.id).date).map(depRow).join('');
+  // Whether the weather branch happens is a DATES question as much as a route
+  // question — it changes which mornings you leave and when you arrive — so
+  // the switch lives here too. Only legs with a real choice of trips get one.
+  const branchRow = leg => {
+    const plans = plansOf(leg);
+    if (plans.length < 2) return '';
+    const cur = legChoice(leg).id;
+    return `<div class="dep">
+      <div class="deplab">${esc(leg.name)} — which trip</div>
+      <div class="seg2">${plans.map(p =>
+        `<button data-route="${esc(p.id)}" data-rleg="${esc(leg.id)}"
+          aria-pressed="${p.id === cur}">${esc(p.name)}</button>`).join('')}</div>
+    </div>`;
+  };
+  const branchBlock = legs.map(branchRow).join('');
+  const depBlock = branchBlock + legs.map(depRow).join('');
+  const unsetBlock = legs.filter(l => !depOf(legChoice(l)).date).map(depRow).join('');
 
   const dated = spans.filter(x => !x.unset);
   if (!dated.length)
@@ -878,7 +904,7 @@ export function plannedDate(id) {
   // and added that many to the departure, which silently assumed every leg
   // starts the morning the previous one ends.
   for (const r of selected()) {
-    if (!store.depFor(legIdOf(r)).date) continue;   // that leg has no date yet
+    if (!depOf(r).date) continue;   // that leg has no date yet
     for (const d of realDays(r))
       if (d.stops.some(s => s.id === id)) return d.date.toISOString().slice(0, 10);
   }
