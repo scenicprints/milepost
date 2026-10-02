@@ -175,13 +175,25 @@ const TZ_STATE = {
   CA: -8, NV: -8, AZ: -7, NM: -7, UT: -7, CO: -7,
   TX: -6, OK: -6, AR: -6, LA: -6, MS: -6, AL: -6, MO: -6,
   GA: -5, SC: -5, NC: -5, FL: -5, VA: -5,
+  // The northeast arrived with leg 2.2, the first time this trip has gone
+  // above Virginia. Without these the fallback below silently made Paterson
+  // and Philadelphia Pacific, which put day one's whole morning three hours
+  // out and quietly missed Independence Hall's ticket-free window.
+  NJ: -5, PA: -5, DE: -5, MD: -5, DC: -5, NY: -5, CT: -5, WV: -5, KY: -5,
 };
 
 /// The standard-time offset for a place, from its state and, where the state
 /// straddles a boundary, its longitude.
 export function tzFor(state, lon) {
   if (state === 'TN') return lon != null && lon < -85.5 ? -6 : -5;
-  return TZ_STATE[state] ?? -8;
+  const tz = TZ_STATE[state];
+  // A missing state used to fall through to home's -8 without a word. That is
+  // a three-hour error that looks like a plausible schedule, so say so.
+  if (tz === undefined) {
+    console.warn('tzFor: no timezone for state "' + state + '" — falling back to -8. Add it to TZ_STATE.');
+    return -8;
+  }
+  return tz;
 }
 
 /// The offset at a road-mile, for the ends of the route where there is no stop

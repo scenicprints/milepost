@@ -393,6 +393,28 @@ Android Auto is no.
 
 ## Session log
 
+**Session 68** — New Jersey and Pennsylvania were in Pacific time. 1.54.0.
+
+**`TZ_STATE` had no NJ, PA, DE or MD, and `tzFor` fell through to -8 without a
+word.** Leg 2.2 put the first stops this trip has ever had above Virginia, so
+Paterson, Clifton and Philadelphia were all computed three hours behind. The
+waypoints were fine — they carry an explicit `tz` — which is why only the stops
+were wrong and why it looked like a plausible schedule instead of an error.
+
+**What it cost.** Day 1 appeared to run 06:00–23:05 and the Philadelphia-to-
+Virginia stretch appeared to take 7h59 for 248 miles, about 31 mph. I invented
+a metro-penalty theory to explain it rather than checking the timezone. Kevin
+caught it from the arithmetic: he predicted Sheetz at about 16:20, and the fixed
+clock says 16:19. **Day 1 actually runs 06:00–20:05 and the real drive is 4h42.**
+
+**The fallback now warns.** A state missing from `TZ_STATE` logs rather than
+silently becoming home time, because a three-hour error that still looks like a
+schedule is the worst kind.
+
+**The bed decision survives the correction**, checked rather than assumed:
+Greensboro and Mobile give 14h05 and 15h41 with 10h55 and 8h19 of sleep.
+Putting Bellingrath back needs nights at Charlotte and Gulfport, which makes
+both days 16h+ and still has the visit running an hour past the 21:00 gate.
 **Session 67** — A night you LEAVE at an hour, not one you stay in for hours. 1.52.0.
 
 Kevin: *"you cant just say stay there for this many hours. What if I get to a
