@@ -17,6 +17,19 @@ agent, or a new Claude account, can continue without losing the thread.
 
 ## State
 
+**Leg 2.2 exists, and leg 2 may never happen (session 65).** Ada's mother has
+moved to New Jersey. If the weather allows, they take her to the new house after
+Christmas, which replaces leg 2 outright with a two-part branch: **2.1**,
+Mooresville to Paterson, a straight shot with no sightseeing and deliberately no
+route at all — Kevin's instruction, do not build one — and **2.2**, Paterson to
+Houston over three days. **It is weather-dependent and undecided.** Legs 1, 2 and
+3 are untouched and stay that way.
+
+**`leg22-low` is the road and `leg22-plan` is the trip.** I-95 to Richmond,
+I-85 through the Carolinas, and from Gastonia south it is `leg2-gulf`'s own
+waypoints reused verbatim, so session 61's atlas miles still hold. 1,747 miles,
+27 waypoints, nothing above about 1,100 feet and the high point is Atlanta.
+
 **A plan route now arrives WHOLE (session 64).** `*-plan` routes are the trip,
 not a pool, so the 70-minute suggester no longer votes on them and each one is
 filled exactly once, tracked by route id in `seededPlans`. Before this the
@@ -222,6 +235,7 @@ offline.
 | 1. Modesto → NC | **The Route 66 road** — I-40, 2,771 mi, 36 stops | **The low road** — I-10/20/30, 2,984 mi, 25 stops. Nothing above 4,600 ft. |
 | 2. NC → Houston | **The Gulf Coast** — I-85/65/10, 1,221 mi, 9 stops | **The inland run** — I-20/45, 1,455 mi, 7 stops. Skips New Orleans. |
 | 3. Houston → Modesto | **The desert road** — I-10, 1,898 mi, 16 stops | **Up through Vegas** — 1,960 mi, 16 stops. No LA traffic. |
+| 2.2 Paterson → Houston *(branch)* | **The low road** — I-95/I-85/Gulf, 1,747 mi, 21 stops | None. The I-81 mountain line was rejected on elevation. |
 
 ---
 
@@ -377,6 +391,63 @@ Android Auto is no.
 ---
 
 ## Session log
+
+**Session 65** — Leg 2.2: Paterson to Houston, built from scratch with Kevin. 1.50.0.
+
+**Why this leg exists.** Ada's mother moved. The Christmas plan may now end with
+driving her to New Jersey, and if it does, leg 2 does not happen. Kevin was
+explicit that nothing about legs 1, 2 or 3 changes and that 2.1 needs no route —
+it is a straight shot and this app is for sightseeing.
+
+**The road was chosen on winter, not scenery.** NOAA has an El Niño advisory in
+effect with roughly 97% odds of persisting through the winter, and the CPC
+outlook puts above-normal precipitation across the whole southern tier. That
+inverts this file's standing assumption: **in a strong El Niño the low road is
+the storm track**, and with above-normal temperatures the hazard is ice rather
+than snow. Kevin's call was low elevation and plowed interstates regardless, and
+the low road costs only about 100 miles against the I-81 mountain line, which
+tops out near 2,400 feet. The one oddity — it passes back through Charlotte,
+twenty minutes from where Christmas was — was accepted as a bail-out rather than
+an embarrassment.
+
+**The night moved to Duncan on purpose.** Sleeping seventeen miles short of
+Greenville puts Falls Park ahead of you at sunrise with no doubling back, and
+takes a hundred miles off the second day. `bed-duncan` is the TA at I-85 exit
+63: 187 spaces, staffed around the clock. South Carolina posts its state rest
+areas against overnight parking and Greenville has an ordinance against sleeping
+on public property, so a staffed private lot is the only right answer there.
+`bed-biloxi` carries over unchanged and is still the best bed on either trip.
+
+**Food on this leg is filtered, and the filter is permanent.** No pork, no
+seafood, nothing available in Modesto, and nothing cash-only. That removed
+fourteen of forty-one candidates outright and emptied two whole slots: Gulf
+Coast dinner and Cajun lunch are built almost entirely on pork and shellfish.
+Mobile was rebuilt around beef and chicken. **Day 3's lunch is deliberately
+unplaced** — Johnny's Po-Boys turned out to be closed on the relevant weekday
+and the obvious replacement is cash-only, so the plan reserves 45 minutes
+around Lafayette and names nothing. Do not quietly fill it.
+
+**Doors verified:** Independence Hall runs an open house with no ticket before
+10:30, which removes the holiday-week booking risk entirely as long as you
+arrive at opening — that single fact pins the whole first morning. Reading
+Terminal trades on Sundays. Ponce City Market opens at 10:00, not 11:00. Tick
+Tock is 24/7/365. Café du Monde closes only on Christmas Day. **Not verified:**
+Methodical Coffee and Cook Out's closing time, both with substitutes either
+side, and Biscuitville's South Carolina coverage, which is flagged in its own
+`winter` field — the chain is mainly North Carolina and Virginia.
+
+**Checked before pushing:** both data files re-fetched and byte-compared against
+HEAD before writing; every one of the 21 stops projects onto the road, worst
+offset 16.7 miles which is Bellingrath's real detour; the new ground's
+atlas-to-polyline ratio is 1.103 against the reused Gulf road's 1.104, so the
+new waypoints are no sparser than session 61's measured work; legs 1, 2 and 3
+byte-identical; and the whole diff scanned for travel dates, since this repo is
+public.
+
+**A correction worth keeping.** The `first` flag means *no California
+equivalent*, not *not available in Modesto*. I had inflated it to about a third
+of entries when the library's own rate is 18 in 111. Kevin caught it. Hold the
+strict line.
 
 **Session 64** — The Dates tab was showing a plan with holes in it. 1.49.0.
 
