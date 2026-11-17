@@ -17,6 +17,12 @@ agent, or a new Claude account, can continue without losing the thread.
 
 ## State
 
+**Winter watch covers the Virginia–New Jersey corridor, going AND coming
+(session 72).** Four new points in `winter.json`, and crossings are now found
+once per PASS of the road rather than once per point, so an out-and-back road
+flags the return too. `plowedBy` on the new four is an estimate, not a sourced
+figure.
+
 **A plan route now arrives WHOLE (session 64).** `*-plan` routes are the trip,
 not a pool, so the 70-minute suggester no longer votes on them and each one is
 filled exactly once, tracked by route id in `seededPlans`. Before this the
@@ -377,6 +383,56 @@ Android Auto is no.
 ---
 
 ## Session log
+
+**Session 72** — Winter watch covers the Virginia–New Jersey corridor, both ways. 1.58.0.
+
+An outside review of the plan (a spreadsheet another Claude built from the
+export) found that the New Jersey road, about 1,300 miles of I-85 and I-95 up
+and back, was flagged for nothing but Atlanta. The model was fine. The data had
+no winter point between Asheville and Paterson.
+
+**Four points added to `winter.json`:** Fredericksburg (I-95, where a January
+2022 snowstorm stopped the interstate for a day), Baltimore, Philadelphia
+(standing for Wilmington to Trenton), and Newark (the Turnpike, and the side
+streets to the house). Each is named after a waypoint on `leg2-newjersey-plan`,
+and those four waypoints now carry `risk` and `note` so the Trip sheet's winter
+list shows them. **`plowedBy` is a judgment call on all four** — 09:00 for
+Fredericksburg, 08:00 for the rest — on the same footing as the older points.
+Replace them if anyone finds better.
+
+**Road-conditions links added for SC, VA, MD, DE, PA and NJ.** None of the six
+were in `dot`, so the Trip sheet listed nothing for the whole branch, and SC
+was missing for every leg 2 road. Each URL was checked live; Virginia's 511 has
+moved to 511.vdot.virginia.gov.
+
+**The bug the data exposed: a winter point was crossed at most once.**
+`project()` returns the single nearest spot on the road. That is right for
+ordering a stop and wrong for "when do I drive past this", because an
+out-and-back road meets the same point twice. With the data alone, the
+northbound passes were flagged and the morning south from Paterson, past all
+four, was not. New `passes()` in route.js walks the road and keeps each
+separate dip in distance, needing a 5-mile gap between dips so a road that
+wiggles near a town does not report it three times. Crossings use it; stops
+still use `project()`.
+
+**What the New Jersey plan now shows:** northbound, all four in the dark, with
+Newark also ahead of the plows. Southbound, Newark lands fifteen minutes ahead
+of its 08:00 `plowedBy`; Philadelphia, Baltimore and Fredericksburg are in
+daylight.
+
+**Unpinned nights will now wait for the corridor's plows.** The bed rule holds
+an unpinned night up to six hours so the next crossing lands after `plowedBy`.
+Every bed on the New Jersey road is pinned by `leaveBy`, so nothing moved, but
+a bed added there without `leaveBy` or `sleepBy` will be held for Newark or
+Fredericksburg.
+
+**Verified before committing:** all thirteen roads rebuilt before and after.
+Twelve are identical. On the New Jersey road the only changes are the eight new
+crossings, their warnings, and the Paterson morning naming Newark as its risk
+point; no wake time or arrival moved. In the running app, Dates lists both
+passes of all four in road order, and the Trip sheet shows the four notes and
+six links. The service worker will not register inside the desktop app's
+preview pane; that is the pane, not this change, and sw.js serves and parses.
 
 **Session 71** — Leg 2.2, rebuilt from scratch and actually verified. 1.57.0.
 

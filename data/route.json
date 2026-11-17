@@ -1797,6 +1797,8 @@
                 38.3032,
                 -77.4605
               ],
+              "risk": "snow",
+              "note": "I-95 here stopped for a day in a 2022 snowstorm. If one is forecast, be through before it or wait south of Richmond.",
               "tz": -5,
               "road": "I-95 N",
               "limit": 70,
@@ -1822,6 +1824,8 @@
                 39.2904,
                 -76.6122
               ],
+              "risk": "ice",
+              "note": "Sleet more than snow. The ramps and elevated road freeze first.",
               "tz": -5,
               "urban": true,
               "road": "I-95 N",
@@ -1847,6 +1851,8 @@
                 39.9526,
                 -75.1652
               ],
+              "risk": "ice",
+              "note": "Much of I-95 through the city is elevated and glazes before the ground does.",
               "tz": -5,
               "urban": true,
               "road": "I-95 N",
@@ -1872,6 +1878,8 @@
                 40.7357,
                 -74.1724
               ],
+              "risk": "snow",
+              "note": "Nor'easter country. The Turnpike stays open; the side streets to the house do not.",
               "tz": -5,
               "urban": true,
               "road": "NJ Turnpike N",
@@ -3990,6 +3998,36 @@
       "state": "LA",
       "name": "511LA",
       "url": "https://www.511la.org/"
+    },
+    {
+      "state": "SC",
+      "name": "SC511",
+      "url": "https://www.511sc.org/"
+    },
+    {
+      "state": "VA",
+      "name": "Virginia 511",
+      "url": "https://511.vdot.virginia.gov/"
+    },
+    {
+      "state": "MD",
+      "name": "Maryland CHART",
+      "url": "https://chart.maryland.gov/"
+    },
+    {
+      "state": "DE",
+      "name": "DelDOT",
+      "url": "https://deldot.gov/"
+    },
+    {
+      "state": "PA",
+      "name": "511PA",
+      "url": "https://www.511pa.com/"
+    },
+    {
+      "state": "NJ",
+      "name": "511NJ",
+      "url": "https://511nj.org/"
     }
   ]
 }

@@ -43,7 +43,7 @@
 // TIME IS KEPT IN MINUTES from the trip's first midnight, one integer per
 // event. Dates and clock faces are formatting concerns, applied at the edge.
 
-import { stopCost, driveMinutes, tzAtMile, project } from './route.js';
+import { stopCost, driveMinutes, tzAtMile, passes } from './route.js';
 import * as winter from './winter.js';
 
 const MIN_PER_DAY = 1440;
@@ -285,11 +285,12 @@ export function build(route, chosen, start, data) {
   //
   // So: find the risk points that actually lie on this road, in mile order.
   // The walk can then ask what is AHEAD of it rather than what is near it.
+  // Every PASS of a point, not just the nearest: an out-and-back road meets
+  // the same point going and coming, on different days. See passes().
   const crossings = ((WINTER && WINTER.points) || [])
     .filter(p => p.ll && p.plowedBy)
-    .map(p => { const q = project(p.ll, route.waypoints, route.cum);
-                return { p, mile: q.mile, off: q.off }; })
-    .filter(c => c.off <= 25)
+    .flatMap(p => passes(p.ll, route.waypoints, route.cum, 25)
+      .map(q => ({ p, mile: q.mile, off: q.off })))
     .sort((a, b) => a.mile - b.mile);
 
   /// Wall clock at a crossing for an absolute minute. The walk's clock is

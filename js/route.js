@@ -73,6 +73,42 @@ export function project(ll, waypoints, cum) {
   return best;
 }
 
+/// EVERY time the road passes a point, not just the closest one.
+///
+/// project() answers "where does this sit on the road", and that has one
+/// answer. A winter point asks something else: "when do I drive past it",
+/// and a road that goes out and comes back drives past it twice. The New
+/// Jersey road runs I-95 up to Paterson and the same I-95 back down;
+/// project() found Fredericksburg on the way up and never on the way down,
+/// so the morning you head south past four winter points flagged none.
+///
+/// So walk the road and keep each separate approach. A pass is a dip in the
+/// distance to the point. Two dips are two passes only when the road pulls at
+/// least PASS_GAP miles further away between them, so a road that wiggles
+/// near a town does not report the town three times. Stops still use
+/// project(): a place you visit is in the plan once, wherever you meet it.
+const PASS_GAP = 5;
+export function passes(ll, waypoints, cum, maxOff) {
+  const out = [];
+  let low = null, high = null;   // the bottom of the current dip, or the top between dips
+  for (let i = 1; i < waypoints.length; i++) {
+    const a = waypoints[i - 1].ll, b = waypoints[i].ll;
+    const { t, ll: foot } = nearestOnSegment(ll, a, b);
+    const here = { mile: cum[i - 1] + (cum[i] - cum[i - 1]) * t, off: milesBetween(ll, foot), index: i - 1 };
+    if (high) {
+      if (here.off > high.off) high = here;
+      else if (here.off < high.off - PASS_GAP) { high = null; low = here; }
+    } else if (!low || here.off < low.off) {
+      low = here;
+    } else if (here.off > low.off + PASS_GAP) {
+      if (low.off <= maxOff) out.push(low);
+      low = null; high = here;
+    }
+  }
+  if (low && low.off <= maxOff) out.push(low);
+  return out;
+}
+
 /// The point on the route at a given road-mile — used to place the
 /// "you are here" marker and to find the next town ahead.
 export function pointAtMile(mile, waypoints, cum) {

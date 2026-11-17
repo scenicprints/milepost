@@ -226,6 +226,78 @@
     33.749,
     -84.388
    ]
+  },
+  {
+   "id": "fredericksburg",
+   "name": "Fredericksburg",
+   "state": "VA",
+   "elev": null,
+   "plowedBy": "09:00",
+   "priority": "first",
+   "daylight": true,
+   "plows": "VDOT treats I-95 as a first-priority road, but this is the busiest stretch of interstate in Virginia and the plows work in the same traffic you do.",
+   "risk": "In January 2022 a snowstorm stopped about 50 miles of I-95 through here and held drivers on it overnight, some for more than a day. Depth was never the problem: jackknifed trucks blocked the road, and there is no parallel route close enough to take.",
+   "car": "The Accord is not the problem here; the queue is. If a storm is forecast, be through before it starts or wait it out south of Richmond. Once you are in a stopped line on I-95 there is nowhere to go, so never join it on less than half a tank.",
+   "watch": "https://511.vdot.virginia.gov/",
+   "tz": -5,
+   "ll": [
+    38.3032,
+    -77.4605
+   ]
+  },
+  {
+   "id": "baltimore",
+   "name": "Baltimore",
+   "state": "MD",
+   "elev": null,
+   "plowedBy": "08:00",
+   "priority": "first",
+   "daylight": true,
+   "plows": "MDOT SHA pre-treats and plows I-95 first. The harbor tunnel stays dry; the elevated approaches and ramps either side of it do not.",
+   "risk": "Sleet and freezing rain more often than deep snow, and a metro this size slows to a crawl in it. Elevated road and ramps freeze before the road at grade.",
+   "car": "Bridges and ramps are the hazard, not the open road. Slow before them, not on them.",
+   "watch": "https://chart.maryland.gov/",
+   "tz": -5,
+   "ll": [
+    39.2904,
+    -76.6122
+   ]
+  },
+  {
+   "id": "philadelphia",
+   "name": "Philadelphia",
+   "state": "PA",
+   "elev": null,
+   "plowedBy": "08:00",
+   "priority": "first",
+   "daylight": true,
+   "plows": "PennDOT clears I-95 first; DelDOT has the stretch past Wilmington. Both pre-treat ahead of a forecast storm.",
+   "risk": "Long stretches of I-95 through Philadelphia are elevated, and elevated road freezes before the ground does. The Delaware Valley sits on the rain-snow line, so it is sleet and freezing rain as often as snow.",
+   "car": "Same answer as every bridge on the trip: slow before it. A road that looks wet here can be glazed.",
+   "watch": "https://www.511pa.com/",
+   "tz": -5,
+   "ll": [
+    39.9526,
+    -75.1652
+   ]
+  },
+  {
+   "id": "newark",
+   "name": "Newark",
+   "state": "NJ",
+   "elev": null,
+   "plowedBy": "08:00",
+   "priority": "first",
+   "daylight": true,
+   "plows": "The New Jersey Turnpike Authority runs its own maintenance crews, and the Turnpike is first in line. Local streets are plowed last.",
+   "risk": "The snowiest ground on the eastern half of the trip, and nor'easters bring it in quantity. The Turnpike is usually kept moving; the last miles to the house are local streets, and those wait.",
+   "car": "Arrive in daylight if snow is falling, because the last few miles are side streets plowed after everything else. Do not plan an early start the morning after a storm.",
+   "watch": "https://511nj.org/",
+   "tz": -5,
+   "ll": [
+    40.7357,
+    -74.1724
+   ]
   }
  ]
 }
