@@ -34,6 +34,9 @@ either is settled.
 | `js/plan.js` | Turns a route + chosen stops into days. |
 | `js/map.js` | SVG poster map drawn from coordinates. No tiles. |
 | `js/store.js` | All user state. The seam where Firestore drops in. |
-| `js/ui.js` | The five screens. |
+| `js/weather.js` | Weather per place and date: forecast, seasonal ensemble, El Niño baseline. Cached, refreshes itself. |
+| `data/elnino.json` | El Niño analog winters vs normal per place. Generated: `node tools/elnino.mjs`. |
+| `data/enso.json` | NOAA's El Niño status. **Hand-updated monthly** from CPC's discussion. |
+| `js/ui.js` | The six screens. |
 | `js/app.js` | Boot, tabs, events. |
 | `prototype/` | The agreed new design, not yet ported onto the app. `node prototype/build.mjs` regenerates it. |

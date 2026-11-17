@@ -1,0 +1,18 @@
+{
+  "_comment": [
+    "The El Nino status the Weather tab shows at the top. HAND-MAINTAINED.",
+    "NOAA's Climate Prediction Center issues its ENSO Diagnostic Discussion on",
+    "the second Thursday of each month. When a new one is out, copy its issue",
+    "date, alert status, synopsis and next date in here, bump the version and",
+    "the cache name, and push. The app says out loud when `next` has passed,",
+    "so a stale file is visible rather than silently wrong.",
+    "These dates are CPC's publication dates, not dates of the trip."
+  ],
+  "issued": "2026-11-12",
+  "status": "El Niño Advisory",
+  "synopsis": "El Niño continues to strengthen, with a strong-to-very strong El Niño likely through January-March 2027 (remaining greater than a 79% chance).",
+  "historic": "Chances of a historic event, stronger than any El Niño back to 1950, are about 60% for October-December and November-January.",
+  "next": "2026-12-10",
+  "source": "NOAA Climate Prediction Center, ENSO Diagnostic Discussion",
+  "url": "https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.shtml"
+}

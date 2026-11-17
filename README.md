@@ -18,6 +18,10 @@ interstate*, and a running list of the things Ada has never seen before.
   Needles and Flagstaff, and again across West Texas.
 - **Winter is built in.** Chain-control rules for this specific car, pass
   elevations, and every state's road-conditions site.
+- **Weather where you will be, on the day.** Every stop, bed and pass gets the
+  best weather there is for its date: the forecast inside 16 days, ECMWF's
+  seasonal ensemble beyond that, and always what the strongest El Niño winters
+  did at that spot. It refreshes itself and keeps working offline.
 
 ## Running it
 

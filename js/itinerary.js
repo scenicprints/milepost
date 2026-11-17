@@ -398,6 +398,8 @@ export function build(route, chosen, start, data) {
 
       rows.push({
         kind: 'bed', stop: s, dayIx, mile: s.mile,
+        // The overnight low is the MORNING's, so weather wants both dates.
+        date: iso(here.date), wakeDate: iso(next.date),
         driveMin: legMin, arrive, depart: wake,
         arriveAt: hhmm(downLocal), departAt: hhmm(wakeLocal),
         tz: here.tz, tzShift: here.tz - tzStart,
@@ -447,6 +449,7 @@ export function build(route, chosen, start, data) {
 
     const row = {
       kind: 'stop', stop: s, dayIx, mile: s.mile,
+      date: iso(here.date),
       // A stop you slept past and came back to. `back` is the one-way road
       // between the bed and it, so the round trip is twice this.
       back: backMin ? { min: backMin, miles: Math.round(mile - s.mile) } : null,
@@ -515,7 +518,7 @@ export function build(route, chosen, start, data) {
 
       row.sleep = {
         minutes: nap,
-        downAt: hhmm(downLocal), wakeAt: hhmm(wakeLocal),
+        downAt: hhmm(downLocal), wakeAt: hhmm(wakeLocal), wakeDate: iso(next.date),
         at: s.town ? `${s.town}${s.state ? ', ' + s.state : ''}` : s.name,
         where: null,
         dayIx, flags: sflags,
@@ -562,7 +565,8 @@ export function build(route, chosen, start, data) {
       const rise = day.rise, set = day.set;
       const dark = at < rise || at > set;
       const early = at < plowAt;
-      crossed.push({ name: c.p.name, elev: c.p.elev || null, mile: Math.round(c.mile),
+      crossed.push({ name: c.p.name, id: c.p.id, ll: c.p.ll, elev: c.p.elev || null,
+                     mile: Math.round(c.mile), date: iso(day.date), abs,
                      at, atLabel: hhmm(at), plowedBy: c.p.plowedBy, dark, early });
       if (dark || early)
         warnings.push(`${c.p.name}${c.p.elev ? ', ' + c.p.elev.toLocaleString() + ' ft,' : ''} `
@@ -577,6 +581,7 @@ export function build(route, chosen, start, data) {
     rows, days, crossings: crossed,
     totalMin: Math.round(endsAt - toMin(start.at)),
     endsAt, endsAtLabel: hhmm(endsLocal),
+    endsDate: iso(new Date(start.date.valueOf() + Math.floor(endsLocal / MIN_PER_DAY) * 86400000)),
     tzStart, tzEnd, tzShift: tzEnd - tzStart,
     dayCount: days.length,
     warnings,
@@ -627,5 +632,10 @@ function nearestRisk(WINTER, ll) {
   }
   return best;
 }
+
+/// A Date that build() made (UTC midnight of a local calendar day) as
+/// 'yyyy-mm-dd'. Weather is looked up by the day you are actually standing
+/// there, and an arrival at 01:25 belongs to the next date, not the day row.
+const iso = d => d.toISOString().slice(0, 10);
 
 export { hhmm, toMin, weekday };

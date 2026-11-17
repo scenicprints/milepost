@@ -136,7 +136,9 @@ input, textarea { font: inherit; color: inherit; }
 .tabs { flex: none; display: flex; border-top: 1px solid var(--rule); padding-bottom: env(safe-area-inset-bottom); }
 .tabs button {
   flex: 1; padding: 16px 0 18px; text-align: center; position: relative;
-  font-size: 11px; font-family: var(--mono); letter-spacing: .12em;
+  /* Six tabs since Weather. .12em let "WEATHER" touch its neighbours on a
+     375-point iPhone; .06em keeps the caps airy and every label clear. */
+  font-size: 11px; font-family: var(--mono); letter-spacing: .06em;
   text-transform: uppercase; color: var(--ink2);
 }
 .tabs button[aria-selected="true"] { color: var(--ink); }
@@ -511,3 +513,46 @@ ol.cstops li:first-child { border-top: 0; }
 .cbed .cd { font-family: var(--mono); font-size: 11px; flex: none; }
 .cbed.done { display: block; border-top: 0; font-family: var(--mono); font-size: 13px;
   color: var(--ink2); margin-top: 8px; }
+
+/* ===================================================== weather
+   One block per place you are at on a known date. The numbers lead, the tier
+   says how far to trust them, and the El Nino line underneath is quieter
+   because it is context. Orange only where it changes what you do. */
+.wxfresh { display: flex; align-items: baseline; gap: 12px; padding: 12px 0;
+  border-bottom: 1px solid var(--rule); font-family: var(--mono); font-size: 11px; color: var(--ink2); }
+.wxfresh span { flex: 1; }
+.wxfresh button { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--signal); }
+.wxfresh button[disabled] { color: var(--ink3); cursor: default; }
+.wxday { padding: 13px 0 6px; border-bottom: 1px solid var(--rule); }
+.wxday:last-child { border-bottom: 0; }
+.wxi { padding: 9px 0; border-top: 1px solid var(--rule); }
+.wxday .cwhere + .wxi { margin-top: 8px; }
+.wxh { display: flex; gap: 12px; align-items: baseline; font-size: 16px; }
+.wxh .ct { font-family: var(--mono); font-size: 15px; min-width: 56px; flex: none;
+  font-variant-numeric: tabular-nums; }
+.wxh .ct b { font-weight: 500; }
+.wxh .cn { flex: 1; letter-spacing: -.01em; }
+.wxk { font-family: var(--mono); font-size: 10px; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--ink2); flex: none; }
+.wxv, .wxl, .wxn { padding-left: 68px; }
+.wxv { font-family: var(--mono); font-size: 11px; color: var(--ink2); margin-top: 4px; }
+.wxl { font-size: 14px; margin-top: 4px; line-height: 1.5; font-variant-numeric: tabular-nums; }
+.wxl b { font-weight: 500; }
+.wxl em { font-style: normal; font-family: var(--mono); font-size: 10px; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--ink3); white-space: nowrap; }
+.wxn { font-family: var(--mono); font-size: 10.5px; line-height: 1.6; color: var(--ink2);
+  margin-top: 4px; font-variant-numeric: tabular-nums; }
+.wxnone { color: var(--ink3); }
+.wxi.hot .wxl, .wxi.hot .wxh .cn { color: var(--signal); }
+.wxenso { margin-top: 2px; }
+.wxenso .cmeta a { color: var(--ink2); margin-left: 6px; }
+.wxhow { margin-top: 26px; border-bottom: 0; }
+/* The band on a Dates day. Tapping it opens the Weather tab. */
+.cwx { font-family: var(--mono); font-size: 11px; color: var(--ink2); margin-top: 6px;
+  cursor: pointer; font-variant-numeric: tabular-nums; }
+.cwx.hot { color: var(--signal); }
+.cwx em { font-style: normal; color: var(--ink3); margin-left: 4px; }
+@media (max-width: 380px) {
+  .wxv, .wxl, .wxn { padding-left: 0; }
+}

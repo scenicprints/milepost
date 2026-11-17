@@ -17,6 +17,13 @@ agent, or a new Claude account, can continue without losing the thread.
 
 ## State
 
+**There is a Weather tab (session 73).** Every stop, bed, pass and leg end on
+a dated leg gets the best weather there is for its own date: the forecast
+inside 16 days, ECMWF's seasonal ensemble beyond that, and always the El Niño
+analog line from `data/elnino.json`. It refreshes itself and works offline.
+**`data/enso.json` is hand-maintained**: update it when CPC publishes its
+monthly ENSO discussion (the app says when it is overdue).
+
 **Winter watch covers the Virginia–New Jersey corridor, going AND coming
 (session 72).** Four new points in `winter.json`, and crossings are now found
 once per PASS of the road rather than once per point, so an out-and-back road
@@ -383,6 +390,93 @@ Android Auto is no.
 ---
 
 ## Session log
+
+**Session 73** — Weather: the trip, the day, the place, and El Niño. 1.59.0.
+
+Kevin's ask: a weather tracker, because a very strong El Niño is running and
+it aims the storm track at the southern route. "See the trip and see what the
+weather will look like at each spot on the date I will be there," and
+"updateable means the weather updates as things change with weather
+forecasting." Another Claude session designed it with him and started building
+on a different computer; none of that work was pushed, so this session built
+the agreed design from scratch.
+
+**Why it lives in Milepost and not an artifact or a second app:** only the
+phones know the dates (per-leg departures, never in the repo), and only
+`build()` knows which date you are at each place. Anything separate would
+need the dates typed in again.
+
+**Three tiers, and the screen always says which one it is showing.**
+`js/weather.js` `picture(key, ll, date)` picks the best:
+- *forecast* (Open-Meteo, inside 16 days): the day itself. Stale after 3 hours.
+- *seasonal* (ECMWF SEAS5 via Open-Meteo's seasonal API, ~92 days): 51 runs
+  summarised per day as the 10th/50th/90th percentile of high and low and the
+  share of runs wet, snowy and heavy. Shown as a spread, read as a tilt. Stale
+  after a day.
+- *climate*: no live data, so the El Niño composite. Only seen offline with an
+  empty cache, or for a date beyond the seasonal run.
+
+**Under every place, the El Niño line:** the five winters since 1950 whose El
+Niño peaked at ONI +2.0 or more (1972-73, 1982-83, 1997-98, 2015-16,
+2023-24) against the 1991-2020 normal, for the 15 days around that date.
+`tools/elnino.mjs` builds it from Open-Meteo's archive: 139 named points (every
+stop, winter point and route end) grouped onto a 0.2° grid as 85 places, one
+batched request per winter, 33 winters, about 4,000 of the archive's 10,000
+free daily units, paced off the rate-limit headers, cached in `.cache/elnino/`
+(gitignored). Re-run it when a stop is added or moved. It holds climate stats
+for public places and no trip dates. What it shows: Arizona and New Mexico
+colder and a little snowier in those winters, the Gulf wetter with more heavy
+rain, the Southeast and the East Coast milder.
+
+**Cold nights run colder than shown, and the screen says so.** The archive and
+the seasonal model both work on grid cells miles wide and miss how cold a
+clear desert night gets: Gallup's station normal low is about 13°F, the
+model's 21°F. The El Niño difference is still sound because the same bias sits
+on both sides of it.
+
+**Where it shows:**
+- A sixth tab, Weather, for the whole trip by day: the CPC status at the top
+  from `data/enso.json`, when it was last checked and a Refresh button, then
+  every place in clock order with its tier, numbers and El Niño line. A bed is
+  asked about on its WAKE date, because the overnight low is the morning's,
+  and shows the low only. A pass carries the crossing verdict from `build()`.
+  Orange only for what changes a plan: snow or heavy rain in 1 in 4 runs or
+  more, a night at 15°F or below, a forecast of snow, freezing rain, an inch of
+  rain or 45 mph gusts.
+- A band on every Dates day: the day's highs, the night's low at the bed, and
+  the worst snow or heavy-rain signal. Tapping it opens Weather.
+- The place sheet's temperature line uses the same `picture()`, so the
+  screens cannot disagree.
+
+**How it updates.** `refresh()` fetches only what is stale, batching up to 25
+places per request (Open-Meteo bills one unit per place against 600 a minute),
+and keeps compact per-day summaries in localStorage under `milepost.wx2`, about
+90 KB for the whole trip. It runs on boot, on opening the tab, when the phone
+comes back to the app, when signal returns, 1.5 s after any plan change, and
+on Refresh. Requests carry only public stop coordinates; no trip dates leave
+the phone.
+
+**Builder changes, additive only:** rows carry `date` (the local calendar day,
+so an arrival at 01:25 is the next day's weather), beds and nights carry
+`wakeDate`, crossings carry `id`, `ll`, `date` and `abs`, and the result has
+`endsDate`. The Weather tab places a pass on the day whose clock it falls in,
+not by mile: Amarillo crossed at 07:35 after a night belongs to that morning.
+All thirteen roads rebuild identically.
+
+**Tab bar:** six tabs. Letter-spacing went from .12em to .06em so WEATHER fits
+at 375 points; checked, no label overflows.
+
+**`data/enso.json` needs a person once a month.** CPC's next discussion is due
+on the second Thursday of each month. Copy the issue date, status, synopsis
+and next date in, bump the version and cache name, push. When `next` has
+passed by three days the tab says the status is the older one.
+
+**Verified:** every route rebuilt before and after; live API runs for leg 1 in
+node (28 places in about 3 s, a second refresh fetches nothing); the forecast
+tier with a departure three days out; the offline fallback to the shipped
+table, including a custom stop borrowing the nearest place; all 1,020 El Niño
+rows sanity-checked; in the running app at phone width, the Weather tab, the
+Dates bands, the place sheet and the tab bar. Not checked on a real phone.
 
 **Session 72** — Winter watch covers the Virginia–New Jersey corridor, both ways. 1.58.0.
 

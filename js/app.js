@@ -16,6 +16,10 @@ const TABS = [
   // whole trip clock (arrive, leave, time there, every stop and bed) and the
   // per-leg departure editors that used to live on Days.
   { id: 'cal',   label: 'Dates', render: () => ui.renderCalendar() },
+  // Its own tab rather than a sheet: Kevin called it a tracker, something he
+  // checks, and session 11 already settled that discoverability beats a
+  // tidier tab bar.
+  { id: 'wx',    label: 'Weather', render: () => ui.renderWeather() },
   { id: 'trip',  label: 'Trip',  render: () => ui.renderTrip(upd) },
 ];
 
@@ -34,7 +38,7 @@ async function boot() {
   // in; it now runs the same builder the desktop planner does, and that builder
   // needs the opening hours and the plow windows. Both were already in the
   // service worker's precache list, so this costs nothing offline.
-  const [route, stops, usa, extras, hours, winter, darksky] = await Promise.all([
+  const [route, stops, usa, extras, hours, winter, darksky, elnino, enso] = await Promise.all([
     fetch('data/route.json').then(r => r.json()).then(resolveRoads),
     fetch('data/stops.json').then(r => r.json()),
     fetch('data/usa.json').then(r => r.json()),
@@ -43,8 +47,12 @@ async function boot() {
     fetch('data/winter.json').then(r => r.json()),
     // Optional: the app works without it, and the Sky button simply never shows.
     fetch('data/darksky.json').then(r => r.json()).catch(() => null),
+    // Optional too: without them the Weather tab still shows live forecasts,
+    // it just has no El Niño baseline or status line.
+    fetch('data/elnino.json').then(r => r.json()).catch(() => null),
+    fetch('data/enso.json').then(r => r.json()).catch(() => null),
   ]);
-  ui.init({ route, stops: stops.stops, usa, darksky, hours, winter,
+  ui.init({ route, stops: stops.stops, usa, darksky, hours, winter, elnino, enso,
     sites: extras.sites, normals: extras.normals, bookings: extras.bookings || {} });
 
   // Seed any stop the seeder has never considered. Runs on every boot, but
@@ -87,8 +95,12 @@ async function boot() {
     `<button data-tab="${t.id}" aria-selected="${t.id === tab}">${t.label}</button>`).join('');
 
   store.addEventListener('change', draw);
+  // A changed departure or plan means new places and dates to ask about.
+  // Debounced, because a date picker fires a change per keystroke.
+  store.addEventListener('change', () => { clearTimeout(wxTimer); wxTimer = setTimeout(() => weatherTick(), 1500); });
   syncmod.sync.addEventListener('change', draw);
   draw();
+  weatherTick();
   maybeShow();
   syncmod.resume();
   // If location was on last session, pick it back up — you're probably still
@@ -98,6 +110,23 @@ async function boot() {
     startWatch();
   }
 }
+
+// ============================================================ weather
+//
+// Fetches only what has gone stale (forecasts after 3 hours, the seasonal
+// run after a day) and redraws if a screen that shows weather is up. Called
+// on boot, on opening the tab, when the phone comes back to the app, when
+// signal returns, after a plan change, and from the Refresh button.
+let wxTimer = null;
+function weatherTick(force = false) {
+  const p = ui.refreshWeather({ force });
+  if (force && tab === 'wx') draw();             // show "Checking…" at once
+  return p.then(r => {
+    if ((r.changed || force) && (tab === 'wx' || tab === 'cal' || sheet)) draw();
+  });
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden) weatherTick(); });
+window.addEventListener('online', () => weatherTick());
 
 function draw() {
   $head.innerHTML = ui.renderHead(legIx, tab);
@@ -440,7 +469,9 @@ document.addEventListener('click', e => {
   if (e.target.closest('a')) return;              // let links be links
 
   const t = e.target.closest('[data-tab]');
-  if (t) { tab = t.dataset.tab; sheet = null; draw(); return; }
+  if (t) { tab = t.dataset.tab; sheet = null; draw(); if (tab === 'wx') weatherTick(); return; }
+
+  if (e.target.closest('[data-wxrefresh]')) { weatherTick(true); return; }
 
   const kf = e.target.closest('[data-kindfilter]');
   if (kf) { ui.setKindFilter(kf.dataset.kindfilter); draw(); return; }

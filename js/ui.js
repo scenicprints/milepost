@@ -22,6 +22,7 @@ let position = null;          // [lat, lon] once geolocation is allowed
 export function init(data) {
   DATA = data;
   SKY = darksky.load(data.darksky);
+  wx.init({ elnino: data.elnino });
 }
 let SKY = null;
 /// The overlay only exists once there is data behind it — no dead control.
@@ -240,7 +241,7 @@ export { suggestStops };
 export function renderHead(legIx, tab) {
   // Trip and Dates both describe the WHOLE trip, so they take the whole-trip
   // totals and drop the leg and road pickers. Anything else is one leg.
-  const whole = tab === "trip" || tab === "cal";
+  const whole = tab === "trip" || tab === "cal" || tab === "wx";
   const rt = legRoute(legIx);
   const t = realTotals(rt);
   let wm = 0, wd = 0, ws = 0;
@@ -589,7 +590,7 @@ export function renderCalendar() {
       continue;
     }
 
-    const { d, di, n, leg } = e;
+    const { d, di, n, leg, rt } = e;
     const rows = d.rows.filter(r => r.kind !== 'bed');
     const bed = d.rows.find(r => r.kind === 'bed');
     h += `<div class="cday drive">
@@ -605,6 +606,7 @@ export function renderCalendar() {
                : r.dark ? ', in the dark'
                : r.early ? `, before the plows clear it at ${r.plowedBy}` : ''))
         ).join(' · ')}</div>` : ''}
+        ${wxBand(d, rt)}
         ${rows.length ? `<ol class="cstops">${rows.map(r =>
           `<li><span class="ct"><b>${esc(r.arriveAt)}</b>–${esc(r.departAt)}</span><span class="cn">${esc(r.stop.name)}</span>
            ${r.dwell ? `<span class="cd">${fmtHours(r.dwell)}</span>` : ''}</li>`).join('')}</ol>` : ''}
@@ -874,44 +876,338 @@ function bookingList() {
     </div>`;
 }
 
+// ============================================================== weather
+//
+// Kevin: "I need a way to see the trip and see what the weather will look like
+// at each spot on the date I will be there", and it has to update as the
+// forecasting changes. js/weather.js does the fetching and picks the best tier
+// for a place and a date; this lays it over the real days.
+//
+// Everything asked about is a place you are actually at on a known date: each
+// stop, each bed (the overnight low is the next MORNING's, so a bed is asked
+// about on its wake date), each pass the day crosses, and the far end of the
+// leg. Only legs with a departure date appear — there is no date to ask about
+// otherwise, and dates never leave the phone.
+
+/// Every place on every dated leg, by day, in road order.
+function wxTrip() {
+  const out = [];
+  DATA.route.legs.forEach((leg, li) => {
+    const rt = legRoute(li);
+    if (!depOf(rt).date) { out.push({ leg, li, unset: true }); return; }
+    const D = realDays(rt);
+    const term = rt.waypoints[rt.waypoints.length - 1];
+    // Passes go on the day whose CLOCK they fall in, not the one whose miles
+    // contain them: a stop pinned to the next morning doubles back, and
+    // Amarillo crossed at 07:35 belongs to that morning, not to the evening
+    // before it. Same for the order inside a day: by the clock.
+    const starts = D.it.days.map(x => x.startedAt);
+    const dayOfAbs = abs => { let i = 0; starts.forEach((s, j) => { if (s <= abs) i = j; }); return i; };
+    const days = D.map((d, di) => {
+      const items = [];
+      for (const r of d.rows) {
+        if (!r.stop || !r.date) continue;
+        const night = r.kind === 'bed' ? r.wakeDate : (r.sleep && r.sleep.wakeDate) || null;
+        items.push({
+          kind: r.kind === 'bed' ? 'bed' : 'stop', abs: r.arrive,
+          key: r.stop.id, ll: r.stop.ll, name: r.stop.name, at: r.arriveAt,
+          date: r.date, night,
+        });
+      }
+      for (const c of D.it.crossings || [])
+        if (c.ll && c.date && dayOfAbs(c.abs) === di)
+          items.push({ kind: 'pass', abs: c.abs, key: 'w:' + c.id, ll: c.ll, name: c.name,
+                       at: c.atLabel, date: c.date, cross: c });
+      items.sort((a, b) => a.abs - b.abs);
+      if (di === D.length - 1 && D.it.endsDate)
+        items.push({ kind: 'end', abs: D.it.endsAt, key: 'end:' + term.name, ll: term.ll,
+                     name: term.name, at: D.it.endsAtLabel, date: D.it.endsDate });
+      return { d, di, n: D.length, items };
+    });
+    out.push({ leg, li, rt, days });
+  });
+  return out;
+}
+
+/// The places to keep fresh, each with which tiers its dates can use.
+function wxPlaces(trip = wxTrip()) {
+  const by = new Map();
+  for (const L of trip) for (const day of L.days || []) for (const it of day.items)
+    for (const date of [it.date, it.night].filter(Boolean)) {
+      const k = wx.keyOf(it.ll);
+      const need = wx.needFor(date);
+      const p = by.get(k) || { ll: it.ll, need: { forecast: false, seasonal: false } };
+      p.need.forecast ||= need.forecast;
+      p.need.seasonal ||= need.seasonal;
+      by.set(k, p);
+    }
+  return [...by.values()];
+}
+
+/// Fetch whatever is stale for the dated trip. Safe to call often: weather.js
+/// only goes to the network for what has expired, and never throws.
+export function refreshWeather(opts) {
+  if (typeof navigator !== 'undefined' && navigator.onLine === false)
+    return Promise.resolve({ changed: 0, failed: 0 });
+  return wx.refresh(wxPlaces(), opts);
+}
+
+const deg = n => (n < 0 ? '−' + Math.abs(n) : String(n));
+const pctWords = n => (n == null ? '' : n >= 85 ? 'almost every' : n >= 60 ? 'most' : n >= 40 ? 'about half of'
+  : n >= 25 ? '1 in 3' : n >= 15 ? '1 in 5' : n >= 8 ? '1 in 10' : n > 0 ? 'a few' : 'none of');
+const ago = t => {
+  if (!t) return null;
+  const m = Math.round((Date.now() - t) / 60000);
+  if (m < 2) return 'just now';
+  if (m < 60) return `${m} min ago`;
+  const h = Math.round(m / 60);
+  return h < 36 ? `${h}h ago` : `${Math.round(h / 24)} days ago`;
+};
+
+/// Worth flagging: the things that change what you do, not what you wear.
+function wxHot(p, night) {
+  if (!p) return false;
+  if (p.tier === 'forecast')
+    return (p.snowIn || 0) >= 0.4 || (p.rainIn || 0) >= 0.75 || (p.gust || 0) >= 45
+      || /freezing/.test(p.words || '') || (night && p.lo <= 15);
+  // 1 in 4 runs or days. Heavy rain in 1 in 5 is close to normal for the
+  // Southeast in December, and at that bar a dozen places lit up and the
+  // orange stopped meaning anything.
+  return (p.snow || 0) >= 25 || (p.heavy || 0) >= 25 || (night && p.lo <= 15);
+}
+
+/// One line: the numbers for the best tier available, in plain words.
+function wxLine(p, night) {
+  if (!p) return '<span class="wxnone">No weather for this place yet.</span>';
+  const temps = night ? `low <b>${deg(p.lo)}°</b>` : `<b>${deg(p.hi)}°</b> / ${deg(p.lo)}°`;
+  if (p.tier === 'forecast') {
+    const bits = [temps];
+    if (p.words) bits.push(esc(p.words));
+    if ((p.snowIn || 0) >= 0.1) bits.push(`snow ${p.snowIn.toFixed(1)} in`);
+    else if ((p.rainIn || 0) >= 0.1) bits.push(`${p.rainIn.toFixed(1)} in of rain`);
+    if (p.wet != null) bits.push(`${p.wet}% chance of rain or snow`);
+    if ((p.gust || 0) >= 30) bits.push(`gusts ${p.gust} mph`);
+    return bits.join(' · ');
+  }
+  if (p.tier === 'seasonal') {
+    // "−1–27°" reads as a typo, so a range that crosses zero says "to".
+    const range = (r, mid, b) => {
+      const s = !r || r[0] === r[1] ? `${deg(mid)}°`
+        : `${deg(r[0])}${r[0] < 0 ? ' to ' : '–'}${deg(r[1])}°`;
+      return b ? `<b>${s}</b>` : s;
+    };
+    // A night is about the low. The next afternoon's high is not the night.
+    const bits = [night ? `low ${range(p.loR, p.lo, true)}` : `${range(p.hiR, p.hi, true)} / ${range(p.loR, p.lo)}`];
+    bits.push(`wet in ${pctWords(p.wet)} runs`);
+    if (p.snow) bits.push(`snow in ${pctWords(p.snow)} runs`);
+    if (p.heavy >= 8) bits.push(`heavy rain in ${pctWords(p.heavy)} runs`);
+    return bits.join(' · ');
+  }
+  // climate: there is no live data, so this IS the El Niño composite
+  const bits = [temps, `wet ${p.wet}% of days`];
+  if (p.snow) bits.push(`snow ${p.snow}%`);
+  if (p.heavy >= 5) bits.push(`heavy rain ${p.heavy}%`);
+  return bits.join(' · ');
+}
+
+const tierName = p => (!p ? '' : p.tier === 'forecast' ? 'forecast'
+  : p.tier === 'seasonal' ? `seasonal · ${p.runs} runs` : 'El Niño years');
+
+/// The El Niño line under every place: the strongest El Niño winters at this
+/// spot against the normal. It is the piece that is useful a month out.
+function ninoLine(clim, night) {
+  if (!clim) return '';
+  const n = clim.normal, e = clim.nino;
+  const diff = (a, b) => (a === b ? 'same' : `${a > b ? '+' : '−'}${Math.abs(a - b)}°`);
+  const bits = [night
+    ? `low ${e.lo}° (${diff(e.lo, n.lo)}), 1 night in 10 below ${e.cold}° vs ${n.cold}°`
+    : `${e.hi}°/${e.lo}° (${diff(e.hi, n.hi)} / ${diff(e.lo, n.lo)})`];
+  bits.push(`wet ${e.wet}% of days vs ${n.wet}%`);
+  if (e.snow || n.snow) bits.push(`snow ${e.snow}% vs ${n.snow}%`);
+  if (e.heavy >= 5 || n.heavy >= 5) bits.push(`heavy rain ${e.heavy}% vs ${n.heavy}%`);
+  return `<div class="wxn">El Niño years vs normal: ${bits.join(' · ')}${clim.near ? '' : ' (nearest week in the table)'}</div>`;
+}
+
+function passVerdict(c) {
+  if (!c) return '';
+  return c.dark && c.early ? 'in the dark and before the plows'
+    : c.dark ? 'in the dark' : c.early ? `before the plows clear it at ${esc(c.plowedBy)}` : 'in daylight, after the plows';
+}
+
+function wxItem(it) {
+  const night = it.kind === 'bed' ? it.night : null;
+  // A bed is about the night: the morning's low, on the morning's date.
+  const p = wx.picture(it.key, it.ll, night || it.date);
+  const tag = it.kind === 'bed' ? 'night' : it.kind === 'pass' ? 'pass' : it.kind === 'end' ? 'arrive' : '';
+  return `<div class="wxi${wxHot(p, !!night) ? ' hot' : ''}">
+    <div class="wxh"><span class="ct"><b>${esc(it.at || '')}</b></span><span class="cn">${esc(it.name)}</span>
+      ${tag ? `<span class="wxk">${tag}</span>` : ''}</div>
+    ${it.kind === 'pass' ? `<div class="wxv">Crossed ${passVerdict(it.cross)}.</div>` : ''}
+    <div class="wxl">${wxLine(p, !!night)}${p ? ` <em>${esc(tierName(p))}</em>` : ''}</div>
+    ${p ? ninoLine(p.clim, !!night) : ''}
+  </div>`;
+}
+
+function ensoBlock() {
+  const E = DATA.enso;
+  if (!E) return '';
+  const issued = new Date(E.issued + 'T00:00:00Z'), next = new Date(E.next + 'T00:00:00Z');
+  const late = Date.now() > next.valueOf() + 3 * 86400000;
+  return `<div class="dep wxenso">
+    <div class="deplab">El Niño · NOAA, ${esc(longDate(issued).replace(/^\w+ /, ''))}</div>
+    <div class="depval">${esc(E.status)}</div>
+    <div class="sbody">${esc(E.synopsis)}</div>
+    ${E.historic ? `<div class="sbody">${esc(E.historic)}</div>` : ''}
+    <div class="cmeta">${late
+      ? `A newer discussion was due ${esc(longDate(next).replace(/^\w+ /, ''))}. This is the older one until the app is updated.`
+      : `Next update ${esc(longDate(next).replace(/^\w+ /, ''))}.`}
+      <a href="${esc(E.url)}" target="_blank" rel="noopener">Source</a></div>
+  </div>`;
+}
+
+function wxFreshText(fr, offline, trip) {
+  const parts = [];
+  if (fr.forecast) parts.push(`forecasts checked ${ago(fr.forecast)}`);
+  if (fr.seasonal) parts.push(`seasonal checked ${ago(fr.seasonal)}`);
+  // Say when the real forecasts start, so a screen of seasonal spreads is not
+  // mistaken for something broken.
+  const first = trip.flatMap(L => (L.days || []).flatMap(d => d.items.map(i => i.date))).sort()[0];
+  if (!fr.forecast && first && wx.leadDays(first) >= 16)
+    parts.push(`forecasts start ${wx.leadDays(first) - 15} days from now`);
+  if (offline) parts.unshift('no signal, showing what was saved');
+  const s = parts.join(' · ') || 'Not checked yet.';
+  return esc(s.charAt(0).toUpperCase() + s.slice(1));
+}
+
+export function renderWeather() {
+  const trip = wxTrip();
+  const dated = trip.filter(L => !L.unset);
+  let h = '<div class="cal wx">' + ensoBlock();
+
+  if (!dated.length)
+    return h + `<div class="err">No departure dates set yet. Set them on Dates and every stop
+      gets the weather for the day you are there.</div>${wxExplain()}</div>`;
+
+  const lls = wxPlaces(trip).map(p => p.ll);
+  const fr = wx.freshness(lls);
+  const offline = typeof navigator !== 'undefined' && navigator.onLine === false;
+  h += `<div class="wxfresh">
+    <span>${wx.busy() ? 'Checking for new forecasts…' : wxFreshText(fr, offline, trip)}</span>
+    <button data-wxrefresh${wx.busy() || offline ? ' disabled' : ''}>Refresh</button>
+  </div>`;
+
+  for (const L of trip) {
+    if (L.unset) {
+      h += `<div class="calmon">${esc(L.leg.name)}</div>
+        <div class="cnote">No departure date for this leg yet. Set it on Dates.</div>`;
+      continue;
+    }
+    h += `<div class="calmon">${esc(L.leg.name)}</div>`;
+    for (const day of L.days) {
+      const d = day.d;
+      h += `<div class="wxday">
+        <div class="ctag">${esc(longDate(d.date))} · day ${day.di + 1} of ${day.n}</div>
+        <div class="cwhere">${esc(d.from.name)} → ${esc(d.overnight.name)}</div>
+        ${day.items.map(wxItem).join('')}
+      </div>`;
+    }
+  }
+  return h + wxExplain() + '</div>';
+}
+
+function wxExplain() {
+  const A = wx.analogs();
+  return `<div class="dep wxhow">
+    <div class="deplab">How to read this</div>
+    <div class="sbody"><b>Forecast</b> inside 16 days: the day itself. Checked every few hours.</div>
+    <div class="sbody"><b>Seasonal</b> beyond that: 51 runs of ECMWF's seasonal model. Nobody
+      knows the day this far out, so it shows the spread the runs give and how many of them put
+      rain or snow down. Read it as a tilt, not a forecast. Rechecked daily.</div>
+    <div class="sbody"><b>El Niño years</b> under every place: what the ${A.length || 'strongest'}
+      strongest El Niño winters${A.length ? ` (${esc(A.join(', '))})` : ''} were like at that spot
+      around that date, against the 1991–2020 normal. El Niño pushes the storm track south, over
+      the roads this trip uses, and this is what it did there before.</div>
+    <div class="sbody">Snow means at least 0.4 in in a day, wet at least 0.04 in, heavy rain half an
+      inch. A bed shows the next morning's low, because that is the night you are parked in.</div>
+    <div class="sbody"><b>Cold nights run colder than shown.</b> The history and the seasonal model
+      both work on grid cells miles wide, and they miss how cold a clear, still night gets on the
+      high desert. Gallup's weather-station normal low is about 13°; the model's is 21°. At the high
+      beds, plan for several degrees below the number here. The El Niño difference is still good,
+      because the same bias sits on both sides of it.</div>
+  </div>`;
+}
+
+/// One line for a calendar day: the worst of what that day's places show, and
+/// a tap through to the Weather tab.
+function wxBand(d, rt) {
+  const D = realDays(rt);
+  const term = rt.waypoints[rt.waypoints.length - 1];
+  const isLast = d === D[D.length - 1];
+  const pts = [];
+  for (const r of d.rows) if (r.stop && r.date)
+    pts.push({ name: r.stop.name, p: wx.picture(r.stop.id, r.stop.ll, r.kind === 'bed' ? r.wakeDate : r.date), night: r.kind === 'bed' });
+  for (const c of d.risks || []) if (c.ll && c.date) pts.push({ name: c.name, p: wx.picture('w:' + c.id, c.ll, c.date) });
+  if (isLast && D.it.endsDate) pts.push({ name: term.name, p: wx.picture('end:' + term.name, term.ll, D.it.endsDate) });
+  const have = pts.filter(x => x.p);
+  if (!have.length) return '';
+  // Highs across the places you are at by day; the low only where you sleep.
+  // "Low 17° at Desert View" was a low at a place you pass at five in the
+  // afternoon.
+  const day = have.filter(x => !x.night);
+  const his = (day.length ? day : have).map(x => x.p.hi);
+  const bed = have.find(x => x.night);
+  const snow = have.reduce((a, x) => ((x.p.snow || 0) > (a.p.snow || 0) ? x : a));
+  const wet = have.reduce((a, x) => ((x.p.heavy || 0) > (a.p.heavy || 0) ? x : a));
+  const tiers = [...new Set(have.map(x => x.p.tier))];
+  const lo = Math.min(...his), hi = Math.max(...his);
+  const bits = [lo === hi ? `high ${deg(hi)}°` : `highs ${deg(lo)}°–${deg(hi)}°`];
+  if (bed) bits.push(`night ${deg(bed.p.lo)}° at ${esc(bed.name)}`);
+  if ((snow.p.snow || 0) >= 15) bits.push(snow.p.tier === 'forecast'
+    ? `snow at ${esc(snow.name)}` : `snow in ${snow.p.snow}% at ${esc(snow.name)}`);
+  if ((wet.p.heavy || 0) >= 10) bits.push(wet.p.tier === 'forecast'
+    ? `heavy rain at ${esc(wet.name)}` : `heavy rain ${wet.p.heavy}% at ${esc(wet.name)}`);
+  const hot = have.some(x => wxHot(x.p, x.night));
+  return `<div class="cwx${hot ? ' hot' : ''}" data-tab="wx">Weather — ${bits.join(' · ')}
+    <em>${tiers.map(t => (t === 'climate' ? 'El Niño years' : t)).join(' + ')}</em></div>`;
+}
+
 // ============================================================== live weather
-/// Shows what we have now and upgrades in place when the network answers.
-function tempLine(nrm, live) {
-  if (live && live.hi != null)
-    return `<div class="temps"><b>${live.hi}°</b><s>${live.lo}°</s>
-      <em>forecast for ${esc(live.date)}${live.words ? " · " + esc(live.words) : ""}</em></div>`;
+/// The place sheet's temperature line, from the same picture the Weather tab
+/// uses, so the two can never disagree.
+function tempLine(nrm, p) {
+  if (p)
+    return `<div class="temps"><b>${p.hi}°</b><s>${p.lo}°</s>
+      <em>${esc(p.tier === 'forecast' ? `forecast for ${p.date}` : p.tier === 'seasonal'
+        ? `seasonal median for ${p.date}` : `El Niño years, around ${p.date}`)}</em></div>
+      ${p.clim ? ninoLine(p.clim, false) : ''}`;
   if (nrm)
     return `<div class="temps"><b>${nrm.hi ?? nrm[0]}°</b><s>${nrm.lo ?? nrm[1]}°</s>
       <em>${nrm.real ? `late-December average, last ${nrm.years} years` : "typical high / low"}</em></div>`;
   return `<div class="srow">No temperatures for this one yet.</div>`;
 }
 
-/// Called after the sheet is on screen. Replaces the estimate with real data.
+/// Called after the sheet is on screen. Replaces the estimate with the best
+/// picture there is for the day you are there.
 export async function hydrateWeather(id) {
   const st = allStops().find(x => x.id === id);
   const host = document.getElementById("wx-" + id);
   if (!st || !host) return;
-
   const day = plannedDate(id);
-  const live = await wx.forecast(st.ll, day);
-  if (live) {
-    live.words = wx.describe(live.code);
-    host.innerHTML = tempLine(null, live);
-    return;
-  }
-  const real = await wx.normals(st.ll);
-  if (real) host.innerHTML = tempLine(real, null);
+  if (!day) return;
+  const p = wx.picture(st.id, st.ll, day);
+  if (p) host.innerHTML = tempLine(null, { ...p, date: day });
 }
 
 /// Which calendar day this stop falls on, given a departure date.
 export function plannedDate(id) {
-  // The day carries its own date now. The old version counted days across legs
-  // and added that many to the departure, which silently assumed every leg
-  // starts the morning the previous one ends.
+  // The row carries its own local date now, so an arrival after midnight is
+  // the next day's weather rather than the day row's.
   for (const r of selected()) {
     if (!depOf(r).date) continue;   // that leg has no date yet
-    for (const d of realDays(r))
-      if (d.stops.some(s => s.id === id)) return d.date.toISOString().slice(0, 10);
+    for (const d of realDays(r)) {
+      const row = d.rows.find(x => x.stop && x.stop.id === id);
+      if (row) return row.date || d.date.toISOString().slice(0, 10);
+    }
   }
   return null;
 }
