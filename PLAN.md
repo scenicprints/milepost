@@ -429,6 +429,20 @@ Android Auto is no.
 
 ## Session log
 
+**Session 75, later** — Three addresses added to the plans. 1.61.1.
+
+Kevin asked for the Mooresville pickup (174 Hathaway Ln), the Statesville
+Airbnb (1316 Forest Park Dr) and the Houston house (5401 Chimney Rock Rd,
+Apt 180) to be in Milepost. Asked whether they should stay out of the public
+repo, he said: "Who said those are private addresses?" So they are in
+`data/stops.json` **by his decision**; do not strip them. Each is tagged
+`address`, with no detour and no dwell, so it shows on Route, Map and the Dates
+timetable without moving the schedule. Phones pick them up on their own: a
+plan route that was already seeded still runs new ids through
+`suggestStops`, which takes every stop on a plan. The same three are saved in
+Kevin's Google Maps list "Milepost trip" (48 places), with an offline-maps
+checklist as a private artifact.
+
 **Session 75** — A New look, Dates as a timetable, who drives, storm
 warnings. 1.61.0.
 

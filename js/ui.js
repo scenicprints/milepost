@@ -280,7 +280,7 @@ export function timetable(d, isLast) {
         note: `Sleep${r.sleep ? ' ' + fmtHours(r.sleep.minutes) : ''} · leave ${r.wakeDate !== r.date ? 'next morning' : 'the same day'}` });
       continue;
     }
-    const bits = [r.dwell ? fmtHours(r.dwell) + ' there' : 'drive through'];
+    const bits = [r.dwell ? fmtHours(r.dwell) + ' there' : (r.stop.tags || []).includes('address') ? 'address' : 'drive through'];
     if (r.hours && r.hours.closeAt && !r.hours.shut && !/^(23:[3-5]\d|24:00)$/.test(r.hours.closeAt)) bits.push('shuts ' + r.hours.closeAt);
     const bad = (r.flags || []).find(f => f.level === 'bad');
     out.push({ kind: 'stop', id: r.stop.id, name: r.stop.name, arrive: r.arriveAt,

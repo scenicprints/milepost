@@ -3227,6 +3227,72 @@
       "leaveBy": {
         "leg2-newjersey-plan": "07:00"
       }
+    },
+    {
+      "id": "pickup-mooresville",
+      "name": "Pick up Mom, 174 Hathaway Ln",
+      "town": "Mooresville",
+      "state": "NC",
+      "ll": [
+        35.587585,
+        -80.846154
+      ],
+      "detour": 0,
+      "dwell": 0,
+      "cost": "Free",
+      "tags": [
+        "address"
+      ],
+      "why": "174 Hathaway Ln, Mooresville, NC 28117. Where Kevin picks up his mother-in-law.",
+      "winter": "Nothing to check.",
+      "routes": [
+        "leg1-plan",
+        "leg2-newjersey-plan"
+      ]
+    },
+    {
+      "id": "airbnb-statesville",
+      "name": "Airbnb, 1316 Forest Park Dr",
+      "town": "Statesville",
+      "state": "NC",
+      "ll": [
+        35.7949848,
+        -80.8672786
+      ],
+      "detour": 0,
+      "dwell": 0,
+      "cost": "Booked",
+      "tags": [
+        "address"
+      ],
+      "why": "1316 Forest Park Dr, Statesville, NC 28677. The Airbnb in North Carolina between the drive out and the drive to Houston.",
+      "winter": "Nothing to check.",
+      "routes": [
+        "leg1-plan",
+        "leg2-newjersey-plan"
+      ]
+    },
+    {
+      "id": "house-houston",
+      "name": "Houston house, 5401 Chimney Rock Rd, Apt 180",
+      "town": "Houston",
+      "state": "TX",
+      "ll": [
+        29.722551,
+        -95.4761363
+      ],
+      "detour": 0,
+      "dwell": 0,
+      "cost": "Free",
+      "tags": [
+        "address"
+      ],
+      "why": "5401 Chimney Rock Rd, Apt 180, Houston, TX 77081. The house in Houston, end of leg 2 and start of the drive home.",
+      "winter": "Nothing to check.",
+      "routes": [
+        "leg2-newjersey-plan",
+        "leg3-plan"
+      ]
     }
   ]
 }
