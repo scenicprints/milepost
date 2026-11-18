@@ -5,7 +5,7 @@
 // trips, and the leg selector at the top drives all of it.
 
 import { store } from './store.js';
-import { buildRoute, stopCost, fmtHours, fmtMiles, project, driveMinutes } from './route.js';
+import { buildRoute, stopCost, fmtHours, fmtMiles, project, driveMinutes, pointAtMile } from './route.js';
 import { suggestStops } from './plan.js';
 import { build } from './itinerary.js';
 import * as mapview from './map.js';
@@ -361,10 +361,14 @@ export function renderRoute(legIx) {
 
 // ============================================================== map
 // Pan/zoom lives in a CSS transform on .mapstage — see js/map.js for why.
-let tf = null;                       // { x, y, s } or null for "fit on mount"
-export const getTf = () => tf;
-export const setTf = t => { tf = t; };
-export const resetTf = () => { tf = null; };
+// Two maps share the stage code: the Map tab and the Weather tab. Each keeps
+// its own view, so zooming into a day's weather never moves the route map.
+const tfs = { map: null, wx: null };
+let mode = 'map';
+export const setMapMode = m => { mode = m === 'wx' ? 'wx' : 'map'; };
+export const getTf = () => tfs[mode];
+export const setTf = t => { tfs[mode] = t; };
+export const resetTf = () => { tfs[mode] = null; };
 
 // kept for the old call sites
 export const resetView = resetTf;
@@ -910,7 +914,7 @@ function wxTrip() {
         const night = r.kind === 'bed' ? r.wakeDate : (r.sleep && r.sleep.wakeDate) || null;
         items.push({
           kind: r.kind === 'bed' ? 'bed' : 'stop', abs: r.arrive,
-          key: r.stop.id, ll: r.stop.ll, name: r.stop.name, at: r.arriveAt,
+          key: r.stop.id, ll: r.stop.ll, name: r.stop.name, town: r.stop.town, at: r.arriveAt,
           date: r.date, night,
         });
       }
@@ -949,7 +953,12 @@ function wxPlaces(trip = wxTrip()) {
 export function refreshWeather(opts) {
   if (typeof navigator !== 'undefined' && navigator.onLine === false)
     return Promise.resolve({ changed: 0, failed: 0 });
-  return wx.refresh(wxPlaces(), opts);
+  const trip = wxTrip();
+  // The zones' grid only needs the tiers the trip's dates can use.
+  const dates = trip.flatMap(L => (L.days || []).map(d => d.d.date.toISOString().slice(0, 10)));
+  const need = { forecast: dates.some(d => wx.needFor(d).forecast), seasonal: dates.some(d => wx.needFor(d).seasonal) };
+  return wx.refresh(wxPlaces(trip), opts).then(a =>
+    wx.refreshGrid(wxGrid(trip), need, opts).then(b => ({ changed: a.changed + b.changed, failed: a.failed + b.failed })));
 }
 
 const deg = n => (n < 0 ? '−' + Math.abs(n) : String(n));
@@ -976,40 +985,6 @@ function wxHot(p, night) {
   return (p.snow || 0) >= 25 || (p.heavy || 0) >= 25 || (night && p.lo <= 15);
 }
 
-/// One line: the numbers for the best tier available, in plain words.
-function wxLine(p, night) {
-  if (!p) return '<span class="wxnone">No weather for this place yet.</span>';
-  const temps = night ? `low <b>${deg(p.lo)}°</b>` : `<b>${deg(p.hi)}°</b> / ${deg(p.lo)}°`;
-  if (p.tier === 'forecast') {
-    const bits = [temps];
-    if (p.words) bits.push(esc(p.words));
-    if ((p.snowIn || 0) >= 0.1) bits.push(`snow ${p.snowIn.toFixed(1)} in`);
-    else if ((p.rainIn || 0) >= 0.1) bits.push(`${p.rainIn.toFixed(1)} in of rain`);
-    if (p.wet != null) bits.push(`${p.wet}% chance of rain or snow`);
-    if ((p.gust || 0) >= 30) bits.push(`gusts ${p.gust} mph`);
-    return bits.join(' · ');
-  }
-  if (p.tier === 'seasonal') {
-    // "−1–27°" reads as a typo, so a range that crosses zero says "to".
-    const range = (r, mid, b) => {
-      const s = !r || r[0] === r[1] ? `${deg(mid)}°`
-        : `${deg(r[0])}${r[0] < 0 ? ' to ' : '–'}${deg(r[1])}°`;
-      return b ? `<b>${s}</b>` : s;
-    };
-    // A night is about the low. The next afternoon's high is not the night.
-    const bits = [night ? `low ${range(p.loR, p.lo, true)}` : `${range(p.hiR, p.hi, true)} / ${range(p.loR, p.lo)}`];
-    bits.push(`wet in ${pctWords(p.wet)} runs`);
-    if (p.snow) bits.push(`snow in ${pctWords(p.snow)} runs`);
-    if (p.heavy >= 8) bits.push(`heavy rain in ${pctWords(p.heavy)} runs`);
-    return bits.join(' · ');
-  }
-  // climate: there is no live data, so this IS the El Niño composite
-  const bits = [temps, `wet ${p.wet}% of days`];
-  if (p.snow) bits.push(`snow ${p.snow}%`);
-  if (p.heavy >= 5) bits.push(`heavy rain ${p.heavy}%`);
-  return bits.join(' · ');
-}
-
 const tierName = p => (!p ? '' : p.tier === 'forecast' ? 'forecast'
   : p.tier === 'seasonal' ? `seasonal · ${p.runs} runs` : 'El Niño years');
 
@@ -1032,20 +1007,6 @@ function passVerdict(c) {
   if (!c) return '';
   return c.dark && c.early ? 'in the dark and before the plows'
     : c.dark ? 'in the dark' : c.early ? `before the plows clear it at ${esc(c.plowedBy)}` : 'in daylight, after the plows';
-}
-
-function wxItem(it) {
-  const night = it.kind === 'bed' ? it.night : null;
-  // A bed is about the night: the morning's low, on the morning's date.
-  const p = wx.picture(it.key, it.ll, night || it.date);
-  const tag = it.kind === 'bed' ? 'night' : it.kind === 'pass' ? 'pass' : it.kind === 'end' ? 'arrive' : '';
-  return `<div class="wxi${wxHot(p, !!night) ? ' hot' : ''}">
-    <div class="wxh"><span class="ct"><b>${esc(it.at || '')}</b></span><span class="cn">${esc(it.name)}</span>
-      ${tag ? `<span class="wxk">${tag}</span>` : ''}</div>
-    ${it.kind === 'pass' ? `<div class="wxv">Crossed ${passVerdict(it.cross)}.</div>` : ''}
-    <div class="wxl">${wxLine(p, !!night)}${p ? ` <em>${esc(tierName(p))}</em>` : ''}</div>
-    ${p ? ninoLine(p.clim, !!night) : ''}
-  </div>`;
 }
 
 function ensoBlock() {
@@ -1079,40 +1040,521 @@ function wxFreshText(fr, offline, trip) {
   return esc(s.charAt(0).toUpperCase() + s.slice(1));
 }
 
-export function renderWeather() {
-  const trip = wxTrip();
-  const dated = trip.filter(L => !L.unset);
-  let h = '<div class="cal wx">' + ensoBlock();
+// ============================================================== weather map
+//
+// Kevin asked for a map: see the trip, and the weather at each spot on the
+// date he is there. So the Weather tab is a map. Every place you are at on a
+// known date is a dot, coloured by its weather that day: orange where it
+// changes what you do (snow, ice, heavy rain, a hard frost in bed), blue
+// where it freezes, green where it is fine. A row of days along the bottom
+// zooms to one day's stretch of road. Tap a dot for the card.
+//
+// Stops in one town on one day are one dot: the two Houston restaurants are
+// the same weather. Beds, passes and the end of a leg each keep their own.
 
-  if (!dated.length)
-    return h + `<div class="err">No departure dates set yet. Set them on Dates and every stop
-      gets the weather for the day you are there.</div>${wxExplain()}</div>`;
+let wxDay = 'all';            // 'all' or `${legIx}:${dayIx}`
+let wxSpot = null;            // the tapped dot's id
+let wxInfo = false;           // the "how to read" panel
+let wxCache = null;           // { trip, spots } from the last render
+export const wxDayNow = () => wxDay;
+export const setWxDay = v => { wxDay = v || 'all'; wxSpot = null; };
+export const setWxSpot = v => { wxSpot = !v || v === wxSpot ? null : v; };
+export const wxInfoOpen = () => wxInfo;
+export const setWxInfo = v => { wxInfo = !!v; };
 
-  const lls = wxPlaces(trip).map(p => p.ll);
-  const fr = wx.freshness(lls);
-  const offline = typeof navigator !== 'undefined' && navigator.onLine === false;
-  h += `<div class="wxfresh">
-    <span>${wx.busy() ? 'Checking for new forecasts…' : wxFreshText(fr, offline, trip)}</span>
-    <button data-wxrefresh${wx.busy() || offline ? ' disabled' : ''}>Refresh</button>
-  </div>`;
+const RANK = { bed: 2, pass: 2, end: 3, stop: 4 };
 
-  for (const L of trip) {
-    if (L.unset) {
-      h += `<div class="calmon">${esc(L.leg.name)}</div>
-        <div class="cnote">No departure date for this leg yet. Set it on Dates.</div>`;
-      continue;
+function wxSpotsOf(trip) {
+  const out = [];
+  for (const L of trip) for (const day of L.days || []) {
+    const groups = [];
+    const towns = new Map();
+    for (const it of day.items) {
+      if (it.kind === 'stop') {
+        const town = it.town || it.name;
+        let g = towns.get(town);
+        if (!g) {
+          g = { id: `${L.li}:${day.di}:t:${town}`, kind: 'stop', name: town, key: it.key, ll: it.ll,
+                date: it.date, night: false, items: [] };
+          towns.set(town, g); groups.push(g);
+        }
+        g.items.push(it);
+      } else {
+        const night = it.kind === 'bed';
+        groups.push({ id: `${L.li}:${day.di}:${it.kind}:${it.key}:${groups.length}`, kind: it.kind,
+                      name: it.name, key: it.key, ll: it.ll, date: (night && it.night) || it.date,
+                      night, items: [it], cross: it.cross || null });
+      }
     }
-    h += `<div class="calmon">${esc(L.leg.name)}</div>`;
-    for (const day of L.days) {
-      const d = day.d;
-      h += `<div class="wxday">
-        <div class="ctag">${esc(longDate(d.date))} · day ${day.di + 1} of ${day.n}</div>
-        <div class="cwhere">${esc(d.from.name)} → ${esc(d.overnight.name)}</div>
-        ${day.items.map(wxItem).join('')}
-      </div>`;
+    for (const g of groups) {
+      g.li = L.li; g.di = day.di; g.day = `${L.li}:${day.di}`;
+      g.dayDate = day.d.date; g.n = day.n; g.leg = L.leg;
+      g.p = wx.picture(g.key, g.ll, g.date);
+      g.tone = wxTone(g.p, g);
+      out.push(g);
     }
   }
-  return h + wxExplain() + '</div>';
+  return out;
+}
+
+/// hot: changes what you do. cold: below freezing where it matters (the
+/// night you sleep through, the ice on a pass, a day that never thaws).
+function wxTone(p, g) {
+  if (!p) return 'none';
+  if (wxHot(p, g.night)) return 'hot';
+  if (g.night || g.kind === 'pass' ? p.lo <= 32 : p.hi <= 34) return 'cold';
+  return 'fine';
+}
+
+/// One glyph for the sky. The forecast says what it is; further out it is
+/// what most of the runs, or most El Niño years, did.
+function wxGlyph(p) {
+  if (!p) return '';
+  const T = '\uFE0E';                       // text, not emoji: it takes the colour
+  if (p.tier === 'forecast') {
+    const w = p.words || '';
+    if (/snow|freezing/.test(w) || (p.snowIn || 0) >= 0.1) return '❄' + T;
+    if (/thunder/.test(w)) return '⚡' + T;
+    if (/rain|drizzle|shower/.test(w)) return '☂' + T;
+    if (/fog|overcast/.test(w)) return '☁' + T;
+    return '☀' + T;
+  }
+  if ((p.snow || 0) >= 25) return '❄' + T;
+  if ((p.heavy || 0) >= 25 || (p.wet || 0) >= 50) return '☂' + T;
+  if ((p.wet || 0) >= 30) return '☁' + T;
+  return '☀' + T;
+}
+
+
+/// The stretch of road one day drives.
+function daySeg(rt, a, b) {
+  const pts = [pointAtMile(a, rt.waypoints, rt.cum)];
+  rt.waypoints.forEach((w, i) => { if (rt.cum[i] > a && rt.cum[i] < b) pts.push(w.ll); });
+  pts.push(pointAtMile(b, rt.waypoints, rt.cum));
+  return pts;
+}
+
+function wxData() {
+  if (!wxCache) { const trip = wxTrip(); wxCache = { trip, spots: wxSpotsOf(trip) }; }
+  return wxCache;
+}
+
+// ------------------------------------------------------------------ zones
+//
+// Kevin: "I imagined a color coded zone for snow and rain. Dots don't do
+// much." So the map shades where snow and rain are, like a weather map, from
+// a 1-degree grid of points near the dated roads (weather.js fetches them).
+//
+//   a day      every grid point on that day's date: the weather map for the
+//              day, with that day's road drawn over it.
+//   All        each grid point on the date the trip goes past it, so the
+//              road becomes a band coloured by the day you are actually
+//              there. Where two legs pass the same ground (I-40 out and back)
+//              the band shows the worse of the two; pick a day to split them.
+//
+// Drawn as one smooth image under the roads, the same way the dark-sky layer
+// is: a grid of cells reads as squares, a raster blends them into zones.
+const REACH = 110;                 // miles either side of the road
+const isoOf = d => d.toISOString().slice(0, 10);
+const hav = (a, b) => {
+  const r = Math.PI / 180, dl = (b[0] - a[0]) * r, dn = (b[1] - a[1]) * r;
+  const h = Math.sin(dl / 2) ** 2 + Math.cos(a[0] * r) * Math.cos(b[0] * r) * Math.sin(dn / 2) ** 2;
+  return 3959 * 2 * Math.asin(Math.sqrt(h));
+};
+const tripSig = trip => trip.map(L => (L.unset ? '-' : L.rt.id + '@' + L.days.map(d => isoOf(d.d.date)).join(','))).join(';');
+
+/// The grid: whole degrees within REACH of any dated road.
+let gridMemo = { key: null, cells: [] };
+function wxGrid(trip) {
+  const dated = trip.filter(L => !L.unset);
+  const key = dated.map(L => L.rt.id).join(',');
+  if (gridMemo.key === key) return gridMemo.cells;
+  const pts = [];
+  for (const L of dated) {
+    const w = L.rt.waypoints;
+    for (let i = 1; i < w.length; i++) {
+      const a = w[i - 1].ll, b = w[i].ll, n = Math.max(1, Math.ceil(hav(a, b) / 15));
+      for (let k = 0; k < n; k++) pts.push([a[0] + (b[0] - a[0]) * k / n, a[1] + (b[1] - a[1]) * k / n]);
+    }
+    pts.push(w[w.length - 1].ll);
+  }
+  const cells = [];
+  if (pts.length) {
+    const la0 = Math.floor(Math.min(...pts.map(p => p[0]))) - 2, la1 = Math.ceil(Math.max(...pts.map(p => p[0]))) + 2;
+    const lo0 = Math.floor(Math.min(...pts.map(p => p[1]))) - 3, lo1 = Math.ceil(Math.max(...pts.map(p => p[1]))) + 3;
+    for (let la = la0; la <= la1; la++) for (let lo = lo0; lo <= lo1; lo++)
+      if (pts.some(p => Math.abs(p[0] - la) < 2 && Math.abs(p[1] - lo) < 2.6 && hav(p, [la, lo]) < REACH))
+        cells.push([la, lo]);
+  }
+  gridMemo = { key, cells };
+  return cells;
+}
+
+/// For each grid point, every dated leg that passes within REACH: which day
+/// it is passed on and how far off the road it sits.
+let linkMemo = { key: null, links: null };
+function wxLinks(trip) {
+  const key = tripSig(trip);
+  if (linkMemo.key === key) return linkMemo.links;
+  const cells = wxGrid(trip);
+  const links = cells.map(ll => {
+    const out = [];
+    for (const L of trip) {
+      if (L.unset) continue;
+      const pr = project(ll, L.rt.waypoints, L.rt.cum);
+      if (pr.off > REACH) continue;
+      const day = L.days.find(d => pr.mile <= d.d.endMile + 0.5) || L.days[L.days.length - 1];
+      out.push({ li: L.li, di: day.di, date: isoOf(day.d.date), off: pr.off });
+    }
+    return out;
+  });
+  linkMemo = { key, links };
+  return links;
+}
+
+/// Snow and rain strength at each grid point for the current view.
+function zoneValues(trip) {
+  const cells = wxGrid(trip);
+  if (wxDay !== 'all') {
+    const [li, di] = wxDay.split(':').map(Number);
+    const day = trip[li] && trip[li].days && trip[li].days[di];
+    if (!day) return cells.map(() => null);
+    const date = isoOf(day.d.date);
+    return cells.map(ll => wx.zoneAt(ll, date));
+  }
+  const links = wxLinks(trip);
+  return cells.map((ll, i) => {
+    let best = null;
+    for (const k of links[i]) {
+      const z = wx.zoneAt(ll, k.date);
+      if (!z) continue;
+      if (!best) { best = z; continue; }
+      const tier = Math.max(z.snow, z.rain) > Math.max(best.snow, best.rain) ? z.tier : best.tier;
+      best = { tier, snow: Math.max(best.snow, z.snow), rain: Math.max(best.rain, z.rain) };
+    }
+    return best;
+  });
+}
+
+/// The worst of each day's road, for the dot on its button: snow or rain and
+/// how bad (1 to 3), clear, or none when there is no weather for it yet.
+function dayWorst(trip) {
+  const cells = wxGrid(trip), links = wxLinks(trip);
+  const out = new Map();
+  cells.forEach((ll, i) => {
+    for (const k of links[i]) {
+      if (k.off > 50) continue;
+      const z = wx.zoneAt(ll, k.date);
+      if (!z) continue;
+      const id = `${k.li}:${k.di}`, cur = out.get(id) || { snow: 0, rain: 0 };
+      out.set(id, { snow: Math.max(cur.snow, z.snow), rain: Math.max(cur.rain, z.rain) });
+    }
+  });
+  return id => {
+    const v = out.get(id);
+    if (!v) return 'none';
+    const sn = wx.stepOf(v.snow), rn = wx.stepOf(v.rain);
+    return sn && sn >= rn ? `snow l${sn}` : rn ? `rain l${rn}` : 'clear';
+  };
+}
+
+const rgbOf = name => {
+  const h = getComputedStyle(document.documentElement).getPropertyValue(name).trim().replace('#', '');
+  return h.length === 6 ? [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16)) : [128, 128, 128];
+};
+
+let zoneMemo = { key: null, layer: null };
+function zoneLayer(trip) {
+  const cells = wxGrid(trip);
+  if (!cells.length || typeof document === 'undefined') return null;
+  const fr = wx.gridFreshness(cells);
+  const SN = rgbOf('--wsnow'), RN = rgbOf('--wrain');
+  const key = [wxDay, tripSig(trip), fr.forecast, fr.seasonal, SN, RN].join('|');
+  if (zoneMemo.key === key) return zoneMemo.layer;
+
+  const vals = zoneValues(trip);
+  const at = new Map();
+  cells.forEach((ll, i) => { if (vals[i]) at.set(ll[0] + ',' + ll[1], vals[i]); });
+  if (!at.size) { zoneMemo = { key, layer: null }; return null; }
+
+  // A raster in plain latitude and longitude, ten pixels a degree. The map is
+  // drawn in the same plain projection, so it lays straight on. Each pixel is
+  // a Gaussian blend of the grid points around it: a straight bilinear blend
+  // of a one-degree grid shows the grid, as squares and diamonds.
+  const PX = 10, SIG = 0.62, R = 2;
+  const STEP = [0.3, 0.25, 0.27];      // opacity each step adds: light, moderate, heavy
+  const FULL = (() => {                 // the weight a pixel gets with every neighbour present
+    let t = 0;
+    for (let i = -R; i <= R; i++) for (let j = -R; j <= R; j++) t += Math.exp(-(i * i + j * j) / (2 * SIG * SIG));
+    return t * 0.55;
+  })();
+  const la0 = Math.min(...cells.map(c => c[0])) - 1, la1 = Math.max(...cells.map(c => c[0])) + 1;
+  const lo0 = Math.min(...cells.map(c => c[1])) - 1, lo1 = Math.max(...cells.map(c => c[1])) + 1;
+  const W = (lo1 - lo0) * PX, H = (la1 - la0) * PX;
+  const cv = document.createElement('canvas');
+  cv.width = W; cv.height = H;
+  const ctx = cv.getContext('2d');
+  const img = ctx.createImageData(W, H);
+  // Where the shading is seasonal odds and not a forecast, the map stripes it.
+  // This image marks where; map.js cuts the stripes through it.
+  const hm = ctx.createImageData(W, H);
+  let anySea = false;
+  for (let y = 0; y < H; y++) {
+    const lat = la1 - (y + 0.5) / PX, a = Math.round(lat);
+    for (let x = 0; x < W; x++) {
+      const lon = lo0 + (x + 0.5) / PX, b = Math.round(lon);
+      let wsum = 0, sn = 0, rn = 0, sea = 0;
+      for (let i = -R; i <= R; i++) for (let j = -R; j <= R; j++) {
+        const v = at.get((a + i) + ',' + (b + j));
+        if (!v) continue;
+        const dy = lat - (a + i), dx = lon - (b + j);
+        const w = Math.exp(-(dx * dx + dy * dy) / (2 * SIG * SIG));
+        wsum += w; sn += w * v.snow; rn += w * v.rain;
+        if (v.tier === 'seasonal') sea += w;
+      }
+      if (wsum < 0.02) continue;
+      const s = sn / wsum, r = rn / wsum;
+      const ks = wx.stepOf(s), kr = wx.stepOf(r);
+      if (!ks && !kr) continue;
+      // The worse of the two wins the pixel; snow on a tie, as it is the one
+      // that closes roads.
+      const snow = ks && ks >= kr, v = snow ? s : r, C = snow ? SN : RN;
+      const o = (y * W + x) * 4;
+      img.data[o] = C[0]; img.data[o + 1] = C[1]; img.data[o + 2] = C[2];
+      // Steps, not a ramp: each band a flat shade, with just enough softness
+      // at its edge not to look pixelled. And it fades at the edge of the
+      // band, where the grid runs out.
+      let al = 0;
+      for (let t = 0; t < 3; t++) al += STEP[t] * Math.max(0, Math.min(1, 0.5 + (v - (t + 0.5)) / 0.16));
+      const edge = Math.min(1, wsum / FULL);
+      img.data[o + 3] = 255 * al * edge;
+      if (sea / wsum > 0.5) {
+        hm.data[o] = hm.data[o + 1] = hm.data[o + 2] = 255;
+        hm.data[o + 3] = 255 * edge * Math.min(1, al / STEP[0]);
+        anySea = true;
+      }
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  let hatch = null;
+  if (anySea) {
+    const hv = document.createElement('canvas');
+    hv.width = W; hv.height = H;
+    hv.getContext('2d').putImageData(hm, 0, 0);
+    hatch = hv.toDataURL('image/png');
+  }
+  const layer = { image: cv.toDataURL('image/png'), hatch, bounds: [la0, la1, lo0, lo1] };
+  zoneMemo = { key, layer };
+  return layer;
+}
+
+export function paintWx(scale, view) {
+  const svg = document.getElementById('msvg');
+  if (!svg) return;
+  const { trip, spots } = wxData();
+  const roads = DATA.route.legs.map((l, li) => ({
+    ll: legRoute(li).waypoints.map(w => w.ll), on: !!(trip[li] && !trip[li].unset) }));
+  const segs = [];
+  if (wxDay !== 'all') {
+    const [li, di] = wxDay.split(':').map(Number);
+    const L = trip[li], day = L && L.days && L.days[di];
+    if (day) segs.push(daySeg(L.rt, day.d.startMile, day.d.endMile));
+  }
+  svg.innerHTML = mapview.paintWeather(DATA.usa, roads, {
+    scale, view, segs, zones: zoneLayer(trip),
+    spots: spots.map(s => ({
+      id: s.id, ll: s.ll, kind: s.kind, name: s.name, named: s.kind !== 'stop',
+      dim: wxDay !== 'all' && s.day !== wxDay, sel: s.id === wxSpot,
+      rank: s.id === wxSpot ? 0 : RANK[s.kind] || 4,
+    })),
+  });
+}
+
+/// Where FIT goes: the chosen day, or every dated leg, or the whole trip.
+export function wxBounds() {
+  const { trip, spots } = wxData();
+  let lls = [];
+  if (wxDay !== 'all') {
+    const [li, di] = wxDay.split(':').map(Number);
+    const L = trip[li], day = L && L.days && L.days[di];
+    if (day) lls = daySeg(L.rt, day.d.startMile, day.d.endMile)
+      .concat(spots.filter(s => s.day === wxDay).map(s => s.ll));
+  }
+  if (!lls.length) lls = spots.map(s => s.ll);
+  if (!lls.length) lls = selected().flatMap(r => r.waypoints.map(w => w.ll));
+  const q = lls.map(mapview.xy);
+  const xs = q.map(p => p[0]), ys = q.map(p => p[1]);
+  let x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  // Room for the labels on the right and the card at the foot.
+  const minW = 70, minH = 50;
+  if (x1 - x0 < minW) { const c = (x0 + x1) / 2; x0 = c - minW / 2; x1 = c + minW / 2; }
+  if (y1 - y0 < minH) { const c = (y0 + y1) / 2; y0 = c - minH / 2; y1 = c + minH / 2; }
+  const w = x1 - x0, h = y1 - y0;
+  return { x: x0 - w * 0.06, y: y0 - h * 0.15, w: w * 1.42, h: h * 1.5 };
+}
+
+/// What the numbers mean for the day, in a sentence.
+function wxPlain(p, night) {
+  if (!p) return 'No weather for this place yet. It fills in once the phone has a signal.';
+  const bits = [];
+  if (p.tier === 'forecast') {
+    if (p.words) bits.push(p.words.charAt(0).toUpperCase() + p.words.slice(1)
+      + ((p.snowIn || 0) >= 0.1 ? `, about ${p.snowIn.toFixed(1)} in of snow`
+        : (p.rainIn || 0) >= 0.1 ? `, about ${p.rainIn.toFixed(1)} in of rain` : '') + '.');
+    if (p.wet != null) bits.push(`${p.wet}% chance of rain or snow.`);
+    if ((p.gust || 0) >= 30) bits.push(`Gusts to ${p.gust} mph.`);
+    return bits.join(' ');
+  }
+  if (p.tier === 'seasonal') {
+    bits.push(`Rain or snow in ${pctWords(p.wet)} model runs.`);
+    if (p.snow) bits.push(`Snow in ${pctWords(p.snow)}.`);
+    if (p.heavy >= 8) bits.push(`Heavy rain in ${pctWords(p.heavy)}.`);
+    bits.push('Too far out for a real forecast; that starts 16 days before.');
+    return bits.join(' ');
+  }
+  bits.push(`No forecast reaches this date yet. In strong El Niño years it was wet on ${p.wet}% of days`
+    + (p.snow ? `, snowy on ${p.snow}%` : '') + '.');
+  return bits.join(' ');
+}
+
+/// How bad the snow and rain are, on the same three steps as the map.
+const STEPS = ['', 'Light', 'Moderate', 'Heavy'];
+function wxSev(p) {
+  if (!p || !p.sev) return '';
+  const out = [];
+  for (const k of ['snow', 'rain']) {
+    const n = wx.stepOf(p.sev[k]);
+    if (!n) continue;
+    let t;
+    if (p.tier === 'forecast') {
+      const inch = k === 'snow' ? p.snowIn : Math.max(0, (p.rainIn || 0) - (p.snowIn || 0) / 10);
+      t = `${STEPS[n]} ${k}, about ${inch < 0.1 ? 'a trace' : inch.toFixed(1) + ' in'}`;
+    } else {
+      const big = k === 'snow' ? p.bigSnow : p.bigRain, line = k === 'snow' ? '4 in of snow' : '1 in of rain';
+      t = n === 1 ? `${k === 'snow' ? 'Snow' : 'Rain'} possible`
+        : `${n === 3 ? 'Good' : 'Some'} chance of ${line} or more, in ${pctWords(big)} runs`;
+    }
+    out.push(`<span><i class="z-${k} l${n}${p.tier === 'forecast' ? '' : ' odds'}"></i>${esc(t)}</span>`);
+  }
+  return out.length ? `<div class="wxsev">${out.join('')}</div>` : '';
+}
+
+function wxTempLine(p, night) {
+  if (!p) return '';
+  const r = (rg, mid) => (!rg || rg[0] === rg[1] ? `${deg(mid)}°`
+    : `${deg(rg[0])}${rg[0] < 0 ? ' to ' : '–'}${deg(rg[1])}°`);
+  if (p.tier === 'seasonal')
+    return night ? `Low <b>${r(p.loR, p.lo)}</b> overnight`
+      : `High <b>${r(p.hiR, p.hi)}</b> · low ${r(p.loR, p.lo)}`;
+  return night ? `Low <b>${deg(p.lo)}°</b> overnight` : `High <b>${deg(p.hi)}°</b> · low ${deg(p.lo)}°`;
+}
+
+/// The El Niño years against the normal, as a sentence.
+function wxNino(clim, night) {
+  if (!clim) return '';
+  const n = clim.normal, e = clim.nino;
+  const dt = night ? e.lo - n.lo : e.hi - n.hi;
+  const t = dt === 0 ? 'about normal temperatures' : `${Math.abs(dt)}° ${dt > 0 ? 'warmer' : 'colder'}`;
+  const dw = e.wet - n.wet;
+  const w = dw >= 5 ? 'wetter' : dw <= -5 ? 'drier' : 'about as wet';
+  let s = `Strong El Niño years ran ${t} and ${w} here than normal`;
+  if (e.snow || n.snow) s += `, snow on ${e.snow}% of days against ${n.snow}%`;
+  if (night) s += `. One night in ten went below ${e.cold}°`;
+  return s + '.';
+}
+
+function wxCard(s) {
+  const tag = s.kind === 'bed' ? 'night' : s.kind === 'pass' ? 'pass' : s.kind === 'end' ? 'arrive' : '';
+  // A bed is asked about on the MORNING's date (that is the night's low), but
+  // you pull in the evening before. Show the evening you arrive.
+  const first = s.items[0];
+  const shown = s.night ? first.date : s.date;
+  const when = s.items.length === 1 && first.at ? ` · ${s.night ? 'in at ' : ''}${esc(first.at)}` : '';
+  const verdict = s.cross ? passVerdict(s.cross) : '';
+  return `<div class="wxcard t-${s.tone}">
+    <div class="wxch">
+      <span class="g">${esc(wxGlyph(s.p))}</span>
+      <div class="wxcn"><div class="n">${esc(s.name)}${tag ? ` <span class="wxk">${tag}</span>` : ''}</div>
+        <div class="d">${esc(longDate(new Date(shown + 'T00:00:00Z')))}${when}</div></div>
+      <button class="x" data-wxspot="" aria-label="Close">×</button>
+    </div>
+    <div class="wxct">${wxTempLine(s.p, s.night)}</div>
+    ${wxSev(s.p)}
+    <div class="wxcs">${esc(wxPlain(s.p, s.night))}</div>
+    ${verdict ? `<div class="wxcv${verdict.startsWith('in daylight') ? '' : ' bad'}">You cross it ${verdict}.</div>` : ''}
+    ${s.p && s.p.clim ? `<div class="wxce">${esc(wxNino(s.p.clim, s.night))}</div>` : ''}
+    ${s.kind === 'stop' ? `<div class="wxcl">${s.items.map(i =>
+      `<span><b>${esc(i.at || '')}</b> ${esc(i.name)}</span>`).join('')}</div>` : ''}
+    ${s.p ? `<div class="wxcm">${esc(tierName(s.p))}</div>` : ''}
+  </div>`;
+}
+
+/// The foot of the map: the card or the key, then the days.
+export function wxFoot() {
+  const { trip, spots } = wxData();
+  const dated = trip.filter(L => !L.unset);
+  if (!dated.length)
+    return `<div class="wxhint">No departure dates yet. Set them on Dates and every place on the
+      trip shows its weather for the day you are there.</div>`;
+  const sel = spots.find(s => s.id === wxSpot);
+  const worst = dayWorst(trip);
+  const chips = [`<button class="wxchip" data-wxday="all" aria-pressed="${wxDay === 'all'}">All</button>`];
+  for (const L of dated) for (const day of L.days) {
+    const id = `${L.li}:${day.di}`;
+    chips.push(`<button class="wxchip" data-wxday="${id}" aria-pressed="${wxDay === id}"><i class="z-${worst(id)}"></i>${esc(shortDate(day.d.date))}</button>`);
+  }
+  const sw = k => [1, 2, 3].map(n => `<i class="z-${k} l${n}"></i>`).join('');
+  const zl = zoneLayer(trip);
+  return (sel ? wxCard(sel) : `<div class="wxkey">
+      <span class="wxsw">${sw('snow')}snow</span><span class="wxsw">${sw('rain')}rain</span>
+      <span class="wxk2">light → heavy</span><em>tap a stop</em>
+      <div class="wxk3">Heavy is 4 in of snow or 1 in of rain in a day.${zl && zl.hatch
+        ? ' <i class="hatch"></i>Striped: over 16 days out, so the odds of it, not amounts.' : ''}</div></div>`)
+    + `<div class="wxdays">${chips.join('')}</div>`;
+}
+
+/// Keep the chosen day's button in view after the row is redrawn.
+export function wxSettle() {
+  const c = document.querySelector('.wxchip[aria-pressed="true"]');
+  if (!c) return;
+  const row = c.parentElement;
+  row.scrollLeft = Math.max(0, c.offsetLeft - row.clientWidth / 2 + c.offsetWidth / 2);
+}
+
+export function renderWeather() {
+  wxCache = null;
+  const { trip, spots } = wxData();
+  if (wxSpot && !spots.some(s => s.id === wxSpot)) wxSpot = null;
+  if (wxDay !== 'all' && !spots.some(s => s.day === wxDay)) wxDay = 'all';
+  const dated = trip.filter(L => !L.unset);
+  const fr = wx.freshness(wxPlaces(trip).map(p => p.ll));
+  const offline = typeof navigator !== 'undefined' && navigator.onLine === false;
+  const E = DATA.enso;
+  // The overlays sit beside the map box, not in it: inside, the map's drag
+  // takes every touch and the row of days could never be scrolled.
+  return `<div class="wxwrap"><div class="mapbox wxmap" id="mapbox">
+      <div class="mapstage" id="mstage" style="width:${mapview.MW}px;height:${mapview.MH}px">
+        <svg class="mapsvg" id="msvg" width="${mapview.MW}" height="${mapview.MH}"
+             viewBox="0 0 ${mapview.MW} ${mapview.MH}" role="img"
+             aria-label="Map of the trip with the weather at each place on the day you are there"></svg>
+      </div>
+      <div class="zoom">
+        <button data-zoom="in" aria-label="Zoom in">+</button>
+        <button data-zoom="out" aria-label="Zoom out">−</button>
+        <button class="fit" data-zoom="fit" aria-label="Fit">FIT</button>
+      </div>
+    </div>
+      <div class="wxtop">
+        <button class="wxstat" data-wxinfo>${esc(E ? E.status : 'El Niño')}<span>How to read</span></button>
+        ${dated.length ? `<div class="wxfresh"><span>${wx.busy() ? 'Checking…' : wxFreshText(fr, offline, trip)}</span>
+          <button data-wxrefresh${wx.busy() || offline ? ' disabled' : ''}>Refresh</button></div>` : ''}
+      </div>
+      <div class="wxfoot" id="wxfoot">${wxFoot()}</div>
+      <div class="wxinfo" id="wxinfo"${wxInfo ? '' : ' hidden'}>
+        <div class="wxinfobar"><b>About this map</b><button data-wxinfo>Close</button></div>
+        <div class="wxinfobody">${ensoBlock()}${wxExplain()}</div>
+      </div>
+    </div>`;
 }
 
 function wxExplain() {
@@ -1127,8 +1569,14 @@ function wxExplain() {
       strongest El Niño winters${A.length ? ` (${esc(A.join(', '))})` : ''} were like at that spot
       around that date, against the 1991–2020 normal. El Niño pushes the storm track south, over
       the roads this trip uses, and this is what it did there before.</div>
-    <div class="sbody">Snow means at least 0.4 in in a day, wet at least 0.04 in, heavy rain half an
-      inch. A bed shows the next morning's low, because that is the night you are parked in.</div>
+    <div class="sbody"><b>The shading</b> comes in three steps. Inside 16 days they are the
+      forecast's amounts: snow light to 1 in, moderate to 4 in, heavy past that; rain light to
+      ¼ in, moderate to 1 in, heavy past that. Further out nobody has amounts, so the map stripes
+      the shading and the steps are odds instead: light where snow or rain shows up in a fair share
+      of the runs, moderate where a heavy day shows up in 1 run in 10, heavy where it is 3 in 10.</div>
+    <div class="sbody">In the card's words, snow means at least 0.4 in in a day, wet at least
+      0.04 in, heavy rain half an inch. A bed shows the next morning's low, because that is the
+      night you are parked in.</div>
     <div class="sbody"><b>Cold nights run colder than shown.</b> The history and the seasonal model
       both work on grid cells miles wide, and they miss how cold a clear, still night gets on the
       high desert. Gallup's weather-station normal low is about 13°; the model's is 21°. At the high

@@ -19,12 +19,15 @@ const TABS = [
   // Its own tab rather than a sheet: Kevin called it a tracker, something he
   // checks, and session 11 already settled that discoverability beats a
   // tidier tab bar.
+  // A map, not a list: Kevin asked to see the trip and the weather at each
+  // place on the day he is there. Same stage and gestures as the Map tab.
   { id: 'wx',    label: 'Weather', render: () => ui.renderWeather() },
   { id: 'trip',  label: 'Trip',  render: () => ui.renderTrip(upd) },
 ];
 
 let tab = 'route';
 let legIx = 0;
+const isMap = t => t === 'map' || t === 'wx';
 let sheet = null;          // null | { kind: 'place', id } | { kind: 'trip' }
 
 const $head = document.getElementById('head');
@@ -129,8 +132,9 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden) weat
 window.addEventListener('online', () => weatherTick());
 
 function draw() {
+  ui.setMapMode(tab);
   $head.innerHTML = ui.renderHead(legIx, tab);
-  $scroll.className = 'scroll' + (tab === 'map' ? ' ismap' : '');
+  $scroll.className = 'scroll' + (isMap(tab) ? ' ismap' : '');
   $scroll.innerHTML = TABS.find(t => t.id === tab).render(legIx);
   for (const b of $tabs.querySelectorAll('[data-tab]'))
     b.setAttribute('aria-selected', String(b.dataset.tab === tab));
@@ -151,7 +155,8 @@ function draw() {
     $sheet.style.transform = '';
   }
 
-  if (tab === 'map') mountMap();
+  if (isMap(tab)) mountMap();
+  if (tab === 'wx') ui.wxSettle();
   if (tab === 'trip') ui.hydrateOffline();
 }
 
@@ -200,7 +205,8 @@ function repaint() {
   const t = ui.getTf();
   if (!t) return;
   const v = visible(t);
-  ui.paintMap(legIx, t.s, v);
+  if (tab === 'wx') ui.paintWx(t.s, v);
+  else ui.paintMap(legIx, t.s, v);
   // Bake: the SVG now shows exactly the visible box at panel size, so the
   // stage needs no transform until the next gesture moves off this state.
   const svg = document.getElementById('msvg'), el = stage(), box = mapbox();
@@ -224,7 +230,8 @@ function schedulePaint(ms = 140) {
 function fitTf() {
   const box = mapbox();
   const r = box.getBoundingClientRect();
-  return mapview.fitTransform(mapview.bounds(ui.legRoute(legIx)), r.width, r.height);
+  const b = tab === 'wx' ? ui.wxBounds() : mapview.bounds(ui.legRoute(legIx));
+  return mapview.fitTransform(b, r.width, r.height);
 }
 
 function mountMap() {
@@ -280,6 +287,7 @@ function wireMap(box) {
   }
 
   box.addEventListener('pointerdown', e => {
+    if (!pts.size) { box.__from = [e.clientX, e.clientY]; box.__moved = false; }
     pts.set(e.pointerId, e);
     rebase();
     box.classList.add('drag');
@@ -289,6 +297,8 @@ function wireMap(box) {
   box.addEventListener('pointermove', e => {
     if (!pts.has(e.pointerId)) return;
     pts.set(e.pointerId, e);
+    if (pts.size > 1 || (box.__from &&
+        Math.hypot(e.clientX - box.__from[0], e.clientY - box.__from[1]) > 6)) box.__moved = true;
     onMove();
   });
 
@@ -319,7 +329,7 @@ function wireMap(box) {
     box.addEventListener(g, e => e.preventDefault());
 
   new ResizeObserver(() => {
-    if (tab !== 'map') return;
+    if (!isMap(tab)) return;
     if (!ui.getTf()) applyTf(fitTf());
     schedulePaint(120);
   }).observe(box);
@@ -468,10 +478,41 @@ export function watching() { return watchId != null; }
 document.addEventListener('click', e => {
   if (e.target.closest('a')) return;              // let links be links
 
+  // The map captures the pointer so a drag can run off its edge, and a
+  // captured pointer reports every click as the map box itself. Ask what is
+  // really under the finger and send the click there. A drag is not a tap.
+  if (e.target.id === 'mapbox' && e.isTrusted) {
+    if (e.target.__moved) return;
+    const under = document.elementFromPoint(e.clientX, e.clientY);
+    if (under && under !== e.target && e.target.contains(under))
+      under.dispatchEvent(new MouseEvent('click', { bubbles: true, clientX: e.clientX, clientY: e.clientY }));
+    return;
+  }
+
   const t = e.target.closest('[data-tab]');
   if (t) { tab = t.dataset.tab; sheet = null; draw(); if (tab === 'wx') weatherTick(); return; }
 
   if (e.target.closest('[data-wxrefresh]')) { weatherTick(true); return; }
+
+  // ---- the weather map ----
+  // A day zooms to that day's road. A dot opens its card in place: the foot
+  // and the pins are repainted, the map is not rebuilt, so the view holds.
+  const wd = e.target.closest('[data-wxday]');
+  if (wd) { ui.setWxDay(wd.dataset.wxday); ui.resetTf(); draw(); return; }
+  const ws = e.target.closest('[data-wxspot]');
+  if (ws) {
+    ui.setWxSpot(ws.dataset.wxspot);
+    const foot = document.getElementById('wxfoot');
+    if (foot) { foot.innerHTML = ui.wxFoot(); ui.wxSettle(); }
+    repaint();
+    return;
+  }
+  if (e.target.closest('[data-wxinfo]')) {
+    ui.setWxInfo(!ui.wxInfoOpen());
+    const el = document.getElementById('wxinfo');
+    if (el) el.hidden = !ui.wxInfoOpen();
+    return;
+  }
 
   const kf = e.target.closest('[data-kindfilter]');
   if (kf) { ui.setKindFilter(kf.dataset.kindfilter); draw(); return; }

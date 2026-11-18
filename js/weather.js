@@ -42,6 +42,8 @@ const BATCH = 25;                              // places per request
 // The same thresholds as tools/elnino.mjs, so a seasonal "wet" and an El Niño
 // "wet" mean the same thing. Inches.
 const WET = 0.04, SNOW = 0.4, HEAVY = 0.5;
+// What the map calls heavy: a day of 4 in of snow or 1 in of rain.
+const BIG_SNOW = 4, BIG_RAIN = 1;
 
 const UNITS = '&temperature_unit=fahrenheit&precipitation_unit=inch&wind_speed_unit=mph&timezone=auto';
 
@@ -129,7 +131,8 @@ async function fetchSeasonal(lls) {
     const days = (d.time || []).map((_, i) => {
       const hi = at(M.hi, i), lo = at(M.lo, i), p = at(M.p, i), s = at(M.s, i);
       return [q(hi, .1), q(hi, .5), q(hi, .9), q(lo, .1), q(lo, .5), q(lo, .9),
-              share(p, v => v >= WET), share(s, v => v >= SNOW), share(p, v => v >= HEAVY)];
+              share(p, v => v >= WET), share(s, v => v >= SNOW), share(p, v => v >= HEAVY),
+              share(s, v => v >= BIG_SNOW), share(p, v => v >= BIG_RAIN)];
     });
     return { t0: d.time && d.time[0], n: days.length, runs: M.hi.length, d: days };
   });
@@ -150,7 +153,8 @@ export function refresh(places, { force = false } = {}) {
         if (!needed) continue;
         const hit = c[tier][k];
         if (hit) hit.seen = now;
-        if (force || !hit || now - hit.at > ttl) want[tier].set(k, p.ll);
+        const old = tier === 's' && hit && hit.v.d && hit.v.d[0] && hit.v.d[0].length < 11;
+        if (force || !hit || old || now - hit.at > ttl) want[tier].set(k, p.ll);
       }
     }
     let changed = 0, failed = 0;
@@ -262,6 +266,7 @@ export function picture(key, ll, iso) {
         snow: s >= SNOW ? 100 : 0, heavy: p >= HEAVY ? 100 : 0,
         snowIn: s, rainIn: p, gust: f.v.g[i] != null ? Math.round(f.v.g[i]) : null,
         words: describe(f.v.code[i]),
+        sev: severity({ tier: 'forecast', snowIn: s, rainIn: Math.max(0, p - s / 10), pp: f.v.pp[i] }),
       };
     }
   }
@@ -270,10 +275,11 @@ export function picture(key, ll, iso) {
   if (s) {
     const i = dayIndex(s.v.t0, iso);
     if (i >= 0 && i < s.v.n && s.v.d[i] && s.v.d[i][1] != null) {
-      const [h1, h5, h9, l1, l5, l9, wet, snow, heavy] = s.v.d[i];
+      const [h1, h5, h9, l1, l5, l9, wet, snow, heavy, bigSnow, bigRain] = s.v.d[i];
       return {
         tier: 'seasonal', lead, at: s.at, clim, runs: s.v.runs,
-        hi: h5, lo: l5, hiR: [h1, h9], loR: [l1, l9], wet, snow, heavy,
+        hi: h5, lo: l5, hiR: [h1, h9], loR: [l1, l9], wet, snow, heavy, bigSnow, bigRain,
+        sev: bigSnow == null ? null : severity({ tier: 'seasonal', wet, snow, heavy, bigSnow, bigRain }),
       };
     }
   }
@@ -301,4 +307,178 @@ export function describe(code) {
   if (code >= 85 && code <= 86) return 'snow showers';
   if (code >= 95) return 'thunderstorms';
   return '';
+}
+
+// ------------------------------------------------------------------ zones
+//
+// The Weather map shades ZONES of snow and rain, not dots. A zone needs the
+// weather across an area, so this keeps a second, coarser set: a 1-degree grid
+// of points near the roads (ui.js picks them), with only what a zone needs —
+// rain and snow, nothing else. Its own cache key, so the stop weather above
+// never gets pushed out of storage by it.
+//
+// Cost, measured: the forecast is about 2 KB per 25 points; the seasonal run
+// is about 185 KB per 25 points, which is why it is rain and snow only, and
+// fetched once a day.
+const GKEY = 'milepost.wxg';
+let gcache = null;
+let ginflight = null;
+
+function gload() {
+  if (gcache) return gcache;
+  try { gcache = JSON.parse(localStorage.getItem(GKEY) || '{}'); } catch (_) { gcache = {}; }
+  gcache.f = gcache.f || {};
+  gcache.s = gcache.s || {};
+  return gcache;
+}
+function gsave() {
+  const c = gload();
+  const now = Date.now();
+  for (const tier of ['f', 's'])
+    for (const [k, v] of Object.entries(c[tier]))
+      if (now - (v.seen || v.at) > DROP_AFTER) delete c[tier][k];
+  try { localStorage.setItem(GKEY, JSON.stringify(c)); }
+  catch (_) { c.s = {}; try { localStorage.setItem(GKEY, JSON.stringify(c)); } catch (__) {} }
+}
+
+async function gridForecast(lls) {
+  const body = await json('https://api.open-meteo.com/v1/forecast' + coords(lls)
+    + '&daily=precipitation_sum,snowfall_sum,precipitation_probability_max'
+    + `&forecast_days=${FORECAST_DAYS}` + UNITS);
+  return many(body).map(x => {
+    const d = x.daily || {};
+    const r2 = a => (a || []).map(v => (v == null ? null : Math.round(v * 100) / 100));
+    return { t0: d.time && d.time[0], n: (d.time || []).length,
+             p: r2(d.precipitation_sum), s: r2(d.snowfall_sum), pp: d.precipitation_probability_max || [] };
+  });
+}
+
+/// Per day: the share of the 51 runs that were wet, snowy, and heavy.
+async function gridSeasonal(lls) {
+  const body = await json('https://seasonal-api.open-meteo.com/v1/seasonal' + coords(lls)
+    + '&daily=precipitation_sum,snowfall_sum'
+    + `&forecast_days=${SEASONAL_DAYS}` + UNITS);
+  return many(body).map(x => {
+    const d = x.daily || {};
+    const members = base => Object.keys(d).filter(k => k === base || k.startsWith(base + '_member'));
+    const P = members('precipitation_sum'), S = members('snowfall_sum');
+    const at = (keys, i) => keys.map(k => d[k][i]).filter(v => v != null);
+    const share = (a, f) => (a.length ? Math.round(100 * a.filter(f).length / a.length) : null);
+    const days = (d.time || []).map((_, i) => {
+      const p = at(P, i), s = at(S, i);
+      return [share(p, v => v >= WET), share(s, v => v >= SNOW), share(p, v => v >= HEAVY),
+              share(s, v => v >= BIG_SNOW), share(p, v => v >= BIG_RAIN)];
+    });
+    return { t0: d.time && d.time[0], n: days.length, d: days };
+  });
+}
+
+/// Bring the grid up to date. `need` says which tiers the trip's dates can
+/// use at all. Never throws.
+export function refreshGrid(lls, need, { force = false } = {}) {
+  if (ginflight) return ginflight;
+  ginflight = (async () => {
+    const c = gload();
+    const now = Date.now();
+    let changed = 0, failed = 0;
+    for (const [tier, ttl, fn, on] of [['f', TTL_FORECAST, gridForecast, need.forecast],
+                                       ['s', TTL_SEASONAL, gridSeasonal, need.seasonal]]) {
+      if (!on) continue;
+      const want = [];
+      for (const ll of lls) {
+        const k = keyOf(ll), hit = c[tier][k];
+        if (hit) hit.seen = now;
+        const old = tier === 's' && hit && hit.v.d && hit.v.d[0] && hit.v.d[0].length < 5;
+        if (force || !hit || old || now - hit.at > ttl) want.push([k, ll]);
+      }
+      for (const part of chunks(want, BATCH)) {
+        try {
+          const got = await fn(part.map(([, ll]) => ll));
+          part.forEach(([k], i) => { if (got[i] && got[i].t0) { c[tier][k] = { at: now, seen: now, v: got[i] }; changed++; } });
+        } catch (_) { failed += part.length; }
+      }
+    }
+    gsave();
+    return { changed, failed };
+  })().finally(() => { ginflight = null; });
+  return ginflight;
+}
+export const gridBusy = () => !!ginflight;
+
+// ------------------------------------------------------------------ severity
+//
+// Kevin asked to see how bad it is, not just where. Three steps, the same on
+// the map, the day buttons and the cards:
+//
+//                 light            moderate         heavy
+//   snow          a dusting to 1"  1" to 4"         4" or more in a day
+//   rain          to 1/4"          1/4" to 1"       1" or more in a day
+//
+// Inside 16 days those are the forecast's amounts. Further out nobody has
+// amounts, so the steps are odds from the 51 seasonal runs instead, and the
+// map stripes them so they never pass for a forecast:
+//
+//   light     snow (0.4") in 15% of runs or more; rain in 45% or more
+//   moderate  heavy (4" snow, 1" rain) in 10% of runs or more
+//   heavy     heavy in 30% of runs or more
+//
+// Returned as a smooth number, 0 to 3, so the map can blend between grid
+// points before it cuts the steps: below 0.5 is nothing, then each whole step.
+const ramp = (x, pts) => {
+  if (x == null) return 0;
+  if (x <= pts[0][0]) return pts[0][1];
+  for (let i = 1; i < pts.length; i++)
+    if (x <= pts[i][0]) {
+      const [x0, y0] = pts[i - 1], [x1, y1] = pts[i];
+      return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
+    }
+  return pts[pts.length - 1][1];
+};
+export function severity(t) {
+  if (t.tier === 'forecast') {
+    let rain = ramp(t.rainIn, [[0, 0], [0.04, 0.5], [0.25, 1.5], [1, 2.5], [2, 3]]);
+    // A big number at low odds is a maybe: hold it at light.
+    if (t.pp != null && t.pp < 30) rain = Math.min(rain, 1.4);
+    return { snow: ramp(t.snowIn, [[0, 0], [0.1, 0.5], [1, 1.5], [4, 2.5], [8, 3]]), rain };
+  }
+  const big = [[0, 0], [10, 1.5], [30, 2.5], [60, 3]];
+  return {
+    snow: Math.max(ramp(t.snow, [[0, 0], [15, 0.5], [60, 1.3]]), ramp(t.bigSnow, big)),
+    rain: Math.max(ramp(t.wet, [[0, 0], [45, 0.5], [85, 1.3]]),
+                   ramp(t.heavy, [[0, 0], [15, 0.8], [45, 1.3]]), ramp(t.bigRain, big)),
+  };
+}
+/// The step a severity number falls in: 0 nothing, 1 light, 2 moderate, 3 heavy.
+export const stepOf = v => (v >= 2.5 ? 3 : v >= 1.5 ? 2 : v >= 0.5 ? 1 : 0);
+
+/// Snow and rain severity at a grid point on a date, with which tier said so.
+export function zoneAt(ll, iso) {
+  const c = gload();
+  const k = keyOf(ll);
+  const lead = leadDays(iso);
+  const f = c.f[k];
+  if (f && lead >= 0 && lead < FORECAST_DAYS) {
+    const i = dayIndex(f.v.t0, iso);
+    if (i >= 0 && i < f.v.n && f.v.p[i] != null) {
+      const s = f.v.s[i] || 0, p = f.v.p[i] || 0;
+      return { tier: 'forecast',
+               ...severity({ tier: 'forecast', snowIn: s, rainIn: Math.max(0, p - s / 10), pp: f.v.pp[i] }) };
+    }
+  }
+  const sz = c.s[k];
+  if (sz && lead >= 0) {
+    const i = dayIndex(sz.v.t0, iso);
+    const d = sz.v.d[i];
+    if (i >= 0 && i < sz.v.n && d && d[0] != null && d.length >= 5) {
+      const [wet, snow, heavy, bigSnow, bigRain] = d;
+      return { tier: 'seasonal', ...severity({ tier: 'seasonal', wet, snow, heavy, bigSnow, bigRain }) };
+    }
+  }
+  return null;
+}
+/// When the grid was last fetched, per tier, across these points.
+export function gridFreshness(lls) {
+  const c = gload();
+  const newest = tier => { let t = null; for (const ll of lls) { const h = c[tier][keyOf(ll)]; if (h && (t == null || h.at > t)) t = h.at; } return t; };
+  return { forecast: newest('f'), seasonal: newest('s') };
 }

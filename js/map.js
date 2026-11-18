@@ -180,3 +180,116 @@ export function paint(usa, routes, active, opts = {}) {
 
   return out.join("");
 }
+
+// ============================================================ weather map
+//
+// The Weather tab is this map. Same ground, same projection and the same
+// pan-and-zoom stage as the Map tab. Under the roads: zones shaded where snow
+// and rain are, one smooth image from ui.js. On top: a plain marker for every
+// place you stop, sleep or cross, which opens its card. ui.js decides the
+// weather; this only draws what it is given.
+//
+//   roads  [{ ll: [[lat, lon]...], on }]   every leg; `on` once it has a date
+//   segs   [[[lat, lon]...]]               the chosen day's stretch of road
+//   zones  { image, hatch, bounds: [lat0, lat1, lon0, lon1] } or null; `hatch`
+//          marks where the shading is seasonal odds, and gets stripes cut
+//          through it so it never passes for a forecast
+//   spots  [{ id, ll, kind, name, named, dim, sel, rank }]
+export function paintWeather(usa, roads, opts = {}) {
+  const { spots = [], segs = [], zones = null, scale = 1, view = null } = opts;
+  const u = 1 / scale;
+  const n = k => (k * u).toFixed(2);
+  const vis = view
+    ? q => q[0] > view.x - 60 * u && q[0] < view.x + view.w + 60 * u &&
+           q[1] > view.y - 60 * u && q[1] < view.y + view.h + 60 * u
+    : () => true;
+
+  const out = [];
+  out.push('<path class="mland" d="' + poly(usa.outline) + ' Z" stroke-width="' + n(1) + '"/>');
+  if (zones && zones.image) {
+    const [la0, la1, lo0, lo1] = zones.bounds;
+    const tl = xy([la1, lo0]), br = xy([la0, lo1]);
+    const box = ' x="' + tl[0].toFixed(2) + '" y="' + tl[1].toFixed(2) + '" width="' +
+      (br[0] - tl[0]).toFixed(2) + '" height="' + (br[1] - tl[1]).toFixed(2) + '"';
+    out.push('<image class="wzone" href="' + esc(zones.image) + '"' + box + ' preserveAspectRatio="none" image-rendering="optimizeQuality"/>');
+    if (zones.hatch) {
+      // Stripes the colour of the land, a few screen pixels apart at any zoom.
+      out.push('<defs><pattern id="whatch" patternUnits="userSpaceOnUse" width="' + n(6) +
+        '" height="' + n(6) + '" patternTransform="rotate(45)"><rect class="whatch" width="' +
+        n(2.4) + '" height="' + n(6) + '"/></pattern><mask id="wzmask" maskUnits="userSpaceOnUse"' +
+        box + '><image href="' + esc(zones.hatch) + '"' + box +
+        ' preserveAspectRatio="none"/></mask></defs>');
+      out.push('<rect class="wzone"' + box + ' fill="url(#whatch)" mask="url(#wzmask)"/>');
+    }
+  }
+  if (scale < 2.2) for (const l of usa.labels) {
+    const q = xy(l.ll);
+    if (!vis(q)) continue;
+    out.push('<text class="mstate" text-anchor="middle" x="' + q[0].toFixed(0) +
+      '" y="' + q[1].toFixed(0) + '" font-size="' + n(9) + '">' + esc(l.t) + "</text>");
+  }
+  for (const r of roads)
+    out.push('<path class="mroute' + (r.on ? ' act' : '') + '" d="' + poly(r.ll) +
+      '" stroke-width="' + n(r.on ? 2.2 : 1.6) + '"/>');
+  for (const s of segs)
+    out.push('<path class="mroute wseg" d="' + poly(s) + '" stroke-width="' + n(4.5) + '"/>');
+
+  // Places that share a doorstep are spread into a small ring, in screen
+  // units, exactly as the Map tab does it.
+  const spot = new Map();
+  {
+    const near = 12 * u, clusters = [];
+    for (const s of spots) {
+      if (s.dim) continue;
+      const q = xy(s.ll);
+      let home = null;
+      for (const c of clusters)
+        if (Math.hypot(q[0] - c.cx, q[1] - c.cy) < near) { home = c; break; }
+      if (home) home.m.push([s, q]);
+      else clusters.push({ cx: q[0], cy: q[1], m: [[s, q]] });
+    }
+    for (const c of clusters) {
+      if (c.m.length === 1) { spot.set(c.m[0][0].id, c.m[0][1]); continue; }
+      const rad = (c.m.length > 2 ? 8 : 6) * u;
+      c.m.forEach(([s], i) => {
+        const a = -Math.PI / 2 + (i * 2 * Math.PI) / c.m.length;
+        spot.set(s.id, [c.cx + rad * Math.cos(a), c.cy + rad * Math.sin(a)]);
+      });
+    }
+  }
+
+  // Only the chosen day's places when a day is picked; the rest would just be
+  // clutter on top of the zones.
+  for (const s of spots) {
+    const q = spot.get(s.id);
+    if (!q || !vis(q)) continue;
+    const shape = s.kind === 'bed' ? 'bed' : s.kind === 'pass' ? 'pass' : 'stop';
+    out.push('<circle class="wmark ' + shape + (s.sel ? ' sel' : '') + '" cx="' + q[0].toFixed(3) +
+      // Small when the whole country is in view, so the zones show through.
+      '" cy="' + q[1].toFixed(3) + '" r="' + n(s.sel ? 7 : (shape === 'stop' ? 4 : 5) * (scale < 1.2 ? 0.55 : 1)) +
+      '" stroke-width="' + n(scale < 1.2 ? 1 : 1.6) + '"/>');
+    out.push('<circle class="whit" data-wxspot="' + esc(s.id) + '" cx="' + q[0].toFixed(3) +
+      '" cy="' + q[1].toFixed(3) + '" r="' + n(18) + '"><title>' + esc(s.name) + '</title></circle>');
+  }
+
+  // Names once there is room: the chosen place, then beds and passes, then
+  // stops once zoomed in. Nothing overlaps.
+  const fs = 11 * u, placed = [];
+  for (const s of spots.slice().sort((a, b) => a.rank - b.rank)) {
+    const q = spot.get(s.id);
+    if (!q || !vis(q)) continue;
+    if (!(s.sel || scale >= 3 || (scale >= 1.2 && s.named))) continue;
+    const bx = q[0] + 9 * u, by = q[1] + 4 * u;
+    const bw = s.name.length * fs * 0.52, bh = fs * 1.3;
+    let clash = false;
+    for (const b of placed)
+      if (bx < b.x + b.w && bx + bw > b.x && by - bh < b.y && by > b.y - b.h) { clash = true; break; }
+    if (clash && !s.sel) continue;
+    placed.push({ x: bx, y: by, w: bw, h: bh });
+    const tail = ' text-anchor="start" x="' + bx.toFixed(3) + '" y="' + by.toFixed(3) +
+      '" font-size="' + fs.toFixed(2) + '">' + esc(s.name) + '</text>';
+    out.push('<text class="mhalo" stroke-width="' + n(3) + '"' + tail);
+    out.push('<text class="mlabel' + (s.sel ? ' wsel' : '') + '"' + tail);
+  }
+  return out.join('');
+}

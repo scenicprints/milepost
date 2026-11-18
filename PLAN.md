@@ -17,6 +17,14 @@ agent, or a new Claude account, can continue without losing the thread.
 
 ## State
 
+**The Weather tab is a map of snow and rain, in three steps of severity
+(session 74).** It replaced the session-73 list. Pick a day and the map shades
+snow (blue) and rain (green) across a 1-degree grid within 110 miles of the
+dated roads; "All" colours the trip by the day you are at each stretch. Light,
+moderate, heavy: forecast amounts inside 16 days, seasonal odds beyond that,
+and the map stripes the odds so they never pass for a forecast. Stops are
+plain markers that open the card.
+
 **There is a Weather tab (session 73).** Every stop, bed, pass and leg end on
 a dated leg gets the best weather there is for its own date: the forecast
 inside 16 days, ECMWF's seasonal ensemble beyond that, and always the El Niño
@@ -357,6 +365,9 @@ services planning** (gone).
 - The 32px favicon is legible but muddy. Redo alongside the UI port.
 - Leg 2 mileage runs ~4% light.
 - The prototype duplicates `js/plan.js`. It will drift.
+- The Weather map's whole-trip view is small on a phone: pinch in or pick a day.
+  Its zones come from points about 60 miles apart, so they show broad areas,
+  not single storms. Not yet tried on a real phone.
 
 ---
 
@@ -390,6 +401,43 @@ Android Auto is no.
 ---
 
 ## Session log
+
+**Session 74** — The Weather tab becomes a map of snow and rain, with
+severity. 1.60.0.
+
+Kevin, on the session-73 list: "nothing like I asked for. I wanted an
+interactive map." Then, on a first map with a coloured dot per place: "I
+imagined a color coded zone for snow and rain. Dots don't do much." Then: "Is
+there a way to see the severity of it?" His picks: both a day view and a
+whole-trip view, markers stay for stops, snow and rain only, severity as
+stepped bands with amounts on the cards.
+
+**How it works.**
+- `js/weather.js` keeps a second cache, `milepost.wxg`: a 1-degree grid of
+  points within 110 miles of the dated roads (`ui.js` `wxGrid`), rain and snow
+  only. Forecast: daily amounts and probability, 16 days, every 3 hours.
+  Seasonal: per day, the share of the 51 runs that are wet, snowy, heavy
+  (0.5"), 4"+ snow and 1"+ rain; once a day. Measured: about 2 KB per 25
+  points for the forecast, about 185 KB per 25 for the seasonal, roughly
+  240 points on this trip.
+- `severity()` turns either tier into a number 0-3 for snow and for rain, and
+  `stepOf()` cuts it into light / moderate / heavy. Forecast: snow to 1", to
+  4", past 4"; rain to 1/4", to 1", past 1" (held at light under 30%
+  probability). Seasonal: light where snow or rain shows in a fair share of
+  runs, moderate where a heavy day (4" snow or 1" rain) is in 10% of runs,
+  heavy at 30%. The stop seasonal summary gained the same two shares, so the
+  cards and the map use one scale; old cache entries are refetched.
+- `ui.js` `zoneLayer` paints one raster (10 px a degree, Gaussian blend of
+  the grid, then cut into flat steps) laid under the roads like the dark-sky
+  layer, plus a mask of where the shading is seasonal. `map.js`
+  `paintWeather` cuts land-coloured stripes through that part.
+- The "All" view gives each grid point the date the trip passes it
+  (`wxLinks`, via `project()`); where two legs pass the same ground it shows
+  the worse.
+- The Weather tab shares the Map tab's stage, but keeps its own pan and zoom.
+  Taps on the map are redispatched with `elementFromPoint` because pointer
+  capture sends every click to `#mapbox`; a drag of more than 6 px is not a
+  tap.
 
 **Session 73** — Weather: the trip, the day, the place, and El Niño. 1.59.0.
 
