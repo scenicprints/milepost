@@ -37,6 +37,11 @@ either is settled.
 | `js/weather.js` | Weather per place and date: forecast, seasonal ensemble, El Niño baseline; plus the snow/rain grid and its severity steps for the Weather map. Cached, refreshes itself. |
 | `data/elnino.json` | El Niño analog winters vs normal per place. Generated: `node tools/elnino.mjs`. |
 | `data/enso.json` | NOAA's El Niño status. **Hand-updated monthly** from CPC's discussion. |
-| `js/ui.js` | The six screens. |
+| `js/ui.js` | The six screens (Classic), and every number both looks show. |
+| `js/ui-new.js` | The New look's layouts of the same six screens. Lays out, never computes. |
+| `js/skin.js` | Classic or New, per phone, and the three confirmed plans New shows. |
+| `css/skin-new.css` | The New look. Every rule scoped to `html[data-skin="new"]`. |
+| `js/drivers.js` | Who drives which stretch, and long-day flags. |
+| `js/alerts.js` | National Weather Service warnings on the next three days of road. |
 | `js/app.js` | Boot, tabs, events. |
 | `prototype/` | The agreed new design, not yet ported onto the app. `node prototype/build.mjs` regenerates it. |

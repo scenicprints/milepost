@@ -627,3 +627,29 @@ i.odds { background-image: repeating-linear-gradient(45deg, transparent 0 2px, v
   cursor: pointer; font-variant-numeric: tabular-nums; }
 .cwx.hot { color: var(--signal); }
 .cwx em { font-style: normal; color: var(--ink3); margin-left: 4px; }
+
+/* ===================================================== on the road
+   When you are supposed to be somewhere (Google Maps says when you will be),
+   who drives which stretch, and the weather service's warnings. Warnings use
+   the signal colour like every other "this changes your plan" line. */
+.ndue { font-family: var(--mono); font-size: 12px; color: var(--ink); margin-top: 8px; font-variant-numeric: tabular-nums; }
+.nalert { border-left: 2px solid var(--signal); padding: 8px 0 8px 12px; margin-bottom: 12px;
+  font-size: 13px; line-height: 1.5; color: var(--ink2); }
+.nalert b { color: var(--signal); font-weight: 500; }
+.cdrv { font-family: var(--mono); font-size: 11px; color: var(--ink2); margin-top: 6px; line-height: 1.55; }
+.cwarn.nws { font-weight: 500; }
+
+/* The day's timetable: arrive and leave in their own columns, read at arm's
+   length, because that is what this screen is for. */
+.ctt { margin-top: 12px; border-top: 1px solid var(--rule); }
+.ctth { display: grid; grid-template-columns: 54px 54px 1fr; gap: 8px; padding: 7px 0 3px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink2); }
+.cttr { display: grid; grid-template-columns: 54px 54px 1fr; gap: 8px; align-items: baseline; width: 100%;
+  padding: 8px 0; border-top: 1px solid var(--rule); text-align: left; }
+.cttr .a, .cttr .l { font-family: var(--mono); font-size: 15px; font-variant-numeric: tabular-nums; }
+.cttr .a { font-weight: 500; }
+.cttr .n { font-size: 15px; line-height: 1.3; }
+.cttr small { display: block; font-family: var(--mono); font-size: 11px; color: var(--ink2); margin-top: 2px; }
+.cttr small.bad, .cttr.bed { color: var(--signal); }
+.cttr.bed small { color: var(--signal); }
+.cttr.start .n, .cttr.end .n { color: var(--ink2); }

@@ -20,6 +20,10 @@
      so a Google-hosted font is a font you do not have in the Mojave. -->
 <link rel="stylesheet" href="css/fonts.css">
 <link rel="stylesheet" href="css/app.css">
+<!-- The New look. Every rule in it is scoped to html[data-skin="new"], so
+     Classic is exactly css/app.css. -->
+<link rel="stylesheet" href="css/skin-new.css">
+<script>try{document.documentElement.dataset.skin=localStorage.getItem('milepost.skin')==='new'?'new':'classic'}catch(e){}</script>
 </head>
 <body>
 <div id="shell">

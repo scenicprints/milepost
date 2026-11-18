@@ -13,17 +13,17 @@
 // preferring fresh. Data, icons and the vendored SDK stay cache-first — they
 // are large, they rarely change, and a stale copy of them is harmless.
 
-const CACHE = 'milepost-v99';
+const CACHE = 'milepost-v100';
 
 const SHELL = [
   'index.html', 'desk.html', 'manifest.webmanifest',
-  'css/app.css', 'css/fonts.css', 'css/desk.css',
+  'css/app.css', 'css/fonts.css', 'css/desk.css', 'css/skin-new.css',
   'fonts/archivo-400.woff2', 'fonts/archivo-500.woff2',
   'fonts/ibm-plex-mono-400.woff2', 'fonts/ibm-plex-mono-500.woff2',
   'js/app.js', 'js/ui.js', 'js/store.js', 'js/route.js', 'js/plan.js', 'js/map.js',
   'js/install.js', 'js/sync.js', 'js/firebase-config.js', 'js/version.js',
   'js/weather.js', 'js/geocode.js', 'js/darksky.js',
-  'js/winter.js', 'js/itinerary.js', 'js/desk.js', 'js/export.js',
+  'js/winter.js', 'js/itinerary.js', 'js/desk.js', 'js/export.js', 'js/skin.js', 'js/ui-new.js', 'js/drivers.js', 'js/alerts.js',
   'data/route.json', 'data/stops.json', 'data/usa.json', 'data/extras.json', 'data/darksky.json', 'data/darksky.png', 'data/hours.json', 'data/winter.json', 'data/elnino.json', 'data/enso.json',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png',
   'icons/apple-touch-icon.png', 'icons/favicon-32.png',

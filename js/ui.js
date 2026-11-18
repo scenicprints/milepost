@@ -14,6 +14,10 @@ import { VERSION } from './version.js';
 import * as wx from './weather.js';
 import * as geo from './geocode.js';
 import * as darksky from './darksky.js';
+import { isNew, skin, CONFIRMED } from './skin.js';
+import * as N from './ui-new.js';
+import * as drivers from './drivers.js';
+import * as alerts from './alerts.js';
 
 let DATA = null;              // { route, stops, usa }
 const built = new Map();      // routeId -> built route
@@ -29,6 +33,8 @@ let SKY = null;
 export const hasSky = () => !!SKY;
 export const skySource = () => SKY && SKY.source;
 export function setPosition(ll) { position = ll; }
+/// For ui-new.js, which lays out the same data its own way.
+export const data = () => DATA;
 export function hasPosition() { return !!position; }
 
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -62,6 +68,10 @@ export const legs = () => DATA.route.legs;
 /// get replaced as the plan matures, and the store (and its Firestore copy)
 /// remembers the old id. Fall back to the leg's default rather than crashing.
 function legChoice(l) {
+  if (isNew() && CONFIRMED[l.id]) {
+    const c = routeById(CONFIRMED[l.id]);
+    if (c) return c;
+  }
   const r = routeById(store.routeFor(l.id));
   if (r) return r;
   const def = l.routes.find(o => o.default) || l.routes[0];
@@ -235,10 +245,113 @@ export function realTotals(route) {
   };
 }
 export const allStops = () => selected().flatMap(r => r.stops);
+
+// ============================================================ on the road
+//
+// Kevin runs Google Maps alongside this. Google says when he WILL get there;
+// this says when he is SUPPOSED to, and he compares the two himself. So the
+// numbers are the plan's own clock, nothing live.
+const todayIso = () => {
+  const n = new Date();
+  return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
+};
+/// The planned row for a stop on this road, or null when the leg has no date.
+export function dueFor(rt, id) {
+  if (!depOf(rt).date) return null;
+  for (const d of realDays(rt)) for (const r of d.rows) if (r.stop && r.stop.id === id) return r;
+  return null;
+}
+export function dueText(r) {
+  if (!r) return '';
+  const when = r.date !== todayIso() ? shortDate(new Date(r.date + 'T00:00:00Z')) + ', ' : '';
+  return r.kind === 'bed' ? `Due ${when}${r.arriveAt} · up at ${r.departAt}`
+    : `Due ${when}${r.arriveAt} · leave by ${r.departAt}`;
+}
+/// A planned time short enough for a list: the weekday too, when it is not today.
+export const dueShort = r => (r ? (r.date !== todayIso() ? WD[new Date(r.date + 'T00:00:00Z').getUTCDay()].slice(0, 3) + ' ' : '') + r.arriveAt : '');
+/// One day as a timetable: when to be at each place and when to leave it.
+/// Kevin: the whole point of Dates "is supposed to show me what time I need
+/// to arrive there, and what time I need to leave." Both looks draw this.
+export function timetable(d, isLast) {
+  const out = [{ kind: 'start', name: d.from.name, leave: d.startAt || '', note: 'Start of the day' }];
+  for (const r of d.rows) {
+    if (r.kind === 'bed') {
+      out.push({ kind: 'bed', id: r.stop.id, name: r.stop.name, arrive: r.arriveAt, leave: r.departAt,
+        note: `Sleep${r.sleep ? ' ' + fmtHours(r.sleep.minutes) : ''} · leave ${r.wakeDate !== r.date ? 'next morning' : 'the same day'}` });
+      continue;
+    }
+    const bits = [r.dwell ? fmtHours(r.dwell) + ' there' : 'drive through'];
+    if (r.hours && r.hours.closeAt && !r.hours.shut && !/^(23:[3-5]\d|24:00)$/.test(r.hours.closeAt)) bits.push('shuts ' + r.hours.closeAt);
+    const bad = (r.flags || []).find(f => f.level === 'bad');
+    out.push({ kind: 'stop', id: r.stop.id, name: r.stop.name, arrive: r.arriveAt,
+      leave: r.dwell ? r.departAt : '', note: bits.join(' · '), bad: bad ? bad.text : '' });
+  }
+  if (isLast) out.push({ kind: 'end', name: d.overnight.name, arrive: d.arriveAt || '', leave: '', note: 'End of the leg' });
+  return out;
+}
+
+/// Who drives what, per day of this road (js/drivers.js).
+export const plansFor = rt => drivers.driverPlan(rt, realDays(rt));
+export { drivers };
+
+/// Points along the road of every day that starts in the next three: the
+/// only days the weather service has warnings for.
+export function alertPoints() {
+  const out = [];
+  const t0 = Date.parse(todayIso() + 'T00:00:00Z');
+  DATA.route.legs.forEach((leg, li) => {
+    const rt = legRoute(li);
+    if (!depOf(rt).date) return;
+    realDays(rt).forEach((d, di) => {
+      const dt = (d.date.valueOf() - t0) / 86400000;
+      if (dt < 0 || dt > 3) return;
+      const iso = d.date.toISOString().slice(0, 10);
+      for (let m = d.startMile; m < d.endMile; m += 50)
+        out.push({ li, di, iso, mile: m, ll: pointAtMile(m, rt.waypoints, rt.cum) });
+      out.push({ li, di, iso, mile: d.endMile, ll: pointAtMile(d.endMile, rt.waypoints, rt.cum) });
+    });
+  });
+  return out;
+}
+const nearestTown = (rt, mile) => {
+  let b = null;
+  for (const t of rt.towns || []) if (!b || Math.abs(t.mile - mile) < Math.abs(b.mile - mile)) b = t;
+  return b ? b.name : '';
+};
+/// The warnings on one day's road, worst first, one per kind.
+export function dayAlerts(li, di) {
+  const rt = legRoute(li);
+  const by = new Map();
+  for (const p of alertPoints()) {
+    if (p.li !== li || p.di !== di) continue;
+    for (const a of alerts.at(p.ll, p.iso)) if (!by.has(a.event)) by.set(a.event, { ...a, near: nearestTown(rt, p.mile) });
+  }
+  return alerts.worstFirst([...by.values()]);
+}
+export function alertText(a) {
+  const t = Date.parse(a.to);
+  const until = isNaN(t) ? '' : ', until ' + new Date(t).toLocaleString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' });
+  return `${a.event}${a.near ? ' near ' + a.near : ''}${until}`;
+}
+/// The warnings on today's and tomorrow's road, for the top of Next.
+export function soonAlerts() {
+  const t0 = Date.parse(todayIso() + 'T00:00:00Z');
+  const out = [];
+  DATA.route.legs.forEach((leg, li) => {
+    const rt = legRoute(li);
+    if (!depOf(rt).date) return;
+    realDays(rt).forEach((d, di) => {
+      const dt = (d.date.valueOf() - t0) / 86400000;
+      if (dt >= 0 && dt <= 1) for (const a of dayAlerts(li, di)) out.push({ ...a, day: dt ? 'Tomorrow' : 'Today' });
+    });
+  });
+  return out;
+}
 export { suggestStops };
 
 // ============================================================== head
 export function renderHead(legIx, tab) {
+  if (isNew()) return N.renderHead(legIx, tab);
   // Trip and Dates both describe the WHOLE trip, so they take the whole-trip
   // totals and drop the leg and road pickers. Anything else is one leg.
   const whole = tab === "trip" || tab === "cal" || tab === "wx";
@@ -271,9 +384,9 @@ export function renderHead(legIx, tab) {
     </div>
     ${whole || tab === "next" ? "" : `<div class="legs">${DATA.route.legs.map((l, i) =>
       `<button data-leg="${i}" aria-selected="${i === legIx}">${esc(l.short || SHORT[i])}</button>`).join("")}</div>
-    <div class="ways">${DATA.route.legs[legIx].routes.map(o =>
+    ${isNew() ? "" : `<div class="ways">${DATA.route.legs[legIx].routes.map(o =>
       `<button data-route="${o.id}" data-rleg="${DATA.route.legs[legIx].id}"
-        aria-pressed="${o.id === rt.id}">${esc(o.name)}</button>`).join("")}</div>`}`;
+        aria-pressed="${o.id === rt.id}">${esc(o.name)}</button>`).join("")}</div>`}`}`;
 }
 
 const SHORT = ["Carolina", "Houston", "Home"];
@@ -283,12 +396,14 @@ const SHORT = ["Carolina", "Houston", "Home"];
 /// line as it runs, with food rows tagged.
 let kindFilter = 'all';
 export const setKindFilter = k => { kindFilter = k; };
+export const kindNow = () => kindFilter;
 
 /// The time scale: total cost (detour both ways + dwell) bucketed for colour.
 const timeBucket = mins =>
   mins < 45 ? 't0' : mins < 90 ? 't1' : mins < 180 ? 't2' : 't3';
 
 export function renderRoute(legIx) {
+  if (isNew()) return N.renderRoute(legIx);
   const rt = legRoute(legIx);
   let h = '<div class="routes">';
   // Choosing the route happens on the Map, where you can see the two lines
@@ -311,6 +426,9 @@ export function renderRoute(legIx) {
   let ni = 0;
   const night = () => {
     const bed = lodgingFor(rt, nights[ni].m);
+    if (isNew()) return `<div class="night"><span class="txt">Night</span>${bed
+      ? `<button class="bed" data-stop="${bed.id}">${esc(bed.name)}</button>`
+      : `<span class="bed">${esc(nights[ni].n)}</span>`}</div>`;
     return `<div class="night"><span class="bar"></span>
       <span class="txt">Night — ${esc(nights[ni].n)}</span><span class="rule"></span>
       ${bed ? `<button class="bed" data-stop="${bed.id}">${esc(bed.name)}</button>` : ""}</div>`;
@@ -399,6 +517,7 @@ function routeOption(leg, opt, chosenId) {
 }
 
 export function renderMap(legIx) {
+  if (isNew()) return N.renderMap(legIx);
   const rt = legRoute(legIx);
   return `<div class="mapbox" id="mapbox">
       <div class="mapstage" id="mstage" style="width:${mapview.MW}px;height:${mapview.MH}px">
@@ -427,6 +546,7 @@ export function renderMap(legIx) {
           <span class="x">${drawer ? "Close" : "Why"}</span>
         </button>
         <div class="mwbody">${DATA.route.legs[legIx].routes
+          .filter(o => !isNew() || o.id === rt.id)
           .map(o => routeOption(DATA.route.legs[legIx], o, rt.id)).join("")}</div>
       </div>
     </div>`;
@@ -487,6 +607,7 @@ const shortDate = d => `${WD[d.getUTCDay()].slice(0, 3)} ${d.getUTCDate()} ${MON
 // A leg with no departure date set simply does not appear. There is no sane
 // place to put it on a calendar.
 export function renderCalendar() {
+  if (isNew()) return N.renderCalendar();
   const legs = DATA.route.legs;
   const byDate = new Map();
   const spans = [];
@@ -543,13 +664,16 @@ export function renderCalendar() {
           aria-pressed="${p.id === cur}">${esc(p.name)}</button>`).join('')}</div>
     </div>`;
   };
-  const branchBlock = legs.map(branchRow).join('');
+  // Kevin read the leg 2 "which trip" switch as a bug: it was the only leg
+  // with a choice on this screen, and the Route tab already has every road
+  // for every leg. So Dates is dates; the road is chosen on Route.
+  const branchBlock = '';
   const depBlock = branchBlock + legs.map(depRow).join('');
   // A leg with a CHOICE of trips keeps its editor on screen even once dated,
   // because each scenario carries its own departure and you cannot set the
   // other one from a control that has hidden itself. Legs with a single plan
   // behave as before: visible only while unset.
-  const unsetBlock = legs.filter(l => !depOf(legChoice(l)).date || plansOf(l).length > 1)
+  const unsetBlock = legs.filter(l => !depOf(legChoice(l)).date)
     .map(depRow).join('');
 
   const dated = spans.filter(x => !x.unset);
@@ -604,18 +728,29 @@ export function renderCalendar() {
         <div class="cwhere">${esc(d.from.name)} → ${esc(d.overnight.name)}</div>
         <div class="cmeta">out ${esc(d.startAt || '')}${d.arriveAt ? ' · in ' + esc(d.arriveAt) : ''} · ${Math.round(d.miles).toLocaleString()} mi
           · ${fmtHours(d.driveMins)} driving${d.stopMins ? ' · ' + fmtHours(d.stopMins) + ' stopped' : ''}</div>
+        ${dayAlerts(e.li, di).map(a => `<div class="cwarn nws">${esc(alertText(a))}</div>`).join('')}
         ${d.risks.length ? `<div class="cwarn">Winter watch — ${d.risks.map(r =>
           esc(r.name + (r.atLabel ? ' ' + r.atLabel : '')
             + (r.dark && r.early ? ', in the dark and before the plows'
                : r.dark ? ', in the dark'
                : r.early ? `, before the plows clear it at ${r.plowedBy}` : ''))
         ).join(' · ')}</div>` : ''}
+        <div class="ctt">
+          <div class="ctth"><span>Arrive</span><span>Leave</span><span></span></div>
+          ${timetable(d, di === n - 1).map(t => `<${t.id ? `button data-stop="${t.id}"` : 'div'} class="cttr ${t.kind}">
+            <span class="a">${esc(t.arrive || '')}</span><span class="l">${esc(t.leave || '')}</span>
+            <span class="n">${esc(t.name)}<small>${esc(t.note)}</small>${t.bad ? `<small class="bad">${esc(t.bad)}</small>` : ''}</span>
+          </${t.id ? 'button' : 'div'}>`).join('')}
+        </div>
+        ${(() => {
+          const p = plansFor(rt)[di];
+          if (!p || !p.total) return '';
+          const co = p.stretches.filter(s => s.who !== 'you');
+          return `<div class="cdrv">${esc(drivers.splitLine(p))}${co.length ? ` Co-driver: ${co.map(s =>
+            esc(`${s.from} → ${s.to} (${fmtHours(s.min)}${s.who === 'maybe' ? ', if dry' : ''})`)).join(' · ')}` : ''}</div>
+            ${p.long ? `<div class="cwarn">Long day: ${esc(p.reasons.join(' · '))}</div>` : ''}`;
+        })()}
         ${wxBand(d, rt)}
-        ${rows.length ? `<ol class="cstops">${rows.map(r =>
-          `<li><span class="ct"><b>${esc(r.arriveAt)}</b>–${esc(r.departAt)}</span><span class="cn">${esc(r.stop.name)}</span>
-           ${r.dwell ? `<span class="cd">${fmtHours(r.dwell)}</span>` : ''}</li>`).join('')}</ol>` : ''}
-        ${bed ? `<div class="cbed"><span class="ct"><b>${esc(bed.arriveAt)}</b>–${esc(bed.departAt)}</span><span class="cn">${esc(bed.stop.name)}</span><span class="cd">sleep</span></div>`
-              : `<div class="cbed"><span class="ct"><b>${esc(d.arriveAt || '')}</b></span><span class="cn">arrive ${esc(d.overnight.name)}</span><span class="cd">leg done</span></div>`}
       </div></div>`;
   }
   return h + '</div>';
@@ -732,6 +867,7 @@ export async function hydrateOffline() {
 }
 
 export function renderTrip(upd = {}) {
+  if (isNew()) return N.renderTrip(upd);
   const st = { ...syncmod.state, ...upd };
   const dep = store.departure;
   const days = dep ? Math.ceil((new Date(dep + "T00:00:00") - new Date()) / 86400000) : null;
@@ -739,6 +875,17 @@ export function renderTrip(upd = {}) {
   const seen = inPlay.filter(s => store.isSeen(s.id));
 
   return `<div class="tripbody">
+      <div class="skinset">
+        <div class="slab">Look</div>
+        <div class="seg2">
+          <button data-skinpick="classic" aria-pressed="${skin() === 'classic'}">Classic</button>
+          <button data-skinpick="new" aria-pressed="${skin() === 'new'}">New</button>
+        </div>
+        <div class="sbody skinnote">${isNew()
+          ? 'Streamlined, with only the three confirmed plans. Switch back any time; nothing is lost.'
+          : 'Every road and option. New is the streamlined look with only the confirmed plans.'}</div>
+      </div>
+      <div class="sdiv"></div>
       ${dep
         ? `<div class="count"><b>${days > 0 ? days : 0}</b>
              <span>${days > 0 ? "days until you leave" : "you're out there"}</span></div>
@@ -958,7 +1105,9 @@ export function refreshWeather(opts) {
   const dates = trip.flatMap(L => (L.days || []).map(d => d.d.date.toISOString().slice(0, 10)));
   const need = { forecast: dates.some(d => wx.needFor(d).forecast), seasonal: dates.some(d => wx.needFor(d).seasonal) };
   return wx.refresh(wxPlaces(trip), opts).then(a =>
-    wx.refreshGrid(wxGrid(trip), need, opts).then(b => ({ changed: a.changed + b.changed, failed: a.failed + b.failed })));
+    wx.refreshGrid(wxGrid(trip), need, opts).then(b =>
+      alerts.refresh(alertPoints().map(p => p.ll), opts).then(c => ({
+        changed: a.changed + b.changed + c.changed, failed: a.failed + b.failed + c.failed }))));
 }
 
 const deg = n => (n < 0 ? '−' + Math.abs(n) : String(n));
@@ -1108,7 +1257,7 @@ function wxTone(p, g) {
 
 /// One glyph for the sky. The forecast says what it is; further out it is
 /// what most of the runs, or most El Niño years, did.
-function wxGlyph(p) {
+export function wxGlyph(p) {
   if (!p) return '';
   const T = '\uFE0E';                       // text, not emoji: it takes the colour
   if (p.tier === 'forecast') {
@@ -1498,10 +1647,12 @@ export function wxFoot() {
       trip shows its weather for the day you are there.</div>`;
   const sel = spots.find(s => s.id === wxSpot);
   const worst = dayWorst(trip);
-  const chips = [`<button class="wxchip" data-wxday="all" aria-pressed="${wxDay === 'all'}">All</button>`];
+  const chips = [`<button class="wxchip" data-wxday="all" aria-pressed="${wxDay === 'all'}">${isNew() ? '<small>Whole</small><b>trip</b>' : 'All'}</button>`];
   for (const L of dated) for (const day of L.days) {
     const id = `${L.li}:${day.di}`;
-    chips.push(`<button class="wxchip" data-wxday="${id}" aria-pressed="${wxDay === id}"><i class="z-${worst(id)}"></i>${esc(shortDate(day.d.date))}</button>`);
+    chips.push(`<button class="wxchip leg${L.li}" data-wxday="${id}" aria-pressed="${wxDay === id}"><i class="z-${worst(id)}"></i>${isNew()
+      ? `<small>${esc(WD[day.d.date.getUTCDay()].slice(0, 3))}</small><b>${day.d.date.getUTCDate()}</b>`
+      : esc(shortDate(day.d.date))}</button>`);
   }
   const sw = k => [1, 2, 3].map(n => `<i class="z-${k} l${n}"></i>`).join('');
   const zl = zoneLayer(trip);
@@ -1587,7 +1738,7 @@ function wxExplain() {
 
 /// One line for a calendar day: the worst of what that day's places show, and
 /// a tap through to the Weather tab.
-function wxBand(d, rt) {
+export function wxBand(d, rt) {
   const D = realDays(rt);
   const term = rt.waypoints[rt.waypoints.length - 1];
   const isLast = d === D[D.length - 1];
@@ -1803,6 +1954,7 @@ function fallbackSpot() {
 }
 
 export function renderNext() {
+  if (isNew()) return N.renderNext();
   const here = whereNow();
   const rt = here.route;
   const days = realDays(rt);
@@ -1819,6 +1971,8 @@ export function renderNext() {
   const risks = rt.towns.filter(t => t.risk && t.mile > here.mile && t.mile < here.mile + 260);
 
   let h = '<div class="nextbody">';
+  for (const a of soonAlerts())
+    h += `<div class="nalert ${a.level}"><b>${esc(a.day)}: ${esc(a.event)}</b>${esc(alertText(a).slice(a.event.length))}</div>`;
 
   if (!position) {
     h += `<div class="nonav">
@@ -1838,6 +1992,7 @@ export function renderNext() {
       <div class="nsub">${esc(next.town)}, ${esc(next.state)} · ${next.kind === 'lodging'
         ? "tonight's bed"
         : `${next.detour} min off the road · ${fmtHours(c.total)} all in`}</div>
+      ${(() => { const r = dueFor(rt, next.id); return r ? `<div class="ndue">${esc(dueText(r))}</div>` : ''; })()}
     </button>
     <div class="actions" style="margin-top:2px">
       <a class="btn on" style="text-align:center;padding:13px 0"
@@ -1855,7 +2010,7 @@ export function renderNext() {
     h += `<div class="nblock"><div class="slab">Then</div><div class="stoplist2">${
       after.map(s => `<button class="nrow" data-stop="${s.id}">
         <span class="t">${esc(s.name)}</span>
-        <span class="d">${Math.max(0, Math.round(s.mile - here.mile)).toLocaleString()} mi</span>
+        <span class="d">${(() => { const r = dueFor(rt, s.id); return r ? 'due ' + esc(dueShort(r)) + ' · ' : ''; })()}${Math.max(0, Math.round(s.mile - here.mile)).toLocaleString()} mi</span>
       </button>`).join('')}</div></div>`;
   }
 
@@ -1869,7 +2024,7 @@ export function renderNext() {
     h += `<div class="nblock"><div class="slab">Tonight</div>
       <div class="nrow big">
         <span class="t">${esc(day.overnight.name)}${day.overnight.state ? ', ' + esc(day.overnight.state) : ''}</span>
-        <span class="d">${Math.round(toNight).toLocaleString()} mi · ${fmtHours(driveMinutes(here.mile, day ? day.endMile : here.mile, rt))}</span>
+        <span class="d">${Math.round(toNight).toLocaleString()} mi · ${fmtHours(driveMinutes(here.mile, day ? day.endMile : here.mile, rt))}${day.arriveAt && depOf(rt).date ? ' · due ' + esc(day.arriveAt) : ''}</span>
       </div>
       ${bed
         ? `<button class="nrow" data-stop="${bed.id}"><span class="t">${esc(bed.name)}</span>

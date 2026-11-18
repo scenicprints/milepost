@@ -7,6 +7,7 @@ import { maybeShow } from './install.js';
 import * as syncmod from './sync.js';
 import { VERSION } from './version.js';
 import { resolveRoads } from './route.js';
+import { setSkin } from './skin.js';
 
 const TABS = [
   { id: 'next',  label: 'Next',  render: () => ui.renderNext() },
@@ -125,7 +126,7 @@ function weatherTick(force = false) {
   const p = ui.refreshWeather({ force });
   if (force && tab === 'wx') draw();             // show "Checking…" at once
   return p.then(r => {
-    if ((r.changed || force) && (tab === 'wx' || tab === 'cal' || sheet)) draw();
+    if ((r.changed || force) && (tab === 'wx' || tab === 'cal' || tab === 'next' || sheet)) draw();
   });
 }
 document.addEventListener('visibilitychange', () => { if (!document.hidden) weatherTick(); });
@@ -514,6 +515,17 @@ document.addEventListener('click', e => {
     return;
   }
 
+  // Classic or New. Not [data-skin]: <html> carries that, so every tap
+  // would match it.
+  // The two looks plan different roads (New is the confirmed
+  // plans only), so both maps start over from a fresh fit.
+  const skb = e.target.closest('[data-skinpick]');
+  if (skb) {
+    setSkin(skb.dataset.skinpick);
+    ui.setMapMode('wx'); ui.resetTf(); ui.setMapMode('map'); ui.resetTf();
+    draw(); weatherTick();
+    return;
+  }
   const kf = e.target.closest('[data-kindfilter]');
   if (kf) { ui.setKindFilter(kf.dataset.kindfilter); draw(); return; }
 

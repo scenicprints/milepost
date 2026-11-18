@@ -17,6 +17,29 @@ agent, or a new Claude account, can continue without losing the thread.
 
 ## State
 
+**Two looks, Classic and New (session 75).** Trip → Look switches per phone
+(localStorage `milepost.skin`, never synced). New is Kevin's "streamlined and
+user friendly" ask: the same six tabs rebuilt in `js/ui-new.js` and
+`css/skin-new.css` (leg colours, cards, switches, an agenda), showing only the
+three confirmed plans (`skin.js` `CONFIRMED`: leg1-plan, leg2-newjersey-plan,
+leg3-plan). Classic is untouched and keeps every road. **New deliberately
+breaks the Rams rules below** (colour per leg, rounded cards); Kevin asked for
+it. Both looks share every number: ui-new.js only lays out what ui.js computes.
+
+**Dates is a timetable (session 75).** Every day lists Arrive and Leave for
+each place (`ui.js` `timetable()`), because Google Maps runs alongside and
+gives the live ETA; Milepost says when you are SUPPOSED to be there. Next
+shows the same due times. The leg 2 "which trip" switch is gone from Dates
+(Kevin read it as a bug); roads are chosen on Route.
+
+**Who drives, and storm warnings (session 75).** `js/drivers.js` judges each
+day's road in 20-mile pieces for the less experienced co-driver: daylight, no
+pass, no city, no rain or snow forecast; seasonal "possible" makes a stretch
+"co-driver if dry". Long days are flagged by the main driver's hours, a
+midnight arrival or a short night. `js/alerts.js` pulls National Weather
+Service warnings (api.weather.gov, no key, CORS open) for days starting in the
+next three, shown on Dates and at the top of Next.
+
 **The Weather tab is a map of snow and rain, in three steps of severity
 (session 74).** It replaced the session-73 list. Pick a day and the map shades
 snow (blue) and rain (green) across a 1-degree grid within 110 miles of the
@@ -365,6 +388,10 @@ services planning** (gone).
 - The 32px favicon is legible but muddy. Redo alongside the UI port.
 - Leg 2 mileage runs ~4% light.
 - The prototype duplicates `js/plan.js`. It will drift.
+- New look: the stop sheet and the add-a-place editor are restyled, not
+  rebuilt. Each tab keeps the scroll position of the last one (both looks).
+- `drivers.js` stretch boundaries are named "near <waypoint>", which can read
+  "near Trenton → near Trenton" where waypoints are sparse.
 - The Weather map's whole-trip view is small on a phone: pinch in or pick a day.
   Its zones come from points about 60 miles apart, so they show broad areas,
   not single storms. Not yet tried on a real phone.
@@ -401,6 +428,24 @@ Android Auto is no.
 ---
 
 ## Session log
+
+**Session 75** — A New look, Dates as a timetable, who drives, storm
+warnings. 1.61.0.
+
+Kevin found the app "a bit ugly" and asked for a switch to a new UI he can
+flip back from. First pass restyled Classic; his verdict: "That still looks
+the same," so New got its own layouts (`ui-new.js`), same tabs, only the three
+confirmed plans. Then, asked what the app is missing: Google Maps runs
+alongside, so Milepost should say when he is SUPPOSED to be somewhere; yes to
+weather-service warnings; yes to a driver plan, with a co-driver who should
+stay off night, rain, snow, passes and cities. Not wanted: re-routing (Google
+does it), an emergency card ("nothing to do with the app"). Offline already
+existed. Last, Dates had to make arrive and leave times plain.
+
+**Bug found and fixed on the way:** `<html data-skin>` matched
+`closest('[data-skin]')`, so for a while every tap below that branch in the
+click handler set the skin instead. The switch buttons use `data-skinpick`.
+Any new data-attribute must not collide with one on `<html>`.
 
 **Session 74** — The Weather tab becomes a map of snow and rain, with
 severity. 1.60.0.

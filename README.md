@@ -24,6 +24,12 @@ interstate*, and a running list of the things Ada has never seen before.
   ensemble beyond that (striped, because it is odds, not amounts), and always
   what the strongest El Niño winters did at that spot. It refreshes itself and
   keeps working offline.
+- **On the road:** Dates is a timetable of when to arrive and leave each
+  place, to check against Google Maps. Each day shows which stretches the less
+  experienced driver can take (daylight, dry, no passes, no cities), flags long
+  days, and shows any National Weather Service warnings on the road ahead.
+- **Two looks.** Classic, or New: a streamlined layout with only the three
+  confirmed plans. Switch on the Trip tab; each phone keeps its own.
 
 ## Running it
 
